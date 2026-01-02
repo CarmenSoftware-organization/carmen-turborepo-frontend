@@ -28,6 +28,7 @@ import {
   useTaxProfileQuery,
   useUpdateTaxProfile,
 } from "@/hooks/use-tax-profile";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function TaxProfileComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -62,25 +63,44 @@ export function TaxProfileComponent() {
 
   const actionButtons = (
     <div className="action-btn-container" data-id="tax-profile-action-buttons">
-      {taxProfilePerms.canCreate && (
-        <Button size="sm" onClick={handleAddNew}>
-          <Plus className="h-4 w-4" />
-          {tCommon("add")}
-        </Button>
-      )}
-      <Button
-        variant="outlinePrimary"
-        className="group"
-        size="sm"
-        data-id="tax-profile-export-button"
-      >
-        <FileDown className="h-4 w-4" />
-        {tCommon("export")}
-      </Button>
-      <Button variant="outlinePrimary" size="sm" data-id="tax-profile-print-button">
-        <Printer className="h-4 w-4" />
-        {tCommon("print")}
-      </Button>
+      <TooltipProvider>
+        {taxProfilePerms.canCreate && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size="sm" onClick={handleAddNew}>
+                <Plus className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{tCommon("add")}</TooltipContent>
+          </Tooltip>
+        )}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outlinePrimary"
+              className="group"
+              size="sm"
+              data-id="tax-profile-export-button"
+            >
+              <FileDown className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("export")}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outlinePrimary"
+              className="group"
+              size="sm"
+              data-id="tax-profile-print-button"
+            >
+              <Printer className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("print")}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 

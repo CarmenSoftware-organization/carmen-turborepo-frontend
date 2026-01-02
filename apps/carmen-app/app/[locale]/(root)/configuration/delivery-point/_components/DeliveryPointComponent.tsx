@@ -17,10 +17,7 @@ import { useState } from "react";
 import ListDeliveryPoint from "./ListDeliveryPoint";
 import { parseSortString } from "@/utils/table";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import {
-  DeliveryPointCreateDto,
-  DeliveryPointUpdateDto,
-} from "@/dtos/delivery-point.dto";
+import { DeliveryPointCreateDto, DeliveryPointUpdateDto } from "@/dtos/delivery-point.dto";
 import { formType } from "@/dtos/form.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -28,6 +25,7 @@ import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import DeliveryPointDialog from "@/components/shared/DeliveryPointDialog";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function DeliveryPointComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -78,8 +76,7 @@ export default function DeliveryPointComponent() {
   const deliveryPointsData = deliveryPoints?.data ?? [];
   const currentPage = deliveryPoints?.paginate.page ?? 1;
   const totalPages = deliveryPoints?.paginate.pages ?? 1;
-  const totalItems =
-    deliveryPoints?.paginate.total ?? deliveryPoints?.data?.length ?? 0;
+  const totalItems = deliveryPoints?.paginate.total ?? deliveryPoints?.data?.length ?? 0;
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage.toString());
@@ -127,9 +124,7 @@ export default function DeliveryPointComponent() {
     });
   };
 
-  const handleDialogSubmit = (
-    data: DeliveryPointUpdateDto | DeliveryPointCreateDto,
-  ) => {
+  const handleDialogSubmit = (data: DeliveryPointUpdateDto | DeliveryPointCreateDto) => {
     if (dialogMode === formType.ADD) {
       // Create new delivery point
       createDeliveryPoint(data, {
@@ -177,36 +172,42 @@ export default function DeliveryPointComponent() {
   const title = tDeliveryPoint("title");
 
   const actionButtons = (
-    <div
-      className="action-btn-container"
-      data-id="delivery-point-list-action-buttons"
-    >
-      <Button
-        size="sm"
-        onClick={handleAdd}
-        disabled={!deliveryPointPerms.canCreate}
-        data-id="delivery-point-add-button"
-      >
-        <Plus className="h-4 w-4" />
-        {tCommon("add")}
-      </Button>
-      <Button
-        variant="outlinePrimary"
-        className="group"
-        size="sm"
-        data-id="delivery-point-export-button"
-      >
-        <FileDown className="h-4 w-4" />
-        {tCommon("export")}
-      </Button>
-      <Button
-        variant="outlinePrimary"
-        size="sm"
-        data-id="delivery-point-print-button"
-      >
-        <Printer className="h-4 w-4" />
-        {tCommon("print")}
-      </Button>
+    <div className="action-btn-container" data-id="delivery-point-list-action-buttons">
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button size={"sm"} onClick={handleAdd}>
+              <Plus className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("add")}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outlinePrimary"
+              className="group"
+              size="sm"
+              data-id="delivery-point-export-button"
+            >
+              <FileDown className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("export")}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outlinePrimary" size="sm" data-id="delivery-point-print-button">
+              <Printer className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("print")}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 

@@ -25,6 +25,7 @@ import ExtraCostDialog from "./ExtraCostDialog";
 import { useTranslations } from "next-intl";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function ExtraCostComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -165,25 +166,39 @@ export default function ExtraCostComponent() {
 
   const actionButtons = (
     <div className="action-btn-container" data-id="extra-cost-list-action-buttons">
-      {extraCostPerms.canCreate && (
-        <Button size="sm" onClick={handleAdd}>
-          <Plus className="h-4 w-4" />
-          {tCommon("add")}
-        </Button>
-      )}
-      <Button
-        variant="outlinePrimary"
-        className="group"
-        size="sm"
-        data-id="extra-cost-export-button"
-      >
-        <FileDown className="h-4 w-4" />
-        {tCommon("export")}
-      </Button>
-      <Button variant="outlinePrimary" size="sm" data-id="extra-cost-print-button">
-        <Printer className="h-4 w-4" />
-        {tCommon("print")}
-      </Button>
+      <TooltipProvider>
+        {extraCostPerms.canCreate && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size="sm" onClick={handleAdd}>
+                <Plus className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{tCommon("add")}</TooltipContent>
+          </Tooltip>
+        )}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outlinePrimary"
+              className="group"
+              size="sm"
+              data-id="extra-cost-export-button"
+            >
+              <FileDown className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("export")}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outlinePrimary" size="sm" data-id="extra-cost-print-button">
+              <Printer className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("print")}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 

@@ -20,6 +20,7 @@ import { configurationPermission } from "@/lib/permission";
 import { StoreLocationDto } from "@/dtos/location.dto";
 import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function LocationComponent() {
   const tCommon = useTranslations("Common");
@@ -60,9 +61,7 @@ export default function LocationComponent() {
   const { mutate: deleteLocation } = useDeleteLocation(token, buCode);
 
   useEffect(() => {
-    if (
-      (error as { response?: { status?: number } })?.response?.status === 401
-    ) {
+    if ((error as { response?: { status?: number } })?.response?.status === 401) {
       setLoginDialogOpen(true);
     }
   }, [error, setLoginDialogOpen]);
@@ -103,32 +102,43 @@ export default function LocationComponent() {
   };
 
   const actionButtons = (
-    <div
-      className="action-btn-container"
-      data-id="store-location-list-action-buttons"
-    >
-      <Button
-        size="sm"
-        data-id="store-location-add-button"
-        onClick={() => router.push("/configuration/location/new")}
-        disabled={!locationPerms.canCreate}
-      >
-        <Plus className="h-4 w-4" />
-        {tCommon("add")}
-      </Button>
-      <Button
-        variant="outlinePrimary"
-        className="group"
-        size="sm"
-        data-id="store-location-export-button"
-      >
-        <FileDown className="h-4 w-4" />
-        {tCommon("export")}
-      </Button>
-      <Button variant="outlinePrimary" size="sm" data-id="store-location-print-button">
-        <Printer className="h-4 w-4" />
-        {tCommon("print")}
-      </Button>
+    <div className="action-btn-container" data-id="store-location-list-action-buttons">
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="sm"
+              data-id="store-location-add-button"
+              onClick={() => router.push("/configuration/location/new")}
+              disabled={!locationPerms.canCreate}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("add")}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outlinePrimary"
+              className="group"
+              size="sm"
+              data-id="store-location-export-button"
+            >
+              <FileDown className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("export")}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outlinePrimary" size="sm" data-id="store-location-print-button">
+              <Printer className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("print")}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 
