@@ -203,7 +203,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
           </Card>
           <Card className="p-3 space-y-3">
             <h2 className="text-sm font-semibold text-foreground mb-2">General Information</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
               <FormField
                 control={form.control}
                 name="code"
@@ -242,59 +242,58 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="business_type"
-                render={({ field }) => (
-                  <FormItem className="space-y-1">
-                    <FormLabel className="text-xs font-medium text-muted-foreground">
-                      Business Type
-                    </FormLabel>
-                    <FormControl>
-                      <div className="h-8">
-                        <MultiSelectCustom
-                          options={BUSINESS_TYPE_OPTIONS}
-                          onValueChange={(values: string[]) => {
-                            const selectedTypes = values.map((val: string) => {
-                              const option = BUSINESS_TYPE_OPTIONS.find(
-                                (opt: { label: string; value: string }) => opt.value === val
-                              );
-                              return { id: val, name: option?.label || "" };
-                            });
-                            field.onChange(selectedTypes);
-                          }}
-                          defaultValue={field.value.map((v) => v.id)}
-                          placeholder="Select types"
-                          variant="inverted"
-                          animation={2}
-                          maxCount={2}
-                          disabled={isViewMode}
-                          className="text-xs"
-                        >
-                          <div className="border-t border-border w-full">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              className="w-full text-xs justify-start h-8 text-primary hover:text-primary/80 hover:bg-transparent"
-                              onMouseDown={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setIsBuTypeInternalDialogOpen(true);
-                              }}
-                            >
-                              <Plus className="h-3 w-3" />
-                              New Business Type
-                            </Button>
-                          </div>
-                        </MultiSelectCustom>
-                      </div>
-                    </FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )}
-              />
             </div>
+            <FormField
+              control={form.control}
+              name="business_type"
+              render={({ field }) => (
+                <FormItem className="space-y-1">
+                  <FormLabel className="text-xs font-medium text-muted-foreground">
+                    Business Type
+                  </FormLabel>
+                  <FormControl>
+                    <div className="h-8">
+                      <MultiSelectCustom
+                        options={BUSINESS_TYPE_OPTIONS}
+                        onValueChange={(values: string[]) => {
+                          const selectedTypes = values.map((val: string) => {
+                            const option = BUSINESS_TYPE_OPTIONS.find(
+                              (opt: { label: string; value: string }) => opt.value === val
+                            );
+                            return { id: val, name: option?.label || "" };
+                          });
+                          field.onChange(selectedTypes);
+                        }}
+                        defaultValue={field.value.map((v) => v.id)}
+                        placeholder="Select types"
+                        variant="inverted"
+                        animation={2}
+                        maxCount={2}
+                        disabled={isViewMode}
+                        className="text-xs"
+                      >
+                        <div className="border-t border-border w-full">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            className="w-full text-xs justify-start h-8 text-primary hover:text-primary/80 hover:bg-transparent"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setIsBuTypeInternalDialogOpen(true);
+                            }}
+                          >
+                            <Plus className="h-3 w-3" />
+                            New Business Type
+                          </Button>
+                        </div>
+                      </MultiSelectCustom>
+                    </div>
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="description"

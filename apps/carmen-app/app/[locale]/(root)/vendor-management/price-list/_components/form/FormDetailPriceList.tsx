@@ -13,7 +13,6 @@ import { Badge } from "@/components/ui/badge";
 import { formType } from "@/dtos/form.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { priceListSchema, type PriceListFormData } from "../../_schema/price-list.schema";
-import type { PriceListDetailDto } from "../../_dto/price-list-dto";
 import OverviewSection from "./OverviewSection";
 import ProductsSection from "./ProductsSection";
 import { formatDate } from "@/utils/format/date";
@@ -279,7 +278,7 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
       <div className="flex-1 overflow-y-auto">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-4 pb-8">
-            <Tabs defaultValue="account">
+            <Tabs defaultValue="overview">
               <TabsList>
                 <TabsTrigger value="overview">{tPriceList("overview")}</TabsTrigger>
                 <TabsTrigger value="products">{tPriceList("products")}</TabsTrigger>
