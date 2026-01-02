@@ -161,7 +161,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
   const watchFormValues = form.watch();
 
   return (
-    <div className="max-w-5xl mx-auto pb-10">
+    <div className="max-w-4xl mx-auto pb-10">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Card className="p-3">
