@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { usePriceListById } from "../_hooks/use-price-list";
+import { usePriceListById } from "@/hooks/use-price-list";
 import { useParams } from "next/navigation";
 import DetailPriceList from "../_components/form/FormDetailPriceList";
 import { formType } from "@/dtos/form.dto";
