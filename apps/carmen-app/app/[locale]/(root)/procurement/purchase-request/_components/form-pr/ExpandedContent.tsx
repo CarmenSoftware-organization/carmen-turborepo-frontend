@@ -143,8 +143,10 @@ export default function ExpandedContent({
                   req_unit={item.requested_unit_name ?? "-"}
                   apv_qty={item.approved_qty}
                   apv_unit={item.approved_unit_name ?? "-"}
-                  pricelist_detail_id={item.pricelist_detail_id ?? ""}
+                  productId={item.product_id}
+                  productName={item.product_name}
                   itemId={item.id}
+                  bu_code={buCode}
                   onItemUpdate={onItemUpdate}
                 />
               )}
