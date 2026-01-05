@@ -1,11 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-import type {
-  PriceListDtoList,
-  PriceListDetailDto,
-  PriceListCreateDto,
-  PriceListUpdateDto,
-} from "../_dto/price-list-dto";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { backendApi } from "@/lib/backend-api";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import {
@@ -17,6 +10,7 @@ import {
 } from "@/lib/config.api";
 
 import axios from "axios";
+import { PriceListCreateDto, PriceListUpdateDto } from "@/dtos/price-list-dto";
 
 const queryKey = "price-list";
 

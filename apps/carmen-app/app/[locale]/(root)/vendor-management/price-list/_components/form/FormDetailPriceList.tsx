@@ -16,8 +16,8 @@ import { priceListSchema, type PriceListFormData } from "../../_schema/price-lis
 import OverviewSection from "./OverviewSection";
 import ProductsSection from "./ProductsSection";
 import { formatDate } from "@/utils/format/date";
-import { useCreatePriceList, useUpdatePriceList } from "../../_hooks/use-price-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCreatePriceList, useUpdatePriceList } from "@/hooks/use-price-list";
 interface DetailPriceListProps {
   readonly priceList?: any;
   mode: formType;

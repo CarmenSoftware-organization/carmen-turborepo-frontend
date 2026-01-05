@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Calendar, List, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useDeletePriceList } from "../_hooks/use-price-list";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -34,9 +33,10 @@ import {
 } from "@/components/ui/data-grid-table";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import type { PriceListDtoList } from "../_dto/price-list-dto";
 import { formatDate } from "@/utils/format/date";
 import { Badge } from "@/components/ui/badge";
+import { PriceListDtoList } from "@/dtos/price-list-dto";
+import { useDeletePriceList } from "@/hooks/use-price-list";
 
 interface ListPriceListProps {
   readonly priceLists?: any[];

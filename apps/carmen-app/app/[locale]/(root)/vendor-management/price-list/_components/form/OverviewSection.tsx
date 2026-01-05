@@ -19,9 +19,9 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { PriceListFormData } from "../../_schema/price-list.schema";
-import type { PriceListDetailDto } from "../../_dto/price-list-dto";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
 import VendorLookup from "@/components/lookup/LookupVendor";
+import { PriceListDetailDto } from "@/dtos/price-list-dto";
 
 interface OverviewSectionProps {
   form: UseFormReturn<PriceListFormData>;

@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, useMemo } from "react";
+import { useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
@@ -10,8 +10,8 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Package, TrendingDown, TrendingUp } from "lucide-react";
 import type { PriceListFormData } from "../../_schema/price-list.schema";
-import type { PriceListDetailDto, ProductPlDto } from "../../_dto/price-list-dto";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import { PriceListDetailDto, ProductPlDto } from "@/dtos/price-list-dto";
 
 interface ProductsSectionProps {
   form: UseFormReturn<PriceListFormData>;

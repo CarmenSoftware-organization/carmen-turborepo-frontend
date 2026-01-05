@@ -15,7 +15,7 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { VIEW } from "@/constants/enum";
 import PriceListGrid from "./PriceListGrid";
-import { usePriceList } from "../_hooks/use-price-list";
+import { usePriceList } from "@/hooks/use-price-list";
 
 const sortFields = [{ key: "name", label: "Name" }];
 

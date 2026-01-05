@@ -28,8 +28,8 @@ interface Props {
   req_unit: string;
   apv_qty: number;
   apv_unit: string;
-  pricelist_detail_id?: string;
   itemId: string;
+  bu_code?: string;
   onItemUpdate: (
     itemId: string,
     fieldName: string,
@@ -46,6 +46,7 @@ export default function VendorComparison({
   apv_qty,
   apv_unit,
   itemId,
+  bu_code,
   onItemUpdate,
 }: Props) {
   const { dateFormat } = useAuth();

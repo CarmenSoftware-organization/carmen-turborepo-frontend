@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "@/lib/navigation";
 import { Calendar, List, MoreHorizontal, Package, Trash2 } from "lucide-react";
-import { PriceListDtoList } from "../_dto/price-list-dto";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,12 +24,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useDeletePriceList } from "../_hooks/use-price-list";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import CardLoading from "@/components/loading/CardLoading";
 
 import { formatDate } from "@/utils/format/date";
+import { useDeletePriceList } from "@/hooks/use-price-list";
+import { PriceListDtoList } from "@/dtos/price-list-dto";
 
 interface PriceListGridProps {
   priceLists: any[];
