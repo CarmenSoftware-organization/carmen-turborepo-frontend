@@ -276,8 +276,11 @@ export const createPurchaseItemColumns = (
               }}
               classNames="text-xs h-7 w-full"
               disabled={!getItemValue(item, "location_id")}
+              initialDisplayName={
+                (getItemValue(item, "product_name") as string) || item.product_name
+              }
             />
-            {item.product_id && item.description && (
+            {item.description && (
               <p className="text-xs text-muted-foreground break-words">{item.description}</p>
             )}
           </div>

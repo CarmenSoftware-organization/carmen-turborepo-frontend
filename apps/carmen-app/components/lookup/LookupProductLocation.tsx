@@ -36,6 +36,7 @@ interface ProductLocationLookupProps {
   readonly classNames?: string;
   readonly bu_code?: string;
   readonly excludeProductIds?: string[];
+  readonly initialDisplayName?: string;
 }
 
 export default function LookupProductLocation({
@@ -46,6 +47,7 @@ export default function LookupProductLocation({
   classNames = "max-w-40",
   bu_code,
   excludeProductIds = [],
+  initialDisplayName,
 }: ProductLocationLookupProps) {
   const { token, buCode } = useAuth();
   const currentBuCode = bu_code ?? buCode;
@@ -78,8 +80,10 @@ export default function LookupProductLocation({
 
   const selectedProduct = productLocationData.find((p) => p.id === value);
 
+  const displayName = selectedProduct?.name || initialDisplayName;
+
   const getButtonLabel = () => {
-    if (isLoading) {
+    if (isLoading && !displayName) {
       return (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -87,15 +91,15 @@ export default function LookupProductLocation({
         </>
       );
     }
-    if (selectedProduct) {
-      return <span className="truncate">{selectedProduct.name}</span>;
+    if (displayName) {
+      return <span className="truncate">{displayName}</span>;
     }
     return <span className="truncate text-muted-foreground/90">{t("select_product")}</span>;
   };
 
   const getButtonTitle = () => {
-    if (selectedProduct) {
-      return selectedProduct.name;
+    if (displayName) {
+      return displayName;
     }
     return t("select_product");
   };
