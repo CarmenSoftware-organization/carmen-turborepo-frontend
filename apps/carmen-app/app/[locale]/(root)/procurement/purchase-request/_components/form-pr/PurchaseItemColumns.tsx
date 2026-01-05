@@ -20,7 +20,6 @@ import ExpandedContent from "./ExpandedContent";
 import { PR_STATUS } from "../../_constants/pr-status";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
 import { Input } from "@/components/ui/input";
-import { useCurrenciesQuery } from "@/hooks/use-currency";
 
 interface ColumnConfig {
   currentMode: formType;
@@ -43,6 +42,7 @@ interface ColumnConfig {
   buCode: string;
   tHeader: (key: string) => string;
   tAction: (key: string) => string;
+  getCurrencyCode: (currencyId: string) => string;
 }
 
 const getPrItemName = (type: string, tAction: (key: string) => string) => {
@@ -91,9 +91,8 @@ export const createPurchaseItemColumns = (
     buCode,
     tHeader,
     tAction,
+    getCurrencyCode,
   } = config;
-
-  const { getCurrencyCode } = useCurrenciesQuery(token, buCode);
 
   const initValues = [...unsortedInitValues].sort((a, b) => a.sequence_no - b.sequence_no);
 
@@ -199,6 +198,7 @@ export const createPurchaseItemColumns = (
           <div className="min-w-[200px] pr-4">
             <LookupLocation
               value={getItemValue(item, "location_id") as string | undefined}
+              bu_code={buCode}
               onValueChange={(value, selectedLocation) => {
                 console.log("selectedLocation", selectedLocation);
                 onItemUpdate(item.id, "location_id", value);
@@ -261,6 +261,7 @@ export const createPurchaseItemColumns = (
               location_id={(getItemValue(item, "location_id") as string) || ""}
               value={(getItemValue(item, "product_id") as string) || ""}
               excludeProductIds={usedProductIds}
+              bu_code={buCode}
               onValueChange={(value, selectedProduct) => {
                 onItemUpdate(item.id, "product_id", value, selectedProduct);
                 if (selectedProduct?.inventory_unit) {
@@ -432,21 +433,18 @@ export const createPurchaseItemColumns = (
     },
     {
       accessorKey: "currency_id",
-      header: ({ column }) => (
-        <div className="flex justify-center">
-          <DataGridColumnHeader column={column} title={tHeader("currency")} />
-        </div>
-      ),
+      header: ({ column }) => <DataGridColumnHeader column={column} title={tHeader("currency")} />,
       cell: ({ row }) => {
         const item = row.original;
 
         return currentMode === formType.VIEW ? (
-          <Input value={getCurrencyCode(item.currency_id ?? "")} disabled className="bg-muted" />
+          <p className="text-xs">{getCurrencyCode(item.currency_id || "-")}</p>
         ) : (
           <LookupCurrency
             value={(getItemValue(item, "currency_id") as string) || ""}
             onValueChange={(value) => onItemUpdate(item.id, "currency_id", value)}
             classNames="h-7 text-xs"
+            bu_code={buCode}
           />
         );
       },
@@ -454,14 +452,14 @@ export const createPurchaseItemColumns = (
       size: currentMode === formType.VIEW ? 100 : 180,
       meta: {
         headerTitle: tHeader("currency"),
+        cellClassName: "text-right",
+        headerClassName: "text-right",
       },
     },
     {
       accessorKey: "delivery_date",
       header: ({ column }) => (
-        <div className="flex justify-center">
-          <DataGridColumnHeader column={column} title={tHeader("date_required")} />
-        </div>
+        <DataGridColumnHeader column={column} title={tHeader("date_required")} />
       ),
       cell: ({ row }) => {
         const item = row.original;

@@ -26,11 +26,13 @@ export default function LookupLocation({
   onValueChange,
   disabled = false,
   classNames = "",
+  bu_code,
 }: Readonly<LocationLookupProps>) {
   const [open, setOpen] = useState(false);
   const { token, buCode } = useAuth();
+  const currentBuCode = bu_code ?? buCode;
   const t = useTranslations("StoreLocation");
-  const { data, isLoading } = useLocationQuery(token, buCode, { perpage: -1 });
+  const { data, isLoading } = useLocationQuery(token, currentBuCode, { perpage: -1 });
 
   const storeLocations = data?.data;
 

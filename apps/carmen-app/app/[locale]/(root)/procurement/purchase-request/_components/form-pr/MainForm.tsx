@@ -37,6 +37,7 @@ import { PR_STATUS } from "../../_constants/pr-status";
 interface Props {
   mode: formType;
   initValues?: PurchaseRequestByIdDto;
+  bu_code: string;
 }
 
 interface CancelAction {
@@ -44,8 +45,8 @@ interface CancelAction {
   event: React.MouseEvent<HTMLButtonElement> | null;
 }
 
-export default function MainForm({ mode, initValues }: Props) {
-  const { token, buCode, user, departments } = useAuth();
+export default function MainForm({ mode, initValues, bu_code }: Props) {
+  const { user, departments } = useAuth();
   const tPR = useTranslations("PurchaseRequest");
 
   const form = useForm<CreatePrDtoType>({
@@ -145,7 +146,7 @@ export default function MainForm({ mode, initValues }: Props) {
                   })}
                 >
                   <ActionFields />
-                  <HeadForm />
+                  <HeadForm bu_code={bu_code} />
                   <Tabs defaultValue="items">
                     <TabsList className={"mt-4"}>
                       <TabsTrigger className={"w-full h-6"} value="items">
@@ -168,6 +169,7 @@ export default function MainForm({ mode, initValues }: Props) {
                         getCurrentStatus={getCurrentStatus}
                         workflow_id={workflowId}
                         prStatus={prStatus ?? ""}
+                        bu_code={bu_code}
                       />
                     </TabsContent>
                     <TabsContent value="workflow" className="mt-2">

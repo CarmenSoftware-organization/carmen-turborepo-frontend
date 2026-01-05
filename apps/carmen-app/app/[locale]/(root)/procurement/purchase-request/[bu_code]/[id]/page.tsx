@@ -13,9 +13,9 @@ import { useEffect } from "react";
 
 export default function PurchaseRequestIdPage() {
   const { id, bu_code } = useParams();
-  const { token, buCode: authBuCode } = useAuth();
+  const { token } = useAuth();
 
-  const currentBuCode = (bu_code as string) || authBuCode;
+  const currentBuCode = bu_code as string;
 
   const {
     purchaseRequest,
@@ -64,5 +64,11 @@ export default function PurchaseRequestIdPage() {
   if (!prDataWithInventory) return <DetailLoading />;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return <MainForm mode={formType.VIEW} initValues={prDataWithInventory as any} />;
+  return (
+    <MainForm
+      mode={formType.VIEW}
+      initValues={prDataWithInventory as any}
+      bu_code={currentBuCode}
+    />
+  );
 }

@@ -30,8 +30,10 @@ export default function LookupCurrency({
   disabled = false,
   classNames = "",
   onSelectObject,
+  bu_code,
 }: Readonly<LookupCurrencyProps>) {
   const { token, buCode } = useAuth();
+  const currentBuCode = bu_code ?? buCode;
   const t = useTranslations("Currency");
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -42,13 +44,13 @@ export default function LookupCurrency({
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } =
     useInfiniteQuery({
-      queryKey: ["currencies", buCode, debouncedSearchTerm],
+      queryKey: ["currencies", currentBuCode, debouncedSearchTerm],
       queryFn: async ({ pageParam = 1 }) => {
-        if (!token || !buCode) {
+        if (!token || !currentBuCode) {
           throw new Error("Unauthorized: Missing token or buCode");
         }
         const result = await getAllApiRequest(
-          `${backendApi}/api/config/${buCode}/currencies`,
+          `${backendApi}/api/config/${currentBuCode}/currencies`,
           token,
           "Error fetching currency",
           {
@@ -65,7 +67,7 @@ export default function LookupCurrency({
         }
         return allPages.length + 1;
       },
-      enabled: !!token && !!buCode,
+      enabled: !!token && !!currentBuCode,
       initialPageParam: 1,
       staleTime: 5 * 60 * 1000, // 5 minutes
     });

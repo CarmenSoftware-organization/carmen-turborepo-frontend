@@ -18,6 +18,7 @@ import { createPurchaseItemColumns } from "./PurchaseItemColumns";
 import { usePurchaseItemTable, PR_ITEM_BULK_ACTION } from "../../_hooks/use-purchase-item-table";
 import BulkActionDialog from "./dialogs/BulkActionDialog";
 import SelectAllDialog from "./dialogs/SelectAllDialog";
+import { useCurrenciesQuery } from "@/hooks/use-currency";
 
 const EMPTY_ARRAY: PurchaseRequestDetail[] = [];
 
@@ -38,6 +39,7 @@ interface Props {
   getCurrentStatus: (stagesStatusValue: string | StageStatus[] | undefined) => string;
   workflow_id?: string;
   prStatus?: string;
+  bu_code?: string;
 }
 
 export default function PurchaseItemDataGrid({
@@ -52,12 +54,15 @@ export default function PurchaseItemDataGrid({
   getCurrentStatus,
   workflow_id,
   prStatus,
+  bu_code,
 }: Props) {
   const { dateFormat, currencyBase, token, buCode } = useAuth();
+  const currentBuCode = bu_code ?? buCode;
   const tPr = useTranslations("PurchaseRequest");
   const tHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
   const tAction = useTranslations("Action");
+  const { getCurrencyCode } = useCurrenciesQuery(token || "", currentBuCode || "");
 
   const {
     deleteDialogOpen,
@@ -98,9 +103,10 @@ export default function PurchaseItemDataGrid({
         dateFormat: dateFormat || "yyyy-MM-dd",
         currencyBase: currencyBase || "THB",
         token: token || "",
-        buCode: buCode || "",
+        buCode: currentBuCode || "",
         tHeader,
         tAction,
+        getCurrencyCode,
       }),
     [
       currentMode,
@@ -115,10 +121,11 @@ export default function PurchaseItemDataGrid({
       dateFormat,
       currencyBase,
       token,
-      buCode,
+      currentBuCode,
       tHeader,
       tPr,
       tAction,
+      getCurrencyCode,
     ]
   );
 

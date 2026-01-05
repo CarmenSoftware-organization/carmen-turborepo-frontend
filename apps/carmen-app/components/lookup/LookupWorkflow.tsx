@@ -22,6 +22,7 @@ interface PropsWorkflowLookup {
   readonly onValueChange: (value: string) => void;
   readonly disabled?: boolean;
   readonly type: enum_workflow_type;
+  readonly bu_code: string;
 }
 
 export default function LookupWorkflow({
@@ -29,9 +30,11 @@ export default function LookupWorkflow({
   onValueChange,
   disabled = false,
   type,
+  bu_code,
 }: Readonly<PropsWorkflowLookup>) {
   const { token, buCode } = useAuth();
-  const { workflows, isLoading } = useWorkflowQuery(token, buCode, type);
+  const currentBuCode = bu_code ?? buCode;
+  const { workflows, isLoading } = useWorkflowQuery(token, currentBuCode, type);
   const t = useTranslations("Workflow");
 
   let selectContent;

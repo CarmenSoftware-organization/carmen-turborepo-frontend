@@ -18,7 +18,11 @@ import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { usePurchaseRequestContext } from "./PurchaseRequestContext";
 
-export default function HeadForm() {
+interface HeadFormProps {
+  bu_code: string;
+}
+
+export default function HeadForm({ bu_code }: HeadFormProps) {
   const { control } = useFormContext();
   const {
     currentMode: mode,
@@ -47,6 +51,7 @@ export default function HeadForm() {
                 onValueChange={field.onChange}
                 type={enum_workflow_type.purchase_request}
                 disabled={mode === formType.VIEW}
+                bu_code={bu_code}
               />
             </FormControl>
             <FormMessage />

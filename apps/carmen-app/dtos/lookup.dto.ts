@@ -5,4 +5,5 @@ export interface PropsLookup {
   readonly disabled?: boolean;
   readonly classNames?: string;
   readonly excludeIds?: string[];
+  readonly bu_code?: string;
 }

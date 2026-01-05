@@ -34,6 +34,7 @@ interface ProductLocationLookupProps {
   readonly onValueChange: (value: string, selectedProduct?: ProductLocation) => void;
   readonly disabled?: boolean;
   readonly classNames?: string;
+  readonly bu_code?: string;
   readonly excludeProductIds?: string[];
 }
 
@@ -43,15 +44,22 @@ export default function LookupProductLocation({
   onValueChange,
   disabled = false,
   classNames = "max-w-40",
+  bu_code,
   excludeProductIds = [],
 }: ProductLocationLookupProps) {
   const { token, buCode } = useAuth();
+  const currentBuCode = bu_code ?? buCode;
   const [open, setOpen] = useState(false);
   const t = useTranslations("Products");
 
-  const { productLocation, isLoading, error } = useProductLocation(token, buCode, location_id, {
-    perpage: -1,
-  });
+  const { productLocation, isLoading, error } = useProductLocation(
+    token,
+    currentBuCode,
+    location_id,
+    {
+      perpage: -1,
+    }
+  );
 
   const allProducts: ProductLocation[] = productLocation?.data || [];
 
