@@ -123,19 +123,18 @@ export default function ProductsSection({ form, priceList, isViewMode }: Product
           const change = row.original.priceChange;
           const isPositive = change > 0;
           const isNegative = change < 0;
+
+          const getChangeColorClass = () => {
+            if (isPositive) return "text-green-600";
+            if (isNegative) return "text-red-600";
+            return "text-muted-foreground";
+          };
+
           return (
             <div className="flex items-center justify-end gap-1">
               {isPositive && <TrendingUp className="h-3.5 w-3.5 text-green-600" />}
               {isNegative && <TrendingDown className="h-3.5 w-3.5 text-red-600" />}
-              <span
-                className={`text-sm font-medium ${
-                  isPositive
-                    ? "text-green-600"
-                    : isNegative
-                      ? "text-red-600"
-                      : "text-muted-foreground"
-                }`}
-              >
+              <span className={`text-sm font-medium ${getChangeColorClass()}`}>
                 {change > 0 ? "+" : ""}
                 {change.toFixed(2)}%
               </span>
