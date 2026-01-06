@@ -2,7 +2,6 @@
 
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestByIdDto, STAGE_ROLE } from "@/dtos/purchase-request.dto";
-import { CreatePrSchema } from "../../_schemas/purchase-request-form.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { usePurchaseItemManagement } from "../../_hooks/use-purchase-item-management";
@@ -31,7 +30,7 @@ import ActionButtons from "./ActionButtons";
 import { useTranslations } from "next-intl";
 import { useMainFormLogic } from "../../_hooks/use-main-form-logic";
 import { PurchaseRequestProvider } from "./PurchaseRequestContext";
-import { CreatePrDtoType } from "../../_schemas/purchase-request-form.schema";
+import { CreatePrDtoType, CreatePrSchema } from "../../_schemas/purchase-request-form.schema";
 import { PR_STATUS } from "../../_constants/pr-status";
 
 interface Props {

@@ -35,6 +35,7 @@ interface UseMainFormLogicProps {
   initValues?: PurchaseRequestByIdDto;
   form: UseFormReturn<CreatePrDtoType>;
   purchaseItemManager: UsePurchaseItemManagementReturn;
+  bu_code?: string;
 }
 
 interface CancelAction {
@@ -47,9 +48,11 @@ export const useMainFormLogic = ({
   initValues,
   form,
   purchaseItemManager,
+  bu_code,
 }: UseMainFormLogicProps) => {
   const router = useRouter();
   const { token, buCode, user, departments } = useAuth();
+  const currentBuCode = bu_code ?? buCode;
   const tPR = useTranslations("PurchaseRequest");
   const queryClient = useQueryClient();
 
@@ -63,11 +66,11 @@ export const useMainFormLogic = ({
   const [selectedStage, setSelectedStage] = useState<string>("");
 
   // Queries & Mutations
-  const { mutate: createPr, isPending: isCreatingPr } = useCreatePr(token, buCode);
+  const { mutate: createPr, isPending: isCreatingPr } = useCreatePr(token, currentBuCode);
   const { mutate: sendNotification } = useSendNotification(token);
   const { save, submit, approve, purchase, review, reject, sendBack, isPending } = usePrActions(
     token,
-    buCode,
+    currentBuCode,
     initValues?.id || ""
   );
 
@@ -79,7 +82,6 @@ export const useMainFormLogic = ({
       }))
     : [];
   const currentStage = workflowStages[workflowStages.length - 1]?.title;
-  const isDraft = initValues?.pr_status === "draft";
   const isNewPr = currentMode === formType.ADD;
   const prStatus = initValues?.pr_status;
   const workflowId = form.watch("details.workflow_id");
@@ -99,7 +101,7 @@ export const useMainFormLogic = ({
 
   const { data: prevWorkflowData, isLoading: isPrevWorkflowLoading } = usePrevWorkflow({
     token,
-    buCode,
+    buCode: currentBuCode,
     workflow_id: initValues?.workflow_id || "",
     stage: currentStage,
     enabled: reviewDialogOpen,
@@ -162,7 +164,7 @@ export const useMainFormLogic = ({
 
   // Handlers
   const performCancel = () => {
-    if (currentMode === formType.ADD) {
+    if (isNewPr) {
       router.push("/procurement/purchase-request");
     } else {
       setCurrentMode(formType.VIEW);
@@ -172,15 +174,22 @@ export const useMainFormLogic = ({
 
   const handleSubmit = (data: CreatePrDtoType): void => {
     const processedData = prepareSubmitData(data);
-    const isCreating = currentMode === formType.ADD;
-    if (isCreating) {
-      createPurchaseRequest(processedData, createPr, router, buCode, tPR, toastSuccess, toastError);
+    if (isNewPr) {
+      createPurchaseRequest(
+        processedData,
+        createPr,
+        router,
+        currentBuCode,
+        tPR,
+        toastSuccess,
+        toastError
+      );
     } else {
       updatePurchaseRequest(
         processedData,
         save,
         queryClient,
-        buCode,
+        currentBuCode,
         initValues?.id,
         setCurrentMode,
         tPR,
@@ -238,7 +247,7 @@ export const useMainFormLogic = ({
       details,
       submit,
       queryClient,
-      buCode,
+      currentBuCode,
       initValues?.id,
       tPR,
       toastSuccess,
@@ -264,7 +273,7 @@ export const useMainFormLogic = ({
             category: "user-to-user",
             to_user_id: user.data.id,
             from_user_id: user.data.id,
-            link: `/procurement/purchase-request/${buCode}/${initValues?.id}`,
+            link: `/procurement/purchase-request/${currentBuCode}/${initValues?.id}`,
           });
         }
       },
@@ -287,7 +296,7 @@ export const useMainFormLogic = ({
       details,
       reject,
       queryClient,
-      buCode,
+      currentBuCode,
       initValues?.id,
       tPR,
       toastSuccess,
@@ -306,7 +315,7 @@ export const useMainFormLogic = ({
       details,
       sendBack,
       queryClient,
-      buCode,
+      currentBuCode,
       initValues?.id,
       tPR,
       toastSuccess,
@@ -365,7 +374,7 @@ export const useMainFormLogic = ({
         setReviewDialogOpen(false);
         setSelectedStage("");
         queryClient.invalidateQueries({
-          queryKey: ["purchase-request", buCode, initValues?.id],
+          queryKey: ["purchase-request", currentBuCode, initValues?.id],
         });
       },
       onError: () => {

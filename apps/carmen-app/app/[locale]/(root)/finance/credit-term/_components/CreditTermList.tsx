@@ -2,17 +2,25 @@
 
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Activity, CreditCard, FileText, Hash, MoreHorizontal, StickyNote, Trash2 } from "lucide-react";
+import {
+  Activity,
+  CreditCard,
+  FileText,
+  Hash,
+  MoreHorizontal,
+  StickyNote,
+  Trash2,
+} from "lucide-react";
 import { CreditTermGetAllDto } from "@/dtos/credit-term.dto";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useMemo } from "react";
-import {
-  ColumnDef,
-  getCoreRowModel,
-  useReactTable,
-  SortingState,
-} from "@tanstack/react-table";
+import { ColumnDef, getCoreRowModel, useReactTable, SortingState } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
@@ -47,24 +55,34 @@ export default function CreditTermList({
     return [{ id: sort.field, desc: sort.direction === "desc" }];
   }, [sort]);
 
-
   // Define columns
   const columns = useMemo<ColumnDef<CreditTermGetAllDto>[]>(
     () => [
       {
+        id: "no",
+        header: () => <span>#</span>,
+        cell: ({ row }) => <span>{row.index + 1}</span>,
+        enableSorting: false,
+        size: 30,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
+      },
+      {
         accessorKey: "name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("name")} icon={<CreditCard className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("name")}
+            icon={<CreditCard className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => {
           const creditTerm = row.original;
           if (canUpdate) {
             return (
-              <button
-                type="button"
-                className="btn-dialog"
-                onClick={() => onEdit(creditTerm)}
-              >
+              <button type="button" className="btn-dialog" onClick={() => onEdit(creditTerm)}>
                 {creditTerm.name}
               </button>
             );
@@ -80,15 +98,13 @@ export default function CreditTermList({
       {
         accessorKey: "value",
         header: ({ column }) => (
-          <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={t("value")} icon={<Hash className="h-4 w-4" />} />
-          </div>
+          <DataGridColumnHeader
+            column={column}
+            title={t("value")}
+            icon={<Hash className="h-4 w-4" />}
+          />
         ),
-        cell: ({ row }) => (
-          <div className="text-center font-mono text-sm font-medium">
-            {row.original.value}
-          </div>
-        ),
+        cell: ({ row }) => <span>{row.original.value}</span>,
         enableSorting: true,
         size: 100,
         meta: {
@@ -100,12 +116,16 @@ export default function CreditTermList({
       {
         accessorKey: "description",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("description")} icon={<FileText className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("description")}
+            icon={<FileText className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
-          <p className="truncate max-w-[250px] inline-block">
+          <span className="truncate max-w-[250px] inline-block">
             {row.original.description || "-"}
-          </p>
+          </span>
         ),
         enableSorting: false,
         size: 250,
@@ -116,12 +136,14 @@ export default function CreditTermList({
       {
         accessorKey: "note",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("note")} icon={<StickyNote className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("note")}
+            icon={<StickyNote className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
-          <p className="truncate max-w-[200px] inline-block">
-            {row.original.note || "-"}
-          </p>
+          <span className="truncate max-w-[200px] inline-block">{row.original.note || "-"}</span>
         ),
         enableSorting: false,
         size: 200,
@@ -132,16 +154,16 @@ export default function CreditTermList({
       {
         accessorKey: "is_active",
         header: ({ column }) => (
-          <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={t("status")} icon={<Activity className="h-4 w-4" />} />
-          </div>
+          <DataGridColumnHeader
+            column={column}
+            title={t("status")}
+            icon={<Activity className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
-          <div className="flex justify-center">
-            <StatusCustom is_active={row.original.is_active}>
-              {row.original.is_active ? tCommon("active") : tCommon("inactive")}
-            </StatusCustom>
-          </div>
+          <StatusCustom is_active={row.original.is_active}>
+            {row.original.is_active ? tCommon("active") : tCommon("inactive")}
+          </StatusCustom>
         ),
         enableSorting: true,
         size: 120,
@@ -153,7 +175,7 @@ export default function CreditTermList({
       },
       {
         id: "action",
-        header: () => <span className="text-right">{t("action")}</span>,
+        header: () => <span>{t("action")}</span>,
         cell: ({ row }) => {
           const creditTerm = row.original;
 
@@ -190,17 +212,9 @@ export default function CreditTermList({
         },
       },
     ],
-    [
-      t,
-      tCommon,
-      canUpdate,
-      canDelete,
-      onEdit,
-      onDelete,
-    ]
+    [t, tCommon, canUpdate, canDelete, onEdit, onDelete]
   );
 
-  // Initialize table
   const table = useReactTable({
     data: creditTerms,
     columns,
