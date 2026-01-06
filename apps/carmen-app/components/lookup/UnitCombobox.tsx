@@ -31,6 +31,7 @@ export default function UnitCombobox({ value, onChange, availableUnits, disabled
     },
     [availableUnits]
   );
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
