@@ -21,7 +21,7 @@ import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, isSameDay } from "date-fns";
 import { UseFormReturn } from "react-hook-form";
-// import { RfpFormValues } from "../../_schema/rfp.schema"; // Adjust import path as needed
+import { useTranslations } from "next-intl";
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,10 +29,11 @@ interface Props {
   isViewMode: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   templates: any;
-  tRfp: (key: string) => string;
 }
 
-export default function OverviewTab({ form, isViewMode, templates, tRfp }: Props) {
+export default function OverviewTab({ form, isViewMode, templates }: Props) {
+  const tRfp = useTranslations("RFP");
+  const tPlt = useTranslations("PriceListTemplate");
   const endDate = form.watch("end_date");
 
   return (
@@ -44,7 +45,7 @@ export default function OverviewTab({ form, isViewMode, templates, tRfp }: Props
           name="pricelist_template_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{tRfp("template")}</FormLabel>
+              <FormLabel>{tRfp("price_list_template")}</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={field.onChange}
@@ -52,7 +53,7 @@ export default function OverviewTab({ form, isViewMode, templates, tRfp }: Props
                   disabled={isViewMode}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={tRfp("select_template")} />
+                    <SelectValue placeholder={tPlt("select_template")} />
                   </SelectTrigger>
                   <SelectContent>
                     {templates?.data?.map((template: any) => (
@@ -72,9 +73,9 @@ export default function OverviewTab({ form, isViewMode, templates, tRfp }: Props
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>RFP Name</FormLabel>
+              <FormLabel>{tRfp("rfp_name")}</FormLabel>
               <FormControl>
-                <Input {...field} disabled={isViewMode} placeholder="Enter RFP Name" />
+                <Input {...field} disabled={isViewMode} placeholder={tRfp("rfp_name_placeholder")} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -85,7 +86,7 @@ export default function OverviewTab({ form, isViewMode, templates, tRfp }: Props
           name="status"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Status</FormLabel>
+              <FormLabel>{tRfp("status")}</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 value={field.value || ""}
@@ -93,15 +94,15 @@ export default function OverviewTab({ form, isViewMode, templates, tRfp }: Props
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Status" />
+                    <SelectValue placeholder={tRfp("select_status")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="submit">Submitted</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="draft">{tRfp("status_draft")}</SelectItem>
+                  <SelectItem value="active">{tRfp("status_active")}</SelectItem>
+                  <SelectItem value="submit">{tRfp("status_submit")}</SelectItem>
+                  <SelectItem value="completed">{tRfp("status_completed")}</SelectItem>
+                  <SelectItem value="inactive">{tRfp("status_inactive")}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -113,7 +114,7 @@ export default function OverviewTab({ form, isViewMode, templates, tRfp }: Props
           name="start_date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Validity Period</FormLabel>
+              <FormLabel>{tRfp("validity_period")}</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -131,7 +132,7 @@ export default function OverviewTab({ form, isViewMode, templates, tRfp }: Props
                           {format(new Date(endDate), "LLL dd, y")}
                         </>
                       ) : (
-                        <span>Pick a date range</span>
+                        <span>{tRfp("pick_date_range")}</span>
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
@@ -202,9 +203,9 @@ export default function OverviewTab({ form, isViewMode, templates, tRfp }: Props
         name="custom_message"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Description</FormLabel>
+            <FormLabel>{tRfp("description")}</FormLabel>
             <FormControl>
-              <Textarea {...field} disabled={isViewMode} className="resize-none" rows={3} />
+              <Textarea {...field} disabled={isViewMode} className="resize-none" rows={3} placeholder={tRfp("description_placeholder")} />
             </FormControl>
             <FormMessage />
           </FormItem>

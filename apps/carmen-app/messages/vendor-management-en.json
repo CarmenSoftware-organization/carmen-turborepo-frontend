@@ -263,7 +263,15 @@
     "no_vendors_assigned": "This campaign has no vendors assigned",
     "start_adding_vendors": "Start by searching and adding vendors using the search box above",
     "no_vendors_selected_empty": "No vendors selected",
-    "priority": "Priority"
+    "priority": "Priority",
+    "cancel": "Cancel",
+    "save": "Save",
+    "create_success": "RFP created successfully",
+    "update_success": "RFP updated successfully",
+    "validity_period": "Validity Period",
+    "pick_date_range": "Pick a date range",
+    "price_list_checked": "Price list checked successfully",
+    "price_list_check_failed": "Failed to check price list"
   },
   "vendorEntry": {
     "title": "Vendor Entry"

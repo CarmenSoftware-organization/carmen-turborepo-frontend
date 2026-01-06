@@ -10,13 +10,13 @@ import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import VendorLookup from "@/components/lookup/LookupVendor";
-import { FormLabel } from "@/components/form-custom/form";
 import { VendorGetDto } from "@/dtos/vendor-management";
 import { RfpDetailDto } from "@/dtos/rfp.dto";
 import { RfpFormValues } from "../../_schema/rfp.schema";
 import { nanoid } from "nanoid";
 import { backendApi } from "@/lib/backend-api";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { useTranslations } from "next-intl";
 
 interface VendorDisplay {
   id: string;
@@ -35,6 +35,7 @@ interface Props {
 }
 
 export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props) {
+  const tRfp = useTranslations("RFP");
   const [isAdding, setIsAdding] = useState(false);
   const addedVendors = form.watch("vendors.add") || [];
   const removedVendorIds = form.watch("vendors.remove") || [];
@@ -87,10 +88,10 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
     try {
       const res = await axios.post(`${backendApi}/api/check-price-list/${url_token}`);
       if (res.data.success) {
-        toastSuccess({ message: "Price list checked successfully" });
+        toastSuccess({ message: tRfp("price_list_checked") });
       }
     } catch (error: any) {
-      toastError({ message: error.response?.data?.message || "Failed to check price list" });
+      toastError({ message: error.response?.data?.message || tRfp("price_list_check_failed") });
     }
   };
 
@@ -104,7 +105,7 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
       },
       {
         accessorKey: "name",
-        header: () => <span className="text-xs">Vendor Name</span>,
+        header: () => <span className="text-xs">{tRfp("vendor_name")}</span>,
         cell: ({ row }) => {
           if (row.original.isPlaceholder) {
             return (
@@ -154,11 +155,11 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
           }
           return <span className="text-xs">{row.original.name}</span>;
         },
-        size: 200,
+        size: 150,
       },
       {
         id: "email",
-        header: () => <span className="text-xs">Email</span>,
+        header: () => <span className="text-xs">{tRfp("email")}</span>,
         cell: ({ row }) =>
           row.original.contact_email ? (
             <Button
@@ -174,7 +175,7 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
       },
       {
         id: "action",
-        header: () => <span className="text-xs">Action</span>,
+        header: () => <span className="text-xs">{tRfp("action")}</span>,
         cell: ({ row }) => {
           if (isViewMode) return null;
           if (row.original.isPlaceholder) {
@@ -201,7 +202,7 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
         size: 50,
       },
     ],
-    [isViewMode, isAdding, rfpData, vendors, form]
+    [isViewMode, isAdding, rfpData, vendors, form, tRfp]
   );
 
   const table = useReactTable({
@@ -216,7 +217,7 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
         <div className="flex justify-end">
           <Button onClick={() => setIsAdding(true)} size="sm" className="h-7">
             <Plus className="h-4 w-4" />
-            Add Vendor
+            {tRfp("add_vendors")}
           </Button>
         </div>
       )}

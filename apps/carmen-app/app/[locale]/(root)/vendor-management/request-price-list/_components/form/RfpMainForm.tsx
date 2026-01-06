@@ -26,6 +26,7 @@ import { usePriceListTemplates } from "@/hooks/use-price-list-template";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import OverviewTab from "./OverviewTab";
 import VendorsTab from "./VendorsTab";
+import { useTranslations } from "next-intl";
 
 interface Props {
   readonly rfpData?: RfpDetailDto;
@@ -34,14 +35,7 @@ interface Props {
 
 export default function RfpMainForm({ rfpData, mode }: Props) {
   const router = useRouter();
-
-  const tRfp = (key: string) => {
-    const map: Record<string, string> = {
-      template: "Price List Template",
-      select_template: "Select Template",
-    };
-    return map[key] || key;
-  };
+  const tRfp = useTranslations("RFP");
   const { token, buCode } = useAuth();
   const { data: templates } = usePriceListTemplates(token, buCode);
 
@@ -99,7 +93,7 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
         const newId = result?.data?.id || result?.id;
         if (result.success) {
           toastSuccess({
-            message: "RFP created successfully",
+            message: tRfp("create_success"),
           });
           router.replace(`/vendor-management/request-price-list/${newId}`);
           setCurrentMode(formType.VIEW);
@@ -115,7 +109,7 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
       await updateRfp(dto, updateMutation, form, (result) => {
         if (result.success) {
           toastSuccess({
-            message: "RFP updated successfully",
+            message: tRfp("update_success"),
           });
           setCurrentMode(formType.VIEW);
         } else {
@@ -128,7 +122,7 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
   };
 
   return (
-    <div className="flex h-full flex-col p-4 max-w-3xl mx-auto">
+    <div className="flex h-full flex-col p-4 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
           <Button
@@ -140,7 +134,7 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-2xl font-semibold">
-            {currentMode === formType.ADD ? "Create New RFP" : rfpData?.name}
+            {currentMode === formType.ADD ? tRfp("create_new") : rfpData?.name}
           </h1>
         </div>
 
@@ -148,17 +142,17 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
           {isViewMode ? (
             <Button size="sm" onClick={() => setCurrentMode(formType.EDIT)}>
               <PenBoxIcon className="h-4 w-4" />
-              Edit
+              {tRfp("edit")}
             </Button>
           ) : (
             <>
               <Button variant="outline" size="sm" onClick={() => setCurrentMode(formType.VIEW)}>
                 <X className="h-4 w-4" />
-                Cancel
+                {tRfp("cancel")}
               </Button>
               <Button size="sm" onClick={form.handleSubmit(onSubmit)}>
                 <Save className="h-4 w-4" />
-                Save
+                {tRfp("save")}
               </Button>
             </>
           )}
@@ -169,18 +163,13 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
         <div className="flex-1 overflow-hidden">
           <Tabs defaultValue="overview" className="h-full flex flex-col">
             <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="vendors">Vendors</TabsTrigger>
+              <TabsTrigger value="overview">{tRfp("tab_overview")}</TabsTrigger>
+              <TabsTrigger value="vendors">{tRfp("tab_vendors")}</TabsTrigger>
             </TabsList>
 
             <div className="flex-1 overflow-auto">
               <TabsContent value="overview">
-                <OverviewTab
-                  form={form}
-                  isViewMode={isViewMode}
-                  templates={templates}
-                  tRfp={tRfp}
-                />
+                <OverviewTab form={form} isViewMode={isViewMode} templates={templates} />
               </TabsContent>
               <TabsContent value="vendors">
                 <VendorsTab
