@@ -10,6 +10,7 @@ import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
 import MainForm from "../../_components/form-pr/MainForm";
 import { usePurchaseRequestById } from "@/hooks/use-purchase-request";
 import { useEffect } from "react";
+import ErrorBoundary from "../../_components/ErrorBoundary";
 
 export default function PurchaseRequestIdPage() {
   const { id, bu_code } = useParams();
@@ -65,10 +66,12 @@ export default function PurchaseRequestIdPage() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (
-    <MainForm
-      mode={formType.VIEW}
-      initValues={prDataWithInventory as any}
-      bu_code={currentBuCode}
-    />
+    <ErrorBoundary>
+      <MainForm
+        mode={formType.VIEW}
+        initValues={prDataWithInventory as any}
+        bu_code={currentBuCode}
+      />
+    </ErrorBoundary>
   );
 }

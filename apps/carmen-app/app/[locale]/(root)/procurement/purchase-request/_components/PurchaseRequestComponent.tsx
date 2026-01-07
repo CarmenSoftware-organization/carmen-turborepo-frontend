@@ -30,6 +30,7 @@ import { convertStatus } from "@/utils/status";
 import FilterPurchaseRequest, { PurchaseRequestFilterValues } from "./FilterPurchaseRequest";
 import ExportDropdown, { ExportFormat } from "@/components/ui-custom/ExportDropdown";
 import { exportToExcel, exportToPDF, exportToWord, ExportData } from "@/utils/export";
+import ErrorBoundary from "./ErrorBoundary";
 
 export default function PurchaseRequestComponent() {
   const { token, buCode, businessUnits } = useAuth();
@@ -349,44 +350,18 @@ export default function PurchaseRequestComponent() {
   const currentPageNumber = Number(page || "1");
 
   const content = (
-    <Tabs defaultValue={buCodes?.split(",")[0] || ""}>
-      <TabsList className="mb-4">
+    <ErrorBoundary>
+      <Tabs defaultValue={buCodes?.split(",")[0] || ""}>
+        <TabsList className="mb-4">
+          {prs?.data?.map((bu: any) => (
+            <TabsTrigger key={bu.bu_code} value={bu.bu_code}>
+              {bu.bu_code}
+            </TabsTrigger>
+          ))}
+        </TabsList>
         {prs?.data?.map((bu: any) => (
-          <TabsTrigger key={bu.bu_code} value={bu.bu_code}>
-            {bu.bu_code}
-          </TabsTrigger>
-        ))}
-      </TabsList>
-      {prs?.data?.map((bu: any) => (
-        <TabsContent key={bu.bu_code} value={bu.bu_code}>
-          <div className="block lg:hidden">
-            <PurchaseRequestGrid
-              purchaseRequests={bu.data}
-              currentPage={bu.paginate?.page ?? currentPageNumber}
-              totalPages={bu.paginate?.pages ?? 1}
-              onPageChange={handlePageChange}
-              isLoading={isLoading}
-              convertStatus={getStatusLabel}
-            />
-          </div>
-
-          <div className="hidden lg:block">
-            {view === VIEW.LIST ? (
-              <PurchaseRequestList
-                purchaseRequests={bu.data || []}
-                currentPage={bu.paginate?.page ?? currentPageNumber}
-                totalPages={bu.paginate?.pages ?? 1}
-                totalItems={bu.paginate?.total ?? 0}
-                perpage={bu.paginate?.perpage ?? 10}
-                onPageChange={handlePageChange}
-                isLoading={isLoading}
-                sort={parseSortString(sort)}
-                onSort={setSort}
-                setPerpage={handleSetPerpage} // Note: global perpage change
-                convertStatus={getStatusLabel}
-                buCode={bu.bu_code}
-              />
-            ) : (
+          <TabsContent key={bu.bu_code} value={bu.bu_code}>
+            <div className="block lg:hidden">
               <PurchaseRequestGrid
                 purchaseRequests={bu.data}
                 currentPage={bu.paginate?.page ?? currentPageNumber}
@@ -395,11 +370,39 @@ export default function PurchaseRequestComponent() {
                 isLoading={isLoading}
                 convertStatus={getStatusLabel}
               />
-            )}
-          </div>
-        </TabsContent>
-      ))}
-    </Tabs>
+            </div>
+
+            <div className="hidden lg:block">
+              {view === VIEW.LIST ? (
+                <PurchaseRequestList
+                  purchaseRequests={bu.data || []}
+                  currentPage={bu.paginate?.page ?? currentPageNumber}
+                  totalPages={bu.paginate?.pages ?? 1}
+                  totalItems={bu.paginate?.total ?? 0}
+                  perpage={bu.paginate?.perpage ?? 10}
+                  onPageChange={handlePageChange}
+                  isLoading={isLoading}
+                  sort={parseSortString(sort)}
+                  onSort={setSort}
+                  setPerpage={handleSetPerpage} // Note: global perpage change
+                  convertStatus={getStatusLabel}
+                  buCode={bu.bu_code}
+                />
+              ) : (
+                <PurchaseRequestGrid
+                  purchaseRequests={bu.data}
+                  currentPage={bu.paginate?.page ?? currentPageNumber}
+                  totalPages={bu.paginate?.pages ?? 1}
+                  onPageChange={handlePageChange}
+                  isLoading={isLoading}
+                  convertStatus={getStatusLabel}
+                />
+              )}
+            </div>
+          </TabsContent>
+        ))}
+      </Tabs>
+    </ErrorBoundary>
   );
 
   return (
