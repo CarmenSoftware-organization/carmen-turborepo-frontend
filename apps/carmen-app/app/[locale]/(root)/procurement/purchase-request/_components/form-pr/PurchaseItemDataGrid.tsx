@@ -88,6 +88,19 @@ export default function PurchaseItemDataGrid({
     getItemValue,
   });
 
+  // Memoize product IDs map for each item to avoid recalculating in column cells
+  const usedProductIdsMap = useMemo(() => {
+    const map = new Map<string, string[]>();
+    for (const item of items) {
+      const otherProductIds = items
+        .filter((i) => i.id !== item.id)
+        .map((i) => (getItemValue(i, "product_id") as string) || i.product_id)
+        .filter(Boolean);
+      map.set(item.id, otherProductIds);
+    }
+    return map;
+  }, [items, getItemValue]);
+
   const columns = useMemo(
     () =>
       createPurchaseItemColumns({
@@ -107,6 +120,7 @@ export default function PurchaseItemDataGrid({
         tHeader,
         tAction,
         getCurrencyCode,
+        usedProductIdsMap,
       }),
     [
       currentMode,
@@ -123,9 +137,9 @@ export default function PurchaseItemDataGrid({
       token,
       currentBuCode,
       tHeader,
-      tPr,
       tAction,
       getCurrencyCode,
+      usedProductIdsMap,
     ]
   );
 

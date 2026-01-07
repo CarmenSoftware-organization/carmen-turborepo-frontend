@@ -42,6 +42,7 @@ interface ColumnConfig {
   tHeader: (key: string) => string;
   tAction: (key: string) => string;
   getCurrencyCode: (currencyId: string) => string;
+  usedProductIdsMap: Map<string, string[]>;
 }
 
 const getPrItemName = (type: string, tAction: (key: string) => string) => {
@@ -91,6 +92,7 @@ export const createPurchaseItemColumns = (
     tHeader,
     tAction,
     getCurrencyCode,
+    usedProductIdsMap,
   } = config;
 
   const initValues = [...unsortedInitValues].sort((a, b) => a.sequence_no - b.sequence_no);
@@ -233,15 +235,11 @@ export const createPurchaseItemColumns = (
     {
       accessorKey: "product_name",
       header: ({ column }) => <DataGridColumnHeader column={column} title={tHeader("product")} />,
-      cell: ({ row, table }) => {
+      cell: ({ row }) => {
         const item = row.original;
 
-        // Get all product_ids from other items (exclude current item)
-        const usedProductIds = table
-          .getRowModel()
-          .rows.filter((r) => r.original.id !== item.id)
-          .map((r) => getItemValue(r.original, "product_id") as string)
-          .filter(Boolean);
+        // Get memoized product IDs from map instead of recalculating
+        const usedProductIds = usedProductIdsMap.get(item.id) || [];
 
         return currentMode === formType.VIEW ? (
           <div>
