@@ -45,7 +45,6 @@ export default function PurchaseRequestComponent() {
   const debouncedKeyword = useDebounce(keyword, 500);
 
   const buCodes = businessUnits?.map((bu) => bu.code).join(",") || buCode;
-  // console.log("buCodes", buCodes);
 
   useEffect(() => {
     if (debouncedKeyword !== search) {
@@ -103,11 +102,6 @@ export default function PurchaseRequestComponent() {
     search,
     perpage: perpage,
   });
-
-  const totalItems = prs?.paginate?.total ?? 0;
-  const totalPages = prs?.paginate?.pages ?? 1;
-
-  console.log("prs", prs);
 
   useEffect(() => {
     if (search) {

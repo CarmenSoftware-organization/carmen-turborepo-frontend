@@ -10,7 +10,7 @@ interface Props {
 
 export default function PrLabelItem({ label, value, position = "text-left", sub_value }: Props) {
   return (
-    <div className={cn(position, "space-y-0.5")}>
+    <div className={cn(position)}>
       <Label className="text-muted-foreground text-xs font-medium">{label}</Label>
       <p className="font-bold text-sm text-muted-foreground">{value}</p>
       {sub_value && <p className="text-xs text-muted-foreground">{sub_value}</p>}
