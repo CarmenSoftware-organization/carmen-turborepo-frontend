@@ -1,7 +1,4 @@
-import { removeEmptyFields, convertFieldsToNumbers } from "./object.utils";
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
-
-const QUANTITY_FIELDS = ["requested_qty", "approved_qty", "foc_qty"] as const;
 
 type PurchaseRequestDetailInput = Record<string, unknown> & {
   readonly id?: string;
@@ -63,82 +60,6 @@ export const prepareSubmitData = (data: CreatePrDto): CreatePrDto => {
   };
 };
 
-export const validateItemForApproval = (item: PurchaseRequestDetail, index?: number): boolean => {
-  const logError = (field: string, value: any) => {
-    console.log(
-      `[Validation Failed] Item ${index !== undefined ? index + 1 : "?"}: ${field} is missing or invalid (Value: ${value})`
-    );
-  };
-
-  if (!item.tax_profile_id) {
-    logError("tax_profile_id", item.tax_profile_id);
-    return false;
-  }
-  if (!item.tax_profile_name) {
-    logError("tax_profile_name", item.tax_profile_name);
-    return false;
-  }
-  if (!item.currency_id) {
-    logError("currency_id", item.currency_id);
-    return false;
-  }
-  if (!item.exchange_rate_date) {
-    logError("exchange_rate_date", item.exchange_rate_date);
-    return false;
-  }
-  if (!item.vendor_id) {
-    logError("vendor_id", item.vendor_id);
-    return false;
-  }
-  if (!item.foc_unit_id) {
-    logError("foc_unit_id", item.foc_unit_id);
-    return false;
-  }
-
-  if (Number(item.tax_rate || 0) <= 0) {
-    logError("tax_rate", item.tax_rate);
-    return false;
-  }
-  if (Number(item.tax_amount || 0) <= 0) {
-    logError("tax_amount", item.tax_amount);
-    return false;
-  }
-  if (Number(item.base_tax_amount || 0) <= 0) {
-    logError("base_tax_amount", item.base_tax_amount);
-    return false;
-  }
-
-  if (Number(item.discount_rate || 0) < 0) {
-    logError("discount_rate", item.discount_rate);
-    return false;
-  }
-  // Validate consistency: if discount amount > 0, rate should be > 0
-  if (Number(item.discount_amount || 0) > 0 && Number(item.discount_rate || 0) <= 0) {
-    logError("discount_rate", item.discount_rate);
-    return false;
-  }
-
-  if (Number(item.total_price || 0) <= 0) {
-    logError("total_price", item.total_price);
-    return false;
-  }
-  if (Number(item.net_amount || 0) <= 0) {
-    logError("net_amount", item.net_amount);
-    return false;
-  }
-  if (Number(item.base_total_price || 0) <= 0) {
-    logError("base_total_price", item.base_total_price);
-    return false;
-  }
-  if (Number(item.base_net_amount || 0) <= 0) {
-    logError("base_net_amount", item.base_net_amount);
-    return false;
-  }
-
-  return true;
-};
-
-/** Prepare data for Purchase Approve action with full details */
 export const preparePurchaseApproveData = (
   items: PurchaseRequestDetail[],
   prId: string,

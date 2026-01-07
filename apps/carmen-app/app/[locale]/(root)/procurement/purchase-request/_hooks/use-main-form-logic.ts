@@ -17,7 +17,6 @@ import { EnumNotiType } from "@/dtos/notification.dto";
 import {
   prepareSubmitData,
   preparePurchaseApproveData,
-  validateItemForApproval,
 } from "../_utils/purchase-request.utils";
 import { prepareStageDetails } from "../_utils/stage.utils";
 import { createPurchaseRequest } from "../_handlers/purchase-request-create.handlers";
@@ -86,10 +85,30 @@ export const useMainFormLogic = ({
 
   const isApproveDisabled = useMemo(() => {
     if (purchaseItemManager.currentItems.length === 0) return true;
-    // return !purchaseItemManager.currentItems.every((item, index) =>
-    //   validateItemForApproval(item, index)
-    // );
-  }, [purchaseItemManager.currentItems]);
+
+    // Validate required fields for approval
+    const hasInvalidItems = purchaseItemManager.currentItems.some((item) => {
+      const getValue = (fieldName: string) =>
+        purchaseItemManager.getItemValue(item, fieldName) ?? item[fieldName as keyof typeof item];
+
+      const vendorId = getValue("vendor_id");
+      const taxProfileId = getValue("tax_profile_id");
+      const taxProfileName = getValue("tax_profile_name");
+      const taxRate = getValue("tax_rate");
+      const taxAmount = getValue("tax_amount");
+      const focUnitId = getValue("foc_unit_id");
+
+      // Check if any required field is missing
+      const isMissingVendor = !vendorId;
+      const isMissingTaxProfile = !taxProfileId || !taxProfileName;
+      const isMissingTaxValues = taxRate === undefined || taxRate === null || taxAmount === undefined || taxAmount === null;
+      const isMissingFocUnit = !focUnitId;
+
+      return isMissingVendor || isMissingTaxProfile || isMissingTaxValues || isMissingFocUnit;
+    });
+
+    return hasInvalidItems;
+  }, [purchaseItemManager]);
 
   const isDisabled = useMemo(() => {
     return isCreatingPr || isPending || hasFormErrors || (mode === formType.ADD && !workflowId);
@@ -272,6 +291,10 @@ export const useMainFormLogic = ({
             link: `/procurement/purchase-request/${currentBuCode}/${initValues?.id}`,
           });
         }
+        queryClient.invalidateQueries({
+          queryKey: ["purchase-request", currentBuCode, initValues?.id],
+        });
+        setCurrentMode(formType.VIEW);
       },
       onError: () => {
         toastError({
