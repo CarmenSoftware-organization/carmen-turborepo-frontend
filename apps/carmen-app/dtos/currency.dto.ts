@@ -13,6 +13,8 @@ export interface CurrencyCreateDto {
   is_active: boolean;
   symbol: string;
   exchange_rate: number;
+  exchange_rate_date?: string;
+  updated_at?: string;
 }
 
 /**

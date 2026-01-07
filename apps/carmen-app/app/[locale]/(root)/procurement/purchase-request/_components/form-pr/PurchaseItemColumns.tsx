@@ -19,7 +19,6 @@ import { UnitSelectCell } from "../UnitSelectCell";
 import ExpandedContent from "./ExpandedContent";
 import { PR_STATUS } from "../../_constants/pr-status";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
-import { Input } from "@/components/ui/input";
 
 interface ColumnConfig {
   currentMode: formType;
@@ -445,7 +444,15 @@ export const createPurchaseItemColumns = (
         ) : (
           <LookupCurrency
             value={(getItemValue(item, "currency_id") as string) || ""}
-            onValueChange={(value) => onItemUpdate(item.id, "currency_id", value)}
+            onValueChange={(value) => {
+              onItemUpdate(item.id, "currency_id", value);
+              onItemUpdate(item.id, "currency_name", getCurrencyCode(value));
+            }}
+            onSelectObject={(currency) => {
+              onItemUpdate(item.id, "exchange_rate", currency.exchange_rate);
+              // date update ให้มีค่าก่อนค่อยอัพเดท
+              onItemUpdate(item.id, "exchange_rate_date", currency.updated_at);
+            }}
             classNames="h-7 text-xs"
             bu_code={buCode}
           />

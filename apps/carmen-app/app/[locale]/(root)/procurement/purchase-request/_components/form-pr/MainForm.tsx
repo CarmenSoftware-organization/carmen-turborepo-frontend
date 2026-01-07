@@ -32,6 +32,7 @@ import { useMainFormLogic } from "../../_hooks/use-main-form-logic";
 import { PurchaseRequestProvider } from "./PurchaseRequestContext";
 import { CreatePrDtoType, CreatePrSchema } from "../../_schemas/purchase-request-form.schema";
 import { PR_STATUS } from "../../_constants/pr-status";
+import JsonViewer from "@/components/JsonViewer";
 
 interface Props {
   mode: formType;
@@ -178,6 +179,8 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
                 </form>
               </Form>
             </Card>
+
+            <JsonViewer data={form.watch()} title="Form value" />
 
             {isShowActionButtons && (
               <ActionButtons
