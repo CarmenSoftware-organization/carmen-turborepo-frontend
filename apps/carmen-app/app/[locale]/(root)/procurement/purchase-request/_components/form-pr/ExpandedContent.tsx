@@ -136,6 +136,8 @@ export default function ExpandedContent({
   );
 
   const isPriceValid = Number(getItemValue(item, "pricelist_price")) > 0;
+  const isDiscountAdjustment = !!getItemValue(item, "is_discount_adjustment");
+  const isTaxAdjustment = !!getItemValue(item, "is_tax_adjustment");
 
   return (
     <Card className="m-2 rounded-md">
@@ -215,9 +217,9 @@ export default function ExpandedContent({
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Checkbox
-                                checked={Boolean(getItemValue(item, "is_discount_adjustment"))}
+                                checked={isDiscountAdjustment}
                                 onCheckedChange={(checked) => {
-                                  recalculateAll({ is_discount_adjustment: Boolean(checked) });
+                                  recalculateAll({ is_discount_adjustment: !!checked });
                                 }}
                                 className="h-3.5 w-3.5"
                                 disabled={!isPriceValid || currentMode !== formType.EDIT}
@@ -232,15 +234,12 @@ export default function ExpandedContent({
                       <div className="relative">
                         <NumberInput
                           value={
-                            Boolean(getItemValue(item, "is_discount_adjustment"))
+                            isDiscountAdjustment
                               ? Number(getItemValue(item, "discount_amount")) || 0
                               : Number(getItemValue(item, "discount_rate")) || 0
                           }
                           onChange={(value) => {
-                            const isAdjustment = Boolean(
-                              getItemValue(item, "is_discount_adjustment")
-                            );
-                            if (isAdjustment) {
+                            if (isDiscountAdjustment) {
                               recalculateAll({ discount_amount: Number(value) });
                             } else {
                               recalculateAll({ discount_rate: Number(value) });
@@ -248,11 +247,11 @@ export default function ExpandedContent({
                           }}
                           classNames={cn(
                             "h-7 text-xs w-full text-right bg-background",
-                            !Boolean(getItemValue(item, "is_discount_adjustment")) && "pr-6"
+                            !isDiscountAdjustment && "pr-6"
                           )}
                           disabled={!isPriceValid || currentMode !== formType.EDIT}
                         />
-                        {!Boolean(getItemValue(item, "is_discount_adjustment")) && (
+                        {!isDiscountAdjustment && (
                           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
                             %
                           </span>
@@ -276,9 +275,9 @@ export default function ExpandedContent({
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Checkbox
-                                checked={Boolean(getItemValue(item, "is_tax_adjustment"))}
+                                checked={isTaxAdjustment}
                                 onCheckedChange={(checked) => {
-                                  recalculateAll({ is_tax_adjustment: Boolean(checked) });
+                                  recalculateAll({ is_tax_adjustment: !!checked });
                                 }}
                                 className="h-3.5 w-3.5"
                                 disabled={!isPriceValid || currentMode !== formType.EDIT}
@@ -290,7 +289,7 @@ export default function ExpandedContent({
                           </Tooltip>
                         </TooltipProvider>
                       </div>
-                      {Boolean(getItemValue(item, "is_tax_adjustment")) ? (
+                      {isTaxAdjustment ? (
                         <NumberInput
                           value={Number(getItemValue(item, "tax_amount")) || 0}
                           onChange={(value) => {

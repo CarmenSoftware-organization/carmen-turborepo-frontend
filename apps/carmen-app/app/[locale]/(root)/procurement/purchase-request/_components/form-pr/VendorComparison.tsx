@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -229,46 +229,59 @@ export default function VendorComparison({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-  const handleSelectVendor = () => {
-    if (selectedDetailId) {
-      const selectedItem = comparisonData.find((item) => item.detail_id === selectedDetailId);
-
-      if (selectedItem) {
-        onItemUpdate(itemId, "vendor_id", selectedItem.vendor_id);
-        onItemUpdate(itemId, "vendor_name", selectedItem.vendor_name);
-        onItemUpdate(itemId, "pricelist_detail_id", selectedItem.detail_id);
-        onItemUpdate(itemId, "pricelist_id", selectedItem.pricelist_id);
-        onItemUpdate(itemId, "pricelist_no", selectedItem.pricelist_no);
-        onItemUpdate(itemId, "pricelist_unit", selectedItem.unit_id);
-        onItemUpdate(itemId, "pricelist_price", selectedItem.price);
-        onItemUpdate(itemId, "currency_id", selectedItem.currency_id);
-        onItemUpdate(itemId, "currency_name", selectedItem.currency_name);
-        onItemUpdate(itemId, "tax_rate", selectedItem.tax_rate);
-        onItemUpdate(itemId, "tax_profile_id", selectedItem.tax_profile_id);
-        onItemUpdate(itemId, "tax_profile_name", selectedItem.tax_profile_name);
-
-        // Calculate prices
-        const qty = apv_qty > 0 ? apv_qty : req_qty;
-        const price = selectedItem.price || 0;
-        const subTotal = qty * price;
-        const taxRate = selectedItem.tax_rate || 0;
-        const taxAmount = subTotal * (taxRate / 100);
-        const totalPrice = subTotal + taxAmount;
-
-        onItemUpdate(itemId, "sub_total_price", subTotal);
-        onItemUpdate(itemId, "tax_amount", taxAmount);
-        onItemUpdate(itemId, "total_price", totalPrice);
-
-        // Update base values
-        onItemUpdate(itemId, "base_sub_total_price", subTotal);
-        onItemUpdate(itemId, "base_tax_amount", taxAmount);
-        onItemUpdate(itemId, "base_total_price", totalPrice);
-        onItemUpdate(itemId, "base_price", price);
-      }
+  const handleSelectVendor = useCallback(() => {
+    if (!selectedDetailId) {
+      setSelectedDetailId(null);
+      setIsOpen(false);
+      return;
     }
+
+    const selectedItem = comparisonData.find((item) => item.detail_id === selectedDetailId);
+    if (!selectedItem) {
+      setSelectedDetailId(null);
+      setIsOpen(false);
+      return;
+    }
+
+    // Calculate prices
+    const qty = apv_qty > 0 ? apv_qty : req_qty;
+    const price = selectedItem.price || 0;
+    const subTotal = qty * price;
+    const taxRate = selectedItem.tax_rate || 0;
+    const taxAmount = subTotal * (taxRate / 100);
+    const totalPrice = subTotal + taxAmount;
+
+    // Batch all updates into a single object
+    const updates: Record<string, unknown> = {
+      vendor_id: selectedItem.vendor_id,
+      vendor_name: selectedItem.vendor_name,
+      pricelist_detail_id: selectedItem.detail_id,
+      pricelist_id: selectedItem.pricelist_id,
+      pricelist_no: selectedItem.pricelist_no,
+      pricelist_unit: selectedItem.unit_id,
+      pricelist_price: price,
+      currency_id: selectedItem.currency_id,
+      currency_name: selectedItem.currency_name,
+      tax_rate: taxRate,
+      tax_profile_id: selectedItem.tax_profile_id,
+      tax_profile_name: selectedItem.tax_profile_name,
+      sub_total_price: subTotal,
+      tax_amount: taxAmount,
+      total_price: totalPrice,
+      base_sub_total_price: subTotal,
+      base_tax_amount: taxAmount,
+      base_total_price: totalPrice,
+      base_price: price,
+    };
+
+    // Apply all updates in a single batch
+    Object.entries(updates).forEach(([fieldName, value]) => {
+      onItemUpdate(itemId, fieldName, value);
+    });
+
     setSelectedDetailId(null);
     setIsOpen(false);
-  };
+  }, [selectedDetailId, comparisonData, apv_qty, req_qty, itemId, onItemUpdate]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
