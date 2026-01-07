@@ -174,63 +174,89 @@ export default function VendorComparison({
     () => [
       {
         id: "vendor_name",
-        header: tPr("vendor"),
+        header: () => <span className="text-xs">{tPr("vendor")}</span>,
         cell: ({ row }) => (
-          <span className="font-medium">{row.original.priceList.vendor?.name || "-"}</span>
+          <span className="text-xs">{row.original.priceList.vendor?.name || "-"}</span>
         ),
         size: 150,
       },
       {
         id: "pricelist_no",
-        header: tPr("pricelist"),
-        cell: ({ row }) => <span>{row.original.priceList.no || "-"}</span>,
+        header: () => <span className="text-xs">{tPr("pricelistNo")}</span>,
+        cell: ({ row }) => <span className="text-xs">{row.original.priceList.no || "-"}</span>,
         size: 120,
       },
       {
         id: "product_name",
-        header: tPr("product"),
-        cell: ({ row }) => <span>{row.original.detail.product_name || "-"}</span>,
+        header: () => <span className="text-xs">{tPr("product")}</span>,
+        cell: ({ row }) => (
+          <span className="text-xs">{row.original.detail.product_name || "-"}</span>
+        ),
         size: 150,
       },
       {
         id: "price",
-        header: tPr("unit_price"),
+        header: () => <span className="text-xs">{tPr("unit_price")}</span>,
         cell: ({ row }) => (
-          <span>
+          <span className="text-xs">
             {row.original.detail.price || 0} {row.original.detail.unit_name || "-"}
           </span>
         ),
-        size: 120,
+        size: 80,
+        meta: {
+          cellClassName: "text-right",
+          headerClassName: "text-right",
+        },
       },
       {
         id: "moq_qty",
-        header: tPr("moq"),
-        cell: ({ row }) => <span>{row.original.detail.moq_qty || 0}</span>,
+        header: () => <span className="text-xs">MOQ</span>,
+        cell: ({ row }) => <span className="text-xs">{row.original.detail.moq_qty || 0}</span>,
         size: 80,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
       },
       {
         id: "currency",
-        header: tPr("currency"),
-        cell: ({ row }) => <span>{row.original.priceList.currency?.name || "-"}</span>,
+        header: () => <span className="text-xs">{tPr("currency")}</span>,
+        cell: ({ row }) => (
+          <span className="text-xs">{row.original.priceList.currency?.name || "-"}</span>
+        ),
         size: 80,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
       },
       {
         id: "valid_period",
-        header: tPr("valid_period"),
+        header: () => <span className="text-xs">{tPr("valid_period")}</span>,
         cell: ({ row }) => (
-          <span>{formatEffectivePeriod(row.original.priceList.effectivePeriod)}</span>
+          <span className="text-xs">
+            {formatEffectivePeriod(row.original.priceList.effectivePeriod)}
+          </span>
         ),
         size: 150,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
       },
       {
         id: "action",
         header: "",
         cell: ({ row }) => (
-          <Button size="sm" onClick={() => handleSelectVendor(row.original)}>
+          <Button size="sm" className="h-7" onClick={() => handleSelectVendor(row.original)}>
             {tPr("select")}
           </Button>
         ),
         size: 100,
+        meta: {
+          cellClassName: "text-right",
+          headerClassName: "text-right",
+        },
       },
     ],
     [handleSelectVendor, tPr]
@@ -250,7 +276,7 @@ export default function VendorComparison({
       >
         {tPr("compare")}
       </DialogTrigger>
-      <DialogContent className="max-w-5xl">
+      <DialogContent className="max-w-6xl">
         <DialogHeader>
           <DialogTitle>{tPr("vendor_comparison")}</DialogTitle>
         </DialogHeader>
@@ -259,9 +285,7 @@ export default function VendorComparison({
         <Card className="p-3 space-y-2">
           <div className="flex items-center justify-between gap-2">
             <div>
-              <p className="text-sm font-semibold">
-                {productName || tPr("select_product_first")}
-              </p>
+              <p className="text-sm font-semibold">{productName || tPr("select_product_first")}</p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2">
