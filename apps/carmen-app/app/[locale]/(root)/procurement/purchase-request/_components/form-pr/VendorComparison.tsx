@@ -19,7 +19,8 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { createColumnHelper, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { usePriceList } from "@/hooks/use-price-list";
-import { Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface Props {
   req_qty: number;
@@ -78,7 +79,7 @@ export default function VendorComparison({
 }: Props) {
   const { token, buCode, currencyBase } = useAuth();
   const currentBuCode = bu_code ?? buCode;
-  const { data: priceLists, isLoading } = usePriceList(token, currentBuCode);
+  const { data: priceLists, isLoading, error } = usePriceList(token, currentBuCode);
 
   const [selectedDetailId, setSelectedDetailId] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -314,13 +315,23 @@ export default function VendorComparison({
           </div>
         )}
 
-        {!isLoading && comparisonData.length === 0 && (
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              Failed to load price list data. Please try again later.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {!isLoading && !error && comparisonData.length === 0 && (
           <div className="flex flex-col items-center justify-center py-8 text-center border-2 border-dashed rounded-lg">
             <p className="text-sm text-muted-foreground">No price list found</p>
           </div>
         )}
 
-        {!isLoading && comparisonData.length > 0 && (
+        {!isLoading && !error && comparisonData.length > 0 && (
           <DataGrid
             table={table}
             recordCount={comparisonData.length}
