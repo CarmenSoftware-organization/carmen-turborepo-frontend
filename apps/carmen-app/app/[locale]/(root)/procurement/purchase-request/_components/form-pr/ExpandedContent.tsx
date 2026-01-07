@@ -23,6 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PR_STATUS } from "../../_constants/pr-status";
+import { useInventoryData } from "../../_hooks/use-inventory-data";
 
 interface ExpandedContentProps {
   item: PurchaseRequestDetail;
@@ -53,6 +54,13 @@ export default function ExpandedContent({
   const tPr = useTranslations("PurchaseRequest");
 
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
+
+  // Consolidated inventory data fetching - single API call for both InventoryInfo and InventoryProgress
+  const { inventoryData, stockLevel, isLoading: isInventoryLoading } = useInventoryData({
+    item,
+    token,
+    buCode,
+  });
 
   const recalculateAll = useCallback(
     (overrides: Record<string, unknown>) => {
@@ -365,8 +373,12 @@ export default function ExpandedContent({
             <h4 className="font-bold text-xs text-muted-foreground">{tPr("inventory_info")}</h4>
           </AccordionTrigger>
           <AccordionContent className="space-y-1 flex flex-col gap-2 p-4">
-            <InventoryInfo item={item} token={token} buCode={buCode} />
-            <InventoryProgress item={item} token={token} buCode={buCode} />
+            <InventoryInfo
+              inventoryData={inventoryData}
+              inventoryUnitName={item.inventory_unit_name}
+              isLoading={isInventoryLoading}
+            />
+            <InventoryProgress stockLevel={stockLevel} isLoading={isInventoryLoading} />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
