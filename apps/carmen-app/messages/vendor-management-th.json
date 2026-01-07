@@ -95,6 +95,7 @@
   "PriceList": {
     "title": "ราคาสินค้า",
     "add_price_list": "เพิ่มราคาสินค้า",
+    "edit_price_list": "แก้ไขราคาสินค้า",
     "new_price_list": "ราคาสินค้าใหม่",
     "overview": "ภาพรวม",
     "products": "สินค้า",

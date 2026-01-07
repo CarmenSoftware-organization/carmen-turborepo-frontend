@@ -95,6 +95,7 @@
   "PriceList": {
     "title": "Price List",
     "add_price_list": "Add Price List",
+    "edit_price_list": "Edit Price List",
     "new_price_list": "New Price List",
     "overview": "Overview",
     "products": "Products",
