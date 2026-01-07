@@ -9,6 +9,7 @@ import {
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 import { useTranslations } from "next-intl";
+import { useCallback } from "react";
 import { formatPrice } from "@/utils/format/currency";
 import VendorComparison from "./VendorComparison";
 import InventoryInfo from "./InventoryInfo";
@@ -53,76 +54,78 @@ export default function ExpandedContent({
 
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
 
-  const recalculateAll = (overrides: Record<string, unknown>) => {
-    // Merge current values with overrides
-    const getValue = (key: string) => (key in overrides ? overrides[key] : getItemValue(item, key));
+  const recalculateAll = useCallback(
+    (overrides: Record<string, unknown>) => {
+      // Merge current values with overrides
+      const getValue = (key: string) =>
+        key in overrides ? overrides[key] : getItemValue(item, key);
 
-    const qty =
-      (getValue("approved_qty") as number) > 0
-        ? (getValue("approved_qty") as number)
-        : (getValue("requested_qty") as number);
-    const price = Number(getValue("pricelist_price") || 0);
-    const isDiscountAdjustment = Boolean(getValue("is_discount_adjustment"));
-    const isTaxAdjustment = Boolean(getValue("is_tax_adjustment"));
+      const qty =
+        (getValue("approved_qty") as number) > 0
+          ? (getValue("approved_qty") as number)
+          : (getValue("requested_qty") as number);
+      const price = Number(getValue("pricelist_price") || 0);
+      const isDiscountAdjustment = Boolean(getValue("is_discount_adjustment"));
+      const isTaxAdjustment = Boolean(getValue("is_tax_adjustment"));
 
-    // 1. Calculate Sub Total
-    const subTotal = qty * price;
+      // 1. Calculate Sub Total
+      const subTotal = qty * price;
 
-    // 2. Calculate Discount
-    let discountAmount = Number(getValue("discount_amount") || 0);
-    let discountRate = Number(getValue("discount_rate") || 0);
+      // 2. Calculate Discount
+      let discountAmount = Number(getValue("discount_amount") || 0);
+      let discountRate = Number(getValue("discount_rate") || 0);
 
-    if (isDiscountAdjustment) {
-      // Input is Amount, Calculate Rate
-      discountRate = subTotal > 0 ? (discountAmount / subTotal) * 100 : 0;
-    } else {
-      // Input is Rate, Calculate Amount
-      discountAmount = subTotal * (discountRate / 100);
-    }
+      if (isDiscountAdjustment) {
+        // Input is Amount, Calculate Rate
+        discountRate = subTotal > 0 ? (discountAmount / subTotal) * 100 : 0;
+      } else {
+        // Input is Rate, Calculate Amount
+        discountAmount = subTotal * (discountRate / 100);
+      }
 
-    // 3. Calculate Net Amount
-    const netAmount = Math.max(0, subTotal - discountAmount);
+      // 3. Calculate Net Amount
+      const netAmount = Math.max(0, subTotal - discountAmount);
 
-    // 4. Calculate Tax
-    let taxAmount = Number(getValue("tax_amount") || 0);
-    let taxRate = Number(getValue("tax_rate") || 0);
+      // 4. Calculate Tax
+      let taxAmount = Number(getValue("tax_amount") || 0);
+      let taxRate = Number(getValue("tax_rate") || 0);
 
-    if (isTaxAdjustment) {
-      // Input is Amount, Calculate Rate
-      taxRate = netAmount > 0 ? (taxAmount / netAmount) * 100 : 0;
-    } else {
-      // Input is Rate, Calculate Amount
-      taxAmount = netAmount * (taxRate / 100);
-    }
+      if (isTaxAdjustment) {
+        // Input is Amount, Calculate Rate
+        taxRate = netAmount > 0 ? (taxAmount / netAmount) * 100 : 0;
+      } else {
+        // Input is Rate, Calculate Amount
+        taxAmount = netAmount * (taxRate / 100);
+      }
 
-    // 5. Calculate Total
-    const totalPrice = netAmount + taxAmount;
+      // 5. Calculate Total
+      const totalPrice = netAmount + taxAmount;
 
-    // Update all fields
-    // First apply overrides to ensure the input value is set
-    Object.entries(overrides).forEach(([key, value]) => {
-      onItemUpdate(item.id, key, value);
-    });
+      // Batch all updates into a single object to reduce re-renders
+      const updates: Record<string, unknown> = {
+        ...overrides,
+        base_price: price,
+        sub_total_price: subTotal,
+        base_sub_total_price: subTotal,
+        discount_amount: discountAmount,
+        base_discount_amount: discountAmount,
+        discount_rate: discountRate,
+        net_amount: netAmount,
+        base_net_amount: netAmount,
+        tax_amount: taxAmount,
+        base_tax_amount: taxAmount,
+        tax_rate: taxRate,
+        total_price: totalPrice,
+        base_total_price: totalPrice,
+      };
 
-    // Then update calculated fields
-    onItemUpdate(item.id, "base_price", price);
-    onItemUpdate(item.id, "sub_total_price", subTotal);
-    onItemUpdate(item.id, "base_sub_total_price", subTotal);
-
-    onItemUpdate(item.id, "discount_amount", discountAmount);
-    onItemUpdate(item.id, "base_discount_amount", discountAmount);
-    onItemUpdate(item.id, "discount_rate", discountRate);
-
-    onItemUpdate(item.id, "net_amount", netAmount);
-    onItemUpdate(item.id, "base_net_amount", netAmount);
-
-    onItemUpdate(item.id, "tax_amount", taxAmount);
-    onItemUpdate(item.id, "base_tax_amount", taxAmount);
-    onItemUpdate(item.id, "tax_rate", taxRate);
-
-    onItemUpdate(item.id, "total_price", totalPrice);
-    onItemUpdate(item.id, "base_total_price", totalPrice);
-  };
+      // Apply all updates
+      Object.entries(updates).forEach(([key, value]) => {
+        onItemUpdate(item.id, key, value);
+      });
+    },
+    [item, getItemValue, onItemUpdate]
+  );
 
   const isPriceValid = Number(getItemValue(item, "pricelist_price")) > 0;
 
