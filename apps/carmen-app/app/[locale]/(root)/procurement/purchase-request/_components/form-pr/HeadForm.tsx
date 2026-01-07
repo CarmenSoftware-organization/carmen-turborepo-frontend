@@ -114,7 +114,8 @@ export default function HeadForm({ bu_code }: HeadFormProps) {
       {lastThreeSteps.length > 0 && (
         <div className="col-span-2 pt-8">
           <div
-            className={`bg-muted/80 p-2 rounded-md grid grid-cols-${lastThreeSteps.length} gap-0`}
+            className="bg-muted/80 p-2 rounded-md grid gap-0"
+            style={{ gridTemplateColumns: `repeat(${lastThreeSteps.length}, minmax(0, 1fr))` }}
           >
             {lastThreeSteps.map((step, index) => {
               const isLast = index === lastThreeSteps.length - 1;
