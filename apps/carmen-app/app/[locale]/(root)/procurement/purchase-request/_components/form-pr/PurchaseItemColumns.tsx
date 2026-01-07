@@ -199,7 +199,6 @@ export const createPurchaseItemColumns = (
               value={getItemValue(item, "location_id") as string | undefined}
               bu_code={buCode}
               onValueChange={(value, selectedLocation) => {
-                console.log("selectedLocation", selectedLocation);
                 onItemUpdate(item.id, "location_id", value);
                 // Reset product and related fields when location changes
                 onItemUpdate(item.id, "product_id", "");
@@ -208,7 +207,6 @@ export const createPurchaseItemColumns = (
                 onItemUpdate(item.id, "inventory_unit_name", "");
                 onItemUpdate(item.id, "requested_qty", 0);
                 onItemUpdate(item.id, "requested_unit_id", "");
-                onItemUpdate(item.id, "requested_qty", 0);
                 onItemUpdate(item.id, "requested_unit_name", "");
                 onItemUpdate(item.id, "delivery_date", "");
                 // Auto-init delivery point from location

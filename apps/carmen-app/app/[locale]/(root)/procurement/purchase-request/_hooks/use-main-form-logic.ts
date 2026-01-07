@@ -22,11 +22,7 @@ import {
 import { prepareStageDetails } from "../_utils/stage.utils";
 import { createPurchaseRequest } from "../_handlers/purchase-request-create.handlers";
 import { updatePurchaseRequest } from "../_handlers/purchase-request-update.handlers";
-import {
-  submitPurchaseRequest,
-  rejectPurchaseRequest,
-  sendBackPurchaseRequest,
-} from "../_handlers/purchase-request-actions.handlers";
+import { submitPurchaseRequest } from "../_handlers/purchase-request-actions.handlers";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { UsePurchaseItemManagementReturn } from "./use-purchase-item-management";
 
@@ -292,15 +288,34 @@ export const useMainFormLogic = ({
       "reject",
       "rejected"
     );
-    rejectPurchaseRequest(
-      details,
-      reject,
-      queryClient,
-      currentBuCode,
-      initValues?.id,
-      tPR,
-      toastSuccess,
-      toastError
+    reject(
+      { state_role: STAGE_ROLE.CREATE, details },
+      {
+        onSuccess: () => {
+          toastSuccess({
+            message: tPR(PR_ERROR_MESSAGES.SUCCESS.REJECTED),
+          });
+          if (user?.data.id) {
+            sendNotification({
+              title: "Purchase Request Rejected",
+              message: `Purchase Request [${initValues?.pr_no || ""}](/procurement/purchase-request/${initValues?.id}) has been rejected`,
+              type: EnumNotiType.error,
+              category: "user-to-user",
+              to_user_id: user.data.id,
+              from_user_id: user.data.id,
+              link: `/procurement/purchase-request/${currentBuCode}/${initValues?.id}`,
+            });
+          }
+          queryClient.invalidateQueries({
+            queryKey: ["purchase-request", currentBuCode, initValues?.id],
+          });
+        },
+        onError: () => {
+          toastError({
+            message: tPR(PR_ERROR_MESSAGES.API.REJECT_FAILED),
+          });
+        },
+      }
     );
   };
 
@@ -311,15 +326,34 @@ export const useMainFormLogic = ({
       "send_back",
       "sent back"
     );
-    sendBackPurchaseRequest(
-      details,
-      sendBack,
-      queryClient,
-      currentBuCode,
-      initValues?.id,
-      tPR,
-      toastSuccess,
-      toastError
+    sendBack(
+      { state_role: STAGE_ROLE.CREATE, details },
+      {
+        onSuccess: () => {
+          toastSuccess({
+            message: tPR(PR_ERROR_MESSAGES.SUCCESS.SENT_BACK),
+          });
+          if (user?.data.id) {
+            sendNotification({
+              title: "Purchase Request Sent Back",
+              message: `Purchase Request [${initValues?.pr_no || ""}](/procurement/purchase-request/${initValues?.id}) has been sent back`,
+              type: EnumNotiType.warning,
+              category: "user-to-user",
+              to_user_id: user.data.id,
+              from_user_id: user.data.id,
+              link: `/procurement/purchase-request/${currentBuCode}/${initValues?.id}`,
+            });
+          }
+          queryClient.invalidateQueries({
+            queryKey: ["purchase-request", currentBuCode, initValues?.id],
+          });
+        },
+        onError: () => {
+          toastError({
+            message: tPR(PR_ERROR_MESSAGES.API.SEND_BACK_FAILED),
+          });
+        },
+      }
     );
   };
 

@@ -116,7 +116,7 @@ export default function VendorComparison({
           unit_name: detail.unit_name,
           lead_time_days: detail.lead_time_days || 0,
           price: detail.price || 0,
-          price_without_tax: detail.price_wirhout_tax || 0,
+          price_without_tax: detail.price_without_tax || 0,
           tax_amt: detail.tax_amt || 0,
           tax_profile_id: detail.tax_profile?.id || "",
           tax_profile_name: detail.tax_profile?.name || "",
@@ -181,9 +181,7 @@ export default function VendorComparison({
       }),
       columnHelper.accessor("lead_time_days", {
         header: "Lead Time",
-        cell: ({ getValue }) => (
-          <div className="text-center">{getValue()} days</div>
-        ),
+        cell: ({ getValue }) => <div className="text-center">{getValue()} days</div>,
         size: 100,
         meta: {
           cellClassName: "text-center",
@@ -289,9 +287,7 @@ export default function VendorComparison({
           <div className="flex items-center justify-between gap-2">
             <div>
               <p className="text-sm font-semibold">{productName || "Select product first"}</p>
-              {productId && (
-                <p className="text-xs text-muted-foreground">ID: {productId}</p>
-              )}
+              {productId && <p className="text-xs text-muted-foreground">ID: {productId}</p>}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2">
