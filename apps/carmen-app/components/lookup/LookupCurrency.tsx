@@ -72,8 +72,6 @@ export default function LookupCurrency({
       staleTime: 5 * 60 * 1000, // 5 minutes
     });
 
-  console.log("currency data", data);
-
   const currenciesData: CurrencyGetDto[] = useMemo(() => {
     const result = data?.pages?.flatMap((page) => page?.data || []) ?? [];
     return result;

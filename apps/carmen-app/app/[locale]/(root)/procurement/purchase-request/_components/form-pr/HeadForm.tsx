@@ -111,6 +111,26 @@ export default function HeadForm({ bu_code }: HeadFormProps) {
         )}
       />
 
+      <FormField
+        control={control}
+        name="details.note"
+        icon={<FileText className="h-4 w-4 text-muted-foreground" />}
+        render={({ field }) => (
+          <FormItem className="col-span-2 mt-2">
+            <FormLabel>{tPr("note")}</FormLabel>
+            <FormControl>
+              <Textarea
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value)}
+                placeholder={tPr("note")}
+                className={cn(mode === formType.VIEW ? "bg-muted" : "")}
+                disabled={mode === formType.VIEW}
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+
       {lastThreeSteps.length > 0 && (
         <div className="col-span-2 pt-8">
           <div
