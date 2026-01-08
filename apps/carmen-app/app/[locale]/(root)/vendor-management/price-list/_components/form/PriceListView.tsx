@@ -3,14 +3,7 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  SquarePen,
-  Calendar,
-  Building2,
-  Coins,
-  TrendingUp,
-  TrendingDown,
-} from "lucide-react";
+import { SquarePen, Calendar, Building2, Coins, Package } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,10 +13,6 @@ import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
-import { ProductPlDto } from "@/dtos/price-list-dto";
-import { Badge } from "@/components/ui/badge";
-import { Package } from "lucide-react";
 import { PriceListBreadcrumb, PriceListCardHeader, ProductsCardHeader } from "../shared";
 
 interface PriceListViewProps {
@@ -39,112 +28,63 @@ export default function PriceListView({ initialData, onEditMode }: PriceListView
 
   const rawProducts = initialData?.pricelist_detail || initialData?.products || [];
 
-  const products: ProductPlDto[] = useMemo(() => {
+  interface ProductViewItem {
+    id: string;
+    product_code: string;
+    product_name: string;
+    unit_name: string;
+    tax_profile_name: string;
+    moq_qty: number;
+  }
+
+  const products: ProductViewItem[] = useMemo(() => {
     return rawProducts.map((p: any) => ({
       id: p.id,
-      code: p.code || p.tb_product?.code || "",
-      name: p.name || p.tb_product?.name || "",
-      moqs: p.moqs || [],
-      taxRate: p.taxRate ?? p.tax_rate ?? 0,
-      totalAmount: p.totalAmount ?? p.total_amount ?? 0,
-      priceChange: p.priceChange ?? p.price_change ?? 0,
-      lastUpdate: p.lastUpdate || p.last_update || "",
+      product_code: p.product_code || p.tb_product?.code || "",
+      product_name: p.product_name || p.tb_product?.name || "",
+      unit_name: p.unit_name || p.tb_unit?.name || "-",
+      tax_profile_name: p.tax_profile_name || p.tb_tax_profile?.name || "-",
+      moq_qty: p.moq_qty ?? 0,
     }));
   }, [rawProducts]);
 
   const productsCount = products.length;
 
-  const columns = useMemo<ColumnDef<ProductPlDto>[]>(
+  const columns = useMemo<ColumnDef<ProductViewItem>[]>(
     () => [
       {
         id: "index",
         header: () => <div className="text-center">#</div>,
-        cell: ({ row }) => <div className="text-center">{row.index + 1}</div>,
+        cell: ({ row }) => <div className="text-center text-muted-foreground">{row.index + 1}</div>,
         size: 50,
       },
       {
-        accessorKey: "code",
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tPriceList("product_code")} />
-        ),
+        id: "product",
+        header: "Product",
         cell: ({ row }) => (
-          <Badge variant="outline" className="font-mono">
-            {row.original.code}
-          </Badge>
+          <span>
+            {row.original.product_code} - {row.original.product_name}
+          </span>
         ),
-        size: 150,
-      },
-      {
-        accessorKey: "name",
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tPriceList("product_name")} />
-        ),
-        cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
         size: 250,
       },
       {
-        id: "moqs",
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tPriceList("moq_tiers")} />
-        ),
-        cell: ({ row }) => {
-          const moqs = row.original.moqs || [];
-          return (
-            <div className="flex flex-col gap-1">
-              {moqs.map((moq, idx) => (
-                <span key={idx} className="text-xs">
-                  {moq.minQuantity} + {moq.unit} → {moq.price} ({moq.leadTimeDays}d)
-                </span>
-              ))}
-            </div>
-          );
-        },
-        size: 180,
+        accessorKey: "unit_name",
+        header: "Unit",
+        cell: ({ row }) => <span>{row.original.unit_name}</span>,
+        size: 120,
       },
       {
-        accessorKey: "taxRate",
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tPriceList("tax_rate")} />
-        ),
-        cell: ({ row }) => (
-          <span className="text-right block">{(row.original.taxRate * 100).toFixed(2)}%</span>
-        ),
+        accessorKey: "tax_profile_name",
+        header: "Tax Profile",
+        cell: ({ row }) => <span>{row.original.tax_profile_name}</span>,
+        size: 150,
+      },
+      {
+        accessorKey: "moq_qty",
+        header: "MOQ",
+        cell: ({ row }) => <span>{row.original.moq_qty}</span>,
         size: 100,
-      },
-      {
-        accessorKey: "totalAmount",
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tPriceList("total_amount")} />
-        ),
-        cell: ({ row }) => (
-          <span className="text-right block font-medium">{row.original.totalAmount}</span>
-        ),
-        size: 120,
-      },
-      {
-        accessorKey: "priceChange",
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tPriceList("price_change")} />
-        ),
-        cell: ({ row }) => {
-          const change = row.original.priceChange;
-          const isPositive = change > 0;
-          const isNegative = change < 0;
-
-          return (
-            <div className="flex items-center justify-end gap-1">
-              {isPositive && <TrendingUp className="h-3.5 w-3.5 text-green-600" />}
-              {isNegative && <TrendingDown className="h-3.5 w-3.5 text-red-600" />}
-              <span
-                className={`text-sm font-medium ${isPositive ? "text-green-600" : isNegative ? "text-red-600" : "text-muted-foreground"}`}
-              >
-                {change > 0 ? "+" : ""}
-                {change.toFixed(2)}%
-              </span>
-            </div>
-          );
-        },
-        size: 120,
       },
     ],
     [tPriceList]
@@ -282,7 +222,6 @@ export default function PriceListView({ initialData, onEditMode }: PriceListView
               </dd>
             </div>
 
-            {/* RFP */}
             <div className="space-y-1">
               <dt className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 {tPriceList("rfp")}
@@ -290,7 +229,6 @@ export default function PriceListView({ initialData, onEditMode }: PriceListView
               <dd className="text-sm">{initialData.rfp?.name || "-"}</dd>
             </div>
 
-            {/* Description - Full width */}
             <div className="space-y-1 sm:col-span-2">
               <dt className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 {tHeader("description")}
@@ -298,7 +236,6 @@ export default function PriceListView({ initialData, onEditMode }: PriceListView
               <dd className="text-sm text-muted-foreground">{initialData.description || "-"}</dd>
             </div>
 
-            {/* Note - Full width */}
             {initialData.note && (
               <div className="space-y-1 sm:col-span-2">
                 <dt className="text-xs font-medium text-muted-foreground uppercase tracking-wide">

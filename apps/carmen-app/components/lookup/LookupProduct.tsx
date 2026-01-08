@@ -29,10 +29,10 @@ export default function LookupProduct({
   const [open, setOpen] = useState(false);
 
   const selectedProductName = useMemo(() => {
-    if (!value || !products || !Array.isArray(products)) return null;
-    const found = products.find((product) => product.id === value);
-    const productName = found?.code + " - " + found?.name;
-    return productName ?? null;
+    if (!value || !products?.data || !Array.isArray(products.data)) return null;
+    const found = products.data.find((product: any) => product.id === value);
+    if (!found) return null;
+    return `${found.code} - ${found.name}`;
   }, [value, products]);
 
   return (
@@ -67,9 +67,8 @@ export default function LookupProduct({
               <>
                 <CommandEmpty>No products found.</CommandEmpty>
                 <CommandGroup>
-                  {products && products.length > 0 ? (
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    products.map((product: any) => (
+                  {products?.data && products.data.length > 0 ? (
+                    products.data.map((product: any) => (
                       <CommandItem
                         key={product.id}
                         value={product.id}

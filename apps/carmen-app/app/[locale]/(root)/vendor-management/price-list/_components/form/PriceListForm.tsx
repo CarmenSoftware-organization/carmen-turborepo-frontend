@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -19,6 +19,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import { PriceListBreadcrumb, ProductsCardHeader } from "../shared";
+import JsonViewer from "@/components/JsonViewer";
 
 interface PriceListFormProps {
   readonly initialData?: any;
@@ -58,6 +59,62 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
   );
 
   const productsCount = form.watch("pricelist_detail")?.length || 0;
+  const formData = form.watch();
+
+  // Transform form data to API payload format for preview
+  const payloadPreview = useMemo(() => {
+    const items = formData.pricelist_detail || [];
+
+    const formatDateToISO = (dateStr: string) => {
+      if (!dateStr) return "";
+      const date = new Date(dateStr);
+      return date.toISOString();
+    };
+
+    const addItems = items
+      .filter((item) => item._action === "add")
+      .map((item, index) => ({
+        sequence_no: item.sequence_no ?? index + 1,
+        product_id: item.product_id,
+        unit_id: item.unit_id,
+        tax_profile_id: item.tax_profile_id,
+        tax_rate: item.tax_rate || 0,
+        moq_qty: Number(item.moq_qty) || 0,
+      }));
+
+    const updateItems = items
+      .filter((item) => item._action === "update" && item.dbId)
+      .map((item) => ({
+        id: item.dbId,
+        sequence_no: item.sequence_no,
+        product_id: item.product_id,
+        unit_id: item.unit_id,
+        tax_profile_id: item.tax_profile_id,
+        tax_rate: item.tax_rate || 0,
+        moq_qty: Number(item.moq_qty) || 0,
+      }));
+
+    const removeItems = items
+      .filter((item) => item._action === "remove" && item.dbId)
+      .map((item) => ({ id: item.dbId! }));
+
+    const pricelistDetail: Record<string, any> = {};
+    if (addItems.length > 0) pricelistDetail.add = addItems;
+    if (updateItems.length > 0) pricelistDetail.update = updateItems;
+    if (removeItems.length > 0) pricelistDetail.remove = removeItems;
+
+    return {
+      vendor_id: formData.vendorId,
+      name: formData.name,
+      description: formData.description,
+      status: formData.status,
+      currency_id: formData.currencyId,
+      effective_from_date: formatDateToISO(formData.effectivePeriod?.from || ""),
+      effective_to_date: formatDateToISO(formData.effectivePeriod?.to || ""),
+      note: formData.note,
+      pricelist_detail: Object.keys(pricelistDetail).length > 0 ? pricelistDetail : undefined,
+    };
+  }, [formData]);
 
   useEffect(() => {
     if (initialData) {
@@ -80,14 +137,18 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
         currencyId: initialData.currency?.id,
         effectivePeriod: getEffectivePeriod(initialData.effectivePeriod),
         pricelist_detail: (initialData.pricelist_detail || []).map((p: any) => ({
+          dbId: p.id, // ใช้ dbId แทน id
           sequence_no: p.sequence_no,
           product_id: p.product_id,
+          product_name: p.tb_product?.name || p.product_name || "",
+          product_code: p.tb_product?.code || p.product_code || "",
           unit_id: p.unit_id,
+          unit_name: p.unit_name || "",
           tax_profile_id: p.tax_profile_id,
+          tax_profile_name: p.tax_profile?.name || p.tax_profile_name || "",
           tax_rate: p.tax_rate,
           moq_qty: p.moq_qty,
-          price: p.price,
-          lead_time_days: p.lead_time_days,
+          _action: "none" as const,
         })),
       });
     }
@@ -119,50 +180,77 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
         currencyId: initialData.currency?.id,
         effectivePeriod: getEffectivePeriod(initialData.effectivePeriod),
         pricelist_detail: (initialData.pricelist_detail || []).map((p: any) => ({
+          dbId: p.id, // ใช้ dbId แทน id
           sequence_no: p.sequence_no,
           product_id: p.product_id,
+          product_name: p.tb_product?.name || p.product_name || "",
+          product_code: p.tb_product?.code || p.product_code || "",
           unit_id: p.unit_id,
+          unit_name: p.unit_name || "",
           tax_profile_id: p.tax_profile_id,
+          tax_profile_name: p.tax_profile?.name || p.tax_profile_name || "",
           tax_rate: p.tax_rate,
           moq_qty: p.moq_qty,
-          price: p.price,
-          lead_time_days: p.lead_time_days,
+          _action: "none" as const,
         })),
       });
     }
     onViewMode();
   };
 
+  const formatDateToISO = (dateStr: string) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    return date.toISOString();
+  };
+
   const onSubmit = (data: PriceListFormData) => {
+    const items = data.pricelist_detail || [];
+
+    // แยก items ตาม action
+    const addItems = items
+      .filter((item) => item._action === "add")
+      .map((item, index) => ({
+        sequence_no: item.sequence_no ?? index + 1,
+        product_id: item.product_id,
+        unit_id: item.unit_id,
+        tax_profile_id: item.tax_profile_id,
+        tax_rate: item.tax_rate || 0,
+        moq_qty: Number(item.moq_qty) || 0,
+      }));
+
+    const updateItems = items
+      .filter((item) => item._action === "update" && item.dbId)
+      .map((item) => ({
+        id: item.dbId,
+        sequence_no: item.sequence_no,
+        product_id: item.product_id,
+        unit_id: item.unit_id,
+        tax_profile_id: item.tax_profile_id,
+        tax_rate: item.tax_rate || 0,
+        moq_qty: Number(item.moq_qty) || 0,
+      }));
+
+    const removeItems = items
+      .filter((item) => item._action === "remove" && item.dbId)
+      .map((item) => ({ id: item.dbId! }));
+
+    // สร้าง pricelist_detail object โดยใส่เฉพาะ array ที่มีข้อมูล
+    const pricelistDetail: Record<string, any> = {};
+    if (addItems.length > 0) pricelistDetail.add = addItems;
+    if (updateItems.length > 0) pricelistDetail.update = updateItems;
+    if (removeItems.length > 0) pricelistDetail.remove = removeItems;
+
     const payload = {
       vendor_id: data.vendorId,
       name: data.name,
       description: data.description,
       status: data.status,
       currency_id: data.currencyId,
-      from_date: data.effectivePeriod.from,
-      to_date: data.effectivePeriod.to,
+      effective_from_date: formatDateToISO(data.effectivePeriod.from),
+      effective_to_date: formatDateToISO(data.effectivePeriod.to),
       note: data.note,
-      pricelist_detail: {
-        create: (data.pricelist_detail || []).map((item) => {
-          const taxRate = item.tax_rate || 0;
-          const price = Number(item.price) || 0;
-          const taxAmt = (price * taxRate) / 100;
-
-          return {
-            sequence_no: item.sequence_no,
-            product_id: item.product_id,
-            unit_id: item.unit_id,
-            tax_profile_id: item.tax_profile_id,
-            tax_rate: taxRate,
-            moq_qty: Number(item.moq_qty) || 0,
-            price: price,
-            price_without_tax: price,
-            tax_amt: taxAmt,
-            lead_time_days: Number(item.lead_time_days) || 0,
-          };
-        }),
-      },
+      pricelist_detail: Object.keys(pricelistDetail).length > 0 ? pricelistDetail : undefined,
     };
 
     if (initialData?.id) {
@@ -193,8 +281,7 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
   };
 
   return (
-    <div className="space-y-4 mx-auto max-w-3xl">
-      {/* Header: Breadcrumb + Action buttons */}
+    <div className="space-y-4 mx-auto max-w-3xl pb-10">
       <div className="flex items-center justify-between">
         <PriceListBreadcrumb
           currentPage={isAddMode ? tPriceList("new_price_list") : initialData?.no}
@@ -269,11 +356,12 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
             </CardHeader>
             <Separator />
             <CardContent className="pt-4">
-              <ProductsSection form={form} priceList={initialData} isViewMode={false} />
+              <ProductsSection form={form} isViewMode={false} />
             </CardContent>
           </Card>
         </form>
       </Form>
+      <JsonViewer data={payloadPreview} title="API Payload Preview" />
     </div>
   );
 }

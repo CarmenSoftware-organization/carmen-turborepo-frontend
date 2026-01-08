@@ -77,7 +77,7 @@ export const useUpdatePriceList = (token: string, buCode: string, id: string) =>
         token,
         dataPriceList,
         "Failed to update price list",
-        "PUT"
+        "PATCH"
       );
     },
   });

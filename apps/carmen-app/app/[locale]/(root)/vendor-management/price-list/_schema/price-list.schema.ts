@@ -5,6 +5,23 @@ const dateRangeSchema = z.object({
   to: z.string().min(1, "End date is required"),
 });
 
+// Schema สำหรับ product detail item
+// ใช้ dbId แทน id เพราะ useFieldArray สร้าง internal id ให้ทุก field
+export const priceListDetailItemSchema = z.object({
+  dbId: z.string().optional(), // id จาก database (existing item)
+  sequence_no: z.number().optional(),
+  product_id: z.string().min(1, "Product is required"),
+  product_name: z.string().optional(), // สำหรับ display
+  product_code: z.string().optional(), // สำหรับ display
+  unit_id: z.string().optional(),
+  unit_name: z.string().optional(), // สำหรับ display
+  tax_profile_id: z.string().optional(),
+  tax_profile_name: z.string().optional(), // สำหรับ display
+  tax_rate: z.number().optional(),
+  moq_qty: z.number().min(0, "MOQ must be greater than or equal to 0").optional(),
+  _action: z.enum(["add", "update", "remove", "none"]).optional(), // track action
+});
+
 export const priceListSchema = z.object({
   no: z.string().optional(),
   name: z.string(),
@@ -15,20 +32,8 @@ export const priceListSchema = z.object({
   status: z.enum(["active", "draft", "submit", "inactive"]),
   currencyId: z.string().min(1, "Currency is required"),
   effectivePeriod: dateRangeSchema,
-  pricelist_detail: z
-    .array(
-      z.object({
-        sequence_no: z.number().optional(),
-        product_id: z.string().min(1, "Product is required"),
-        unit_id: z.string().optional(),
-        tax_profile_id: z.string().optional(),
-        tax_rate: z.number().optional(),
-        moq_qty: z.number().min(0, "MOQ must be greater than or equal to 0"),
-        price: z.number().min(0, "Price must be greater than or equal to 0"),
-        lead_time_days: z.number().min(0).optional(),
-      })
-    )
-    .optional(),
+  pricelist_detail: z.array(priceListDetailItemSchema).optional(),
 });
 
+export type PriceListDetailItem = z.infer<typeof priceListDetailItemSchema>;
 export type PriceListFormData = z.infer<typeof priceListSchema>;
