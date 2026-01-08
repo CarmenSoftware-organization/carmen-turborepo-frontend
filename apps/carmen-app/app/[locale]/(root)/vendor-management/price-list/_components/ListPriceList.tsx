@@ -123,13 +123,13 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
         size: 180,
       },
       {
-        accessorKey: "vender.name",
+        accessorKey: "vendor.name",
         header: ({ column }) => (
           <DataGridColumnHeader column={column} title={tTableHeader("vendor")} />
         ),
         cell: ({ row }) => {
           const priceList = row.original;
-          return <span>{priceList.vender?.name}</span>;
+          return <span>{priceList.vendor?.name}</span>;
         },
         enableSorting: false,
         size: 200,
@@ -276,7 +276,7 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
             <AlertDialogTitle>Delete Price List</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete this price list for &quot;
-              {selectedPriceList?.vender?.name}&quot;? This action cannot be undone.
+              {selectedPriceList?.vendor?.name}&quot;? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

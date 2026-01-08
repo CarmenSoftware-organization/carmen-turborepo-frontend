@@ -112,7 +112,7 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
                     {priceList.no}
                   </CardTitle>
                   <CardDescription className="text-sm mt-1 truncate">
-                    {priceList.vender?.name}
+                    {priceList.vendor?.name}
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
@@ -191,7 +191,7 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
           <AlertDialogHeader>
             <AlertDialogTitle>{tPriceList("delete_price_list")}</AlertDialogTitle>
             <AlertDialogDescription>
-              {tPriceList("delete_price_list_confirmation")} &quot;{selectedPriceList?.vender?.name}
+              {tPriceList("delete_price_list_confirmation")} &quot;{selectedPriceList?.vendor?.name}
               &quot;? {tCommon("action_cannot_be_undone")}
             </AlertDialogDescription>
           </AlertDialogHeader>

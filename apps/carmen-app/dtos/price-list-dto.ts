@@ -66,19 +66,18 @@ export interface PriceListDetailItemDto {
 }
 
 export interface BasePriceList {
-  id: string;
   no?: string;
   name: string;
   status: PlStatusType;
   description?: string;
-  vender: VendorDto;
+  vendor: VendorDto;
   currency: CurrencyDto;
   effectivePeriod: string;
   note?: string;
 }
 
 export interface PriceListDtoList extends BasePriceList {
-  // id is now in BasePriceList
+  id: string;
 }
 
 export interface PriceListDetailDto extends BasePriceList {
