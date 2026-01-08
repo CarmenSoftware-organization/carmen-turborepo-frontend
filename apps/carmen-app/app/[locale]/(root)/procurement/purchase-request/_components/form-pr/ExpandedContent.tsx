@@ -56,7 +56,11 @@ export default function ExpandedContent({
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
 
   // Consolidated inventory data fetching - single API call for both InventoryInfo and InventoryProgress
-  const { inventoryData, stockLevel, isLoading: isInventoryLoading } = useInventoryData({
+  const {
+    inventoryData,
+    stockLevel,
+    isLoading: isInventoryLoading,
+  } = useInventoryData({
     item,
     token,
     buCode,

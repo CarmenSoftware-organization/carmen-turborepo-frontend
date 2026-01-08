@@ -30,12 +30,11 @@ export function useInventoryData({
   const locationId = item.location_id || "";
   const productId = item.product_id || "";
 
-  const { data: onHandData, isLoading, error } = useOnHandOrder(
-    token,
-    buCode,
-    locationId,
-    productId
-  );
+  const {
+    data: onHandData,
+    isLoading,
+    error,
+  } = useOnHandOrder(token, buCode, locationId, productId);
 
   const inventoryData = useMemo((): InventoryData => {
     if (locationId && productId && onHandData) {
