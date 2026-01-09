@@ -167,7 +167,7 @@ export default function SignInForm() {
                 {form.formState.errors.root && (
                   <div className="text-error">{form.formState.errors.root.message}</div>
                 )}
-                <div className="submit-container">
+                <div className="submit-container flex gap-2">
                   <Button
                     type="submit"
                     className="submit-button"
@@ -179,6 +179,12 @@ export default function SignInForm() {
                 </div>
               </form>
             </Form>
+            <div className="flex items-center justify-end mt-4 text-xs">
+              <span className="mr-1">{t("notHaveAccount")}</span>
+              <Link href="/sign-up" className="text-primary hover:underline">
+                <span>{t("register")}</span>
+              </Link>
+            </div>
           </div>
         </div>
         <div className="form-footer">

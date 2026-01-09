@@ -235,6 +235,30 @@ export const useSignInMutation = () => {
   });
 };
 
+// Hook สำหรับ sign up mutation
+export const useSignUpMutation = () => {
+  return useMutation({
+    mutationFn: async (payload: {
+      username: string;
+      email: string;
+      password: string;
+      user_info: {
+        first_name: string;
+        middle_name: string;
+        last_name: string;
+        telephone: string;
+      };
+    }) => {
+      const url = `${backendApi}/api/auth/register`;
+      const response = await axios.post(url, payload);
+      return response.data;
+    },
+    onError: (error) => {
+      console.error("Failed to sign up:", error);
+    },
+  });
+};
+
 // Hook สำหรับจัดการ cache การ logout
 export const useAuthCache = () => {
   const queryClient = useQueryClient();
