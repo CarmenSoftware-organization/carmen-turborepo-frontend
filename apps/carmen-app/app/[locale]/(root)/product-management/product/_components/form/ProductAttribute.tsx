@@ -9,7 +9,7 @@ import {
 } from "@/components/form-custom/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import { Percent, Plus, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import NumberInput from "@/components/form-custom/NumberInput";
@@ -170,6 +170,8 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                   placeholder={tProducts("price_deviation_limit")}
                   disabled={isViewMode}
                   min={0}
+                  max={100}
+                  suffix={<Percent className="h-3 w-3" />}
                 />
               </FormControl>
               <FormMessage />
@@ -190,6 +192,8 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                   placeholder={tProducts("qty_deviation_limit")}
                   disabled={isViewMode}
                   min={0}
+                  max={100}
+                  suffix={<Percent className="h-3 w-3" />}
                 />
               </FormControl>
               <FormMessage />

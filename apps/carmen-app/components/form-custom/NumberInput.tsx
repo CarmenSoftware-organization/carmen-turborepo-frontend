@@ -14,6 +14,7 @@ interface InputNumberProps {
   readonly permission?: "view" | "edit" | "view-edit";
   readonly viewStage?: "enable" | "disable" | "hidden";
   readonly classNames?: string;
+  readonly suffix?: React.ReactNode;
 }
 
 export default function NumberInput({
@@ -28,6 +29,7 @@ export default function NumberInput({
   permission = "view-edit",
   viewStage = "enable",
   classNames,
+  suffix,
 }: InputNumberProps) {
   const [localValue, setLocalValue] = useState<string>(String(value || 0));
 
@@ -74,28 +76,33 @@ export default function NumberInput({
   const isHide = showContent || viewStage === "hidden";
 
   return (
-    <Input
-      type="number"
-      value={localValue}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      onKeyDown={handleKeyDown}
-      onClick={handleClick}
-      min={min}
-      max={max}
-      step={step}
-      disabled={
-        disabled ||
-        permission === "view" ||
-        viewStage === "disable" ||
-        showContent === false
-      }
-      placeholder={isHide ? placeholder : "••••••••"}
-      readOnly={!showContent}
-      className={cn(
-        "text-right [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]",
-        classNames
+    <div className="relative">
+      <Input
+        type="number"
+        value={localValue}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        onClick={handleClick}
+        min={min}
+        max={max}
+        step={step}
+        disabled={
+          disabled || permission === "view" || viewStage === "disable" || showContent === false
+        }
+        placeholder={isHide ? placeholder : "••••••••"}
+        readOnly={!showContent}
+        className={cn(
+          "text-right [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]",
+          suffix && "pr-7",
+          classNames
+        )}
+      />
+      {suffix && (
+        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+          <span className="text-gray-500 sm:text-sm">{suffix}</span>
+        </div>
       )}
-    />
+    </div>
   );
 }
