@@ -15,9 +15,10 @@ import UnitDialog from "@/components/shared/UnitDialog";
 import { UnitDto } from "@/dtos/unit.dto";
 import { formType } from "@/dtos/form.dto";
 import { PropsLookup } from "@/dtos/lookup.dto";
-import { useUnitQuery } from "@/hooks/use-unit";
+import { useUnitMutation, useUnitQuery } from "@/hooks/use-unit";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
+import { toastSuccess } from "../ui-custom/Toast";
 
 export default function LookupUnit({
   value,
@@ -27,14 +28,17 @@ export default function LookupUnit({
   classNames,
 }: Readonly<PropsLookup>) {
   const tCommon = useTranslations("Common");
+  const tUnit = useTranslations("Unit");
   const { token, buCode } = useAuth();
-  const { units, isLoading } = useUnitQuery({
+  const { units, isLoading, refetch } = useUnitQuery({
     token,
     buCode,
     params: {
       perpage: -1,
     },
   });
+
+  const { mutate: createUnit } = useUnitMutation(token, buCode);
 
   const [open, setOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -47,8 +51,20 @@ export default function LookupUnit({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleAddUnit = (data: any) => {
-    onValueChange(data.id);
-    setDialogOpen(false);
+    createUnit(
+      {
+        ...data,
+      },
+      {
+        onSuccess: async (res: any) => {
+          if (res?.data?.id) {
+            await refetch();
+            onValueChange(res.data.id);
+            toastSuccess({ message: tUnit("add_success") });
+          }
+        },
+      }
+    );
   };
 
   const handleOpenDialog = () => {
