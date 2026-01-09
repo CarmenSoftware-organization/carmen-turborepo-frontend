@@ -50,7 +50,7 @@ export default function BasicInfo({
   const { watch, setValue } = useFormContext<ProductFormValues>();
 
   const status = watch("product_status_type");
-  const productItemGroupId = watch("product_info.product_item_group_id");
+  const productItemGroupId = watch("product_item_group_id");
   const hasInitialized = useRef(false);
 
   const { itemGroups } = useItemGroup();
@@ -102,7 +102,7 @@ export default function BasicInfo({
 
   const watchedFields = useWatch({
     control,
-    name: ["name", "code", "local_name", "inventory_unit_id", "product_info.product_item_group_id"],
+    name: ["name", "code", "local_name", "inventory_unit_id", "product_item_group_id"],
   });
 
   const orderUnits = watch("order_units");
@@ -284,7 +284,7 @@ export default function BasicInfo({
             <div className="space-y-2">
               <FormField
                 control={control}
-                name="product_info.product_item_group_id"
+                name="product_item_group_id"
                 required
                 render={({ field }) => (
                   <FormItem className="col-span-full">

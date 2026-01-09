@@ -6,12 +6,12 @@ export const productFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   code: z.string().min(1, "Code is required"),
   inventory_unit_id: z.string().uuid(),
+  product_item_group_id: z.string().uuid(),
   product_status_type: z.literal("active"),
   local_name: z.string().min(1, "Local name is required"),
   description: z.string().optional(),
   product_info: z.object({
     id: z.union([z.string().uuid(), z.literal("")]).optional(),
-    product_item_group_id: z.string().uuid(),
     is_used_in_recipe: z.boolean(),
     is_sold_directly: z.boolean(),
     barcode: z.string().optional(),

@@ -27,11 +27,11 @@ export interface ProductFormValues {
   code: string;
   inventory_unit_id: string;
   product_status_type: "active";
+  product_item_group_id: string;
   local_name: string;
   description?: string;
   product_info: {
     id?: string | "";
-    product_item_group_id: string;
     is_used_in_recipe: boolean;
     is_sold_directly: boolean;
     barcode?: string;

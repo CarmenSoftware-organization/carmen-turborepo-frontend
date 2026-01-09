@@ -46,8 +46,8 @@ export default function FormProduct({ mode, initialValues }: Props) {
         description: "",
         inventory_unit_id: "",
         product_status_type: "active" as const,
+        product_item_group_id: "",
         product_info: {
-          product_item_group_id: "",
           is_ingredients: false,
           price: 0,
           tax_type: "none" as const,
@@ -99,23 +99,42 @@ export default function FormProduct({ mode, initialValues }: Props) {
       local_name: initialValues.local_name ?? "",
       description: initialValues.description ?? "",
       inventory_unit_id: initialValues.inventory_unit?.id ?? "",
+      product_item_group_id:
+        initialValues.product_item_group?.id ?? (initialValues as any).product_item_group_id ?? "",
       product_status_type: "active",
       product_info: {
         id: initialValues.product_info?.id ?? "",
-        product_item_group_id: initialValues.product_item_group?.id ?? "",
         is_ingredients: initialValues.product_info?.is_ingredients ?? false,
-        price: initialValues.product_info?.price ?? 0,
+        price: initialValues.product_info?.price ?? (initialValues as any).price ?? 0,
         tax_type:
-          (initialValues.product_info?.tax_type as "none" | "included" | "excluded") ?? "none",
-        tax_profile_id: initialValues.product_info?.tax_profile_id ?? "",
-        tax_profile_name: initialValues.product_info?.tax_profile_name ?? "",
-        tax_rate: initialValues.product_info?.tax_rate ?? 0,
-        price_deviation_limit: initialValues.product_info?.price_deviation_limit ?? 0,
-        qty_deviation_limit: initialValues.product_info?.qty_deviation_limit ?? 0,
-        is_used_in_recipe: initialValues.product_info?.is_used_in_recipe ?? false,
-        is_sold_directly: initialValues.product_info?.is_sold_directly ?? false,
-        barcode: initialValues.product_info?.barcode ?? "",
-        info: initialValues.product_info?.info ?? [],
+          (initialValues.product_info?.tax_type as "none" | "included" | "excluded") ??
+          (initialValues as any).tax_type ??
+          "none",
+        tax_profile_id:
+          initialValues.product_info?.tax_profile_id ?? (initialValues as any).tax_profile_id ?? "",
+        tax_profile_name:
+          initialValues.product_info?.tax_profile_name ??
+          (initialValues as any).tax_profile_name ??
+          "",
+        tax_rate: initialValues.product_info?.tax_rate ?? (initialValues as any).tax_rate ?? 0,
+        price_deviation_limit:
+          initialValues.product_info?.price_deviation_limit ??
+          (initialValues as any).price_deviation_limit ??
+          0,
+        qty_deviation_limit:
+          initialValues.product_info?.qty_deviation_limit ??
+          (initialValues as any).qty_deviation_limit ??
+          0,
+        is_used_in_recipe:
+          initialValues.product_info?.is_used_in_recipe ??
+          (initialValues as any).is_used_in_recipe ??
+          false,
+        is_sold_directly:
+          initialValues.product_info?.is_sold_directly ??
+          (initialValues as any).is_sold_directly ??
+          false,
+        barcode: initialValues.product_info?.barcode ?? (initialValues as any).barcode ?? "",
+        info: initialValues.product_info?.info ?? (initialValues as any).info ?? [],
       },
       locations: {
         data: Array.isArray(initialValues.locations)
