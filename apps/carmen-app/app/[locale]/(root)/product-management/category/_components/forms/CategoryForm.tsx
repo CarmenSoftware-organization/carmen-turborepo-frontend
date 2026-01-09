@@ -28,6 +28,8 @@ import {
 } from "@/components/form-custom/form";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import LookupTaxProfile from "@/components/lookup/LookupTaxProfile";
+import NumberInput from "@/components/form-custom/NumberInput";
+import { Percent } from "lucide-react";
 interface CategoryFormProps {
   readonly mode: formType;
   readonly selectedNode?: CategoryNode;
@@ -39,7 +41,7 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
   const tCategory = useTranslations("Category");
   const tCommon = useTranslations("Common");
   const tAction = useTranslations("Action");
-
+  const tProducts = useTranslations("Products");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingData, setPendingData] = useState<CategoryDto | null>(null);
 
@@ -133,16 +135,12 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
                 <FormItem>
                   <FormLabel>{tCategory("price_deviation_limit")}</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="Enter Price Deviation Limit"
-                      {...field}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        field.onChange(value === "" ? "" : Number(value));
-                      }}
+                    <NumberInput
+                      value={field.value ?? 0}
+                      onChange={(value) => field.onChange(value)}
+                      min={0}
+                      max={100}
+                      suffix={<Percent className="h-3 w-3" />}
                     />
                   </FormControl>
                   <FormMessage />
@@ -157,16 +155,12 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
                 <FormItem>
                   <FormLabel>{tCategory("qty_deviation_limit")}</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      step="1"
-                      min="0"
-                      placeholder="Enter Quantity Deviation Limit"
-                      {...field}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        field.onChange(value === "" ? "" : Number(value));
-                      }}
+                    <NumberInput
+                      value={field.value ?? 0}
+                      onChange={(value) => field.onChange(value)}
+                      min={0}
+                      max={100}
+                      suffix={<Percent className="h-3 w-3" />}
                     />
                   </FormControl>
                   <FormMessage />

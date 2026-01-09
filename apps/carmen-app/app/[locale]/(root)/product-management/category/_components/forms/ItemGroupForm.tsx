@@ -18,6 +18,8 @@ import { useEffect, useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import LookupTaxProfile from "@/components/lookup/LookupTaxProfile";
+import NumberInput from "@/components/form-custom/NumberInput";
+import { Percent } from "lucide-react";
 interface ItemGroupFormProps {
   readonly mode: formType;
   readonly selectedNode?: CategoryNode;
@@ -143,16 +145,12 @@ export function ItemGroupForm({
               <FormItem>
                 <FormLabel>{tCategory("price_deviation_limit")}</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="Enter Price Deviation Limit"
-                    {...field}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      field.onChange(value === "" ? "" : Number(value));
-                    }}
+                  <NumberInput
+                    value={field.value ?? 0}
+                    onChange={(value) => field.onChange(value)}
+                    min={0}
+                    max={100}
+                    suffix={<Percent className="h-3 w-3" />}
                   />
                 </FormControl>
                 <FormMessage />
@@ -167,16 +165,12 @@ export function ItemGroupForm({
               <FormItem>
                 <FormLabel>{tCategory("qty_deviation_limit")}</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    step="1"
-                    min="0"
-                    placeholder="Enter Quantity Deviation Limit"
-                    {...field}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      field.onChange(value === "" ? "" : Number(value));
-                    }}
+                  <NumberInput
+                    value={field.value ?? 0}
+                    onChange={(value) => field.onChange(value)}
+                    min={0}
+                    max={100}
+                    suffix={<Percent className="h-3 w-3" />}
                   />
                 </FormControl>
                 <FormMessage />
