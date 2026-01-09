@@ -51,6 +51,8 @@ export default function FormProduct({ mode, initialValues }: Props) {
           is_ingredients: false,
           price: 0,
           tax_type: "none" as const,
+          tax_profile_id: "",
+          tax_profile_name: "",
           tax_rate: 0,
           price_deviation_limit: 0,
           qty_deviation_limit: 0,
@@ -105,6 +107,8 @@ export default function FormProduct({ mode, initialValues }: Props) {
         price: initialValues.product_info?.price ?? 0,
         tax_type:
           (initialValues.product_info?.tax_type as "none" | "included" | "excluded") ?? "none",
+        tax_profile_id: initialValues.product_info?.tax_profile_id ?? "",
+        tax_profile_name: initialValues.product_info?.tax_profile_name ?? "",
         tax_rate: initialValues.product_info?.tax_rate ?? 0,
         price_deviation_limit: initialValues.product_info?.price_deviation_limit ?? 0,
         qty_deviation_limit: initialValues.product_info?.qty_deviation_limit ?? 0,

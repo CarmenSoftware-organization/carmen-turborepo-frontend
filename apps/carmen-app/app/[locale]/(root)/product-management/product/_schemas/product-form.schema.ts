@@ -9,9 +9,6 @@ export const productFormSchema = z.object({
   product_status_type: z.literal("active"),
   local_name: z.string().min(1, "Local name is required"),
   description: z.string().optional(),
-  tax_profile_id: z.string().optional(),
-  tax_profile_name: z.string().optional(),
-  tax_rate: z.number().optional(),
   product_info: z.object({
     id: z.union([z.string().uuid(), z.literal("")]).optional(),
     product_item_group_id: z.string().uuid(),
@@ -24,6 +21,8 @@ export const productFormSchema = z.object({
     price: z.number().optional(),
     tax_type: z.enum(["none", "included", "excluded"]).default("none"),
     tax_rate: z.number().optional(),
+    tax_profile_id: z.string(),
+    tax_profile_name: z.string(),
     info: z.array(
       z.object({
         label: z.string(),

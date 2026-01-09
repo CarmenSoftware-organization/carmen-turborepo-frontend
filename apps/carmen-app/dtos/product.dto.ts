@@ -29,9 +29,6 @@ export interface ProductFormValues {
   product_status_type: "active";
   local_name: string;
   description?: string;
-  tax_profile_id?: string;
-  tax_profile_name?: string;
-  tax_rate?: number;
   product_info: {
     id?: string | "";
     product_item_group_id: string;
@@ -43,6 +40,9 @@ export interface ProductFormValues {
     is_ingredients: boolean;
     price?: number;
     tax_type: "none" | "included" | "excluded";
+    tax_rate?: number;
+    tax_profile_id: string;
+    tax_profile_name: string;
     info: Array<{
       label: string;
       value: string;
@@ -151,15 +151,14 @@ export interface ProductInitialValues {
   description?: string;
   inventory_unit?: { id: string };
   product_status_type?: "active";
-  tax_profile_id?: string;
-  tax_profile_name?: string;
-  tax_rate?: number;
   product_info?: {
     id?: string;
     is_ingredients?: boolean;
     price?: number;
     tax_type?: "none" | "included" | "excluded";
     tax_rate?: number;
+    tax_profile_id?: string;
+    tax_profile_name?: string;
     price_deviation_limit?: number;
     qty_deviation_limit?: number;
     is_used_in_recipe?: boolean;
@@ -287,9 +286,6 @@ export interface ProductIdDto {
   local_name: string;
   description: string;
   product_status_type: string;
-  tax_profile_id?: string;
-  tax_profile_name?: string;
-  tax_rate?: number;
   inventory_unit: {
     id: string;
     name: string;

@@ -6,7 +6,7 @@ import { useMemo } from "react";
 export default function DashboardComponent() {
   const { user } = useAuth();
 
-  const userFullName = user?.user_info.firstname + " " + user?.user_info.lastname;
+  const userFullName = user?.data.user_info.firstname + " " + user?.data.user_info.lastname;
 
   const greeting = useMemo(() => {
     const hour = new Date().getHours();

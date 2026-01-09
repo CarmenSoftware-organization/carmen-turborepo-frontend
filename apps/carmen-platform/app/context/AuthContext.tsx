@@ -59,10 +59,12 @@ interface BusinessUnit {
 }
 
 interface User {
-  id: string;
-  email: string;
-  user_info: UserInfo;
-  business_unit: BusinessUnit[];
+  data: {
+    id: string;
+    email: string;
+    user_info: UserInfo;
+    business_unit: BusinessUnit[];
+  };
 }
 
 interface LoginCredentials {

@@ -308,9 +308,15 @@ export default function BasicInfo({
                             );
 
                             if (selectedItemGroup.tax_profile_id) {
-                              setValue("tax_profile_id", selectedItemGroup.tax_profile_id);
-                              setValue("tax_profile_name", selectedItemGroup.tax_profile_name);
-                              setValue("tax_rate", selectedItemGroup.tax_rate ?? 0);
+                              setValue(
+                                "product_info.tax_profile_id",
+                                selectedItemGroup.tax_profile_id
+                              );
+                              setValue(
+                                "product_info.tax_profile_name",
+                                selectedItemGroup.tax_profile_name
+                              );
+                              setValue("product_info.tax_rate", selectedItemGroup.tax_rate ?? 0);
                             }
                           }
                         }}
@@ -420,18 +426,18 @@ export default function BasicInfo({
             <div className="space-y-2">
               <FormField
                 control={control}
-                name="tax_profile_id"
+                name="product_info.tax_profile_id"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{tProducts("tax_profile")}</FormLabel>
                     <FormControl>
                       <LookupTaxProfile
                         value={field.value}
-                        displayName={watch("tax_profile_name")}
+                        displayName={watch("product_info.tax_profile_name")}
                         onValueChange={field.onChange}
                         onSelectObject={(selected) => {
-                          setValue("tax_profile_name", selected.name);
-                          setValue("tax_rate", Number(selected.tax_rate));
+                          setValue("product_info.tax_profile_name", selected.name);
+                          setValue("product_info.tax_rate", Number(selected.tax_rate));
                         }}
                       />
                     </FormControl>
