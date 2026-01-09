@@ -323,7 +323,7 @@ export default function FormProduct({ mode, initialValues }: Props) {
   }, []);
 
   return (
-    <div className="max-w-3xl mx-auto pb-10">
+    <div className="max-w-4xl mx-auto pb-10">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-2">
           <BasicInfo

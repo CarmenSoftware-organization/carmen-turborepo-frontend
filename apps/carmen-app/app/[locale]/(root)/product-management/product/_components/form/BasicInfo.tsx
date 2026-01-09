@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useEffect, useRef, useMemo } from "react";
 import { useCategoryByItemGroupQuery } from "@/hooks/use-product";
 import { useItemGroup } from "@/hooks/use-item-group";
-import { ItemGroupDto } from "@/dtos/category.dto";
+import { ItemGroupDto, itemGroupSelectDto } from "@/dtos/category.dto";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Save, X, Edit, Info } from "lucide-react";
@@ -52,8 +52,6 @@ export default function BasicInfo({
   const status = watch("product_status_type");
   const productItemGroupId = watch("product_item_group_id");
   const hasInitialized = useRef(false);
-
-  const { itemGroups } = useItemGroup();
 
   useEffect(() => {
     if (!hasInitialized.current) {
@@ -107,19 +105,91 @@ export default function BasicInfo({
 
   const orderUnits = watch("order_units");
 
-  const defaultUnit = useMemo(
-    () =>
-      Array.isArray(orderUnits)
-        ? orderUnits.find((unit) => unit.is_default === true)
-        : orderUnits?.data?.find((unit) => unit.is_default === true),
-    [orderUnits]
-  );
+  const defaultUnit = useMemo(() => {
+    if (!orderUnits) return undefined;
+
+    let activeUnits: any[] = [];
+
+    // 1. Collect all potential active units
+    // From Added
+    if (orderUnits.add) {
+      activeUnits = [...activeUnits, ...orderUnits.add];
+    }
+
+    // From Data (excluding removed)
+    if (orderUnits.data) {
+      const existingActive = orderUnits.data
+        .filter((item) => !orderUnits.remove?.some((r) => r.product_order_unit_id === item.id))
+        .map((item) => {
+          // Merge with updates if any
+          const updated = orderUnits.update?.find((u) => u.product_order_unit_id === item.id);
+          return updated ? { ...item, ...updated } : item;
+        });
+      activeUnits = [...activeUnits, ...existingActive];
+    }
+
+    // 2. Try to find explicit default
+    // eslint-disable-next-line eqeqeq
+    const explicitDefault = activeUnits.find((u) => u.is_default == true);
+    if (explicitDefault) return explicitDefault;
+
+    // 3. Fallback: If there is exactly one active unit, treat it as default
+    // if (activeUnits.length === 1) {
+    //   return activeUnits[0];
+    // }
+
+    return undefined;
+  }, [orderUnits]);
 
   const isFormValid = useMemo(() => {
     const [name, code, localName, inventoryUnitId, itemGroupId] = watchedFields;
 
     return Boolean(name && code && localName && inventoryUnitId && itemGroupId);
   }, [watchedFields]);
+
+  const handleItemGroupChange = (selectedItemGroup: itemGroupSelectDto) => {
+    if (!selectedItemGroup) return;
+
+    if (selectedItemGroup.category) {
+      setValue(
+        "product_category",
+        {
+          id: selectedItemGroup.category.id,
+          name: selectedItemGroup.category.name,
+        },
+        { shouldValidate: false }
+      );
+    }
+    if (selectedItemGroup.sub_category) {
+      setValue(
+        "product_sub_category",
+        {
+          id: selectedItemGroup.sub_category.id,
+          name: selectedItemGroup.sub_category.name,
+        },
+        { shouldValidate: false }
+      );
+    }
+
+    setValue("product_info.price_deviation_limit", selectedItemGroup.price_deviation_limit ?? 0);
+    setValue("product_info.qty_deviation_limit", selectedItemGroup.qty_deviation_limit ?? 0);
+    setValue("product_info.is_used_in_recipe", selectedItemGroup.is_used_in_recipe ?? false);
+    setValue("product_info.is_sold_directly", selectedItemGroup.is_sold_directly ?? false);
+
+    if (selectedItemGroup.tax_profile_id) {
+      setValue("product_info.tax_profile_id", selectedItemGroup.tax_profile_id);
+      setValue("product_info.tax_profile_name", selectedItemGroup.tax_profile_name ?? "");
+      setValue("product_info.tax_rate", Number(selectedItemGroup.tax_rate ?? 0));
+    }
+    setValue(
+      "product_item_group",
+      {
+        id: selectedItemGroup.id,
+        name: selectedItemGroup.name,
+      },
+      { shouldValidate: false }
+    );
+  };
 
   const onBack = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -294,32 +364,8 @@ export default function BasicInfo({
                         value={field.value}
                         onValueChange={(value) => {
                           field.onChange(value);
-                          const selectedItemGroup = itemGroups.find(
-                            (ig: ItemGroupDto) => ig.id === value
-                          );
-                          if (selectedItemGroup) {
-                            setValue(
-                              "product_item_group",
-                              {
-                                id: selectedItemGroup.id,
-                                name: selectedItemGroup.name,
-                              },
-                              { shouldValidate: false }
-                            );
-
-                            if (selectedItemGroup.tax_profile_id) {
-                              setValue(
-                                "product_info.tax_profile_id",
-                                selectedItemGroup.tax_profile_id
-                              );
-                              setValue(
-                                "product_info.tax_profile_name",
-                                selectedItemGroup.tax_profile_name
-                              );
-                              setValue("product_info.tax_rate", selectedItemGroup.tax_rate ?? 0);
-                            }
-                          }
                         }}
+                        onSelectObject={handleItemGroupChange}
                         disabled={currentMode === formType.VIEW}
                         classNames={cn(currentMode === formType.VIEW && "bg-muted")}
                         placeholder={tProducts("item_group")}
@@ -407,6 +453,31 @@ export default function BasicInfo({
               />
             </div>
             <div className="space-y-2">
+              <FormField
+                control={control}
+                name="product_info.tax_profile_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{tProducts("tax_profile")}</FormLabel>
+                    <FormControl>
+                      <LookupTaxProfile
+                        value={field.value}
+                        displayName={watch("product_info.tax_profile_name")}
+                        onValueChange={field.onChange}
+                        onSelectObject={(selected) => {
+                          setValue("product_info.tax_profile_name", selected.name);
+                          setValue("product_info.tax_rate", Number(selected.tax_rate));
+                        }}
+                        disabled={currentMode === formType.VIEW}
+                        classNames={cn(currentMode === formType.VIEW && "bg-muted")}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="space-y-2">
               <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {tProducts("order_unit")}
               </Label>
@@ -423,29 +494,7 @@ export default function BasicInfo({
                 )}
               </div>
             </div>
-            <div className="space-y-2">
-              <FormField
-                control={control}
-                name="product_info.tax_profile_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{tProducts("tax_profile")}</FormLabel>
-                    <FormControl>
-                      <LookupTaxProfile
-                        value={field.value}
-                        displayName={watch("product_info.tax_profile_name")}
-                        onValueChange={field.onChange}
-                        onSelectObject={(selected) => {
-                          setValue("product_info.tax_profile_name", selected.name);
-                          setValue("product_info.tax_rate", Number(selected.tax_rate));
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+
             <FormField
               control={control}
               name="description"

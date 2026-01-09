@@ -13,16 +13,22 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useItemGroup } from "@/hooks/use-item-group";
 import { PropsLookup } from "@/dtos/lookup.dto";
+import { itemGroupSelectDto } from "@/dtos/category.dto";
+
+interface Props extends PropsLookup {
+  readonly onSelectObject?: (value: itemGroupSelectDto) => void;
+}
 
 export default function LookupItemGroup({
   value,
   onValueChange,
+  onSelectObject,
   placeholder = "Select product item group",
   disabled = false,
   classNames,
-}: Readonly<PropsLookup>) {
-  // เรียกใช้ hook โดยเฉพาะเจาะจงแต่ละตัวที่ต้องการ
+}: Readonly<Props>) {
   const { itemGroups, isPending: isLoading } = useItemGroup();
+
   const [open, setOpen] = useState(false);
 
   // ใช้ useMemo เพื่อหาชื่อกลุ่มที่เลือก และป้องกันการคำนวณซ้ำ
@@ -31,16 +37,6 @@ export default function LookupItemGroup({
     const found = itemGroups.find((group) => group?.id === value);
     return found?.name ?? null;
   }, [value, itemGroups]);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const filterItemGroup = itemGroups?.map((item: any) => ({
-    id: item.id,
-    name: item.name,
-    code: item.code,
-    is_active: item.is_active,
-    category: item.category,
-    sub_category: item.sub_category,
-  }));
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -73,14 +69,16 @@ export default function LookupItemGroup({
               <>
                 <CommandEmpty>No item group found.</CommandEmpty>
                 <CommandGroup>
-                  {filterItemGroup && filterItemGroup.length > 0 ? (
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    filterItemGroup.map((group: any) => (
+                  {itemGroups && itemGroups.length > 0 ? (
+                    itemGroups.map((group: itemGroupSelectDto) => (
                       <CommandItem
                         key={group.id}
                         value={group.name}
                         onSelect={() => {
                           onValueChange(group.id);
+                          if (onSelectObject) {
+                            onSelectObject(group);
+                          }
                           setOpen(false);
                         }}
                       >

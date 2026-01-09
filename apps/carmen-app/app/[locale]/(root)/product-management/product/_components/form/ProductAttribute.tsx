@@ -136,7 +136,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols- gap-4">
         <FormField
           control={control}
           name="product_info.price"

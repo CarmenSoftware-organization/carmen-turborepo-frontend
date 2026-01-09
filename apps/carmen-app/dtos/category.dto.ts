@@ -98,6 +98,30 @@ export interface ItemGroupFormData {
   tax_rate?: number;
 }
 
+export type itemGroupSelectDto = {
+  id: string;
+  product_subcategory_id: string;
+  code: string;
+  name: string;
+  description: string;
+  price_deviation_limit: number;
+  qty_deviation_limit: number;
+  is_used_in_recipe: boolean;
+  is_sold_directly: boolean;
+  is_active: boolean;
+
+  tax_profile_id: string | null;
+  tax_profile_name: string | null;
+  tax_rate: string;
+
+  note: string | null;
+
+  info: Record<string, any>;
+  dimension: Record<string, any>;
+  sub_category: SubCategoryDto;
+  category: CategoryDto;
+};
+
 // Tree node type enum
 export enum NODE_TYPE {
   CATEGORY = "category",
