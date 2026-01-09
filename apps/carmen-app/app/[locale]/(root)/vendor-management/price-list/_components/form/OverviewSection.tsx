@@ -111,7 +111,7 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
                   <Input
                     disabled
                     placeholder={tPriceList("select_vendor")}
-                    value={priceList?.vender?.name || "-"}
+                    value={priceList?.vendor?.name || "-"}
                   />
                 ) : (
                   <VendorLookup onValueChange={field.onChange} value={field.value} />

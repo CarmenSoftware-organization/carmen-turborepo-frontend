@@ -121,10 +121,11 @@ export default function TreeNode({
           )}
 
           <div className="flex-1">
-            <div className="fxr-c gap-2 items-baseline">
+            <div className="fxr-c gap-1 items-baseline">
               <Badge variant="outline" className="text-xs bg-muted border-none">
                 {highlightText(node.code, search || "")}
               </Badge>
+              {"-"}
               <p className="font-medium">{highlightText(node.name, search || "")}</p>
               <p className="text-xs text-muted-foreground">{getTypeLabel(node.type)}</p>
             </div>
