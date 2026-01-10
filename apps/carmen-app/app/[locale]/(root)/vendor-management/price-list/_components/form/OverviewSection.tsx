@@ -21,11 +21,12 @@ import { cn } from "@/lib/utils";
 import type { PriceListFormData } from "../../_schema/price-list.schema";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
 import VendorLookup from "@/components/lookup/LookupVendor";
-import { PriceListDetailDto } from "@/dtos/price-list-dto";
-
 interface OverviewSectionProps {
   form: UseFormReturn<PriceListFormData>;
-  priceList?: PriceListDetailDto;
+  priceList?: {
+    vendor?: { name: string };
+    currency?: { name: string };
+  };
   isViewMode: boolean;
 }
 

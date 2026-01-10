@@ -48,6 +48,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
     token,
     buCode,
   });
+
   const { getProductName } = useProductQuery({
     token,
     buCode,

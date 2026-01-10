@@ -14,9 +14,10 @@ import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { PriceListBreadcrumb, PriceListCardHeader, ProductsCardHeader } from "../shared";
+import { PricelistDetail } from "../../_schema/pl.dto";
 
 interface PriceListViewProps {
-  readonly initialData?: any;
+  readonly initialData?: PricelistDetail;
   readonly onEditMode: () => void;
 }
 
@@ -26,7 +27,7 @@ export default function PriceListView({ initialData, onEditMode }: PriceListView
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
 
-  const rawProducts = initialData?.pricelist_detail || initialData?.products || [];
+  const rawProducts = initialData?.pricelist_detail || [];
 
   interface ProductViewItem {
     id: string;
@@ -38,12 +39,12 @@ export default function PriceListView({ initialData, onEditMode }: PriceListView
   }
 
   const products: ProductViewItem[] = useMemo(() => {
-    return rawProducts.map((p: any) => ({
+    return rawProducts.map((p) => ({
       id: p.id,
-      product_code: p.product_code || p.tb_product?.code || "",
-      product_name: p.product_name || p.tb_product?.name || "",
-      unit_name: p.unit_name || p.tb_unit?.name || "-",
-      tax_profile_name: p.tax_profile_name || p.tb_tax_profile?.name || "-",
+      product_code: "", // Not available in payload
+      product_name: p.product_name || "",
+      unit_name: p.unit_name || "-",
+      tax_profile_name: p.tax_profile?.rate !== undefined ? `${p.tax_profile.rate}%` : "-",
       moq_qty: p.moq_qty ?? 0,
     }));
   }, [rawProducts]);
@@ -63,7 +64,8 @@ export default function PriceListView({ initialData, onEditMode }: PriceListView
         header: "Product",
         cell: ({ row }) => (
           <span>
-            {row.original.product_code} - {row.original.product_name}
+            {row.original.product_code ? `${row.original.product_code} - ` : ""}
+            {row.original.product_name}
           </span>
         ),
         size: 250,
@@ -133,7 +135,6 @@ export default function PriceListView({ initialData, onEditMode }: PriceListView
 
   return (
     <div className="space-y-4 mx-auto max-w-3xl">
-      {/* Header: Breadcrumb + Edit button */}
       <div className="flex items-center justify-between">
         <PriceListBreadcrumb currentPage={initialData.no || initialData.name} />
         <TooltipProvider>
@@ -162,7 +163,6 @@ export default function PriceListView({ initialData, onEditMode }: PriceListView
           <PriceListCardHeader
             name={initialData.name}
             no={initialData.no}
-            lastUpdate={initialData.lastUpdate}
             status={initialData.status}
             dateFormat={dateFormat}
           />
@@ -175,7 +175,7 @@ export default function PriceListView({ initialData, onEditMode }: PriceListView
                 <Building2 className="h-3 w-3" />
                 {tPriceList("vendor")}
               </dt>
-              <dd className="text-sm font-medium">{initialData.vender?.name || "-"}</dd>
+              <dd className="text-sm font-medium">{initialData.vendor?.name || "-"}</dd>
             </div>
 
             {/* Currency */}
@@ -208,12 +208,15 @@ export default function PriceListView({ initialData, onEditMode }: PriceListView
                   }
 
                   // Case: array [date1, date2]
-                  if (Array.isArray(period) && period.length === 2) {
-                    return `${formatDate(new Date(period[0]), dateFormat || "yyyy-MM-dd")} - ${formatDate(new Date(period[1]), dateFormat || "yyyy-MM-dd")}`;
+                  if (Array.isArray(period)) {
+                    if (period.length === 2) {
+                      return `${formatDate(new Date(period[0]), dateFormat || "yyyy-MM-dd")} - ${formatDate(new Date(period[1]), dateFormat || "yyyy-MM-dd")}`;
+                    }
+                    return "-";
                   }
 
                   // Case: object { from, to }
-                  if (period.from && period.to) {
+                  if (typeof period === "object" && "from" in period && "to" in period) {
                     return `${formatDate(new Date(period.from), dateFormat || "yyyy-MM-dd")} - ${formatDate(new Date(period.to), dateFormat || "yyyy-MM-dd")}`;
                   }
 
@@ -222,12 +225,12 @@ export default function PriceListView({ initialData, onEditMode }: PriceListView
               </dd>
             </div>
 
-            <div className="space-y-1">
+            {/* <div className="space-y-1">
               <dt className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 {tPriceList("rfp")}
               </dt>
               <dd className="text-sm">{initialData.rfp?.name || "-"}</dd>
-            </div>
+            </div> */}
 
             <div className="space-y-1 sm:col-span-2">
               <dt className="text-xs font-medium text-muted-foreground uppercase tracking-wide">

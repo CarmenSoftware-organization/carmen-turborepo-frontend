@@ -20,12 +20,27 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Separator } from "@/components/ui/separator";
 import { PriceListBreadcrumb, ProductsCardHeader } from "../shared";
 import JsonViewer from "@/components/JsonViewer";
+import { PricelistDetail } from "../../_schema/pl.dto";
 
 interface PriceListFormProps {
-  readonly initialData?: any;
+  readonly initialData?: PricelistDetail;
   readonly mode: formType.ADD | formType.EDIT;
   readonly onViewMode: () => void;
 }
+
+const getEffectivePeriod = (period: any): { from: string; to: string } => {
+  if (typeof period === "string") {
+    const [from, to] = period.split(" - ");
+    return { from: from || "", to: to || "" };
+  }
+  if (Array.isArray(period) && period.length === 2) {
+    return { from: period[0] || "", to: period[1] || "" };
+  }
+  if (typeof period === "object" && period !== null && "from" in period && "to" in period) {
+    return { from: String(period.from), to: String(period.to) };
+  }
+  return { from: "", to: "" };
+};
 
 export default function PriceListForm({ initialData, mode, onViewMode }: PriceListFormProps) {
   const router = useRouter();
@@ -118,35 +133,27 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
 
   useEffect(() => {
     if (initialData) {
-      const getEffectivePeriod = (period: any) => {
-        if (typeof period === "string") {
-          const [from, to] = period.split(" - ");
-          return { from: from || "", to: to || "" };
-        }
-        return period || { from: "", to: "" };
-      };
-
       form.reset({
         no: initialData.no || "",
         name: initialData.name || "",
-        vendorId: initialData.vender?.id,
-        rfpId: initialData.rfp?.id || "",
+        vendorId: initialData.vendor?.id,
+        // rfpId: initialData.rfp?.id || "",
         description: initialData.description || "",
         note: initialData.note || "",
-        status: initialData.status,
+        status: initialData.status as PriceListFormData["status"],
         currencyId: initialData.currency?.id,
         effectivePeriod: getEffectivePeriod(initialData.effectivePeriod),
-        pricelist_detail: (initialData.pricelist_detail || []).map((p: any) => ({
+        pricelist_detail: (initialData.pricelist_detail || []).map((p) => ({
           dbId: p.id, // ใช้ dbId แทน id
           sequence_no: p.sequence_no,
           product_id: p.product_id,
-          product_name: p.tb_product?.name || p.product_name || "",
-          product_code: p.tb_product?.code || p.product_code || "",
+          product_name: p.product_name || "",
+          product_code: "", // Not available in DTO
           unit_id: p.unit_id,
           unit_name: p.unit_name || "",
           tax_profile_id: p.tax_profile_id,
-          tax_profile_name: p.tax_profile?.name || p.tax_profile_name || "",
-          tax_rate: p.tax_rate,
+          tax_profile_name: p.tax_profile?.rate ? `${p.tax_profile.rate}%` : "",
+          tax_rate: p.tax_profile?.rate ?? 0,
           moq_qty: p.moq_qty,
           _action: "none" as const,
         })),
@@ -161,35 +168,27 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
     }
 
     if (initialData) {
-      const getEffectivePeriod = (period: any) => {
-        if (typeof period === "string") {
-          const [from, to] = period.split(" - ");
-          return { from: from || "", to: to || "" };
-        }
-        return period || { from: "", to: "" };
-      };
-
       form.reset({
         no: initialData.no || "",
         name: initialData.name || "",
-        vendorId: initialData.vender?.id,
-        rfpId: initialData.rfp?.id || "",
+        vendorId: initialData.vendor?.id,
+        // rfpId: initialData.rfp?.id || "",
         description: initialData.description || "",
         note: initialData.note || "",
-        status: initialData.status,
+        status: initialData.status as PriceListFormData["status"],
         currencyId: initialData.currency?.id,
         effectivePeriod: getEffectivePeriod(initialData.effectivePeriod),
-        pricelist_detail: (initialData.pricelist_detail || []).map((p: any) => ({
+        pricelist_detail: (initialData.pricelist_detail || []).map((p) => ({
           dbId: p.id, // ใช้ dbId แทน id
           sequence_no: p.sequence_no,
           product_id: p.product_id,
-          product_name: p.tb_product?.name || p.product_name || "",
-          product_code: p.tb_product?.code || p.product_code || "",
+          product_name: p.product_name || "",
+          product_code: "", // Not available in DTO
           unit_id: p.unit_id,
           unit_name: p.unit_name || "",
           tax_profile_id: p.tax_profile_id,
-          tax_profile_name: p.tax_profile?.name || p.tax_profile_name || "",
-          tax_rate: p.tax_rate,
+          tax_profile_name: p.tax_profile?.rate ? `${p.tax_profile.rate}%` : "",
+          tax_rate: p.tax_profile?.rate ?? 0,
           moq_qty: p.moq_qty,
           _action: "none" as const,
         })),
@@ -284,7 +283,7 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
     <div className="space-y-4 mx-auto max-w-3xl pb-10">
       <div className="flex items-center justify-between">
         <PriceListBreadcrumb
-          currentPage={isAddMode ? tPriceList("new_price_list") : initialData?.no}
+          currentPage={isAddMode ? tPriceList("new_price_list") : initialData?.no || ""}
         />
         <div className="flex items-center gap-2">
           <TooltipProvider>

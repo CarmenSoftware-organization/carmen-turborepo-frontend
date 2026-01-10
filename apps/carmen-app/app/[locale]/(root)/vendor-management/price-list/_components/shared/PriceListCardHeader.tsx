@@ -8,7 +8,6 @@ import { formatDate } from "@/utils/format/date";
 interface PriceListCardHeaderProps {
   readonly name?: string;
   readonly no?: string;
-  readonly lastUpdate?: string;
   readonly status?: string;
   readonly dateFormat?: string | null;
   readonly showStatus?: boolean;
@@ -17,7 +16,6 @@ interface PriceListCardHeaderProps {
 export default function PriceListCardHeader({
   name,
   no,
-  lastUpdate,
   status,
   dateFormat,
   showStatus = true,
@@ -81,11 +79,6 @@ export default function PriceListCardHeader({
               <Badge variant="outline" className="font-mono text-xs">
                 {no}
               </Badge>
-            )}
-            {lastUpdate && (
-              <span className="text-xs text-muted-foreground">
-                {tCommon("last_updated")}: {formatDate(lastUpdate, dateFormat || "dd/MM/yyyy HH:mm")}
-              </span>
             )}
           </div>
         </div>

@@ -4,9 +4,10 @@ import { useState } from "react";
 import { formType } from "@/dtos/form.dto";
 import PriceListView from "./PriceListView";
 import PriceListForm from "./PriceListForm";
+import { PricelistDetail } from "../../_schema/pl.dto";
 
 interface DetailPriceListProps {
-  readonly priceList?: any;
+  readonly priceList?: PricelistDetail;
   mode: formType;
 }
 
