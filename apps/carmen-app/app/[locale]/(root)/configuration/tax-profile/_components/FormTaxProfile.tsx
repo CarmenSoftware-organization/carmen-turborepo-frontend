@@ -19,6 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/form-custom/form";
+import { InputValidate } from "@/components/ui-custom/InputValidate";
 
 interface FormTaxProfileProps {
   open: boolean;
@@ -105,7 +106,7 @@ export const FormTaxProfile = ({
                 <FormItem>
                   <FormLabel>{tTaxProfile("name")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. VAT 7%" {...field} />
+                    <InputValidate placeholder="e.g. VAT 7%" {...field} maxLength={100} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -13,8 +13,6 @@ import {
   FormMessage,
 } from "@/components/form-custom/form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { ExtraCostTypeDto } from "@/dtos/extra-cost-type.dto";
 import { formType } from "@/dtos/form.dto";
 import { useTranslations } from "next-intl";
@@ -24,6 +22,8 @@ import {
   createExtraCostUpdateSchema,
 } from "../_schemas/extra-cost-form.schema";
 import { formatJsonValue } from "@/utils/format";
+import { InputValidate } from "@/components/ui-custom/InputValidate";
+import { TextareaValidate } from "@/components/ui-custom/TextareaValidate";
 
 interface ExtraCostDialogProps {
   open: boolean;
@@ -123,7 +123,11 @@ export default function ExtraCostDialog({
                 <FormItem>
                   <FormLabel>{tExtraCost("name")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={tExtraCost("name_placeholder")} {...field} />
+                    <InputValidate
+                      placeholder={tExtraCost("name_placeholder")}
+                      {...field}
+                      maxLength={100}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -138,13 +142,17 @@ export default function ExtraCostDialog({
                 <FormItem>
                   <FormLabel>{tCommon("description")}</FormLabel>
                   <FormControl>
-                    <Textarea placeholder={tCommon("description")} maxLength={200} {...field} />
+                    <TextareaValidate
+                      placeholder={tCommon("description")}
+                      maxLength={256}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
+            {/*
             <FormField
               control={form.control}
               name="note"
@@ -152,13 +160,13 @@ export default function ExtraCostDialog({
                 <FormItem>
                   <FormLabel>{tCommon("note")}</FormLabel>
                   <FormControl>
-                    <Textarea placeholder={tCommon("note")} maxLength={200} {...field} />
+                    <TextareaValidate placeholder={tCommon("note")} maxLength={256} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
-            />
-
+            /> */}
+            {/*
             <FormField
               control={form.control}
               name="info"
@@ -171,9 +179,9 @@ export default function ExtraCostDialog({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="dimension"
               render={({ field }) => (
@@ -185,7 +193,7 @@ export default function ExtraCostDialog({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <FormField
               control={form.control}

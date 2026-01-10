@@ -20,6 +20,8 @@ import FormBoolean from "@/components/form-custom/form-boolean";
 import LookupTaxProfile from "@/components/lookup/LookupTaxProfile";
 import NumberInput from "@/components/form-custom/NumberInput";
 import { Percent } from "lucide-react";
+import { InputValidate } from "@/components/ui-custom/InputValidate";
+import { TextareaValidate } from "@/components/ui-custom/TextareaValidate";
 interface ItemGroupFormProps {
   readonly mode: formType;
   readonly selectedNode?: CategoryNode;
@@ -115,7 +117,7 @@ export function ItemGroupForm({
             <FormItem>
               <FormLabel>{tCommon("code")}</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <InputValidate {...field} maxLength={15} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -130,7 +132,7 @@ export function ItemGroupForm({
             <FormItem>
               <FormLabel>{tCommon("name")}</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <InputValidate {...field} maxLength={100} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -217,7 +219,7 @@ export function ItemGroupForm({
             <FormItem>
               <FormLabel>{tCommon("description")}</FormLabel>
               <FormControl>
-                <Textarea {...field} />
+                <TextareaValidate {...field} maxLength={256} />
               </FormControl>
               <FormMessage />
             </FormItem>

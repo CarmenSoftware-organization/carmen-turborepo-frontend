@@ -21,7 +21,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import {
   Form,
@@ -32,6 +31,7 @@ import {
   FormMessage,
 } from "@/components/form-custom/form";
 import FormBoolean from "@/components/form-custom/form-boolean";
+import { InputValidate } from "../ui-custom/InputValidate";
 
 interface DeliveryPointDialogProps {
   readonly open: boolean;
@@ -127,7 +127,7 @@ export default function DeliveryPointDialog({
                 <FormItem>
                   <FormLabel>{tCommon("name")}</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <InputValidate {...field} maxLength={100} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

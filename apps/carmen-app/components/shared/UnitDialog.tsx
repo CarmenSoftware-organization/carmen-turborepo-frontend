@@ -27,6 +27,8 @@ import {
   FormMessage,
 } from "@/components/form-custom/form";
 import FormBoolean from "@/components/form-custom/form-boolean";
+import { InputValidate } from "../ui-custom/InputValidate";
+import { TextareaValidate } from "../ui-custom/TextareaValidate";
 
 interface UnitDialogProps {
   readonly open: boolean;
@@ -121,7 +123,7 @@ export default function UnitDialog({
                 <FormItem>
                   <FormLabel>{tCommon("name")}</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <InputValidate {...field} maxLength={10} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -135,7 +137,7 @@ export default function UnitDialog({
                 <FormItem>
                   <FormLabel>{tCommon("description")}</FormLabel>
                   <FormControl>
-                    <Textarea {...field} />
+                    <TextareaValidate {...field} maxLength={256} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
