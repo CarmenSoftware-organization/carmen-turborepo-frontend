@@ -14,11 +14,11 @@ import {
   FormMessage,
 } from "@/components/form-custom/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import { Button } from "@/components/ui/button";
 import { createBuTypeFormSchema } from "@/dtos/bu-type-form.dto";
+import { InputValidate } from "../ui-custom/InputValidate";
+import { TextareaValidate } from "../ui-custom/TextareaValidate";
 
 interface FormBuTypeProps {
   open: boolean;
@@ -105,7 +105,7 @@ export const FormBuTypeDialog = ({
                 <FormItem>
                   <FormLabel>{tBusinessType("name")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={tBusinessType("name")} {...field} />
+                    <InputValidate placeholder={tBusinessType("name")} {...field} maxLength={100} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -120,7 +120,7 @@ export const FormBuTypeDialog = ({
                 <FormItem>
                   <FormLabel>{tBusinessType("description")}</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaValidate
                       {...field}
                       value={field.value || ""}
                       placeholder={tCommon("description")}
@@ -139,7 +139,7 @@ export const FormBuTypeDialog = ({
                 <FormItem>
                   <FormLabel>{tBusinessType("note")}</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaValidate
                       {...field}
                       value={field.value || ""}
                       placeholder={tCommon("note")}
