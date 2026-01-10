@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from "@/components/form-custom/form";
 import { InputValidate } from "@/components/ui-custom/InputValidate";
+import { Percent } from "lucide-react";
 
 interface FormTaxProfileProps {
   open: boolean;
@@ -121,7 +122,14 @@ export const FormTaxProfile = ({
                 <FormItem>
                   <FormLabel>{tTaxProfile("rate")} %</FormLabel>
                   <FormControl>
-                    <NumberInput {...field} placeholder="e.g. 7" min={0} max={100} step={1} />
+                    <NumberInput
+                      {...field}
+                      placeholder="e.g. 7"
+                      min={0}
+                      max={100}
+                      step={1}
+                      suffix={<Percent className="w-3 h-3" />}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
