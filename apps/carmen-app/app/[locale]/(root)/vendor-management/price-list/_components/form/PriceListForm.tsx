@@ -19,7 +19,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import { PriceListBreadcrumb, ProductsCardHeader } from "../shared";
-import JsonViewer from "@/components/JsonViewer";
 import { PricelistDetail } from "../../_schema/pl.dto";
 
 interface PriceListFormProps {
@@ -360,7 +359,6 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
           </Card>
         </form>
       </Form>
-      <JsonViewer data={payloadPreview} title="API Payload Preview" />
     </div>
   );
 }
