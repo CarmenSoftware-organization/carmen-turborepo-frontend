@@ -38,10 +38,11 @@ export default function PurchaseRequestComponent() {
   const [search, setSearch] = useURL("search");
   const [keyword, setKeyword] = useState(search || "");
   const debouncedKeyword = useDebounce(keyword, 500);
-  const [currentBuCode, setCurrentBuCode] = useState(buCode);
-  const [fetchType, setFetchType] = useState<string | undefined>(undefined);
+  const [fetchType, setFetchType] = useState<string | undefined>("my-pending");
 
   const buCodes = businessUnits?.map((bu) => bu.code).join(",") || buCode;
+
+  const [currentBuCode, setCurrentBuCode] = useState(buCodes);
 
   useEffect(() => {
     if (debouncedKeyword !== search) {
@@ -101,7 +102,8 @@ export default function PurchaseRequestComponent() {
       sort,
       search,
       perpage: perpage,
-      filter: filterType,
+      filter:
+        filterStage && filterStage !== "all" ? `workflow_current_stage:${filterStage}` : undefined,
     },
     fetchType
   );
@@ -367,13 +369,13 @@ export default function PurchaseRequestComponent() {
       <Tabs defaultValue={buCode?.split(",")[0] || ""}>
         <TabsList className="mb-4">
           {prs?.data?.map((bu: any) => (
-            <TabsTrigger key={bu.bu_code} value={bu.bu_code}>
-              {bu.bu_code}
+            <TabsTrigger key={bu.bu_name} value={bu.bu_name}>
+              {bu.bu_name}
             </TabsTrigger>
           ))}
         </TabsList>
         {prs?.data?.map((bu: any) => (
-          <TabsContent key={bu.bu_code} value={bu.bu_code}>
+          <TabsContent key={bu.bu_name} value={bu.bu_name}>
             <div className="block lg:hidden">
               <PurchaseRequestGrid
                 purchaseRequests={bu.data}
