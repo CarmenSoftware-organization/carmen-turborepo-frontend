@@ -272,7 +272,11 @@
     "validity_period": "ระยะเวลาที่ใช้ได้",
     "pick_date_range": "เลือกช่วงวันที่",
     "price_list_checked": "ตรวจสอบราคาสินค้าสำเร็จ",
-    "price_list_check_failed": "ไม่สามารถตรวจสอบราคาสินค้าได้"
+    "price_list_check_failed": "ไม่สามารถตรวจสอบราคาสินค้าได้",
+    "delete_confirm_title": "ลบ RFP",
+    "delete_confirm_desc": "คุณแน่ใจหรือไม่ที่จะลบ RFP?",
+    "delete_success": "ลบ RFP สำเร็จ",
+    "delete_failed": "ไม่สามารถลบ RFP ได้"
   },
   "vendorEntry": {
     "title": "พอร์ทัลผู้จัดจำหน่าย"

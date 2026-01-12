@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useRfps } from "@/hooks/use-rfp";
+import { useDeleteRfp, useRfps } from "@/hooks/use-rfp";
 import { useURL } from "@/hooks/useURL";
 import { Button } from "@/components/ui/button";
 
@@ -13,6 +13,8 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SignInDialog from "@/components/SignInDialog";
+import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import RfpList from "./RfpList";
 import RfpGrid from "./RfpGrid";
 import { VIEW } from "@/constants/enum";
@@ -30,6 +32,8 @@ export default function Rfp() {
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [view, setView] = useState<VIEW>(VIEW.LIST);
 
@@ -39,6 +43,8 @@ export default function Rfp() {
     page: page ? Number(page) : 1,
     perpage: perpage ? Number(perpage) : 10,
   });
+
+  const { mutate: deleteRfp, isPending: isDeleting } = useDeleteRfp(token, buCode);
 
   useEffect(() => {
     if (isUnauthorized) {
@@ -52,6 +58,27 @@ export default function Rfp() {
 
   const handlePerpageChange = (newPerpage: number) => {
     setPerpage(newPerpage.toString());
+  };
+
+  const onDelete = (rfpId: string) => {
+    setDeleteId(rfpId);
+    setDeleteDialogOpen(true);
+  };
+
+  const onConfirmDelete = () => {
+    if (!deleteId) return;
+    deleteRfp(deleteId, {
+      onSuccess: () => {
+        toastSuccess({ message: tRfp("delete_success") });
+        setDeleteDialogOpen(false);
+        setDeleteId(null);
+      },
+      onError: (error) => {
+        toastError({
+          message: error instanceof Error ? error.message : "Failed to delete RFP",
+        });
+      },
+    });
   };
 
   const title = tRfp("title");
@@ -143,6 +170,7 @@ export default function Rfp() {
         <RfpGrid
           rfps={rfps?.data ?? []} // Updated access to data
           isLoading={isLoading}
+          onDelete={onDelete}
           // Grid might need pagination props too, but List is priority
         />
       </div>
@@ -158,11 +186,13 @@ export default function Rfp() {
             totalItems={totalItems}
             perpage={currentPerpage}
             setPerpage={handlePerpageChange}
+            onDelete={onDelete}
           />
         ) : (
           <RfpGrid
             rfps={rfps?.data ?? []} // Updated access to data
             isLoading={isLoading}
+            onDelete={onDelete}
           />
         )}
       </div>
@@ -179,6 +209,15 @@ export default function Rfp() {
       />
 
       <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={onConfirmDelete}
+        title={tRfp("delete_confirm_title")}
+        description={tRfp("delete_confirm_desc")}
+        isLoading={isDeleting}
+      />
     </>
   );
 }

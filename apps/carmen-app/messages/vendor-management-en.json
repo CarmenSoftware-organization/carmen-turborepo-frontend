@@ -272,7 +272,11 @@
     "validity_period": "Validity Period",
     "pick_date_range": "Pick a date range",
     "price_list_checked": "Price list checked successfully",
-    "price_list_check_failed": "Failed to check price list"
+    "price_list_check_failed": "Failed to check price list",
+    "delete_confirm_title": "Delete RFP",
+    "delete_confirm_desc": "Are you sure you want to delete this RFP?",
+    "delete_success": "RFP deleted successfully",
+    "delete_failed": "Failed to delete RFP"
   },
   "vendorEntry": {
     "title": "Vendor Entry"

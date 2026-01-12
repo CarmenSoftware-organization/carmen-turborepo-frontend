@@ -22,6 +22,7 @@ interface RfpGridProps {
   readonly isLoading: boolean;
   readonly canUpdate?: boolean;
   readonly canDelete?: boolean;
+  readonly onDelete?: (id: string) => void;
 }
 
 export default function RfpGrid({
@@ -29,6 +30,7 @@ export default function RfpGrid({
   isLoading,
   canUpdate = true,
   canDelete = true,
+  onDelete,
 }: RfpGridProps) {
   const tStatus = useTranslations("Status");
   const tRfp = useTranslations("RFP");
@@ -81,7 +83,7 @@ export default function RfpGrid({
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       className="text-destructive cursor-pointer"
-                      onClick={() => console.log(rfp.id)}
+                      onClick={() => onDelete?.(rfp.id)}
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       {tRfp("delete")}

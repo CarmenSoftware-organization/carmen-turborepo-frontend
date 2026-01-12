@@ -40,6 +40,7 @@ interface RfpListProps {
   readonly perpage: number;
   readonly onPageChange: (page: number) => void;
   readonly setPerpage: (perpage: number) => void;
+  readonly onDelete?: (id: string) => void;
 }
 
 export default function RfpList({
@@ -55,10 +56,12 @@ export default function RfpList({
   perpage,
   onPageChange,
   setPerpage,
+  onDelete,
 }: RfpListProps) {
-  const tStatus = useTranslations("Status");
+  // const tStatus = useTranslations("Status");
   const tHeader = useTranslations("TableHeader");
   const tRfp = useTranslations("RFP");
+  const tCommon = useTranslations("Common");
 
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
@@ -73,7 +76,7 @@ export default function RfpList({
     [currentPage, perpage]
   );
 
-  const getStatusLabel = (status: string) => convertStatus(status, tStatus);
+  // const getStatusLabel = (status: string) => convertStatus(status, tStatus);
 
   const columns = useMemo<ColumnDef<RfpDto>[]>(
     () => [
@@ -87,8 +90,8 @@ export default function RfpList({
       },
       {
         id: "no",
-        header: () => <div className="text-center">#</div>,
-        cell: ({ row }) => <div className="text-center">{row.index + 1}</div>,
+        header: () => <span>#</span>,
+        cell: ({ row }) => <span>{row.index + 1}</span>,
         enableSorting: false,
         size: 30,
         meta: {
@@ -127,30 +130,6 @@ export default function RfpList({
           headerTitle: "Name",
         },
       },
-      // {
-      //   accessorKey: "status",
-      //   header: ({ column }) => (
-      //     <DataGridColumnHeader
-      //       column={column}
-      //       title={tHeader("status")}
-      //       icon={<Activity className="h-4 w-4" />}
-      //     />
-      //   ),
-      //   cell: ({ row }) => {
-      //     const status = row.original.status;
-      //     return (
-      //       <div className="flex justify-center">
-      //         <Badge variant={status as any}>{getStatusLabel(status)}</Badge>
-      //       </div>
-      //     );
-      //   },
-      //   enableSorting: false,
-      //   size: 120,
-      //   meta: {
-      //     cellClassName: "text-center",
-      //     headerClassName: "text-center",
-      //   },
-      // },
       {
         accessorKey: "description",
         header: ({ column }) => (
@@ -238,9 +217,10 @@ export default function RfpList({
                   {canDelete && (
                     <DropdownMenuItem
                       className="text-destructive cursor-pointer hover:bg-transparent"
-                      onClick={() => console.log(rfp.id)}
+                      onClick={() => onDelete?.(rfp.id)}
                     >
                       <Trash2 className="h-4 w-4" />
+                      {tCommon("delete")}
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>
@@ -256,7 +236,7 @@ export default function RfpList({
         },
       },
     ],
-    [canUpdate, canDelete, tHeader, tRfp]
+    [canUpdate, canDelete, tHeader, tRfp, onDelete]
   );
 
   const table = useReactTable({
