@@ -16,13 +16,6 @@ import SignInDialog from "@/components/SignInDialog";
 import { useAuth } from "@/context/AuthContext";
 import { usePurchaseRequest } from "@/hooks/use-purchase-request";
 import { useDebounce } from "../_hooks/use-debounce";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { parseSortString } from "@/utils/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -31,6 +24,7 @@ import FilterPurchaseRequest, { PurchaseRequestFilterValues } from "./FilterPurc
 import ExportDropdown, { ExportFormat } from "@/components/ui-custom/ExportDropdown";
 import { exportToExcel, exportToPDF, exportToWord, ExportData } from "@/utils/export";
 import ErrorBoundary from "./ErrorBoundary";
+import SelectWorkflowStage from "./form-pr/SelectWorkflowStage";
 
 export default function PurchaseRequestComponent() {
   const { token, buCode, businessUnits } = useAuth();
@@ -44,6 +38,8 @@ export default function PurchaseRequestComponent() {
   const [search, setSearch] = useURL("search");
   const [keyword, setKeyword] = useState(search || "");
   const debouncedKeyword = useDebounce(keyword, 500);
+  const [currentBuCode, setCurrentBuCode] = useState(buCode);
+  const [fetchType, setFetchType] = useState<string | undefined>(undefined);
 
   const buCodes = businessUnits?.map((bu) => bu.code).join(",") || buCode;
 
@@ -59,7 +55,7 @@ export default function PurchaseRequestComponent() {
   const [perpage, setPerpage] = useURL("perpage");
 
   const [filterStatus, setFilterStatus] = useURL("filter_status");
-  const [filterStage, setFilterStage] = useURL("filter_stage");
+  const [filterStage, setFilterStage] = useURL("stage");
   const [filterType, setFilterType] = useURL("filter_type");
   const [filterDepartment, setFilterDepartment] = useURL("filter_department");
   const [filterDateFrom, setFilterDateFrom] = useURL("filter_date_from");
@@ -97,12 +93,18 @@ export default function PurchaseRequestComponent() {
     };
   };
 
-  const { prs, isLoading } = usePurchaseRequest(token, buCodes, {
-    page: page ? Number(page) : 1,
-    sort,
-    search,
-    perpage: perpage,
-  });
+  const { prs, isLoading } = usePurchaseRequest(
+    token,
+    currentBuCode,
+    {
+      page: page,
+      sort,
+      search,
+      perpage: perpage,
+      filter: filterType,
+    },
+    fetchType
+  );
 
   useEffect(() => {
     if (search) {
@@ -253,23 +255,34 @@ export default function PurchaseRequestComponent() {
           placeholder={tCommon("search")}
           data-id="pr-list-search-input"
         />
-        <Button size={"sm"} className="h-8">
+        <Button
+          size={"sm"}
+          className="h-8"
+          onClick={() => {
+            setCurrentBuCode(buCodes);
+            setFetchType("my-pending");
+          }}
+          variant={fetchType === "my-pending" ? "default" : "outlinePrimary"}
+        >
           {tDataControls("myPening")}
         </Button>
-        <Button size={"sm"} className="h-8" variant={"outlinePrimary"}>
+        <Button
+          size={"sm"}
+          className="h-8"
+          variant={!fetchType ? "default" : "outlinePrimary"}
+          onClick={() => {
+            setCurrentBuCode(buCode);
+            setFetchType(undefined);
+          }}
+        >
           {tDataControls("allDoc")}
         </Button>
-        <Select>
-          <SelectTrigger className="w-[120px] h-8 bg-muted">
-            <SelectValue placeholder={tDataControls("allStage")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{tDataControls("allStage")}</SelectItem>
-            <SelectItem value="requestor">{tDataControls("requestor")}</SelectItem>
-            <SelectItem value="approver">{tDataControls("department_head_approval")}</SelectItem>
-            <SelectItem value="finnace">{tDataControls("finance_manager_approval")}</SelectItem>
-          </SelectContent>
-        </Select>
+        <SelectWorkflowStage
+          token={token}
+          buCode={currentBuCode}
+          onSetStage={setFilterStage}
+          value={filterStage}
+        />
       </div>
       <TooltipProvider>
         <div className="flex items-center gap-2">
@@ -351,7 +364,7 @@ export default function PurchaseRequestComponent() {
 
   const content = (
     <ErrorBoundary>
-      <Tabs defaultValue={buCodes?.split(",")[0] || ""}>
+      <Tabs defaultValue={buCode?.split(",")[0] || ""}>
         <TabsList className="mb-4">
           {prs?.data?.map((bu: any) => (
             <TabsTrigger key={bu.bu_code} value={bu.bu_code}>

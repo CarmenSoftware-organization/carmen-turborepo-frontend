@@ -10,8 +10,17 @@ import {
 } from "@/lib/config.api";
 import axios from "axios";
 
-export const usePurchaseRequest = (token: string, buCode: string, params?: ParamsGetDto) => {
-  const API_URL = `${backendApi}/api/purchase-request`;
+export const usePurchaseRequest = (
+  token: string,
+  buCode: string,
+  params?: ParamsGetDto,
+  type?: string
+) => {
+  const PR_URL = `${backendApi}/api/purchase-request`;
+
+  const MY_PENDING = `${backendApi}/api/my-pending/purchase-request`;
+
+  const API_URL = type === "my-pending" ? MY_PENDING : PR_URL;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["purchase-request", buCode, params],
@@ -21,6 +30,8 @@ export const usePurchaseRequest = (token: string, buCode: string, params?: Param
       }
 
       const queryParams = { ...params, bu_code: buCode };
+
+      console.log("queryParams", queryParams);
 
       return await getAllApiRequest(API_URL, token, "Error fetching PRs", queryParams);
     },
