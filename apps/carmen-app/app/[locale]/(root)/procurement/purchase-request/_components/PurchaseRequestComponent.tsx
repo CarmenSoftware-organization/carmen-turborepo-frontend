@@ -18,7 +18,7 @@ import { usePurchaseRequest } from "@/hooks/use-purchase-request";
 import { useDebounce } from "../_hooks/use-debounce";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { parseSortString } from "@/utils/table";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { convertStatus } from "@/utils/status";
 import FilterPurchaseRequest, { PurchaseRequestFilterValues } from "./FilterPurchaseRequest";
 import ExportDropdown, { ExportFormat } from "@/components/ui-custom/ExportDropdown";
@@ -200,51 +200,29 @@ export default function PurchaseRequestComponent() {
   };
 
   const actionButtons = (
-    <TooltipProvider>
-      <div className="action-btn-container" data-id="purchase-request-action-buttons">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button size={"sm"} onClick={handleOpenDialog}>
-              <Plus />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{tPurchaseRequest("tooltip_pr_created")}</p>
-          </TooltipContent>
-        </Tooltip>
+    <div className="action-btn-container" data-id="purchase-request-action-buttons">
+      <Button size={"sm"} onClick={handleOpenDialog}>
+        <Plus className="h-4 w-4" />
+        {tCommon("add")}
+      </Button>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div>
-              <ExportDropdown onExport={handleExport}>
-                <Button
-                  variant="outlinePrimary"
-                  className="group"
-                  size={"sm"}
-                  data-id="pr-list-export-button"
-                >
-                  <FileDown />
-                </Button>
-              </ExportDropdown>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{tCommon("export")}</p>
-          </TooltipContent>
-        </Tooltip>
+      <ExportDropdown onExport={handleExport}>
+        <Button
+          variant="outlinePrimary"
+          className="group"
+          size={"sm"}
+          data-id="pr-list-export-button"
+        >
+          <FileDown className="h-4 w-4" />
+          <p>{tCommon("export")}</p>
+        </Button>
+      </ExportDropdown>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outlinePrimary" size={"sm"} data-id="pr-list-print-button">
-              <Printer />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{tCommon("print")}</p>
-          </TooltipContent>
-        </Tooltip>
-      </div>
-    </TooltipProvider>
+      <Button variant="outlinePrimary" size={"sm"} data-id="pr-list-print-button">
+        <Printer className="h-4 w-4" />
+        <p>{tCommon("print")}</p>
+      </Button>
+    </div>
   );
 
   const filters = (
@@ -286,75 +264,47 @@ export default function PurchaseRequestComponent() {
           value={filterStage}
         />
       </div>
-      <TooltipProvider>
-        <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div>
-                <SortComponent
-                  fieldConfigs={sortFields}
-                  sort={sort}
-                  setSort={setSort}
-                  data-id="pr-list-sort-dropdown"
-                />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{tPurchaseRequest("tooltip_pr_sort")}</p>
-            </TooltipContent>
-          </Tooltip>
+      <div className="flex items-center gap-2">
+        <div>
+          <SortComponent
+            fieldConfigs={sortFields}
+            sort={sort}
+            setSort={setSort}
+            data-id="pr-list-sort-dropdown"
+          />
+        </div>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div>
-                <FilterPurchaseRequest
-                  onApply={handleApplyFilter}
-                  onReset={handleResetFilter}
-                  initialValues={getCurrentFilterValues()}
-                />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{tCommon("filter")}</p>
-            </TooltipContent>
-          </Tooltip>
+        <div>
+          <FilterPurchaseRequest
+            onApply={handleApplyFilter}
+            onReset={handleResetFilter}
+            initialValues={getCurrentFilterValues()}
+          />
+        </div>
 
-          <div className="hidden lg:block">
-            <div className="flex items-center gap-2">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
-                    size={"sm"}
-                    onClick={() => setView(VIEW.LIST)}
-                    aria-label="List view"
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{tPurchaseRequest("table_view")}</p>
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
-                    size={"sm"}
-                    onClick={() => setView(VIEW.GRID)}
-                    aria-label="Grid view"
-                  >
-                    <Grid className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{tPurchaseRequest("grid_view")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
+        <div className="hidden lg:block">
+          <div className="flex items-center gap-2">
+            <Button
+              variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
+              size={"sm"}
+              onClick={() => setView(VIEW.LIST)}
+              aria-label="List view"
+            >
+              <List className="h-4 w-4" />
+              {tCommon("list_view")}
+            </Button>
+            <Button
+              variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
+              size={"sm"}
+              onClick={() => setView(VIEW.GRID)}
+              aria-label="Grid view"
+            >
+              <Grid className="h-4 w-4" />
+              {tCommon("grid_view")}
+            </Button>
           </div>
         </div>
-      </TooltipProvider>
+      </div>
     </div>
   );
 
@@ -369,13 +319,13 @@ export default function PurchaseRequestComponent() {
       <Tabs defaultValue={buCode?.split(",")[0] || ""}>
         <TabsList className="mb-4">
           {prs?.data?.map((bu: any) => (
-            <TabsTrigger key={bu.bu_name} value={bu.bu_name}>
+            <TabsTrigger key={bu.bu_code} value={bu.bu_code}>
               {bu.bu_name}
             </TabsTrigger>
           ))}
         </TabsList>
         {prs?.data?.map((bu: any) => (
-          <TabsContent key={bu.bu_name} value={bu.bu_name}>
+          <TabsContent key={bu.bu_code} value={bu.bu_code}>
             <div className="block lg:hidden">
               <PurchaseRequestGrid
                 purchaseRequests={bu.data}

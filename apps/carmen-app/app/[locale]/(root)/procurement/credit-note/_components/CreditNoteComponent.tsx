@@ -78,11 +78,11 @@ export default function CreditNoteComponent() {
         }}
       >
         <FileDown className="h-4 w-4" />
-        {tCommon("export")}
+        <p>{tCommon("export")}</p>
       </Button>
       <Button variant="outlinePrimary" size={"sm"} data-id="credit-note-list-print-button">
         <Printer className="h-4 w-4" />
-        {tCommon("print")}
+        <p>{tCommon("print")}</p>
       </Button>
     </div>
   );

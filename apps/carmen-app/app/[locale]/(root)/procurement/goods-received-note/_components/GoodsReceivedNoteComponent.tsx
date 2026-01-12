@@ -61,11 +61,11 @@ export default function GoodsReceivedNoteComponent() {
         data-id="grn-list-export-button"
       >
         <FileDown className="h-4 w-4" />
-        {tCommon("export")}
+        <p>{tCommon("export")}</p>
       </Button>
       <Button variant="outlinePrimary" size={"sm"} data-id="grn-list-print-button">
         <Printer className="h-4 w-4" />
-        {tCommon("print")}
+        <p>{tCommon("print")}</p>
       </Button>
     </div>
   );

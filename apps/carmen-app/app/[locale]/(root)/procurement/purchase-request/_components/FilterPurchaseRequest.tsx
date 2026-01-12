@@ -95,6 +95,7 @@ export default function FilterPurchaseRequest({
         {children || (
           <Button size="sm" variant={"outlinePrimary"}>
             <Filter className="h-4 w-4" />
+            {tCommon("filter")}
           </Button>
         )}
       </PopoverTrigger>

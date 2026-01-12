@@ -35,17 +35,17 @@ export default function PurchaseRequestTemplateComponent() {
         {tCommon("add")}
       </Button>
       <Button
-        variant="outline"
+        variant="outlinePrimary"
         className="group"
         size={"sm"}
         data-id="pr-template-list-export-button"
       >
         <FileDown className="h-4 w-4" />
-        {tCommon("export")}
+        <p>{tCommon("export")}</p>
       </Button>
-      <Button variant="outline" size={"sm"} data-id="pr-template-list-print-button">
+      <Button variant="outlinePrimary" size={"sm"} data-id="pr-template-list-print-button">
         <Printer className="h-4 w-4" />
-        {tCommon("print")}
+        <p>{tCommon("print")}</p>
       </Button>
     </div>
   );

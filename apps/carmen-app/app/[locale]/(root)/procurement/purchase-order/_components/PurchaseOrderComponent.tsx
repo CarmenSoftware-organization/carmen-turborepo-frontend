@@ -81,8 +81,8 @@ export default function PurchaseOrderComponent() {
   const actionButtons = (
     <div className="action-btn-container" data-id="po-action-buttons">
       <Button size={"sm"} onClick={handleOpenDialog}>
-        <Plus />
-        {tCommon("add")} {title}
+        <Plus className="h-4 w-4" />
+        {tCommon("add")}
       </Button>
       <Button
         variant="outlinePrimary"
@@ -90,12 +90,12 @@ export default function PurchaseOrderComponent() {
         size={"sm"}
         data-id="po-list-export-button"
       >
-        <FileDown />
-        {tCommon("export")}
+        <FileDown className="h-4 w-4" />
+        <p>{tCommon("export")}</p>
       </Button>
       <Button variant="outlinePrimary" size={"sm"} data-id="pr-list-print-button">
-        <Printer />
-        {tCommon("print")}
+        <Printer className="h-4 w-4" />
+        <p>{tCommon("print")}</p>
       </Button>
     </div>
   );

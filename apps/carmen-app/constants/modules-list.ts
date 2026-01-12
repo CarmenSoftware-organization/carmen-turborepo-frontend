@@ -100,11 +100,6 @@ export const moduleItems: ModuleItem[] = [
         icon: CreditCard,
       },
       {
-        labelKey: "Modules.Procurement.vendorComparison",
-        href: "/procurement/vendor-comparison",
-        icon: Scale,
-      },
-      {
         labelKey: "Modules.Procurement.purchaseRequestTemplate",
         href: "/procurement/purchase-request-template",
         icon: FileSpreadsheet,
