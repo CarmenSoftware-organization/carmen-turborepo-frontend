@@ -32,7 +32,6 @@ import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
 import { FormBuTypeDialog } from "@/components/shared/FormBuTypeDialog";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function BusinessTypeComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -103,40 +102,22 @@ export default function BusinessTypeComponent() {
 
   const actionButtons = (
     <div className="action-btn-container" data-id="bu-type-list-action-buttons">
-      <TooltipProvider>
-        {businessTypePerms.canCreate && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size="sm" onClick={handleAddNew}>
-                <Plus className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{tCommon("add")}</TooltipContent>
-          </Tooltip>
-        )}
+      {businessTypePerms.canCreate && (
+        <Button size="sm" onClick={handleAddNew}>
+          <Plus className="h-4 w-4" />
+          {tCommon("add")}
+        </Button>
+      )}
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outlinePrimary"
-              className="group"
-              size="sm"
-              data-id="bu-type-export-button"
-            >
-              <FileDown className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("export")}</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outlinePrimary" size="sm" data-id="bu-type-print-button">
-              <Printer className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("print")}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Button variant="outlinePrimary" className="group" size="sm" data-id="bu-type-export-button">
+        <FileDown className="h-4 w-4" />
+        <p>{tCommon("export")}</p>
+      </Button>
+
+      <Button variant="outlinePrimary" size="sm" data-id="bu-type-print-button">
+        <Printer className="h-4 w-4" />
+        <p>{tCommon("print")}</p>
+      </Button>
     </div>
   );
 

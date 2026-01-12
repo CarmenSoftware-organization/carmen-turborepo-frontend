@@ -25,7 +25,6 @@ import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import DeliveryPointDialog from "@/components/shared/DeliveryPointDialog";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function DeliveryPointComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -173,41 +172,25 @@ export default function DeliveryPointComponent() {
 
   const actionButtons = (
     <div className="action-btn-container" data-id="delivery-point-list-action-buttons">
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button size={"sm"} onClick={handleAdd}>
-              <Plus className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("add")}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outlinePrimary"
-              className="group"
-              size="sm"
-              data-id="delivery-point-export-button"
-            >
-              <FileDown className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("export")}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outlinePrimary" size="sm" data-id="delivery-point-print-button">
-              <Printer className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("print")}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Button size={"sm"} onClick={handleAdd}>
+        <Plus className="h-4 w-4" />
+        {tCommon("add")}
+      </Button>
+
+      <Button
+        variant="outlinePrimary"
+        className="group"
+        size="sm"
+        data-id="delivery-point-export-button"
+      >
+        <FileDown className="h-4 w-4" />
+        <p>{tCommon("export")}</p>
+      </Button>
+
+      <Button variant="outlinePrimary" size="sm" data-id="delivery-point-print-button">
+        <Printer className="h-4 w-4" />
+        <p>{tCommon("print")}</p>
+      </Button>
     </div>
   );
 

@@ -21,7 +21,7 @@ import { configurationPermission } from "@/lib/permission";
 import { DepartmentGetListDto } from "@/dtos/department.dto";
 import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { VIEW } from "@/constants/enum";
 
 export default function DepartmentComponent() {
@@ -37,7 +37,9 @@ export default function DepartmentComponent() {
   const router = useRouter();
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [departmentToDelete, setDepartmentToDelete] = useState<DepartmentGetListDto | undefined>(undefined);
+  const [departmentToDelete, setDepartmentToDelete] = useState<DepartmentGetListDto | undefined>(
+    undefined
+  );
   const [statusOpen, setStatusOpen] = useState(false);
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
@@ -51,10 +53,13 @@ export default function DepartmentComponent() {
     page,
     sort,
     filter,
-    perpage
+    perpage,
   });
 
-  const { mutate: deleteDepartment, isPending: isDeleting } = useDepartmentDeleteMutation(token, buCode);
+  const { mutate: deleteDepartment, isPending: isDeleting } = useDepartmentDeleteMutation(
+    token,
+    buCode
+  );
 
   useEffect(() => {
     if (isUnauthorized) {
@@ -119,53 +124,32 @@ export default function DepartmentComponent() {
   ];
 
   const actionButtons = (
-    <TooltipProvider>
-      <div
-        className="action-btn-container"
-        data-id="department-list-action-buttons"
+    <div className="action-btn-container" data-id="department-list-action-buttons">
+      <Button
+        size="sm"
+        onClick={handleAdd}
+        data-id="department-add-button"
+        disabled={!departmentPerms.canCreate}
       >
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="sm"
-              onClick={handleAdd}
-              data-id="department-add-button"
-              disabled={!departmentPerms.canCreate}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("add")}</TooltipContent>
-        </Tooltip>
+        <Plus className="h-4 w-4" />
+        {tCommon("add")}
+      </Button>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outlinePrimary"
-              className="group"
-              size="sm"
-              data-id="department-export-button"
-            >
-              <FileDown className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("export")}</TooltipContent>
-        </Tooltip>
+      <Button
+        variant="outlinePrimary"
+        className="group"
+        size="sm"
+        data-id="department-export-button"
+      >
+        <FileDown className="h-4 w-4" />
+        <p>{tCommon("export")}</p>
+      </Button>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outlinePrimary"
-              size="sm"
-              data-id="department-print-button"
-            >
-              <Printer className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("print")}</TooltipContent>
-        </Tooltip>
-      </div>
-    </TooltipProvider>
+      <Button variant="outlinePrimary" size="sm" data-id="department-print-button">
+        <Printer className="h-4 w-4" />
+        <p>{tCommon("print")}</p>
+      </Button>
+    </div>
   );
 
   const filters = (
@@ -176,57 +160,44 @@ export default function DepartmentComponent() {
         placeholder={tCommon("search")}
         data-id="department-list-search-input"
       />
-      <TooltipProvider>
-        <div className="fxr-c gap-2">
-          <StatusSearchDropdown
-            value={filter}
-            onChange={setFilter}
-            open={statusOpen}
-            onOpenChange={setStatusOpen}
-            data-id="department-list-status-search-dropdown"
-          />
-          <SortComponent
-            fieldConfigs={sortFields}
-            sort={sort}
-            setSort={setSort}
-            data-id="department-list-sort-dropdown"
-          />
-        </div>
+      <div className="fxr-c gap-2">
+        <StatusSearchDropdown
+          value={filter}
+          onChange={setFilter}
+          open={statusOpen}
+          onOpenChange={setStatusOpen}
+          data-id="department-list-status-search-dropdown"
+        />
+        <SortComponent
+          fieldConfigs={sortFields}
+          sort={sort}
+          setSort={setSort}
+          data-id="department-list-sort-dropdown"
+        />
         <div className="hidden lg:block">
           <div className="flex items-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
-                  size="sm"
-                  onClick={() => setView(VIEW.LIST)}
-                  aria-label="List view"
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{tCommon("list_view")}</p>
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
-                  size="sm"
-                  onClick={() => setView(VIEW.GRID)}
-                  aria-label="Grid view"
-                >
-                  <Grid className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{tCommon("grid_view")}</p>
-              </TooltipContent>
-            </Tooltip>
+            <Button
+              variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
+              size="sm"
+              onClick={() => setView(VIEW.LIST)}
+              aria-label="List view"
+            >
+              <List className="h-4 w-4" />
+              {tCommon("list_view")}
+            </Button>
+
+            <Button
+              variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
+              size="sm"
+              onClick={() => setView(VIEW.GRID)}
+              aria-label="Grid view"
+            >
+              <Grid className="h-4 w-4" />
+              {tCommon("grid_view")}
+            </Button>
           </div>
         </div>
-      </TooltipProvider>
+      </div>
     </div>
   );
 
@@ -285,7 +256,9 @@ export default function DepartmentComponent() {
         onOpenChange={handleCancelDelete}
         onConfirm={handleConfirmDelete}
         title={tDepartment("confirm_delete")}
-        description={tDepartment("confirm_delete_description", { name: departmentToDelete?.name || "" })}
+        description={tDepartment("confirm_delete_description", {
+          name: departmentToDelete?.name || "",
+        })}
         isLoading={isDeleting}
       />
       <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />

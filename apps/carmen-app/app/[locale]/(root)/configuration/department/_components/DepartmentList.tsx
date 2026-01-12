@@ -141,7 +141,7 @@ export default function DepartmentList({
         cell: ({ row }) => {
           const department = row.original;
           if (canUpdate) {
-            return <p className="max-w-[200px] truncate">{row.original.code}</p>;
+            return <span className="max-w-[200px] truncate">{row.original.code}</span>;
           }
           return <span className="max-w-[200px] break-words">{department.code}</span>;
         },
@@ -172,20 +172,16 @@ export default function DepartmentList({
       {
         accessorKey: "is_active",
         header: ({ column }) => (
-          <div className="flex justify-center">
-            <DataGridColumnHeader
-              column={column}
-              title={t("status")}
-              icon={<Activity className="h-4 w-4" />}
-            />
-          </div>
+          <DataGridColumnHeader
+            column={column}
+            title={t("status")}
+            icon={<Activity className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
-          <div className="flex justify-center">
-            <StatusCustom is_active={row.original.is_active}>
-              {row.original.is_active ? tCommon("active") : tCommon("inactive")}
-            </StatusCustom>
-          </div>
+          <StatusCustom is_active={row.original.is_active}>
+            {row.original.is_active ? tCommon("active") : tCommon("inactive")}
+          </StatusCustom>
         ),
         enableSorting: true,
         size: 120,
