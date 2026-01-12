@@ -23,17 +23,23 @@ import {
 import { MoqItem } from "./types";
 
 interface MoqInlineEditProps {
-  readonly defaultUnitName?: string;
+  readonly defaultUnitId: string;
+  readonly defaultUnitName: string;
   readonly items: MoqItem[];
   readonly onChange: (items: MoqItem[]) => void;
 }
 
-export function MoqInlineEdit({ defaultUnitName = "pcs", items, onChange }: MoqInlineEditProps) {
+export function MoqInlineEdit({
+  defaultUnitId,
+  defaultUnitName,
+  items,
+  onChange,
+}: MoqInlineEditProps) {
   const handleAddItem = () => {
     onChange([
       ...items,
       {
-        unit_id: "",
+        unit_id: defaultUnitId,
         unit_name: defaultUnitName,
         note: "",
         qty: 0,
@@ -53,7 +59,13 @@ export function MoqInlineEdit({ defaultUnitName = "pcs", items, onChange }: MoqI
     <div className="mt-3 space-y-2 border-t pt-2">
       <div className="flex items-center justify-between">
         <h4 className="text-xs font-semibold">MOQ List</h4>
-        <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={handleAddItem}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-6 w-6 p-0"
+          onClick={handleAddItem}
+        >
           <Plus className="h-4 w-4" />
         </Button>
       </div>
@@ -62,14 +74,24 @@ export function MoqInlineEdit({ defaultUnitName = "pcs", items, onChange }: MoqI
           <div key={index} className="flex items-start gap-2 text-xs">
             <div className="w-[80px]">
               <Select
-                value={item.unit_name}
-                onValueChange={(val) => handleUpdateItem(index, "unit_name", val)}
+                value={item.unit_id || defaultUnitId}
+                onValueChange={(val) => {
+                  const newItems = [...items];
+                  newItems[index] = {
+                    ...newItems[index],
+                    unit_id: val,
+                    unit_name: val === defaultUnitId ? defaultUnitName : item.unit_name,
+                  };
+                  onChange(newItems);
+                }}
               >
                 <SelectTrigger className="h-7 text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={defaultUnitName}>{defaultUnitName}</SelectItem>
+                  {defaultUnitId && (
+                    <SelectItem value={defaultUnitId}>{defaultUnitName}</SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -91,7 +113,12 @@ export function MoqInlineEdit({ defaultUnitName = "pcs", items, onChange }: MoqI
             </div>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 text-destructive"
+                >
                   <Trash2 className="h-3 w-3" />
                 </Button>
               </AlertDialogTrigger>

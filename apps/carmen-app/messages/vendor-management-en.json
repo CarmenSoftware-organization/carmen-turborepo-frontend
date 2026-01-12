@@ -165,7 +165,8 @@
     "vendor_instruction": "Vendor Instruction",
     "vendor_instruction_placeholder": "Enter vendor instruction",
     "product_name": "Product Name",
-    "product_code": "Product Code"
+    "product_code": "Product Code",
+    "order_unit": "Order Unit"
   },
   "RFP": {
     "title": "Request for Pricing",

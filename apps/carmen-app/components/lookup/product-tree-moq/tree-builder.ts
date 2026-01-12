@@ -68,6 +68,7 @@ export function buildTreeStructure(
       product_category: category,
       product_sub_category: subCategory,
       product_item_group: itemGroup,
+      inventory_unit_id: product.inventory_unit_id,
       inventory_unit_name: product.inventory_unit_name,
     };
 

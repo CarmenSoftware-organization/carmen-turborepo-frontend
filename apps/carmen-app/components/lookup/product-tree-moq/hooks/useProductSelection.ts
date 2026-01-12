@@ -118,6 +118,7 @@ export function useProductSelection({
           product_category: item?.product_category,
           product_sub_category: item?.product_sub_category,
           product_item_group: item?.product_item_group,
+          inventory_unit_id: item?.inventory_unit_id,
           inventory_unit_name: item?.inventory_unit_name,
         };
       });
@@ -141,6 +142,7 @@ export function useProductSelection({
           product_category: item?.product_category,
           product_sub_category: item?.product_sub_category,
           product_item_group: item?.product_item_group,
+          inventory_unit_id: item?.inventory_unit_id,
           inventory_unit_name: item?.inventory_unit_name,
         };
       });

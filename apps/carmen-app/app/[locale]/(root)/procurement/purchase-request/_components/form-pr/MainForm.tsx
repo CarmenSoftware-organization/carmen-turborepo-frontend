@@ -13,7 +13,6 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/animate-ui/components/radix/tabs";
-import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import PurchaseItemDataGrid from "./PurchaseItemDataGrid";
 import ReviewStageDialog from "./dialogs/ReviewStageDialog";
 import CancelConfirmDialog from "./dialogs/CancelConfirmDialog";
@@ -32,6 +31,7 @@ import { useMainFormLogic } from "../../_hooks/use-main-form-logic";
 import { PurchaseRequestProvider } from "./PurchaseRequestContext";
 import { CreatePrDtoType, CreatePrSchema } from "../../_schemas/purchase-request-form.schema";
 import { PR_STATUS } from "../../_constants/pr-status";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 interface Props {
   mode: formType;
@@ -210,6 +210,8 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
+        title={tPR("confirm_delete")}
+        description={tPR("confirm_delete_message")}
       />
 
       <CancelConfirmDialog

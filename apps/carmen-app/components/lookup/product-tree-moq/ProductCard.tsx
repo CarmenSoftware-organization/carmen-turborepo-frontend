@@ -33,6 +33,7 @@ interface ProductCardProps {
     product_category?: { id: string; name: string };
     product_sub_category?: { id: string; name: string };
     product_item_group?: { id: string; name: string };
+    inventory_unit_id?: string;
     inventory_unit_name?: string;
   };
   readonly onRemove: (productId: string) => void;
@@ -62,11 +63,10 @@ export function ProductCard({ product, onRemove, moqItems, onMoqChange }: Produc
         </div>
       </div>
 
-      {/* Delete Button (Absolute) */}
-      {/* Delete Button (Absolute) */}
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button
+            type="button"
             variant="ghost"
             size="icon"
             className="absolute top-1 right-1 h-6 w-6 text-muted-foreground/50 hover:text-destructive hover:bg-transparent opacity-0 group-hover:opacity-100 transition-opacity"
@@ -117,6 +117,7 @@ export function ProductCard({ product, onRemove, moqItems, onMoqChange }: Produc
         </div>
 
         <Button
+          type="button"
           variant="ghost"
           size="sm"
           className={cn(
@@ -138,7 +139,8 @@ export function ProductCard({ product, onRemove, moqItems, onMoqChange }: Produc
       {showMoq && (
         <div className="animate-in slide-in-from-top-1 duration-200">
           <MoqInlineEdit
-            defaultUnitName={product.inventory_unit_name}
+            defaultUnitId={product.inventory_unit_id || ""}
+            defaultUnitName={product.inventory_unit_name || "pcs"}
             items={moqItems}
             onChange={onMoqChange}
           />

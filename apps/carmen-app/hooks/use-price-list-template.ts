@@ -155,7 +155,7 @@ export const useUpdatePriceListTemplate = (token: string, buCode: string, id: st
         token,
         data,
         "Failed to update price list template",
-        "PUT"
+        "PATCH"
       );
     },
     onSuccess: () => {

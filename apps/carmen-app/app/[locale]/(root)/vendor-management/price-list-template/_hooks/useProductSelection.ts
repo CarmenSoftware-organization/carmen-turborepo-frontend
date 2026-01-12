@@ -12,6 +12,11 @@ export const useProductSelection = (
       templateData?.products?.map((product) => ({
         id: product.id,
         name: product.product_name || "",
+        code: product.product_code || "",
+        default_order: {
+          unit_id: product.default_order?.unit_id || "",
+          unit_name: product.default_order?.unit_name || "",
+        },
         moq:
           product.moq?.map((m) => ({
             ...m,

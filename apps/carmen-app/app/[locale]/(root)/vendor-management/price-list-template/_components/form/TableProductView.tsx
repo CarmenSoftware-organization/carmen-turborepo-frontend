@@ -22,24 +22,28 @@ export default function TableProductView({ initialProducts = [] }: Props) {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-12 text-center">#</TableHead>
             <TableHead>{t("product_name")}</TableHead>
+            <TableHead>{t("order_unit")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {initialProducts.length > 0 ? (
-            initialProducts.map((product) => (
+            initialProducts.map((product, index) => (
               <TableRow key={product.id}>
+                <TableCell className="w-12 text-center">{index + 1}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    {product.name}
                     <Badge variant="product_badge">{product.code || "-"}</Badge>
+                    {product.name ?? "-"}
                   </div>
                 </TableCell>
+                <TableCell>{product?.default_order?.unit_name || "-"}</TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={2} className="h-24 text-center">
+              <TableCell colSpan={3} className="h-24 text-center">
                 {t("no_products")}
               </TableCell>
             </TableRow>

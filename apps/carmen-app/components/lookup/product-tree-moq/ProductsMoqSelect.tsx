@@ -1,21 +1,11 @@
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { ProductCard } from "./ProductCard";
 import { MoqItem } from "./types";
 
@@ -28,6 +18,7 @@ interface SelectedProduct {
   product_category?: { id: string; name: string };
   product_sub_category?: { id: string; name: string };
   product_item_group?: { id: string; name: string };
+  inventory_unit_id?: string;
   inventory_unit_name?: string;
 }
 
@@ -49,6 +40,7 @@ export function ProductsMoqSelect({
   onMoqChange,
 }: Props) {
   const [selectedSearchQuery, setSelectedSearchQuery] = useState("");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const tCommon = useTranslations("Common");
 
   const filteredSelectedProducts = useMemo(() => {
@@ -94,31 +86,29 @@ export function ProductsMoqSelect({
                 {tCommon("selected")} {filteredSelectedProducts.length}
               </Badge>
               {hasSelectedProducts && (
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      data-id="remove-all-selected-products"
-                      className="text-destructive"
-                    >
-                      <Trash2 />
-                      {tCommon("un_select_all")}
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will remove all selected products.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={onRemoveAll}>Confirm</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    data-id="remove-all-selected-products"
+                    className="text-destructive"
+                    onClick={() => setShowDeleteDialog(true)}
+                  >
+                    <Trash2 />
+                    {tCommon("un_select_all")}
+                  </Button>
+                  <DeleteConfirmDialog
+                    open={showDeleteDialog}
+                    onOpenChange={setShowDeleteDialog}
+                    onConfirm={() => {
+                      onRemoveAll();
+                      setShowDeleteDialog(false);
+                    }}
+                    title={tCommon("confirm_delete")}
+                    description={tCommon("confirm_delete_all_products")}
+                  />
+                </>
               )}
             </div>
             <ScrollArea className="flex-1 max-h-[calc(100vh-250px)]">

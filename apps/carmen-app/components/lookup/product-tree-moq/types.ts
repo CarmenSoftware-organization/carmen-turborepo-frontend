@@ -10,6 +10,7 @@ export interface TreeNodeData {
   product_category?: { id: string; name: string };
   product_sub_category?: { id: string; name: string };
   product_item_group?: { id: string; name: string };
+  inventory_unit_id?: string;
   inventory_unit_name?: string;
 }
 
@@ -24,6 +25,7 @@ export interface InitialProduct {
   id: string;
   name: string;
   code?: string;
+  default_order?: { unit_id: string; unit_name: string };
   moq?: MoqItem[];
 }
 
@@ -36,6 +38,7 @@ export interface ProductData {
   product_category?: { id: string; name: string };
   product_sub_category?: { id: string; name: string };
   product_item_group?: { id: string; name: string };
+  inventory_unit_id?: string;
   inventory_unit_name?: string;
 }
 

@@ -23,11 +23,12 @@ import ProductsTab from "./ProductsTab";
 import RFPTabs from "./RFPTabs";
 import { FormValues, FormSchema } from "../../_schema/price-list-template.schema";
 import { useProductSelection } from "../../_hooks/useProductSelection";
-import { ChevronLeft, Loader2, PenBoxIcon, Plus, Save, X } from "lucide-react";
+import { ChevronLeft, Loader2, PenBoxIcon, Save, SaveIcon, X } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
 import { useTranslations } from "next-intl";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { Badge } from "@/components/ui/badge";
+import JsonViewer from "@/components/JsonViewer";
 
 interface Props {
   readonly templateData?: PriceListTemplateDetailsDto;
@@ -178,12 +179,13 @@ export default function MainForm({ templateData, mode }: Props) {
             <Button
               type="submit"
               form="price-list-template-form"
+              size={"sm"}
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Plus className="h-4 w-4" />
+                <SaveIcon className="h-4 w-4" />
               )}
               {tCommon("save")}
             </Button>
@@ -192,15 +194,19 @@ export default function MainForm({ templateData, mode }: Props) {
       </div>
       <div className="flex-1 overflow-hidden mt-4">
         <Form {...form}>
-          <form id="price-list-template-form" onSubmit={form.handleSubmit(onSubmit)}>
+          <form
+            id="price-list-template-form"
+            onSubmit={(e) => {
+              e.stopPropagation();
+              form.handleSubmit(onSubmit)(e);
+            }}
+          >
             <Tabs defaultValue="overview" className="flex flex-col">
-              <div className="border-b border-border/40 mb-6">
-                <TabsList className="bg-transparent p-0 h-auto gap-6">
-                  <TabsTrigger value="overview">{tPlt("overview")}</TabsTrigger>
-                  <TabsTrigger value="products">{tPlt("product")}</TabsTrigger>
-                  {templateData && <TabsTrigger value="rfps">{tPlt("rfp")}</TabsTrigger>}
-                </TabsList>
-              </div>
+              <TabsList>
+                <TabsTrigger value="overview">{tPlt("overview")}</TabsTrigger>
+                <TabsTrigger value="products">{tPlt("product")}</TabsTrigger>
+                {templateData && <TabsTrigger value="rfps">{tPlt("rfp")}</TabsTrigger>}
+              </TabsList>
               <div className="flex-1 overflow-y-auto min-h-[500px]">
                 <TabsContent value="overview" className="mt-0">
                   <OverviewTab form={form} isViewMode={isViewMode} templateData={templateData} />

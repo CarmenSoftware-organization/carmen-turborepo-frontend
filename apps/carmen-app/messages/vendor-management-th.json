@@ -165,7 +165,8 @@
     "vendor_instruction": "คำแนะนำผู้จัดจำหน่าย",
     "vendor_instruction_placeholder": "กรอกคำแนะนำผู้จัดจำหน่าย",
     "product_name": "ชื่อสินค้า",
-    "product_code": "โค้ดสินค้า"
+    "product_code": "โค้ดสินค้า",
+    "order_unit": "หน่วยสั่งซื้อ"
   },
   "RFP": {
     "title": "รายงานขอราคาสินค้า (แคมเปญ)",

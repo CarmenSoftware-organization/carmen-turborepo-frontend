@@ -11,7 +11,6 @@ import { getCoreRowModel, useReactTable, getExpandedRowModel } from "@tanstack/r
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { createPurchaseItemColumns } from "./PurchaseItemColumns";
@@ -19,6 +18,7 @@ import { usePurchaseItemTable, PR_ITEM_BULK_ACTION } from "../../_hooks/use-purc
 import BulkActionDialog from "./dialogs/BulkActionDialog";
 import SelectAllDialog from "./dialogs/SelectAllDialog";
 import { useCurrenciesQuery } from "@/hooks/use-currency";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 const EMPTY_ARRAY: PurchaseRequestDetail[] = [];
 
@@ -314,6 +314,8 @@ export default function PurchaseItemDataGrid({
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
+        title={tPr("confirm_delete")}
+        description={tPr("confirm_delete_message")}
       />
 
       <SelectAllDialog
