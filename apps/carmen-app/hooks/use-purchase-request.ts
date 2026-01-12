@@ -23,7 +23,7 @@ export const usePurchaseRequest = (
   const API_URL = type === "my-pending" ? MY_PENDING : PR_URL;
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["purchase-request", buCode, params],
+    queryKey: ["purchase-request", buCode, params, type],
     queryFn: async () => {
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");

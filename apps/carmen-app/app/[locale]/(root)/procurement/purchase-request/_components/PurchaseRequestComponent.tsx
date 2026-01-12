@@ -18,7 +18,6 @@ import { usePurchaseRequest } from "@/hooks/use-purchase-request";
 import { useDebounce } from "../_hooks/use-debounce";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { parseSortString } from "@/utils/table";
-
 import { convertStatus } from "@/utils/status";
 import FilterPurchaseRequest, { PurchaseRequestFilterValues } from "./FilterPurchaseRequest";
 import ExportDropdown, { ExportFormat } from "@/components/ui-custom/ExportDropdown";
@@ -43,6 +42,7 @@ export default function PurchaseRequestComponent() {
   const buCodes = businessUnits?.map((bu) => bu.code).join(",") || buCode;
 
   const [currentBuCode, setCurrentBuCode] = useState(buCodes);
+  const [activeTab, setActiveTab] = useState(buCode);
 
   useEffect(() => {
     if (debouncedKeyword !== search) {
@@ -226,8 +226,8 @@ export default function PurchaseRequestComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="pr-list-filters">
-      <div className="flex items-center gap-2">
+    <div className="space-y-2">
+      <div className="filter-container" data-id="pr-list-filters">
         <SearchInput
           defaultValue={search}
           onSearch={setSearch}
@@ -235,12 +235,52 @@ export default function PurchaseRequestComponent() {
           placeholder={tCommon("search")}
           data-id="pr-list-search-input"
         />
+        <div className="flex items-center gap-2">
+          <SortComponent
+            fieldConfigs={sortFields}
+            sort={sort}
+            setSort={setSort}
+            data-id="pr-list-sort-dropdown"
+          />
+
+          <FilterPurchaseRequest
+            onApply={handleApplyFilter}
+            onReset={handleResetFilter}
+            initialValues={getCurrentFilterValues()}
+          />
+
+          <div className="hidden lg:block">
+            <div className="flex items-center gap-2">
+              <Button
+                variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
+                size={"sm"}
+                onClick={() => setView(VIEW.LIST)}
+                aria-label="List view"
+              >
+                <List className="h-4 w-4" />
+                {tCommon("list_view")}
+              </Button>
+              <Button
+                variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
+                size={"sm"}
+                onClick={() => setView(VIEW.GRID)}
+                aria-label="Grid view"
+              >
+                <Grid className="h-4 w-4" />
+                {tCommon("grid_view")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
         <Button
           size={"sm"}
           className="h-8"
           onClick={() => {
             setCurrentBuCode(buCodes);
             setFetchType("my-pending");
+            setActiveTab(buCode);
           }}
           variant={fetchType === "my-pending" ? "default" : "outlinePrimary"}
         >
@@ -249,10 +289,11 @@ export default function PurchaseRequestComponent() {
         <Button
           size={"sm"}
           className="h-8"
-          variant={!fetchType ? "default" : "outlinePrimary"}
+          variant={fetchType ? "outlinePrimary" : "default"}
           onClick={() => {
             setCurrentBuCode(buCode);
             setFetchType(undefined);
+            setActiveTab(buCode);
           }}
         >
           {tDataControls("allDoc")}
@@ -263,47 +304,6 @@ export default function PurchaseRequestComponent() {
           onSetStage={setFilterStage}
           value={filterStage}
         />
-      </div>
-      <div className="flex items-center gap-2">
-        <div>
-          <SortComponent
-            fieldConfigs={sortFields}
-            sort={sort}
-            setSort={setSort}
-            data-id="pr-list-sort-dropdown"
-          />
-        </div>
-
-        <div>
-          <FilterPurchaseRequest
-            onApply={handleApplyFilter}
-            onReset={handleResetFilter}
-            initialValues={getCurrentFilterValues()}
-          />
-        </div>
-
-        <div className="hidden lg:block">
-          <div className="flex items-center gap-2">
-            <Button
-              variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
-              size={"sm"}
-              onClick={() => setView(VIEW.LIST)}
-              aria-label="List view"
-            >
-              <List className="h-4 w-4" />
-              {tCommon("list_view")}
-            </Button>
-            <Button
-              variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
-              size={"sm"}
-              onClick={() => setView(VIEW.GRID)}
-              aria-label="Grid view"
-            >
-              <Grid className="h-4 w-4" />
-              {tCommon("grid_view")}
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -316,7 +316,7 @@ export default function PurchaseRequestComponent() {
 
   const content = (
     <ErrorBoundary>
-      <Tabs defaultValue={buCode?.split(",")[0] || ""}>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-4">
           {prs?.data?.map((bu: any) => (
             <TabsTrigger key={bu.bu_code} value={bu.bu_code}>
