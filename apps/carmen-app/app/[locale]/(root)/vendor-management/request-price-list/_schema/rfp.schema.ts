@@ -12,7 +12,7 @@ export const rfpFormSchema = z
       required_error: "End date is required",
     }),
     pricelist_template_id: z.string().optional(),
-    dimension: z.string().optional(),
+    dimension: z.any(),
     info: z.string().optional(),
     email_template_id: z.string().optional(),
     vendors: z
@@ -26,7 +26,7 @@ export const rfpFormSchema = z
               contact_person: z.string().optional(),
               contact_phone: z.string().optional(),
               contact_email: z.string().optional(),
-              dimension: z.string().optional(),
+              dimension: z.any(),
             })
           )
           .optional(),

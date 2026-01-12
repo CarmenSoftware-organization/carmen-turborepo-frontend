@@ -75,7 +75,11 @@ export default function OverviewTab({ form, isViewMode, templates }: Props) {
             <FormItem>
               <FormLabel>{tRfp("rfp_name")}</FormLabel>
               <FormControl>
-                <Input {...field} disabled={isViewMode} placeholder={tRfp("rfp_name_placeholder")} />
+                <Input
+                  {...field}
+                  disabled={isViewMode}
+                  placeholder={tRfp("rfp_name_placeholder")}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -193,6 +197,11 @@ export default function OverviewTab({ form, isViewMode, templates }: Props) {
                 </PopoverContent>
               </Popover>
               <FormMessage />
+              {form.formState.errors.end_date && (
+                <p className="text-[0.8rem] font-medium text-destructive">
+                  {form.formState.errors.end_date.message as string}
+                </p>
+              )}
             </FormItem>
           )}
         />
@@ -205,7 +214,13 @@ export default function OverviewTab({ form, isViewMode, templates }: Props) {
           <FormItem>
             <FormLabel>{tRfp("description")}</FormLabel>
             <FormControl>
-              <Textarea {...field} disabled={isViewMode} className="resize-none" rows={3} placeholder={tRfp("description_placeholder")} />
+              <Textarea
+                {...field}
+                disabled={isViewMode}
+                className="resize-none"
+                rows={3}
+                placeholder={tRfp("description_placeholder")}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>

@@ -87,6 +87,7 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
   const updateMutation = useUpdateRfp(token, buCode, rfpData?.id || "");
 
   const onSubmit = async (data: RfpFormValues) => {
+    console.log(data);
     if (currentMode === formType.ADD) {
       const dto = transformToCreateDto(data, vendors?.data || []);
       await createRfp(dto, createMutation, form, data, (result) => {
@@ -150,7 +151,15 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
                 <X className="h-4 w-4" />
                 {tRfp("cancel")}
               </Button>
-              <Button size="sm" onClick={form.handleSubmit(onSubmit)}>
+              <Button
+                size="sm"
+                onClick={form.handleSubmit(onSubmit, (errors) => {
+                  console.error("Form Validation Errors:", errors);
+                  toastError({
+                    message: `Form validation failed: ${Object.keys(errors).join(", ")}`,
+                  });
+                })}
+              >
                 <Save className="h-4 w-4" />
                 {tRfp("save")}
               </Button>
