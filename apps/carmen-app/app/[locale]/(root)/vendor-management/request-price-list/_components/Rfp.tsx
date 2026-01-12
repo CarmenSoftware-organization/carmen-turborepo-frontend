@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRfps } from "@/hooks/use-rfp";
 import { useURL } from "@/hooks/useURL";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
 import { FileDown, Filter, Grid, List, Plus, Printer } from "lucide-react";
@@ -57,46 +57,32 @@ export default function Rfp() {
   const title = tRfp("title");
 
   const actionButtons = (
-    <TooltipProvider>
-      <div className="action-btn-container" data-id="rfp-action-buttons">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size={"sm"}
-              onClick={() => {
-                router.push("/vendor-management/request-price-list/new");
-              }}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tRfp("add_rfp")}</TooltipContent>
-        </Tooltip>
+    <div className="action-btn-container" data-id="rfp-action-buttons">
+      <Button
+        size={"sm"}
+        onClick={() => {
+          router.push("/vendor-management/request-price-list/new");
+        }}
+      >
+        <Plus className="h-4 w-4" />
+        {tCommon("add")}
+      </Button>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outlinePrimary"
-              className="group"
-              size={"sm"}
-              data-id="rfp-list-export-button"
-            >
-              <FileDown className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("export")}</TooltipContent>
-        </Tooltip>
+      <Button
+        variant="outlinePrimary"
+        className="group"
+        size={"sm"}
+        data-id="rfp-list-export-button"
+      >
+        <FileDown className="h-4 w-4" />
+        <p>{tCommon("export")}</p>
+      </Button>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outlinePrimary" size={"sm"} data-id="rfp-list-print-button">
-              <Printer className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("print")}</TooltipContent>
-        </Tooltip>
-      </div>
-    </TooltipProvider>
+      <Button variant="outlinePrimary" size={"sm"} data-id="rfp-list-print-button">
+        <Printer className="h-4 w-4" />
+        <p>{tCommon("print")}</p>
+      </Button>
+    </div>
   );
 
   const filters = (
@@ -107,69 +93,42 @@ export default function Rfp() {
         placeholder={tCommon("search")}
         data-id="vendor-list-search-input"
       />
-      <TooltipProvider>
-        <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div>
-                <SortComponent
-                  fieldConfigs={sortFields}
-                  sort={sort}
-                  setSort={setSort}
-                  data-id="pr-list-sort-dropdown"
-                />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{tCommon("sort")}</p>
-            </TooltipContent>
-          </Tooltip>
+      <div className="flex items-center gap-2">
+        <div>
+          <SortComponent
+            fieldConfigs={sortFields}
+            sort={sort}
+            setSort={setSort}
+            data-id="pr-list-sort-dropdown"
+          />
+        </div>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size={"sm"}>
-                <Filter className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{tCommon("filter")}</TooltipContent>
-          </Tooltip>
+        <Button size={"sm"}>
+          <Filter className="h-4 w-4" />
+          {tCommon("filter")}
+        </Button>
 
-          <div className="hidden lg:block">
-            <div className="flex items-center gap-2">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
-                    size={"sm"}
-                    onClick={() => setView(VIEW.LIST)}
-                    aria-label="List view"
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{tCommon("list_view")}</p>
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
-                    size={"sm"}
-                    onClick={() => setView(VIEW.GRID)}
-                    aria-label="Grid view"
-                  >
-                    <Grid className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{tCommon("grid_view")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
+        <div className="hidden lg:block">
+          <div className="flex items-center gap-2">
+            <Button
+              variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
+              size={"sm"}
+              onClick={() => setView(VIEW.LIST)}
+              aria-label="List view"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
+              size={"sm"}
+              onClick={() => setView(VIEW.GRID)}
+              aria-label="Grid view"
+            >
+              <Grid className="h-4 w-4" />
+            </Button>
           </div>
         </div>
-      </TooltipProvider>
+      </div>
     </div>
   );
 

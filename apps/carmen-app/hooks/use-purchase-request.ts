@@ -31,8 +31,6 @@ export const usePurchaseRequest = (
 
       const queryParams = { ...params, bu_code: buCode };
 
-      console.log("queryParams", queryParams);
-
       return await getAllApiRequest(API_URL, token, "Error fetching PRs", queryParams);
     },
     enabled: !!token && !!buCode,

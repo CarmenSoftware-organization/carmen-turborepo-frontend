@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { CategoryNode, NODE_TYPE } from "@/dtos/category.dto";
 import { ChevronRight, Edit, Plus, Trash2 } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -141,46 +141,14 @@ export default function TreeNode({
 
         <div className="flex items-center gap-2 group-hover:flex hidden">
           {node.type !== NODE_TYPE.ITEM_GROUP && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size={"sm"}
-                    onClick={() => onAdd(node)}
-                    className="h-6 w-6"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent className="bg-background text-foreground">
-                  {node.type === NODE_TYPE.CATEGORY
-                    ? tCategory("add_subcategory")
-                    : tCategory("add_item_group")}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Button variant="ghost" size={"sm"} onClick={() => onAdd(node)} className="h-6 w-6">
+              <Plus className="h-4 w-4" />
+            </Button>
           )}
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size={"sm"}
-                  onClick={() => onEdit(node)}
-                  className="h-6 w-6"
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent className="bg-background text-foreground">
-                {node.type === NODE_TYPE.CATEGORY
-                  ? tCategory("edit_subcategory")
-                  : tCategory("edit_item_group")}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Button variant="ghost" size={"sm"} onClick={() => onEdit(node)} className="h-6 w-6">
+            <Edit className="h-4 w-4" />
+          </Button>
 
           <Button variant="ghost" size={"sm"} onClick={() => onDelete(node)} className="h-6 w-6">
             <Trash2 className="h-4 w-4" />

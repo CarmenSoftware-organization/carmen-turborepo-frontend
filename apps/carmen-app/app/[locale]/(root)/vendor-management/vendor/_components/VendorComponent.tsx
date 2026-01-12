@@ -16,7 +16,6 @@ import { useEffect, useState } from "react";
 import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { vendorManagementPermission } from "@/lib/permission";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const sortFields = [{ key: "name", label: "Name" }];
 
@@ -67,43 +66,24 @@ export default function VendorComponent() {
 
   const actionButtons = (
     <div className="action-btn-container" data-id="vendor-action-buttons">
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size={"sm"}
-              disabled={!vendorPerms.canCreate}
-              onClick={() => {
-                router.push("/vendor-management/vendor/new");
-              }}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent> {tVendor("add_vendor")}</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outlinePrimary"
-              className="group"
-              size="sm"
-              data-id="vendor-export-button"
-            >
-              <FileDown className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("export")}</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outlinePrimary" size="sm" data-id="vendor-print-button">
-              <Printer className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("print")}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Button
+        size={"sm"}
+        disabled={!vendorPerms.canCreate}
+        onClick={() => {
+          router.push("/vendor-management/vendor/new");
+        }}
+      >
+        <Plus className="h-4 w-4" />
+        {tCommon("add")}
+      </Button>
+      <Button variant="outlinePrimary" className="group" size="sm" data-id="vendor-export-button">
+        <FileDown className="h-4 w-4" />
+        <p>{tCommon("export")}</p>
+      </Button>
+      <Button variant="outlinePrimary" size="sm" data-id="vendor-print-button">
+        <Printer className="h-4 w-4" />
+        <p>{tCommon("print")}</p>
+      </Button>
     </div>
   );
 
@@ -131,6 +111,7 @@ export default function VendorComponent() {
         />
         <Button size={"sm"}>
           <Filter className="h-4 w-4" />
+          {tCommon("filter")}
         </Button>
       </div>
     </div>

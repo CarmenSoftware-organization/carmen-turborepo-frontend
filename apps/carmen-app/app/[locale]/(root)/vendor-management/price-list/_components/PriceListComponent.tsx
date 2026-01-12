@@ -8,7 +8,7 @@ import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListPriceList from "./ListPriceList";
 import { useAuth } from "@/context/AuthContext";
 import SignInDialog from "@/components/SignInDialog";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { useRouter } from "@/lib/navigation";
 import { useURL } from "@/hooks/useURL";
 import SearchInput from "@/components/ui-custom/SearchInput";
@@ -38,46 +38,32 @@ export default function PriceListComponent() {
   }, [isUnauthorized]);
 
   const actionButtons = (
-    <TooltipProvider>
-      <div className="action-btn-container" data-id="price-list-action-buttons">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size={"sm"}
-              onClick={() => {
-                router.push("/vendor-management/price-list/new");
-              }}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tPriceList("add_price_list")}</TooltipContent>
-        </Tooltip>
+    <div className="action-btn-container" data-id="price-list-action-buttons">
+      <Button
+        size={"sm"}
+        onClick={() => {
+          router.push("/vendor-management/price-list/new");
+        }}
+      >
+        <Plus className="h-4 w-4" />
+        {tCommon("add")}
+      </Button>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outlinePrimary"
-              className="group"
-              size={"sm"}
-              data-id="price-list-list-export-button"
-            >
-              <FileDown className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("export")}</TooltipContent>
-        </Tooltip>
+      <Button
+        variant="outlinePrimary"
+        className="group"
+        size={"sm"}
+        data-id="price-list-list-export-button"
+      >
+        <FileDown className="h-4 w-4" />
+        <p>{tCommon("export")}</p>
+      </Button>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outlinePrimary" size={"sm"} data-id="price-list-list-print-button">
-              <Printer className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{tCommon("print")}</TooltipContent>
-        </Tooltip>
-      </div>
-    </TooltipProvider>
+      <Button variant="outlinePrimary" size={"sm"} data-id="price-list-list-print-button">
+        <Printer className="h-4 w-4" />
+        <p>{tCommon("print")}</p>
+      </Button>
+    </div>
   );
 
   const filters = (
@@ -88,65 +74,38 @@ export default function PriceListComponent() {
         placeholder={tCommon("search")}
         data-id="price-list-list-search-input"
       />
-      <TooltipProvider>
-        <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div>
-                <SortComponent
-                  fieldConfigs={sortFields}
-                  sort={sort}
-                  setSort={setSort}
-                  data-id="price-list-list-sort-dropdown"
-                />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{tCommon("sort")}</p>
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size={"sm"}>
-                <Filter className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{tCommon("filter")}</TooltipContent>
-          </Tooltip>
-          <div className="hidden lg:flex items-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
-                  size={"sm"}
-                  onClick={() => setView(VIEW.LIST)}
-                  aria-label="List view"
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{tCommon("list_view")}</p>
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
-                  size={"sm"}
-                  onClick={() => setView(VIEW.GRID)}
-                  aria-label="Grid view"
-                >
-                  <Grid className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{tCommon("grid_view")}</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
+      <div className="flex items-center gap-2">
+        <div>
+          <SortComponent
+            fieldConfigs={sortFields}
+            sort={sort}
+            setSort={setSort}
+            data-id="price-list-list-sort-dropdown"
+          />
         </div>
-      </TooltipProvider>
+        <Button size={"sm"}>
+          <Filter className="h-4 w-4" />
+          {tCommon("filter")}
+        </Button>
+        <div className="hidden lg:flex items-center gap-2">
+          <Button
+            variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
+            size={"sm"}
+            onClick={() => setView(VIEW.LIST)}
+            aria-label="List view"
+          >
+            <List className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
+            size={"sm"}
+            onClick={() => setView(VIEW.GRID)}
+            aria-label="Grid view"
+          >
+            <Grid className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 
