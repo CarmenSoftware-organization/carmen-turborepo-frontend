@@ -1,21 +1,9 @@
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CategoryDto, CategoryNode, createCategorySchema } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import {
@@ -32,6 +20,7 @@ import NumberInput from "@/components/form-custom/NumberInput";
 import { Percent } from "lucide-react";
 import { InputValidate } from "@/components/ui-custom/InputValidate";
 import { TextareaValidate } from "@/components/ui-custom/TextareaValidate";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 interface CategoryFormProps {
   readonly mode: formType;
   readonly selectedNode?: CategoryNode;
@@ -263,18 +252,13 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
         </form>
       </Form>
 
-      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tCategory("confirm_edit")}</AlertDialogTitle>
-            <AlertDialogDescription>{tCategory("confirm_edit_description")}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirm}>{tCommon("continue")}</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={showConfirmDialog}
+        onOpenChange={setShowConfirmDialog}
+        onConfirm={handleConfirm}
+        title={tCategory("confirm_edit")}
+        description={tCategory("confirm_edit_description")}
+      />
     </div>
   );
 }

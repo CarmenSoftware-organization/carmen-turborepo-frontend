@@ -14,16 +14,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import CardLoading from "@/components/loading/CardLoading";
@@ -31,6 +21,7 @@ import CardLoading from "@/components/loading/CardLoading";
 import { formatDate } from "@/utils/format/date";
 import { useDeletePriceList } from "@/hooks/use-price-list";
 import { PriceListDtoList } from "@/dtos/price-list-dto";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 interface PriceListGridProps {
   priceLists: any[];
@@ -186,29 +177,13 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
         ))}
       </div>
 
-      <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tPriceList("delete_price_list")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {tPriceList("delete_price_list_confirmation")} &quot;{selectedPriceList?.vendor?.name}
-              &quot;? {tCommon("action_cannot_be_undone")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setAlertOpen(false)}>
-              {tCommon("cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={isDeleting}
-            >
-              {isDeleting ? tCommon("deleting") : tCommon("delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={alertOpen}
+        onOpenChange={setAlertOpen}
+        title={tPriceList("delete_price_list")}
+        description={`${tPriceList("delete_price_list_confirmation")} "${selectedPriceList?.vendor?.name}"? ${tCommon("action_cannot_be_undone")}`}
+        onConfirm={handleDelete}
+      />
     </>
   );
 }

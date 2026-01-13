@@ -4,16 +4,6 @@ import { Plus, FileDown, Printer } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { TaxProfileEditDto, TaxProfileFormData, TaxProfileGetAllDto } from "@/dtos/tax-profile.dto";
 import { toastSuccess } from "@/components/ui-custom/Toast";
 import { FormTaxProfile } from "./FormTaxProfile";
@@ -28,6 +18,7 @@ import {
   useTaxProfileQuery,
   useUpdateTaxProfile,
 } from "@/hooks/use-tax-profile";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 export function TaxProfileComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -181,25 +172,13 @@ export function TaxProfileComponent() {
         onCancel={handleDialogClose}
       />
 
-      <AlertDialog open={deleteProfileId !== null} onOpenChange={handleDeleteCancel}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tTaxProfile("del_tax_profile")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {tTaxProfile("del_tax_profile_description")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleDeleteCancel}>{tCommon("cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              {tCommon("delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={deleteProfileId !== null}
+        onOpenChange={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title={tTaxProfile("del_tax_profile")}
+        description={tTaxProfile("del_tax_profile_description")}
+      />
     </>
   );
 }

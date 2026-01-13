@@ -11,16 +11,6 @@ import { Plus, Printer, FileDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
   useBuTypeMutation,
   useBuTypeQuery,
   useDeleteBuType,
@@ -32,6 +22,7 @@ import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
 import { FormBuTypeDialog } from "@/components/shared/FormBuTypeDialog";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 export default function BusinessTypeComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -265,25 +256,13 @@ export default function BusinessTypeComponent() {
         onCancel={handleDialogClose}
       />
 
-      <AlertDialog open={deleteProfileId !== null} onOpenChange={() => setDeleteProfileId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tBusinessType("confirm_delete")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {tBusinessType("confirm_delete_description")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              {tCommon("delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={deleteProfileId !== null}
+        onOpenChange={() => setDeleteProfileId(null)}
+        onConfirm={confirmDelete}
+        title={tBusinessType("confirm_delete")}
+        description={`${tBusinessType("confirm_delete_description")} ${deleteProfileId}?`}
+      />
     </>
   );
 }

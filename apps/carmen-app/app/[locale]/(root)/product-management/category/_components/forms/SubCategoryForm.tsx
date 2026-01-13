@@ -17,18 +17,7 @@ import {
 } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState, useMemo } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { useTranslations } from "next-intl";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import LookupTaxProfile from "@/components/lookup/LookupTaxProfile";
@@ -36,6 +25,7 @@ import NumberInput from "@/components/form-custom/NumberInput";
 import { Percent } from "lucide-react";
 import { InputValidate } from "@/components/ui-custom/InputValidate";
 import { TextareaValidate } from "@/components/ui-custom/TextareaValidate";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 interface SubCategoryFormProps {
   readonly mode: formType;
   readonly selectedNode?: CategoryNode;
@@ -318,18 +308,13 @@ export function SubCategoryForm({
         </form>
       </Form>
 
-      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tCategory("confirm_edit")}</AlertDialogTitle>
-            <AlertDialogDescription>{tCategory("confirm_edit_description")}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirm}>{tAction("continue")}</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={showConfirmDialog}
+        onOpenChange={setShowConfirmDialog}
+        onConfirm={handleConfirm}
+        title={tCategory("confirm_edit")}
+        description={tCategory("confirm_edit_description")}
+      />
     </>
   );
 }

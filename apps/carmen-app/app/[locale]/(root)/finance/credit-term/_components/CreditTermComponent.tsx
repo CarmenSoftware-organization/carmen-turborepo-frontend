@@ -1,12 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import {
-  FileDown,
-  Filter,
-  Plus,
-  Printer,
-} from "lucide-react";
+import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
@@ -14,23 +9,10 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import { useState } from "react";
 import { useURL } from "@/hooks/useURL";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import {
-  CreditTermGetAllDto,
-  CreateCreditTermFormValues,
-} from "@/dtos/credit-term.dto";
+import { CreditTermGetAllDto, CreateCreditTermFormValues } from "@/dtos/credit-term.dto";
 import CreditTermDialog from "./CreditTermDialog";
 import CreditTermList from "./CreditTermList";
 import { formType } from "@/dtos/form.dto";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { toastSuccess } from "@/components/ui-custom/Toast";
 import {
   useCreateCreditTerm,
@@ -40,6 +22,7 @@ import {
 } from "@/hooks/use-credit-term";
 import { useQueryClient } from "@tanstack/react-query";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 const sortFields = [
   { key: "name", label: "Name" },
@@ -52,14 +35,14 @@ export default function CreditTermComponent() {
   const queryClient = useQueryClient();
   const { creditTerms, isLoading } = useCreditTermQuery(token, buCode);
 
-  const [selectedCreditTerm, setSelectedCreditTerm] =
-    useState<CreditTermGetAllDto | null>(null);
-  const { mutate: createCreditTerm, isPending: isCreating } =
-    useCreateCreditTerm(token, buCode);
-  const { mutate: updateCreditTerm, isPending: isUpdating } =
-    useUpdateCreditTerm(token, buCode, selectedCreditTerm?.id || "");
-  const { mutate: deleteCreditTerm, isPending: isDeleting } =
-    useDeleteCreditTerm(token, buCode);
+  const [selectedCreditTerm, setSelectedCreditTerm] = useState<CreditTermGetAllDto | null>(null);
+  const { mutate: createCreditTerm, isPending: isCreating } = useCreateCreditTerm(token, buCode);
+  const { mutate: updateCreditTerm, isPending: isUpdating } = useUpdateCreditTerm(
+    token,
+    buCode,
+    selectedCreditTerm?.id || ""
+  );
+  const { mutate: deleteCreditTerm, isPending: isDeleting } = useDeleteCreditTerm(token, buCode);
 
   const tCommon = useTranslations("Common");
   const [search, setSearch] = useURL("search");
@@ -75,9 +58,9 @@ export default function CreditTermComponent() {
 
   const parsedSort = sort
     ? {
-      field: sort.split(":")[0],
-      direction: sort.split(":")[1] as "asc" | "desc",
-    }
+        field: sort.split(":")[0],
+        direction: sort.split(":")[1] as "asc" | "desc",
+      }
     : undefined;
 
   const handleCreateCreditTerm = (data: CreateCreditTermFormValues) => {
@@ -146,11 +129,7 @@ export default function CreditTermComponent() {
         <FileDown className="h-4 w-4" />
         {tCommon("export")}
       </Button>
-      <Button
-        variant="outline"
-        size={"sm"}
-        data-id="credit-term-list-print-button"
-      >
+      <Button variant="outline" size={"sm"} data-id="credit-term-list-print-button">
         <Printer className="h-4 w-4" />
         {tCommon("print")}
       </Button>
@@ -210,37 +189,19 @@ export default function CreditTermComponent() {
       <CreditTermDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        onSubmit={
-          dialogMode === formType.ADD
-            ? handleCreateCreditTerm
-            : handleUpdateCreditTerm
-        }
+        onSubmit={dialogMode === formType.ADD ? handleCreateCreditTerm : handleUpdateCreditTerm}
         isLoading={dialogMode === formType.ADD ? isCreating : isUpdating}
         creditTerm={selectedCreditTerm}
         mode={dialogMode}
       />
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tCreditTerm("confirm_del_credit_term")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {tCreditTerm("confirm_del_credit_term_desc")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>
-              {tCommon("cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteCreditTerm}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {tCommon("delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteCreditTerm}
+        title={tCreditTerm("confirm_del_credit_term")}
+        description={tCreditTerm("confirm_del_credit_term_desc")}
+      />
     </>
   );
 }

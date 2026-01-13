@@ -17,16 +17,6 @@ import {
   CategoryNode,
   NODE_TYPE,
 } from "@/dtos/category.dto";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useCategoryTree } from "@/app/[locale]/(root)/product-management/category/_hooks/use-category-tree";
 import { useCategoryDialog } from "@/app/[locale]/(root)/product-management/category/_hooks/use-category-dialog";
@@ -35,6 +25,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import CategoryLoading from "@/components/loading/CategoryLoading";
 import { useTranslations } from "next-intl";
 import { useDebounce } from "@/hooks/useDebounce";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 export default function CategoryComponent() {
   const tCategory = useTranslations("Category");
@@ -379,8 +370,6 @@ export default function CategoryComponent() {
             result.statusCode === 204 ||
             (result.data && !result.error));
 
-        console.log("isSuccess", isSuccess);
-
         if (isSuccess) {
           toastSuccess({ message: tCategory("delete_success") });
           handleDeleteDialogChange(false);
@@ -516,27 +505,13 @@ export default function CategoryComponent() {
           onSubmit={handleFormSubmit}
         />
 
-        <AlertDialog open={deleteDialogOpen} onOpenChange={handleDeleteDialogChange}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {tCommon("delete")} {getNodeTypeLabel(nodeToDelete?.type)}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {nodeToDelete && getDeleteMessage(nodeToDelete)}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleConfirmDelete}
-                className="bg-destructive hover:bg-destructive/90"
-              >
-                {tCommon("delete")}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <DeleteConfirmDialog
+          open={deleteDialogOpen}
+          onOpenChange={handleDeleteDialogChange}
+          onConfirm={handleConfirmDelete}
+          title={`${tCommon("delete")} ${getNodeTypeLabel(nodeToDelete?.type)}`}
+          description={`${nodeToDelete && getDeleteMessage(nodeToDelete)}`}
+        />
       </div>
     );
   };

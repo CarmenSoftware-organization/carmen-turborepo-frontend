@@ -43,21 +43,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 const clusterSchema = z.object({
   code: z.string().min(1, "Code is required"),
@@ -417,27 +408,13 @@ export default function ClusterComponent() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the cluster
-              <span className="font-semibold"> {selectedCluster?.name}</span>.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        title="Are you sure?"
+        description={`This action cannot be undone. This will permanently delete the cluster "${selectedCluster?.name}".`}
+      />
     </div>
   );
 }

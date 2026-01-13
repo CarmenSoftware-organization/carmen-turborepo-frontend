@@ -6,16 +6,6 @@ import { useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import ButtonLink from "@/components/ButtonLink";
 import {
   DropdownMenu,
@@ -37,6 +27,7 @@ import { formatDate } from "@/utils/format/date";
 import { Badge } from "@/components/ui/badge";
 import { PriceListDtoList } from "@/dtos/price-list-dto";
 import { useDeletePriceList } from "@/hooks/use-price-list";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 interface ListPriceListProps {
   readonly priceLists?: any[];
@@ -46,6 +37,7 @@ interface ListPriceListProps {
 export default function ListPriceList({ priceLists = [], isLoading = false }: ListPriceListProps) {
   const { token, buCode, dateFormat } = useAuth();
   const tTableHeader = useTranslations("TableHeader");
+  const tPriceList = useTranslations("PriceList");
   const tCommon = useTranslations("Common");
   const queryClient = useQueryClient();
   const [deleteId, setDeleteId] = useState<string>("");
@@ -270,27 +262,13 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
         </div>
       </DataGrid>
 
-      <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Price List</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this price list for &quot;
-              {selectedPriceList?.vendor?.name}&quot;? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setAlertOpen(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={isDeleting}
-            >
-              {isDeleting ? "Deleting..." : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={alertOpen}
+        onOpenChange={setAlertOpen}
+        title={tPriceList("delete_price_list")}
+        description={`${tPriceList("delete_price_list_confirmation")} "${selectedPriceList?.vendor?.name}"? ${tCommon("action_cannot_be_undone")}`}
+        onConfirm={handleDelete}
+      />
     </>
   );
 }

@@ -19,6 +19,7 @@ interface DeleteConfirmDialogProps {
   readonly title: string;
   readonly description: string;
   readonly isLoading?: boolean;
+  readonly isDisable?: boolean;
 }
 
 export default function DeleteConfirmDialog({
@@ -28,6 +29,7 @@ export default function DeleteConfirmDialog({
   title,
   description,
   isLoading = false,
+  isDisable = false,
 }: DeleteConfirmDialogProps) {
   const tAction = useTranslations("Action");
 
@@ -42,7 +44,7 @@ export default function DeleteConfirmDialog({
           <AlertDialogCancel disabled={isLoading}>{tAction("cancel")}</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            disabled={isLoading}
+            disabled={isLoading || isDisable}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             {isLoading ? `${tAction("deleting")}...` : tAction("delete")}

@@ -20,19 +20,10 @@ import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/lib/navigation";
 import CardLoading from "@/components/loading/CardLoading";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useDeletePr } from "@/hooks/use-purchase-request";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 interface PurchaseRequestGridProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
@@ -322,26 +313,15 @@ export default function PurchaseRequestGrid({
         </Pagination>
       </div>
 
-      <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tPr("confirm_delete")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {tPr("confirm_delete_message")} &quot;{prToDelete?.pr_no}&quot;?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>{tPr("cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={isDeleting}
-            >
-              {isDeleting ? tPr("deleting") : tPr("delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConfirmDialog
+        open={alertOpen}
+        onOpenChange={setAlertOpen}
+        onConfirm={handleConfirmDelete}
+        title={tPr("confirm_delete")}
+        description={`${tPr("confirm_delete_message")} ${prToDelete?.pr_no}?`}
+        isLoading={isDeleting}
+        isDisable={isDeleting}
+      />
     </>
   );
 }
