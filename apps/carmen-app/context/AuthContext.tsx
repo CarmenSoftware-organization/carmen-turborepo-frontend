@@ -253,7 +253,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
     return {
       departments: defaultBu?.department || null,
-      currencyBase: selectedBu?.config?.currency_base || null,
+      currencyBase: selectedBu?.config?.currency_base.code || null,
       dateFormat: selectedBu?.config?.date_format || null,
       longTimeFormat: selectedBu?.config?.long_time_format || null,
       perpage: selectedBu?.config?.perpage || null,

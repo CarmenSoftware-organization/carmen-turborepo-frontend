@@ -12,9 +12,7 @@ type UseExchangeRateProps = {
   baseCurrency: string;
 };
 
-const fetchExchangeRates = async (
-  baseCurrency: string
-): Promise<ExchangeRateResponse> => {
+const fetchExchangeRates = async (baseCurrency: string): Promise<ExchangeRateResponse> => {
   const response = await fetch(
     `https://v6.exchangerate-api.com/v6/${exchangeRateApiKey}/latest/${baseCurrency}`
   );
@@ -33,6 +31,10 @@ const fetchExchangeRates = async (
 };
 
 export const useExchangeRate = ({ baseCurrency }: UseExchangeRateProps) => {
+  if (!baseCurrency) {
+    throw new Error("Base currency is required");
+  }
+
   const query = useQuery({
     queryKey: ["exchangeRates", baseCurrency],
     queryFn: () => fetchExchangeRates(baseCurrency),
