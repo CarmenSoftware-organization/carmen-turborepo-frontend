@@ -9,17 +9,12 @@ import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Banknote, Calendar, Hash } from "lucide-react";
-
-interface ExchangeRateItem {
-  currency_id: string;
-  currency_code: string;
-  exchange_rate: number;
-  at_date: string;
-}
+import { ExchangeRateItem } from "@/dtos/exchange-rate.dto";
+import { formatDate } from "@/utils/format/date";
+import { useAuth } from "@/context/AuthContext";
 
 interface ExcListProps {
   readonly excList?: ExchangeRateItem[];
-  readonly exchangeRates?: Record<string, number>;
   readonly isLoading?: boolean;
   readonly currentPage?: number;
   readonly totalPages?: number;
@@ -27,11 +22,11 @@ interface ExcListProps {
   readonly perpage?: number;
   readonly onPageChange?: (page: number) => void;
   readonly setPerpage?: (perpage: number) => void;
+  readonly onEdit: (currency: ExchangeRateItem) => void;
 }
 
 export default function ExcList({
   excList = [],
-  exchangeRates = {},
   isLoading = false,
   currentPage = 1,
   totalPages = 1,
@@ -39,9 +34,11 @@ export default function ExcList({
   perpage = 10,
   onPageChange,
   setPerpage,
+  onEdit,
 }: ExcListProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
+  const { dateFormat } = useAuth();
 
   const pagination: PaginationState = useMemo(
     () => ({
@@ -75,7 +72,11 @@ export default function ExcList({
             icon={<Hash className="h-4 w-4" />}
           />
         ),
-        cell: ({ row }) => <span className="font-medium">{row.original.currency_code}</span>,
+        cell: ({ row }) => (
+          <button type="button" className="btn-dialog text-sm" onClick={() => onEdit(row.original)}>
+            {row.original.currency_code}
+          </button>
+        ),
         enableSorting: false,
         size: 50,
         meta: {
@@ -109,7 +110,12 @@ export default function ExcList({
             icon={<Calendar className="h-4 w-4" />}
           />
         ),
-        cell: ({ row }) => <span>{row.original.at_date}</span>,
+        cell: ({ row }) => (
+          // <span>{row.original.at_date}</span>
+          <span className="text-left">
+            {formatDate(row.original.at_date, dateFormat || "yyyy-MM-dd")}
+          </span>
+        ),
         enableSorting: false,
         size: 150,
         meta: {
@@ -153,7 +159,7 @@ export default function ExcList({
         dense: false,
       }}
     >
-      <div className="w-full space-y-2.5">
+      <div className="w-full space-y-2">
         <DataGridContainer>
           <ScrollArea className="max-h-[calc(100vh-250px)]">
             <DataGridTable />

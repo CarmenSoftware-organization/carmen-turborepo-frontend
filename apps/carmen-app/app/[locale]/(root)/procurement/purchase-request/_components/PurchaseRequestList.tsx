@@ -206,9 +206,9 @@ export default function PurchaseRequestList({
           />
         ),
         cell: ({ row }) => (
-          <div className="text-left">
+          <span className="text-left">
             {formatDate(row.original.pr_date, dateFormat || "yyyy-MM-dd")}
-          </div>
+          </span>
         ),
         enableSorting: true,
         size: 120,

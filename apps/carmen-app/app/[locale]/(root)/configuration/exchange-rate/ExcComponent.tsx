@@ -13,6 +13,8 @@ import { RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import ExcList from "./ExcList";
+import ExcDialog from "./ExcDialog";
+import { ExchangeRateItem } from "@/dtos/exchange-rate.dto";
 
 export default function ExcComponent() {
   const { token, buCode, currencyBase } = useAuth();
@@ -26,17 +28,17 @@ export default function ExcComponent() {
 
   const { excData } = useExchangeRateQuery(token, buCode);
 
-  console.log("excData:", excData);
-
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
   const [sort, setSort] = useURL("sort");
 
   const [statusOpen, setStatusOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedExc, setSelectedExc] = useState<ExchangeRateItem | undefined>();
 
   const title = tExchangeRate("title");
 
-  const handleRefresh = () => {
+  const onSubmit = () => {
     const transformed = excData.map((exc: any) => ({
       currency_id: exc.currency_id,
       at_date: new Date().toISOString(),
@@ -58,19 +60,24 @@ export default function ExcComponent() {
   ];
 
   const actionButtons = (
-    <Button onClick={handleRefresh} disabled={isRefetching} data-id="exchange-rate-refresh-button">
+    <Button onClick={onSubmit} disabled={isRefetching} data-id="exchange-rate-refresh-button">
       <RefreshCw className="h-4 w-4" />
-      Retry
+      Refresh
     </Button>
   );
 
+  const onEdit = (exc: ExchangeRateItem) => {
+    setSelectedExc(exc);
+    setDialogOpen(true);
+  };
+
   const filters = (
-    <div className="filter-container" data-id="delivery-point-list-filters">
+    <div className="filter-container" data-id="exchange-rate-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
         placeholder={tCommon("search")}
-        data-id="delivery-point-list-search-input"
+        data-id="exchange-rate-list-search-input"
       />
       <div className="fxr-c gap-2">
         <StatusSearchDropdown
@@ -78,26 +85,29 @@ export default function ExcComponent() {
           onChange={setFilter}
           open={statusOpen}
           onOpenChange={setStatusOpen}
-          data-id="delivery-point-status-search-dropdown"
+          data-id="exchange-rate-status-search-dropdown"
         />
         <SortComponent
           fieldConfigs={sortFields}
           sort={sort}
           setSort={setSort}
-          data-id="delivery-point-sort-dropdown"
+          data-id="exchange-rate-sort-dropdown"
         />
       </div>
     </div>
   );
 
-  const content = <ExcList excList={excData} />;
+  const content = <ExcList excList={excData} onEdit={onEdit} />;
 
   return (
-    <DataDisplayTemplate
-      title={title}
-      actionButtons={actionButtons}
-      filters={filters}
-      content={content}
-    />
+    <>
+      <DataDisplayTemplate
+        title={title}
+        actionButtons={actionButtons}
+        filters={filters}
+        content={content}
+      />
+      <ExcDialog open={dialogOpen} onOpenChange={setDialogOpen} initialData={selectedExc} />
+    </>
   );
 }
