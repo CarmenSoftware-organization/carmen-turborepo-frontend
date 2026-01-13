@@ -500,6 +500,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       quantity,
       recipe,
       buCode,
+      currencyBase,
     ]
   );
 

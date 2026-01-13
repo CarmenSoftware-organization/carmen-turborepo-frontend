@@ -1,9 +1,11 @@
 import { ParamsGetDto } from "@/dtos/param.dto";
 import axios from "axios";
+import { xAppId } from "./backend-api";
 
 export const requestHeaders = (token: string) => ({
   Authorization: `Bearer ${token}`,
   "Content-Type": "application/json",
+  "x-app-id": xAppId,
 });
 
 export const getAllApiRequest = async (

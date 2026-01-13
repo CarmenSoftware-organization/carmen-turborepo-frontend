@@ -110,8 +110,9 @@ export default function ExchangeRateComponent() {
     pageSize: 10,
   });
 
+  console.log(currencyBase);
   const { exchangeRates, lastUpdated, isLoading, isError, error, refetch, isRefetching } =
-    useExchangeRate({ baseCurrency: currencyBase ?? "USD" });
+    useExchangeRate({ baseCurrency: currencyBase ?? "THB" });
 
   // Filter and prepare data
   const filteredData = useMemo(() => {
