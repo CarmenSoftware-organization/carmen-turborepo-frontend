@@ -67,15 +67,15 @@ export default function PurchaseOrderComponent() {
   }
 
   const sortFields: FieldConfig<WorkflowListProps>[] = [
-    { key: WorkflowField.name, label: `Name`, className: "w-40" },
-    { key: WorkflowField.workflow_type, label: `Type`, className: "w-40" },
+    { key: WorkflowField.name, label: tWf("name"), className: "w-40" },
+    { key: WorkflowField.workflow_type, label: tWf("type"), className: "w-40" },
     {
       key: WorkflowField.isActive,
-      label: `Status`,
+      label: tWf("status"),
       type: "badge",
       className: "w-24",
     },
-    { key: WorkflowField.stages, label: `Stages`, className: "w-24" },
+    { key: WorkflowField.stages, label: tWf("stages"), className: "w-24" },
   ];
 
   useEffect(() => {
@@ -104,7 +104,7 @@ export default function PurchaseOrderComponent() {
           data-id="workflow-list-new-workflow-button"
         >
           <Plus className="h-4 w-4" />
-          New Workflow
+          {tWf("new_workflow")}
         </Link>
       </Button>
     </div>
@@ -139,8 +139,8 @@ export default function PurchaseOrderComponent() {
   const content = (
     <Tabs defaultValue={defaultTab} className="space-y-4">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="workflow">Workflow</TabsTrigger>
-        <TabsTrigger value="templates">Notification Templates</TabsTrigger>
+        <TabsTrigger value="workflow">{tWf("workflow")}</TabsTrigger>
+        <TabsTrigger value="templates">{tWf("notification_templates")}</TabsTrigger>
       </TabsList>
       <TabsContent value="workflow">
         <WorkflowList

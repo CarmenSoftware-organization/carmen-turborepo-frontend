@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -63,6 +64,7 @@ export default function StageDetailPanel({
   control,
   selectedStageIndex,
 }: StageDetailPanelProps) {
+  const tWf = useTranslations("Workflow");
   const [activeTab, setActiveTab] = useState<"general" | "notifications" | "assigned_users">(
     "general"
   );
@@ -181,7 +183,7 @@ export default function StageDetailPanel({
     <>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Stage Details</CardTitle>
+          <CardTitle>{tWf("stage_details")}</CardTitle>
           {!isFirstStage && !isLastStage && onDelete && (
             <Button
               variant="destructive"
@@ -191,7 +193,7 @@ export default function StageDetailPanel({
               disabled={!isEditing}
             >
               <Trash2 className="w-4 h-4 mr-2" />
-              Delete Stage
+              {tWf("delete_stage")}
             </Button>
           )}
         </CardHeader>
@@ -203,10 +205,9 @@ export default function StageDetailPanel({
               <div className="mb-4">
                 <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Workflow Completed</h3>
+              <h3 className="text-xl font-semibold mb-2">{tWf("workflow_completed")}</h3>
               <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                This is the final stage of the workflow. No further actions or configurations are
-                required.
+                {tWf("final_stage_description")}
               </p>
             </div>
           </CardContent>
@@ -218,9 +219,9 @@ export default function StageDetailPanel({
             }
           >
             <TabsList className="w-full justify-start px-6">
-              <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
-              <TabsTrigger value="assigned_users">Assigned Users</TabsTrigger>
+              <TabsTrigger value="general">{tWf("general")}</TabsTrigger>
+              <TabsTrigger value="notifications">{tWf("notifications")}</TabsTrigger>
+              <TabsTrigger value="assigned_users">{tWf("assigned_users")}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="general" className="space-y-6 px-6 pb-6">
@@ -230,7 +231,7 @@ export default function StageDetailPanel({
                   name={`data.stages.${selectedStageIndex}.name`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Stage Name</FormLabel>
+                      <FormLabel>{tWf("stage_name")}</FormLabel>
                       <FormControl>
                         <Input {...field} disabled={!isEditing} />
                       </FormControl>
@@ -245,13 +246,13 @@ export default function StageDetailPanel({
                   name={`data.stages.${selectedStageIndex}.description`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel>{tWf("description")}</FormLabel>
                       <FormControl>
                         <Textarea
                           {...field}
                           disabled={!isEditing}
                           rows={3}
-                          placeholder="Enter description"
+                          placeholder={tWf("enter_description")}
                         />
                       </FormControl>
                     </FormItem>
@@ -265,7 +266,7 @@ export default function StageDetailPanel({
                   name={`data.stages.${selectedStageIndex}.role`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Stage Role</FormLabel>
+                      <FormLabel>{tWf("stage_role")}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value ?? ""}
@@ -273,7 +274,7 @@ export default function StageDetailPanel({
                       >
                         <FormControl>
                           <SelectTrigger id="stage-role">
-                            <SelectValue placeholder="Select a role" />
+                            <SelectValue placeholder={tWf("select_role")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -295,7 +296,7 @@ export default function StageDetailPanel({
                   name={`data.stages.${selectedStageIndex}.creator_access`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Creator Access</FormLabel>
+                      <FormLabel>{tWf("creator_access")}</FormLabel>
                       <FormControl>
                         <RadioGroup
                           value={field.value}
@@ -311,7 +312,7 @@ export default function StageDetailPanel({
                               disabled={!isEditing}
                             />
                             <Label htmlFor="only_creator" className="cursor-pointer">
-                              Only Creator
+                              {tWf("only_creator")}
                             </Label>
                           </div>
                           <div className="flex items-center space-x-2 p-3 bg-secondary/50 rounded-lg border">
@@ -321,7 +322,7 @@ export default function StageDetailPanel({
                               disabled={!isEditing}
                             />
                             <Label htmlFor="all_department" className="cursor-pointer">
-                              All user in department
+                              {tWf("all_users_department")}
                             </Label>
                           </div>
                         </RadioGroup>
@@ -338,9 +339,9 @@ export default function StageDetailPanel({
                     name={`data.stages.${selectedStageIndex}.sla`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>SLA</FormLabel>
+                        <FormLabel>{tWf("sla")}</FormLabel>
                         <FormControl>
-                          <Input {...field} disabled={!isEditing} />
+                          <Input {...field} disabled={!isEditing} placeholder={tWf("sla_placeholder")} />
                         </FormControl>
                       </FormItem>
                     )}
@@ -353,7 +354,7 @@ export default function StageDetailPanel({
                     name={`data.stages.${selectedStageIndex}.sla_unit`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>SLA Unit</FormLabel>
+                        <FormLabel>{tWf("sla_unit")}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
@@ -361,7 +362,7 @@ export default function StageDetailPanel({
                         >
                           <FormControl>
                             <SelectTrigger id="sla_unit">
-                              <SelectValue placeholder="Select SLA Unit" />
+                              <SelectValue placeholder={tWf("select_sla_unit")} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -379,7 +380,7 @@ export default function StageDetailPanel({
               </div>
 
               <div className="space-y-2">
-                <Label>Available Actions</Label>
+                <Label>{tWf("available_actions")}</Label>
                 <div className="flex gap-2 flex-wrap">
                   <Button
                     type="button"
@@ -387,7 +388,7 @@ export default function StageDetailPanel({
                     onClick={() => toggleAction("submit")}
                     disabled={!isEditing}
                   >
-                    Submit
+                    {tWf("submit")}
                   </Button>
                   {!isFirstStage && (
                     <>
@@ -404,7 +405,7 @@ export default function StageDetailPanel({
                             : ""
                         }
                       >
-                        Approve
+                        {tWf("approve")}
                       </Button>
                       <Button
                         type="button"
@@ -414,7 +415,7 @@ export default function StageDetailPanel({
                         onClick={() => toggleAction("reject")}
                         disabled={!isEditing}
                       >
-                        Reject
+                        {tWf("reject")}
                       </Button>
                       <Button
                         type="button"
@@ -429,7 +430,7 @@ export default function StageDetailPanel({
                             : ""
                         }
                       >
-                        Send Back
+                        {tWf("send_back")}
                       </Button>
                     </>
                   )}
@@ -437,7 +438,7 @@ export default function StageDetailPanel({
               </div>
 
               <div className="space-y-2">
-                <Label>Hidden Fields</Label>
+                <Label>{tWf("hidden_fields")}</Label>
                 <div className="space-y-2">
                   <FormField
                     control={control}
@@ -454,7 +455,7 @@ export default function StageDetailPanel({
                             disabled={!isEditing}
                           />
                         </FormControl>
-                        <FormLabel>Price Per Unit</FormLabel>
+                        <FormLabel>{tWf("price_per_unit")}</FormLabel>
                       </FormItem>
                     )}
                   />
@@ -474,7 +475,7 @@ export default function StageDetailPanel({
                             disabled={!isEditing}
                           />
                         </FormControl>
-                        <FormLabel>Total Price</FormLabel>
+                        <FormLabel>{tWf("total_price")}</FormLabel>
                       </FormItem>
                     )}
                   />
@@ -487,11 +488,11 @@ export default function StageDetailPanel({
               {stage.available_actions.submit.is_active && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">Submit Notification</CardTitle>
+                    <CardTitle className="text-base">{tWf("submit_notification")}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div>
-                      <Label className="mb-3">Recipients</Label>
+                      <Label className="mb-3">{tWf("recipients")}</Label>
                       <div className="space-y-3 mt-2">
                         <FormField
                           control={control}
@@ -508,7 +509,7 @@ export default function StageDetailPanel({
                                   disabled={!isEditing}
                                 />
                               </FormControl>
-                              <FormLabel>Requestor</FormLabel>
+                              <FormLabel>{tWf("requestor")}</FormLabel>
                             </FormItem>
                           )}
                         />
@@ -527,7 +528,7 @@ export default function StageDetailPanel({
                                   disabled={!isEditing}
                                 />
                               </FormControl>
-                              <FormLabel>Current Approver</FormLabel>
+                              <FormLabel>{tWf("current_approver")}</FormLabel>
                             </FormItem>
                           )}
                         />
@@ -546,7 +547,7 @@ export default function StageDetailPanel({
                                   disabled={!isEditing}
                                 />
                               </FormControl>
-                              <FormLabel>Next Stage Approver</FormLabel>
+                              <FormLabel>{tWf("next_stage_approver")}</FormLabel>
                             </FormItem>
                           )}
                         />
@@ -554,18 +555,18 @@ export default function StageDetailPanel({
                     </div>
 
                     <div>
-                      <Label htmlFor="submit-template">Template</Label>
+                      <Label htmlFor="submit-template">{tWf("template")}</Label>
                       <Select
                         value={editedStage.available_actions.submit.template || ""}
                         onValueChange={(value) => updateTemplate("submit", value)}
                         disabled={!isEditing}
                       >
                         <SelectTrigger id="submit-template">
-                          <SelectValue placeholder="Select template" />
+                          <SelectValue placeholder={tWf("select_template")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="submit-template-1">Submit Template 1</SelectItem>
-                          <SelectItem value="submit-template-2">Submit Template 2</SelectItem>
+                          <SelectItem value="submit-template-1">{tWf("submit_template_1")}</SelectItem>
+                          <SelectItem value="submit-template-2">{tWf("submit_template_2")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -577,11 +578,11 @@ export default function StageDetailPanel({
               {!isFirstStage && stage.available_actions.approve.is_active && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">Approve Notification</CardTitle>
+                    <CardTitle className="text-base">{tWf("approve_notification")}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div>
-                      <Label className="mb-3">Recipients</Label>
+                      <Label className="mb-3">{tWf("recipients")}</Label>
                       <div className="space-y-3 mt-2">
                         <FormField
                           control={control}
@@ -598,7 +599,7 @@ export default function StageDetailPanel({
                                   disabled={!isEditing}
                                 />
                               </FormControl>
-                              <FormLabel>Requestor</FormLabel>
+                              <FormLabel>{tWf("requestor")}</FormLabel>
                             </FormItem>
                           )}
                         />
@@ -617,7 +618,7 @@ export default function StageDetailPanel({
                                   disabled={!isEditing}
                                 />
                               </FormControl>
-                              <FormLabel>Current Approver</FormLabel>
+                              <FormLabel>{tWf("current_approver")}</FormLabel>
                             </FormItem>
                           )}
                         />
@@ -636,7 +637,7 @@ export default function StageDetailPanel({
                                   disabled={!isEditing}
                                 />
                               </FormControl>
-                              <FormLabel>Next Stage Approver</FormLabel>
+                              <FormLabel>{tWf("next_stage_approver")}</FormLabel>
                             </FormItem>
                           )}
                         />
@@ -644,18 +645,18 @@ export default function StageDetailPanel({
                     </div>
 
                     <div>
-                      <Label htmlFor="approve-template">Template</Label>
+                      <Label htmlFor="approve-template">{tWf("template")}</Label>
                       <Select
                         value={editedStage.available_actions.approve.template || ""}
                         onValueChange={(value) => updateTemplate("approve", value)}
                         disabled={!isEditing}
                       >
                         <SelectTrigger id="approve-template">
-                          <SelectValue placeholder="Select template" />
+                          <SelectValue placeholder={tWf("select_template")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="approve-template-1">Approval Template 1</SelectItem>
-                          <SelectItem value="approve-template-2">Approval Template 2</SelectItem>
+                          <SelectItem value="approve-template-1">{tWf("approval_template_1")}</SelectItem>
+                          <SelectItem value="approve-template-2">{tWf("approval_template_2")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -667,11 +668,11 @@ export default function StageDetailPanel({
               {!isFirstStage && stage.available_actions.reject.is_active && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">Reject Notification</CardTitle>
+                    <CardTitle className="text-base">{tWf("reject_notification")}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div>
-                      <Label className="mb-3">Recipients</Label>
+                      <Label className="mb-3">{tWf("recipients")}</Label>
                       <div className="space-y-3 mt-2">
                         <FormField
                           control={control}
@@ -688,7 +689,7 @@ export default function StageDetailPanel({
                                   disabled={!isEditing}
                                 />
                               </FormControl>
-                              <FormLabel>Requestor</FormLabel>
+                              <FormLabel>{tWf("requestor")}</FormLabel>
                             </FormItem>
                           )}
                         />
@@ -707,7 +708,7 @@ export default function StageDetailPanel({
                                   disabled={!isEditing}
                                 />
                               </FormControl>
-                              <FormLabel>Previous Stage Approvers</FormLabel>
+                              <FormLabel>{tWf("previous_stage_approvers")}</FormLabel>
                             </FormItem>
                           )}
                         />
@@ -715,18 +716,18 @@ export default function StageDetailPanel({
                     </div>
 
                     <div>
-                      <Label htmlFor="reject-template">Template</Label>
+                      <Label htmlFor="reject-template">{tWf("template")}</Label>
                       <Select
                         value={stage.available_actions.reject.template || ""}
                         onValueChange={(value) => updateTemplate("reject", value)}
                         disabled={!isEditing}
                       >
                         <SelectTrigger id="reject-template">
-                          <SelectValue placeholder="Select template" />
+                          <SelectValue placeholder={tWf("select_template")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="reject-template-1">Rejection Template 1</SelectItem>
-                          <SelectItem value="reject-template-2">Rejection Template 2</SelectItem>
+                          <SelectItem value="reject-template-1">{tWf("rejection_template_1")}</SelectItem>
+                          <SelectItem value="reject-template-2">{tWf("rejection_template_2")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -738,11 +739,11 @@ export default function StageDetailPanel({
               {!isFirstStage && stage.available_actions.sendback.is_active && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">Send Back Notification</CardTitle>
+                    <CardTitle className="text-base">{tWf("send_back_notification")}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div>
-                      <Label className="mb-3">Recipients</Label>
+                      <Label className="mb-3">{tWf("recipients")}</Label>
                       <div className="space-y-3 mt-2">
                         <FormField
                           control={control}
@@ -759,7 +760,7 @@ export default function StageDetailPanel({
                                   disabled={!isEditing}
                                 />
                               </FormControl>
-                              <FormLabel>Requestor</FormLabel>
+                              <FormLabel>{tWf("requestor")}</FormLabel>
                             </FormItem>
                           )}
                         />
@@ -778,7 +779,7 @@ export default function StageDetailPanel({
                                   disabled={!isEditing}
                                 />
                               </FormControl>
-                              <FormLabel>Previous Stage Approvers</FormLabel>
+                              <FormLabel>{tWf("previous_stage_approvers")}</FormLabel>
                             </FormItem>
                           )}
                         />
@@ -797,7 +798,7 @@ export default function StageDetailPanel({
                                   disabled={!isEditing}
                                 />
                               </FormControl>
-                              <FormLabel>Send Back Stage Approvers</FormLabel>
+                              <FormLabel>{tWf("send_back_stage_approvers")}</FormLabel>
                             </FormItem>
                           )}
                         />
@@ -805,18 +806,18 @@ export default function StageDetailPanel({
                     </div>
 
                     <div>
-                      <Label htmlFor="sendback-template">Template</Label>
+                      <Label htmlFor="sendback-template">{tWf("template")}</Label>
                       <Select
                         value={editedStage.available_actions.sendback.template || ""}
                         onValueChange={(value) => updateTemplate("sendback", value)}
                         disabled={!isEditing}
                       >
                         <SelectTrigger id="sendback-template">
-                          <SelectValue placeholder="Select template" />
+                          <SelectValue placeholder={tWf("select_template")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="sendback-template-1">Send Back Template 1</SelectItem>
-                          <SelectItem value="sendback-template-2">Send Back Template 2</SelectItem>
+                          <SelectItem value="sendback-template-1">{tWf("send_back_template_1")}</SelectItem>
+                          <SelectItem value="sendback-template-2">{tWf("send_back_template_2")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -828,11 +829,11 @@ export default function StageDetailPanel({
               {!isFirstStage && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">SLA Warning Notification</CardTitle>
+                    <CardTitle className="text-base">{tWf("sla_warning_notification")}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div>
-                      <Label className="mb-3">Recipients</Label>
+                      <Label className="mb-3">{tWf("recipients")}</Label>
                       <div className="space-y-3 mt-2">
                         <FormField
                           control={control}
@@ -849,7 +850,7 @@ export default function StageDetailPanel({
                                   disabled={!isEditing}
                                 />
                               </FormControl>
-                              <FormLabel>Requestor</FormLabel>
+                              <FormLabel>{tWf("requestor")}</FormLabel>
                             </FormItem>
                           )}
                         />
@@ -868,7 +869,7 @@ export default function StageDetailPanel({
                                   disabled={!isEditing}
                                 />
                               </FormControl>
-                              <FormLabel>Current Approver</FormLabel>
+                              <FormLabel>{tWf("current_approver")}</FormLabel>
                             </FormItem>
                           )}
                         />
@@ -876,18 +877,18 @@ export default function StageDetailPanel({
                     </div>
 
                     <div>
-                      <Label htmlFor="sla-template">Template</Label>
+                      <Label htmlFor="sla-template">{tWf("template")}</Label>
                       <Select
                         value={editedStage.sla_warning_notification?.template || ""}
                         onValueChange={(value) => updateSLAWarningTemplate(value)}
                         disabled={!isEditing}
                       >
                         <SelectTrigger id="sla-template">
-                          <SelectValue placeholder="Select template" />
+                          <SelectValue placeholder={tWf("select_template")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="sla-template-1">SLA Warning Template 1</SelectItem>
-                          <SelectItem value="sla-template-2">SLA Warning Template 2</SelectItem>
+                          <SelectItem value="sla-template-1">{tWf("sla_warning_template_1")}</SelectItem>
+                          <SelectItem value="sla-template-2">{tWf("sla_warning_template_2")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -905,9 +906,9 @@ export default function StageDetailPanel({
                       <div className="mb-3">
                         <Bell className="w-12 h-12 text-muted-foreground mx-auto" />
                       </div>
-                      <h4 className="text-base font-semibold mb-2">No Notifications Available</h4>
+                      <h4 className="text-base font-semibold mb-2">{tWf("no_notifications")}</h4>
                       <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                        Enable actions in the General tab to configure notification settings.
+                        {tWf("no_notifications_description")}
                       </p>
                     </CardContent>
                   </Card>
@@ -927,19 +928,19 @@ export default function StageDetailPanel({
                   />
                   <div className="flex-1">
                     <Label htmlFor="is-hod" className="cursor-pointer font-medium">
-                      Is HOD (Head of Department)
+                      {tWf("is_hod")}
                     </Label>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Enable if this stage requires HOD approval
+                      {tWf("hod_description")}
                     </p>
                   </div>
                 </div>
               )}
 
               <div>
-                <h3 className="text-lg font-semibold mb-1">Stage Users</h3>
+                <h3 className="text-lg font-semibold mb-1">{tWf("stage_users")}</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Manage users assigned to this stage
+                  {tWf("manage_stage_users")}
                 </p>
 
                 {editedStage.is_hod ? (
@@ -949,10 +950,9 @@ export default function StageDetailPanel({
                       <div className="mb-3">
                         <Lock className="w-12 h-12 text-muted-foreground mx-auto" />
                       </div>
-                      <h4 className="text-base font-semibold mb-2">HOD Approval Enabled</h4>
+                      <h4 className="text-base font-semibold mb-2">{tWf("hod_enabled")}</h4>
                       <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                        User assignment is disabled when HOD (Head of Department) approval is
-                        enabled. The system will automatically route to the appropriate HOD.
+                        {tWf("hod_enabled_description")}
                       </p>
                     </CardContent>
                   </Card>
@@ -964,7 +964,7 @@ export default function StageDetailPanel({
                       <div className="flex-1">
                         <Input
                           type="text"
-                          placeholder="Search users..."
+                          placeholder={tWf("search_users")}
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           disabled={!isEditing}
@@ -972,7 +972,7 @@ export default function StageDetailPanel({
                       </div>
                       <Button variant="outline" disabled={!isEditing} type="button">
                         <Filter className="w-4 h-4 mr-2" />
-                        Filter
+                        {tWf("filter")}
                       </Button>
                     </div>
 
@@ -980,32 +980,32 @@ export default function StageDetailPanel({
                     <Card>
                       <CardHeader className="flex flex-row items-center justify-between">
                         <p className="text-sm font-medium">
-                          Total Users: {assignedCount} / {totalUsers}
+                          {tWf("total_users")}: {assignedCount} / {totalUsers}
                         </p>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="outline" size="sm" disabled={!isEditing}>
-                              Bulk Actions
+                              {tWf("bulk_actions")}
                               <ChevronDown className="w-4 h-4 ml-2" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Bulk Operations</DropdownMenuLabel>
+                            <DropdownMenuLabel>{tWf("bulk_operations")}</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={handleAssignAll}>
-                              Assign All Users
+                              {tWf("assign_all")}
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={handleUnassignAll}>
-                              Unassign All Users
+                              {tWf("unassign_all")}
                             </DropdownMenuItem>
                             {searchQuery && (
                               <>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={handleAssignFiltered}>
-                                  Assign Filtered ({filteredUsers.length})
+                                  {tWf("assign_filtered")} ({filteredUsers.length})
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={handleUnassignFiltered}>
-                                  Unassign Filtered ({filteredUsers.length})
+                                  {tWf("unassign_filtered")} ({filteredUsers.length})
                                 </DropdownMenuItem>
                               </>
                             )}
@@ -1044,7 +1044,7 @@ export default function StageDetailPanel({
                                   onClick={() => toggleUserAssignment(user.user_id)}
                                   disabled={!isEditing}
                                 >
-                                  {isAssigned ? "Unassign" : "Assign"}
+                                  {isAssigned ? tWf("unassign") : tWf("assign")}
                                 </Button>
                               </div>
                             );
@@ -1064,13 +1064,13 @@ export default function StageDetailPanel({
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>{tWf("are_you_sure")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete this stage. This action cannot be undone.
+              {tWf("delete_stage_confirmation")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{tWf("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => {
@@ -1078,7 +1078,7 @@ export default function StageDetailPanel({
                 onDelete?.();
               }}
             >
-              Delete
+              {tWf("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

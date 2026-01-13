@@ -6,6 +6,7 @@ import { Pencil, Copy, Trash2, Save, X } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { WorkflowCreateModel } from "@/dtos/workflows.dto";
 import { formType } from "@/dtos/form.dto";
+import { useTranslations } from "next-intl";
 
 interface WorkflowHeaderProps {
   form: UseFormReturn<WorkflowCreateModel>;
@@ -26,6 +27,7 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
   onDelete,
   onSubmit,
 }: WorkflowHeaderProps) => {
+  const tWf = useTranslations("Workflow");
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 px-6 py-4">
@@ -34,7 +36,7 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
             {isEditing ? (
               <>
                 <div className="flex items-center space-x-2">
-                  <CardTitle className="text-2xl font-bold">Edit Workflow</CardTitle>
+                  <CardTitle className="text-2xl font-bold">{tWf("edit_workflow")}</CardTitle>
                 </div>
                 <CardDescription>ID: {form.getValues("id")}</CardDescription>
               </>
@@ -44,7 +46,7 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
                   <CardTitle className="text-2xl font-bold">{form.getValues("name")}</CardTitle>
                   {form.getValues("is_active") && (
                     <Badge variant={form.getValues("is_active") ? "default" : "secondary"}>
-                      {form.getValues("is_active") ? "Active" : "Inactive"}
+                      {form.getValues("is_active") ? tWf("active") : tWf("inactive")}
                     </Badge>
                   )}
                 </div>
@@ -57,7 +59,7 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
         ) : (
           <div>
             <div className="flex items-center space-x-2">
-              <CardTitle className="text-2xl font-bold">Create Workflow</CardTitle>
+              <CardTitle className="text-2xl font-bold">{tWf("create_workflow")}</CardTitle>
             </div>
           </div>
         )}
@@ -67,11 +69,11 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
             <>
               <Button type="button" variant="default" onClick={onEdit}>
                 <Pencil className="mr-2 h-4 w-4" />
-                Edit
+                {tWf("edit")}
               </Button>
               <Button type="button" variant="outline">
                 <Copy className="mr-2 h-4 w-4" />
-                Duplicate
+                {tWf("duplicate")}
               </Button>
               <Button
                 type="button"
@@ -79,18 +81,18 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
                 onClick={() => onDelete(form.getValues("id") ?? "")}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                {tWf("delete")}
               </Button>
             </>
           ) : (
             <>
               <Button type="button" variant="ghost" onClick={onCancelEdit}>
                 <X className="mr-2 h-4 w-4" />
-                Cancel
+                {tWf("cancel")}
               </Button>
               <Button type="submit" variant="default" onClick={form.handleSubmit(onSubmit)}>
                 <Save className="mr-2 h-4 w-4" />
-                Save Changes
+                {tWf("save_changes")}
               </Button>
             </>
           )}
