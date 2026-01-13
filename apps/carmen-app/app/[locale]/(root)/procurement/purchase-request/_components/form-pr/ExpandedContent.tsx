@@ -18,7 +18,6 @@ import PrLabelItem from "./PrLabelItem";
 import NumberInput from "@/components/form-custom/NumberInput";
 import VendorLookup from "@/components/lookup/LookupVendor";
 import LookupTaxProfile from "@/components/lookup/LookupTaxProfile";
-import LookupCurrency from "@/components/lookup/LookupCurrency";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -182,23 +181,7 @@ export default function ExpandedContent({
                     classNames="h-7 text-xs"
                     disabled={currentMode !== formType.EDIT}
                   />
-                  <div className="grid grid-cols-4 gap-2">
-                    <div className="space-y-0.5 text-right">
-                      <Label className="text-muted-foreground text-xs font-medium">
-                        {tPr("currency")}
-                      </Label>
-                      <LookupCurrency
-                        value={(getItemValue(item, "currency_id") as string) || ""}
-                        onValueChange={(value) => {
-                          onItemUpdate(item.id, "currency_id", value);
-                        }}
-                        onSelectObject={(selectedCurrency) => {
-                          onItemUpdate(item.id, "currency_code", selectedCurrency.code);
-                        }}
-                        classNames="h-7 justify-end text-right text-xs"
-                        disabled={currentMode !== formType.EDIT}
-                      />
-                    </div>
+                  <div className="grid grid-cols-3 gap-2">
                     <div className="space-y-0.5 text-right">
                       <Label className="text-muted-foreground text-xs font-medium">
                         {tPr("unit_price")}

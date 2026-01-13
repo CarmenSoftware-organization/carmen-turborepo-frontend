@@ -2,7 +2,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
 import { PurchaseRequestDetail, StageStatus, ItemStatus } from "@/dtos/purchase-request.dto";
 import { formType } from "@/dtos/form.dto";
@@ -176,8 +175,8 @@ export const createPurchaseItemColumns = (
     },
     {
       id: "no",
-      header: () => <div className="text-center text-muted-foreground">#</div>,
-      cell: ({ row }) => <div className="text-center text-xs">{row.index + 1}</div>,
+      header: () => <span className="text-center text-muted-foreground">#</span>,
+      cell: ({ row }) => <span className="text-center text-xs">{row.index + 1}</span>,
       enableSorting: false,
       size: 30,
       meta: {
@@ -238,7 +237,6 @@ export const createPurchaseItemColumns = (
       cell: ({ row }) => {
         const item = row.original;
 
-        // Get memoized product IDs from map instead of recalculating
         const usedProductIds = usedProductIdsMap.get(item.id) || [];
 
         return currentMode === formType.VIEW ? (
@@ -275,9 +273,6 @@ export const createPurchaseItemColumns = (
                 (getItemValue(item, "product_name") as string) || item.product_name
               }
             />
-            {item.description && (
-              <p className="text-xs text-muted-foreground break-words">{item.description}</p>
-            )}
           </div>
         );
       },
@@ -311,24 +306,23 @@ export const createPurchaseItemColumns = (
       size: 100,
       meta: {
         headerTitle: tHeader("status"),
+        cellClassName: "text-center",
+        headerClassName: "text-center",
       },
     },
     {
       accessorKey: "requested_qty",
-      header: ({ column }) => (
-        <div className="flex justify-end">
-          <DataGridColumnHeader column={column} title={tHeader("requested")} />
-        </div>
-      ),
+      header: ({ column }) => <DataGridColumnHeader column={column} title={tHeader("requested")} />,
       cell: ({ row }) => {
         const item = row.original;
 
         return currentMode === formType.VIEW ? (
-          <p className="text-xs text-right">
-            {item.requested_qty} {item.requested_unit_name || "-"}
-          </p>
+          <div className="text-xs text-right">
+            <p>{item.requested_qty}</p>
+            <p>{item.requested_unit_name || "-"}</p>
+          </div>
         ) : (
-          <div className="flex items-center gap-1 justify-end min-w-[120px]">
+          <div className="flex flex-col items-end gap-1">
             <NumberInput
               value={getItemValue(item, "requested_qty") as number}
               onChange={(value) => {
@@ -357,7 +351,7 @@ export const createPurchaseItemColumns = (
         );
       },
       enableSorting: false,
-      size: currentMode === formType.VIEW ? 100 : 180,
+      size: currentMode === formType.VIEW ? 100 : 120,
       meta: {
         headerTitle: tHeader("requested"),
         cellClassName: "text-right",
@@ -366,24 +360,15 @@ export const createPurchaseItemColumns = (
     },
     {
       accessorKey: "approved_qty",
-      header: ({ column }) => (
-        <div className="flex justify-end">
-          <DataGridColumnHeader column={column} title={tHeader("approved")} />
-        </div>
-      ),
+      header: ({ column }) => <DataGridColumnHeader column={column} title={tHeader("approved")} />,
       cell: ({ row }) => {
         const item = row.original;
         const isNewItem = !initValues.some((initItem) => initItem.id === item.id);
         if (currentMode === formType.VIEW) {
           return (
-            <div className="text-right">
-              <p className="text-xs text-active">
-                {item.approved_qty} {item.approved_unit_name || "-"}
-              </p>
-              <Separator className="my-0.5" />
-              <p className="text-xs text-active">
-                FOC: {item.foc_qty} {item.foc_unit_name || "-"}
-              </p>
+            <div className="text-xs text-right">
+              <p>{item.approved_qty}</p>
+              <p>{item.approved_unit_name || "-"}</p>
             </div>
           );
         }
@@ -393,38 +378,61 @@ export const createPurchaseItemColumns = (
         }
 
         return (
-          <div className="flex flex-col gap-1 min-w-[180px] pr-4">
-            <div className="flex items-center gap-1 justify-end">
-              <NumberInput
-                value={getItemValue(item, "approved_qty") as number}
-                onChange={(value) => onItemUpdate(item.id, "approved_qty", value)}
-                classNames="w-16 h-7 text-xs bg-background"
-              />
-              <UnitLookup
-                value={(getItemValue(item, "approved_unit_id") as string) || ""}
-                onValueChange={(value) => onItemUpdate(item.id, "approved_unit_id", value)}
-                classNames="h-7 text-xs w-24"
-              />
-            </div>
-            <div className="flex items-center gap-1 justify-end">
-              <NumberInput
-                value={getItemValue(item, "foc_qty") as number}
-                onChange={(value) => onItemUpdate(item.id, "foc_qty", value)}
-                classNames="w-16 h-7 text-xs bg-background"
-              />
-              <UnitLookup
-                value={(getItemValue(item, "foc_unit_id") as string) || ""}
-                onValueChange={(value) => onItemUpdate(item.id, "foc_unit_id", value)}
-                classNames="h-7 text-xs w-24"
-              />
-            </div>
+          <div className="flex flex-col items-end gap-1">
+            <NumberInput
+              value={getItemValue(item, "approved_qty") as number}
+              onChange={(value) => onItemUpdate(item.id, "approved_qty", value)}
+              classNames="w-16 h-7 text-xs bg-background"
+            />
+            <UnitLookup
+              value={(getItemValue(item, "approved_unit_id") as string) || ""}
+              onValueChange={(value) => onItemUpdate(item.id, "approved_unit_id", value)}
+              classNames="h-7 text-xs w-24"
+            />
           </div>
         );
       },
       enableSorting: false,
-      size: currentMode === formType.VIEW ? 100 : 180,
+      size: currentMode === formType.VIEW ? 100 : 120,
       meta: {
         headerTitle: tHeader("approved"),
+        cellClassName: "text-right",
+        headerClassName: "text-right",
+      },
+    },
+    {
+      accessorKey: "foc",
+      header: ({ column }) => <DataGridColumnHeader column={column} title="FOC" />,
+      cell: ({ row }) => {
+        const item = row.original;
+
+        if (currentMode === formType.VIEW) {
+          return (
+            <div className="text-xs text-right">
+              <p>{item.foc_qty}</p>
+              <p>{item.foc_unit_name || "-"}</p>
+            </div>
+          );
+        }
+        return (
+          <div className="flex flex-col items-end gap-1 justify-end">
+            <NumberInput
+              value={getItemValue(item, "foc_qty") as number}
+              onChange={(value) => onItemUpdate(item.id, "foc_qty", value)}
+              classNames="w-16 h-7 text-xs bg-background"
+            />
+            <UnitLookup
+              value={(getItemValue(item, "foc_unit_id") as string) || ""}
+              onValueChange={(value) => onItemUpdate(item.id, "foc_unit_id", value)}
+              classNames="h-7 text-xs w-24"
+            />
+          </div>
+        );
+      },
+      enableSorting: false,
+      size: currentMode === formType.VIEW ? 80 : 120,
+      meta: {
+        headerTitle: "FOC",
         cellClassName: "text-right",
         headerClassName: "text-right",
       },
@@ -449,17 +457,17 @@ export const createPurchaseItemColumns = (
               // date update ให้มีค่าก่อนค่อยอัพเดท
               onItemUpdate(item.id, "exchange_rate_date", currency.updated_at);
             }}
-            classNames="h-7 text-xs"
+            classNames="h-7 w-24 text-xs"
             bu_code={buCode}
           />
         );
       },
       enableSorting: false,
-      size: currentMode === formType.VIEW ? 100 : 180,
+      size: currentMode === formType.VIEW ? 100 : 120,
       meta: {
         headerTitle: tHeader("currency"),
-        cellClassName: "text-right",
-        headerClassName: "text-right",
+        cellClassName: "text-center",
+        headerClassName: "text-center",
       },
     },
     {
@@ -471,20 +479,18 @@ export const createPurchaseItemColumns = (
         const item = row.original;
 
         return currentMode === formType.VIEW ? (
-          <p className="text-center text-xs">
+          <span className="text-center text-xs">
             {formatDate(item.delivery_date, dateFormat || "yyyy-MM-dd")}
-          </p>
+          </span>
         ) : (
-          <div className="flex justify-center min-w-[120px] pr-4">
-            <DateInput
-              field={{
-                value: getItemValue(item, "delivery_date") as Date | undefined,
-                onChange: (value) => onItemUpdate(item.id, "delivery_date", value),
-              }}
-              classNames="text-xs h-7 w-full"
-              disablePastDates={true}
-            />
-          </div>
+          <DateInput
+            field={{
+              value: getItemValue(item, "delivery_date") as Date | undefined,
+              onChange: (value) => onItemUpdate(item.id, "delivery_date", value),
+            }}
+            classNames="text-xs h-7 w-full"
+            disablePastDates={true}
+          />
         );
       },
       enableSorting: false,
@@ -524,17 +530,13 @@ export const createPurchaseItemColumns = (
     },
     {
       accessorKey: "total_price",
-      header: ({ column }) => (
-        <div className="flex justify-end">
-          <DataGridColumnHeader column={column} title={tHeader("pricing")} />
-        </div>
-      ),
+      header: ({ column }) => <DataGridColumnHeader column={column} title={tHeader("pricing")} />,
       cell: ({ row }) => {
         const item = row.original;
         const isNewItem = !initValues.some((initItem) => initItem.id === item.id);
 
         return (
-          <div className="text-right text-xs text-active font-bold">
+          <div className="text-xs text-active font-bold">
             {isNewItem ? (
               <p>-</p>
             ) : (

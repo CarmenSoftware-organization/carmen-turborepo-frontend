@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { backendApi } from "@/lib/backend-api";
+import { backendApi, xAppId } from "@/lib/backend-api";
 
 const mockAdminPermission = {
   configuration: {
@@ -162,6 +162,7 @@ export const useUserProfileQuery = (token: string, enabled: boolean = true) => {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
+          "x-app-id": xAppId,
         },
       });
 
@@ -193,6 +194,7 @@ export const useUpdateBusinessUnitMutation = () => {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            "x-app-id": xAppId,
           },
         }
       );
@@ -222,7 +224,16 @@ export const useSignInMutation = () => {
   return useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
       const url = `${backendApi}/api/auth/login`;
-      const response = await axios.post(url, { email, password });
+      const response = await axios.post(
+        url,
+        { email, password },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-app-id": xAppId,
+          },
+        }
+      );
       return response.data;
     },
     onSuccess: () => {
@@ -250,7 +261,12 @@ export const useSignUpMutation = () => {
       };
     }) => {
       const url = `${backendApi}/api/auth/register`;
-      const response = await axios.post(url, payload);
+      const response = await axios.post(url, payload, {
+        headers: {
+          "Content-Type": "application/json",
+          "x-app-id": xAppId,
+        },
+      });
       return response.data;
     },
     onError: (error) => {
