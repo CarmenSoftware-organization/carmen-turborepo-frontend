@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   DndContext,
   closestCenter,
@@ -37,6 +38,7 @@ interface WorkflowStageProps {
 }
 
 const WorkflowStages = ({ control, isEditing, listUser }: WorkflowStageProps) => {
+  const tWf = useTranslations("Workflow");
   const { fields, insert, move, update, remove } = useFieldArray({
     name: "data.stages",
     control: control,
@@ -99,11 +101,11 @@ const WorkflowStages = ({ control, isEditing, listUser }: WorkflowStageProps) =>
   };
 
   const handleAddStage = () => {
-    let stageName = `New Stage ${fields.length}`;
+    let stageName = `${tWf("new_stage")} ${fields.length}`;
     let counter = fields.length;
     while (fields.some((s) => s.name.toLowerCase() === stageName.toLowerCase())) {
       counter++;
-      stageName = `New Stage ${counter}`;
+      stageName = `${tWf("new_stage")} ${counter}`;
     }
 
     const newStage: Stage = {
@@ -193,8 +195,8 @@ const WorkflowStages = ({ control, isEditing, listUser }: WorkflowStageProps) =>
   return (
     <div className="space-y-3">
       <div className="mb-6">
-        <h2 className="text-xl font-bold mb-1">Workflow Stages</h2>
-        <p className="text-sm text-gray-600">Configure workflow stages and their settings</p>
+        <h2 className="text-xl font-bold mb-1">{tWf("workflow_stages")}</h2>
+        <p className="text-sm text-gray-600">{tWf("configure_workflow_stages")}</p>
       </div>
 
       <div className="grid grid-cols-12 gap-6">

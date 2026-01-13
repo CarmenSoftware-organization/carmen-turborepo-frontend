@@ -11,7 +11,7 @@ import WorkflowRouting from "./WorkflowRouting";
 import WorkflowProducts from "./WorkflowProducts";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Link } from "@/lib/navigation";
 import { formType } from "@/dtos/form.dto";
 import {
   enum_sla_unit,

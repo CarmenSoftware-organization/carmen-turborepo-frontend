@@ -6,6 +6,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Plus } from "lucide-react";
 import { FieldArrayWithId } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 interface StageListItemProps {
   stage: any;
@@ -26,6 +27,7 @@ function StageListItem({
   isLocked,
   isEditing,
 }: StageListItemProps) {
+  const tWf = useTranslations("Workflow");
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
     disabled: isLocked || !isEditing,
@@ -48,7 +50,7 @@ function StageListItem({
     >
       {/* Drag Handle or Lock Icon */}
       {isLocked || !isEditing ? (
-        <div className="p-1" title={isLocked ? "Fixed position" : "View mode"}>
+        <div className="p-1" title={isLocked ? tWf("fixed_position") : tWf("view_mode")}>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
@@ -63,7 +65,7 @@ function StageListItem({
           {...attributes}
           {...listeners}
           className="cursor-grab active:cursor-grabbing hover:text-gray-600 p-1"
-          title="Drag to reorder"
+          title={tWf("drag_to_reorder")}
           type="button"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,6 +107,8 @@ export default function StageList({
   onAddStage,
   isEditing = true,
 }: StageListProps) {
+  const tWf = useTranslations("Workflow");
+
   const isFirstOrLast = (index: number) => {
     return index === 0 || index === stages.length - 1;
   };
@@ -112,8 +116,8 @@ export default function StageList({
   return (
     <div className="rounded-xl border border-border bg-card">
       <div className="px-4 py-3 border-b">
-        <h3 className="text-base font-semibold">Stages</h3>
-        <p className="text-xs mt-1">Drag to reorder (first and last stages are fixed)</p>
+        <h3 className="text-base font-semibold">{tWf("stages")}</h3>
+        <p className="text-xs mt-1">{tWf("drag_to_reorder")}</p>
       </div>
       {stages.map((stage, index) => (
         <StageListItem
@@ -142,7 +146,7 @@ export default function StageList({
             type="button"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Stage
+            {tWf("add_stage")}
           </Button>
         </div>
       )}

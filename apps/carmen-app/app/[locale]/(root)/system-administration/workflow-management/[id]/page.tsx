@@ -15,7 +15,7 @@ const WorkflowDetailPage = () => {
   const params = useParams();
   const id = params.id as string;
   const { userList } = useUserList(token, buCode);
-  const { products } = useProductQuery({
+  const { products, isLoading: productsLoading } = useProductQuery({
     token,
     buCode,
     params: {
@@ -38,7 +38,7 @@ const WorkflowDetailPage = () => {
     authLoading,
   });
 
-  if (authLoading || (loading && token && buCode)) {
+  if (authLoading || productsLoading || (loading && token && buCode)) {
     return <DetailLoading />;
   }
 

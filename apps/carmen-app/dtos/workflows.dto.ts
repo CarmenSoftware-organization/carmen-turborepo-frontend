@@ -28,7 +28,7 @@ export enum enum_sla_unit {
 export type Role = "create" | "approve" | "purchase" | "issue";
 export type CreatorAccess = "only_creator" | "all_department";
 
-export type OperatorType = "eq" | "lt" | "gt" | "lte" | "gte";
+export type OperatorType = "eq" | "lt" | "gt" | "lte" | "gte" | "between";
 export type ActionType = "SKIP_STAGE" | "NEXT_STAGE";
 export type NotificationChannel = "Email" | "System";
 export type NotificationEventTrigger =
@@ -128,6 +128,8 @@ export interface RoutingCondition {
   field: string;
   operator: OperatorType;
   value: string[];
+  min_value?: string;
+  max_value?: string;
 }
 
 export interface RoutingAction {
@@ -291,8 +293,10 @@ export const wfFormSchema = z.object({
           trigger_stage: z.string(),
           condition: z.object({
             field: z.string(),
-            operator: z.enum(["eq", "lt", "gt", "lte", "gte"]),
+            operator: z.enum(["eq", "lt", "gt", "lte", "gte", "between"]),
             value: z.array(z.string()),
+            min_value: z.string().optional(),
+            max_value: z.string().optional(),
           }),
           action: z.object({
             type: z.enum(["SKIP_STAGE", "NEXT_STAGE"]),

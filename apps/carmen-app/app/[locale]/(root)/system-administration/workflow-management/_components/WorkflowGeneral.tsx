@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 import { Control } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -27,10 +28,11 @@ interface WorkflowGeneralProps {
 }
 
 const WorkflowGeneral = ({ control, isEditing }: WorkflowGeneralProps) => {
+  const tWf = useTranslations("Workflow");
   return (
     <Card>
       <CardHeader className="px-6 py-4">
-        <CardTitle>General Information</CardTitle>
+        <CardTitle>{tWf("general_information")}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6 px-6 pb-6">
         <div className="space-y-2">
@@ -39,12 +41,12 @@ const WorkflowGeneral = ({ control, isEditing }: WorkflowGeneralProps) => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Workflow Name</FormLabel>
+                <FormLabel>{tWf("workflow_name")}</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     value={String(field.value || "")}
-                    placeholder="Enter workflow name"
+                    placeholder={tWf("enter_workflow_name")}
                     disabled={!isEditing}
                   />
                 </FormControl>
@@ -59,7 +61,7 @@ const WorkflowGeneral = ({ control, isEditing }: WorkflowGeneralProps) => {
             name="workflow_type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Type</FormLabel>
+                <FormLabel>{tWf("type")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -67,7 +69,7 @@ const WorkflowGeneral = ({ control, isEditing }: WorkflowGeneralProps) => {
                 >
                   <FormControl>
                     <SelectTrigger id="workflow_type">
-                      <SelectValue placeholder="Select Workflow Type" />
+                      <SelectValue placeholder={tWf("select_workflow_type")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -89,7 +91,7 @@ const WorkflowGeneral = ({ control, isEditing }: WorkflowGeneralProps) => {
             name="is_active"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Status</FormLabel>
+                <FormLabel>{tWf("status")}</FormLabel>
                 <div className="flex items-center space-x-2">
                   <FormControl>
                     <Switch
@@ -99,7 +101,7 @@ const WorkflowGeneral = ({ control, isEditing }: WorkflowGeneralProps) => {
                     />
                   </FormControl>
                   <Label className="text-sm text-muted-foreground">
-                    {field.value ? "Active" : "Inactive"}
+                    {field.value ? tWf("active") : tWf("inactive")}
                   </Label>
                 </div>
                 <FormMessage />
@@ -114,12 +116,12 @@ const WorkflowGeneral = ({ control, isEditing }: WorkflowGeneralProps) => {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>{tWf("description")}</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
                     value={String(field.value || "")}
-                    placeholder="Enter description"
+                    placeholder={tWf("enter_description")}
                     disabled={!isEditing}
                   />
                 </FormControl>

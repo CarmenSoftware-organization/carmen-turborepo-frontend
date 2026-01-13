@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -36,6 +37,7 @@ interface WorkflowRoutingProps {
 }
 
 const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRoutingProps) => {
+  const tWf = useTranslations("Workflow");
   const { fields, insert, remove } = useFieldArray({
     name: "data.routing_rules",
     control: control,
@@ -70,13 +72,20 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
   const rules = form.getValues().data?.routing_rules || [];
   const [selectedRuleIndex, setSelectedRuleIndex] = useState<number | null>(null);
 
+  // Auto-select first rule when rules exist and no rule is selected
+  useEffect(() => {
+    if (rules.length > 0 && selectedRuleIndex === null) {
+      setSelectedRuleIndex(0);
+    }
+  }, [rules.length, selectedRuleIndex]);
+
   const handleSelectRuleIndex = (index: number | null) => {
     setSelectedRuleIndex(index ?? null);
   };
 
   const handleAddRule = () => {
     insert(fields.length, {
-      name: `New Rule ${rules.length + 1}`,
+      name: `${tWf("new_rule")} ${rules.length + 1}`,
       description: "",
       trigger_stage: stagesName[0] || "",
       condition: { field: "", operator: "eq", value: [] },
@@ -90,16 +99,16 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
   };
 
   const fieldList = [
-    { value: "total_amount", label: "Total Amount" },
-    { value: "department", label: "Department" },
-    { value: "category", label: "Category" },
+    { value: "total_amount", label: tWf("total_amount") },
+    { value: "department", label: tWf("department") },
+    { value: "category", label: tWf("category") },
   ];
 
   return (
     <div className="grid grid-cols-3 gap-6">
       <Card className="col-span-1">
         <CardHeader className="pl-4">
-          <CardTitle>Routing Rules</CardTitle>
+          <CardTitle>{tWf("routing_rules")}</CardTitle>
         </CardHeader>
         <CardContent className="p-2 pt-0">
           <ul>
@@ -113,7 +122,7 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                 }`}
                 onClick={() => handleSelectRuleIndex(index)}
               >
-                {rule.name || "Unnamed Rule"}
+                {rule.name || tWf("unnamed_rule")}
               </li>
             ))}
           </ul>
@@ -131,14 +140,14 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
             disabled={!isEditing}
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Rule
+            {tWf("add_rule")}
           </Button>
         </div>
       </Card>
-      {rules.length > 0 && (
+      {rules.length > 0 ? (
         <Card className="col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Rule Details</CardTitle>
+            <CardTitle>{tWf("rule_details")}</CardTitle>
             {isEditing && selectedRuleIndex !== null && (
               <div className="flex space-x-2">
                 <Button
@@ -148,7 +157,7 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                   onClick={() => handleDeleteRule(selectedRuleIndex)}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Rule
+                  {tWf("delete_rule")}
                 </Button>
               </div>
             )}
@@ -164,11 +173,11 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                         name={`data.routing_rules.${index}.name`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Rule Name</FormLabel>
+                            <FormLabel>{tWf("rule_name")}</FormLabel>
                             <FormControl>
                               <Input
                                 {...field}
-                                placeholder="Enter rule name"
+                                placeholder={tWf("enter_rule_name")}
                                 disabled={!isEditing}
                               />
                             </FormControl>
@@ -183,11 +192,11 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                         name={`data.routing_rules.${index}.description`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Description</FormLabel>
+                            <FormLabel>{tWf("description")}</FormLabel>
                             <FormControl>
                               <Textarea
                                 {...field}
-                                placeholder="Enter rule description"
+                                placeholder={tWf("enter_rule_description")}
                                 disabled={!isEditing}
                               />
                             </FormControl>
@@ -202,7 +211,7 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                         name={`data.routing_rules.${index}.trigger_stage`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Trigger Stage</FormLabel>
+                            <FormLabel>{tWf("trigger_stage")}</FormLabel>
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value}
@@ -210,7 +219,7 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                             >
                               <FormControl>
                                 <SelectTrigger id="trigger_stage">
-                                  <SelectValue placeholder="Select Trigger Stage" />
+                                  <SelectValue placeholder={tWf("select_trigger_stage")} />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
@@ -226,7 +235,7 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                         )}
                       />
                     </div>
-                    <Label>Condition</Label>
+                    <Label>{tWf("condition")}</Label>
                     <div className="flex flex-col space-y-2 mt-2">
                       <FormField
                         control={control}
@@ -239,7 +248,9 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                                   `data.routing_rules.${index}.condition.operator`,
                                   "eq"
                                 );
-                                form.setValue(`data.routing_rules.${index}.condition.value`, []);
+                                // Set value based on field type - array for department/category, undefined for total_amount
+                                const newValue = (e === "department" || e === "category") ? [] : undefined;
+                                form.setValue(`data.routing_rules.${index}.condition.value`, newValue as any);
                                 field.onChange(e);
                               }}
                               defaultValue={field.value}
@@ -247,7 +258,7 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                             >
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select field" />
+                                  <SelectValue placeholder={tWf("select_field")} />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
@@ -271,43 +282,104 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                             render={({ field }) => (
                               <FormItem>
                                 <Select
-                                  onValueChange={field.onChange}
+                                  onValueChange={(val) => {
+                                    const currentOperator = form.getValues(`data.routing_rules.${index}.condition.operator`);
+                                    // Clear values when switching operators
+                                    if (val === "between") {
+                                      form.setValue(`data.routing_rules.${index}.condition.value`, []);
+                                      form.setValue(`data.routing_rules.${index}.condition.min_value`, "");
+                                      form.setValue(`data.routing_rules.${index}.condition.max_value`, "");
+                                    } else if (currentOperator === "between") {
+                                      // Switching from 'between' to another operator
+                                      form.setValue(`data.routing_rules.${index}.condition.value`, []);
+                                      form.setValue(`data.routing_rules.${index}.condition.min_value`, "");
+                                      form.setValue(`data.routing_rules.${index}.condition.max_value`, "");
+                                    }
+                                    field.onChange(val);
+                                  }}
                                   defaultValue={field.value}
                                   disabled={!isEditing}
                                 >
                                   <FormControl>
                                     <SelectTrigger>
-                                      <SelectValue placeholder="Select operator" />
+                                      <SelectValue placeholder={tWf("select_operator")} />
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    <SelectItem value="eq">Equals</SelectItem>
-                                    <SelectItem value="gt">Greater than</SelectItem>
-                                    <SelectItem value="lt">Less than</SelectItem>
-                                    <SelectItem value="gte">Greater than or equal</SelectItem>
-                                    <SelectItem value="lte">Less than or equal</SelectItem>
+                                    <SelectItem value="eq">{tWf("equals")}</SelectItem>
+                                    <SelectItem value="gt">{tWf("greater_than")}</SelectItem>
+                                    <SelectItem value="lt">{tWf("less_than")}</SelectItem>
+                                    <SelectItem value="gte">{tWf("greater_than_or_equal")}</SelectItem>
+                                    <SelectItem value="lte">{tWf("less_than_or_equal")}</SelectItem>
+                                    <SelectItem value="between">{tWf("between")}</SelectItem>
                                   </SelectContent>
                                 </Select>
                                 <FormMessage />
                               </FormItem>
                             )}
                           />
-                          <FormField
-                            control={control}
-                            name={`data.routing_rules.${index}.condition.value`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="Enter value"
-                                    disabled={!isEditing}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                          {form.watch(`data.routing_rules.${index}.condition.operator`) === "between" ? (
+                            <div className="flex gap-2">
+                              <FormField
+                                control={control}
+                                name={`data.routing_rules.${index}.condition.min_value`}
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormControl>
+                                      <Input
+                                        {...field}
+                                        value={field.value ?? ""}
+                                        placeholder={tWf("min_value")}
+                                        disabled={!isEditing}
+                                        type="number"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={control}
+                                name={`data.routing_rules.${index}.condition.max_value`}
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormControl>
+                                      <Input
+                                        {...field}
+                                        value={field.value ?? ""}
+                                        placeholder={tWf("max_value")}
+                                        disabled={!isEditing}
+                                        type="number"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          ) : (
+                            <FormField
+                              control={control}
+                              name={`data.routing_rules.${index}.condition.value`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormControl>
+                                    <Input
+                                      value={Array.isArray(field.value) && field.value[0] ? field.value[0] : ""}
+                                      placeholder={tWf("enter_value")}
+                                      disabled={!isEditing}
+                                      type="number"
+                                      onChange={(e) => {
+                                        const arrValue = e.target.value ? [e.target.value] : [];
+                                        field.onChange(arrValue);
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          )}
                         </>
                       )}
 
@@ -327,13 +399,13 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                                   <FormControl>
                                     <SelectTrigger>
                                       <SelectValue
-                                        placeholder="Select operator"
+                                        placeholder={tWf("select_operator")}
                                         defaultValue={"eq"}
                                       />
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    <SelectItem value="eq">Equals</SelectItem>
+                                    <SelectItem value="eq">{tWf("equals")}</SelectItem>
                                   </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -350,7 +422,7 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                                     options={departmentList}
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}
-                                    placeholder={`Select ${item.condition.field}`}
+                                    placeholder={`${tWf("select")} ${tWf("department")}`}
                                     variant="inverted"
                                   />
                                 </FormControl>
@@ -375,13 +447,13 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                                   <FormControl>
                                     <SelectTrigger>
                                       <SelectValue
-                                        placeholder="Select operator"
+                                        placeholder={tWf("select_operator")}
                                         defaultValue={"eq"}
                                       />
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    <SelectItem value="eq">Equals</SelectItem>
+                                    <SelectItem value="eq">{tWf("equals")}</SelectItem>
                                   </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -398,7 +470,7 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                                     options={categoryList}
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}
-                                    placeholder={`Select ${item.condition.field}`}
+                                    placeholder={`${tWf("select")} ${tWf("category")}`}
                                     variant="inverted"
                                   />
                                 </FormControl>
@@ -410,7 +482,7 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                       )}
                     </div>
                     <div className="space-y-2">
-                      <Label>Action</Label>
+                      <Label>{tWf("action")}</Label>
                       <div className="space-y-2 mt-2">
                         <FormField
                           control={control}
@@ -424,12 +496,12 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                               >
                                 <FormControl>
                                   <SelectTrigger>
-                                    <SelectValue placeholder="Select type" />
+                                    <SelectValue placeholder={tWf("select_type")} />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  <SelectItem value="SKIP_STAGE">Skip Stage</SelectItem>
-                                  <SelectItem value="NEXT_STAGE">Next Stage</SelectItem>
+                                  <SelectItem value="SKIP_STAGE">{tWf("skip_stage")}</SelectItem>
+                                  <SelectItem value="NEXT_STAGE">{tWf("next_stage")}</SelectItem>
                                 </SelectContent>
                               </Select>
                               <FormMessage />
@@ -448,7 +520,7 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                               >
                                 <FormControl>
                                   <SelectTrigger>
-                                    <SelectValue placeholder="Select target stage" />
+                                    <SelectValue placeholder={tWf("select_target_stage")} />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -469,6 +541,12 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                 )}
               </div>
             ))}
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="col-span-2">
+          <CardContent className="flex items-center justify-center h-full min-h-[200px]">
+            <p className="text-gray-500">{tWf("no_routing_rules_message")}</p>
           </CardContent>
         </Card>
       )}

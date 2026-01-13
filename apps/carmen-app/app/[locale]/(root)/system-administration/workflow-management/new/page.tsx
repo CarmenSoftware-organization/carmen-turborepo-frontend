@@ -9,7 +9,7 @@ import {
   enum_workflow_type,
   workflowTypeField,
 } from "@/dtos/workflows.dto";
-import Link from "next/link";
+import { Link } from "@/lib/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
