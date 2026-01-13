@@ -28,7 +28,7 @@ import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown"
 import { configurationPermission } from "@/lib/permission";
 
 export default function CurrencyComponent() {
-  const { token, buCode, permissions } = useAuth();
+  const { token, buCode, permissions, currencyBase } = useAuth();
   const currencyPerms = configurationPermission.get(permissions, "currency");
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
@@ -232,6 +232,7 @@ export default function CurrencyComponent() {
     <CurrencyList
       isLoading={isLoading}
       currencies={currenciesData}
+      currencyBase={currencyBase ?? ""}
       onEdit={handleEdit}
       onToggleStatus={handleToggleStatus}
       currentPage={Number(page || "1")}
