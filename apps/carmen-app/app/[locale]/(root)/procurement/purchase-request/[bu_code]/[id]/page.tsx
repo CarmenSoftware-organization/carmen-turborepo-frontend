@@ -18,17 +18,17 @@ export default function PurchaseRequestIdPage() {
 
   const currentBuCode = bu_code as string;
 
-  const {
-    purchaseRequest,
-    isLoading: isPrLoading,
-    error,
-  } = usePurchaseRequestById(token, currentBuCode, id as string);
+  const { purchaseRequest, isLoading, error } = usePurchaseRequestById(
+    token,
+    currentBuCode,
+    id as string
+  );
 
   useEffect(() => {
-    if (!isPrLoading && error) {
+    if (!isLoading && error) {
       notFound();
     }
-  }, [isPrLoading, error]);
+  }, [isLoading, error]);
 
   const { data: prDataWithInventory, isLoading: isInventoryLoading } = useQuery({
     queryKey: ["purchaseRequestWithInventory", id, purchaseRequest?.data],
@@ -60,7 +60,7 @@ export default function PurchaseRequestIdPage() {
     enabled: !!purchaseRequest?.data?.purchase_request_detail && !!token && !!currentBuCode,
   });
 
-  if (isPrLoading || isInventoryLoading) return <DetailLoading />;
+  if (isLoading || isInventoryLoading) return <DetailLoading />;
 
   if (!prDataWithInventory) return <DetailLoading />;
 

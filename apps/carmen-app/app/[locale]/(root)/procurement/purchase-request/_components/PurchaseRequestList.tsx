@@ -51,6 +51,7 @@ import { Badge } from "@/components/ui/badge";
 import { useSearchParams } from "next/navigation";
 import { returnUrl } from "@/utils/url";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import DataGridLoading from "@/components/loading/DataGridLoading";
 
 interface PurchaseRequestListProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
@@ -382,6 +383,7 @@ export default function PurchaseRequestList({
                       handleDeleteClick(pr);
                     }}
                     className="text-destructive cursor-pointer"
+                    disabled={isDeleting}
                   >
                     <Trash2 className="h-4 w-4" />
                     {tPr("delete")}
@@ -447,31 +449,34 @@ export default function PurchaseRequestList({
 
   return (
     <>
-      <DataGrid
-        table={table}
-        recordCount={totalItems}
-        isLoading={isLoading}
-        loadingMode="skeleton"
-        emptyMessage={tPr("no_data")}
-        tableLayout={{
-          headerSticky: true,
-          dense: false,
-          rowBorder: true,
-          headerBackground: true,
-          headerBorder: true,
-          width: "fixed",
-        }}
-      >
-        <div className="w-full space-y-2.5">
-          <DataGridContainer>
-            <ScrollArea className="max-h-[calc(100vh-250px)] pb-2">
-              <DataGridTable />
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-          </DataGridContainer>
-          <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
-        </div>
-      </DataGrid>
+      {isLoading ? (
+        <DataGridLoading />
+      ) : (
+        <DataGrid
+          table={table}
+          recordCount={totalItems}
+          loadingMode="skeleton"
+          emptyMessage={tPr("no_data")}
+          tableLayout={{
+            headerSticky: true,
+            dense: false,
+            rowBorder: true,
+            headerBackground: true,
+            headerBorder: true,
+            width: "fixed",
+          }}
+        >
+          <div className="w-full space-y-2.5">
+            <DataGridContainer>
+              <ScrollArea className="max-h-[calc(100vh-250px)] pb-2">
+                <DataGridTable />
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </DataGridContainer>
+            <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
+          </div>
+        </DataGrid>
+      )}
 
       <DeleteConfirmDialog
         open={alertOpen}
