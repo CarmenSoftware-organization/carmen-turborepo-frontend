@@ -1,8 +1,8 @@
 import { createMetadata } from "@/utils/metadata";
-import ExcComponent from "./ExcComponent";
+import ExchangeRateComponent from "./ExchangeRateComponent";
 
 export const generateMetadata = createMetadata("ExchangeRate", "title");
 
 export default function ExchangeRatePage() {
-  return <ExcComponent />;
+  return <ExchangeRateComponent />;
 }

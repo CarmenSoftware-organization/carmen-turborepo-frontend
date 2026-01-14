@@ -9,13 +9,13 @@ import { ExchangeRateItem } from "@/dtos/exchange-rate.dto";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 
-interface ExcDialogProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialData?: ExchangeRateItem;
 }
 
-export default function ExcDialog({ open, onOpenChange, initialData }: ExcDialogProps) {
+export default function ExchangeRateDialog({ open, onOpenChange, initialData }: Props) {
   const tCommon = useTranslations("Common");
   const tCurrency = useTranslations("Currency");
 

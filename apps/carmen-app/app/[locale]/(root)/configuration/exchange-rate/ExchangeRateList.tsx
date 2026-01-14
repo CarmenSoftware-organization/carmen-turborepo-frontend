@@ -13,7 +13,7 @@ import { ExchangeRateItem } from "@/dtos/exchange-rate.dto";
 import { formatDate } from "@/utils/format/date";
 import { useAuth } from "@/context/AuthContext";
 
-interface ExcListProps {
+interface Props {
   readonly excList?: ExchangeRateItem[];
   readonly isLoading?: boolean;
   readonly currentPage?: number;
@@ -25,7 +25,7 @@ interface ExcListProps {
   readonly onEdit: (currency: ExchangeRateItem) => void;
 }
 
-export default function ExcList({
+export default function ExchangeRateList({
   excList = [],
   isLoading = false,
   currentPage = 1,
@@ -35,7 +35,7 @@ export default function ExcList({
   onPageChange,
   setPerpage,
   onEdit,
-}: ExcListProps) {
+}: Props) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
   const { dateFormat } = useAuth();
