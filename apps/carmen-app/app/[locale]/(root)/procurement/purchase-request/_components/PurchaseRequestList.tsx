@@ -147,9 +147,9 @@ export default function PurchaseRequestList({
       },
       {
         id: "no",
-        header: () => <div className="text-center">#</div>,
+        header: () => "#",
         cell: ({ row }) => (
-          <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
+          <span className="text-center">{(currentPage - 1) * perpage + row.index + 1}</span>
         ),
         enableSorting: false,
         size: 30,
@@ -235,13 +235,13 @@ export default function PurchaseRequestList({
           </div>
         ),
         cell: ({ row }) => (
-          <div className="flex justify-center">
+          <>
             {row.original.pr_status && (
               <Badge variant={row.original.pr_status}>
-                {convertStatus(row.original.pr_status)}
+                <span className="font-bold">{convertStatus(row.original.pr_status)}</span>
               </Badge>
             )}
-          </div>
+          </>
         ),
         enableSorting: true,
         size: 180,

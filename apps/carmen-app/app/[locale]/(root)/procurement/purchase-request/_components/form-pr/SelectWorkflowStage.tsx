@@ -25,7 +25,7 @@ export default function SelectWorkflowStage({ token, buCode, onSetStage, value }
 
   return (
     <Select value={selectValue} onValueChange={onSetStage}>
-      <SelectTrigger className="w-[120px] h-8 bg-muted">
+      <SelectTrigger className="w-[120px] h-8">
         <SelectValue placeholder={tDataControls("allStage")} />
       </SelectTrigger>
       <SelectContent>

@@ -24,6 +24,7 @@ import ExportDropdown, { ExportFormat } from "@/components/ui-custom/ExportDropd
 import { exportToExcel, exportToPDF, exportToWord, ExportData } from "@/utils/export";
 import ErrorBoundary from "./ErrorBoundary";
 import SelectWorkflowStage from "./form-pr/SelectWorkflowStage";
+import SelectPrStatus from "./SelectPrStatus";
 
 export default function PurchaseRequestComponent() {
   const { token, buCode, businessUnits } = useAuth();
@@ -114,6 +115,17 @@ export default function PurchaseRequestComponent() {
     },
     fetchType
   );
+
+  // Sync activeTab when prs data loads - ensure activeTab matches available tabs
+  useEffect(() => {
+    if (prs?.data && prs.data.length > 0) {
+      const availableBuCodes = prs.data.map((bu: any) => bu.bu_code);
+      // If activeTab is not in available tabs, set to first available
+      if (!activeTab || !availableBuCodes.includes(activeTab)) {
+        setActiveTab(availableBuCodes[0]);
+      }
+    }
+  }, [prs?.data, activeTab]);
 
   useEffect(() => {
     if (search) {
@@ -319,6 +331,8 @@ export default function PurchaseRequestComponent() {
           }}
           value={filterStage}
         />
+
+        <SelectPrStatus status={filterStatus} setStatus={setFilterStatus} />
       </div>
     </div>
   );
