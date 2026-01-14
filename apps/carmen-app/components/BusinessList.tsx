@@ -10,7 +10,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 
-export default function TenantList() {
+export default function BusinessList() {
   const t = useTranslations("HomePage");
   const { user, buId, handleChangeBu, isLoading } = useAuth();
 

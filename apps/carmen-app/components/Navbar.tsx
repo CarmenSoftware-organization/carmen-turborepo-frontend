@@ -2,7 +2,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import ModuleList from "./ModuleList";
 import ModuleMobile from "./ModuleMobile";
 import { SwitchTheme } from "./SwitchTheme";
-import TenantList from "./TenantList";
+import BusinessList from "./BusinessList";
 import UserAvatar from "./UserAvatar";
 import Notification from "./Notification";
 import "@/styles/layout.css";
@@ -36,7 +36,7 @@ export default function Navbar() {
         <div className="h-6 w-px bg-border hidden md:block" />
 
         <div className="hidden md:flex items-center gap-3">
-          <TenantList />
+          <BusinessList />
           <SwitchTheme />
           <LanguageSwitcher dense />
         </div>
