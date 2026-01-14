@@ -2,7 +2,6 @@
 
 import { useParams, notFound } from "next/navigation";
 import { formType } from "@/dtos/form.dto";
-import { getOnHandOnOrderService } from "@/services/on-hand-on-order.service";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { DetailLoading } from "@/components/loading/DetailLoading";
@@ -11,6 +10,7 @@ import MainForm from "../../_components/form-pr/MainForm";
 import { usePurchaseRequestById } from "@/hooks/use-purchase-request";
 import { useEffect } from "react";
 import ErrorBoundary from "../../_components/ErrorBoundary";
+import { fetchOnHandOrder } from "@/hooks/use-on-hand-on-order";
 
 export default function PurchaseRequestIdPage() {
   const { id, bu_code } = useParams();
@@ -40,7 +40,7 @@ export default function PurchaseRequestIdPage() {
       const detailsWithInventory = await Promise.all(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         purchaseRequest.data.purchase_request_detail.map(async (detail: any) => {
-          const inventoryData = await getOnHandOnOrderService(
+          const inventoryData = await fetchOnHandOrder(
             token,
             currentBuCode,
             detail.location_id,

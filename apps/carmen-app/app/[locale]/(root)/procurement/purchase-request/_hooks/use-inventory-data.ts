@@ -1,5 +1,5 @@
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
-import { useOnHandOrder } from "@/hooks/useOnHandOrder";
+import { useOnHandOrder } from "@/hooks/use-on-hand-on-order";
 import { useMemo } from "react";
 
 export interface InventoryData {

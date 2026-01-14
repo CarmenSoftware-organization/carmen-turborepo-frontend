@@ -8,9 +8,9 @@ import {
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
-import { useWorkflowQuery } from "@/hooks/useWorkflowQuery";
 import { useTranslations } from "next-intl";
 import { cn } from "@/utils";
+import { useWorkflowTypeQuery } from "@/hooks/use-workflow";
 
 interface WorkflowDto {
   id: string;
@@ -34,7 +34,7 @@ export default function LookupWorkflow({
 }: Readonly<PropsWorkflowLookup>) {
   const { token, buCode } = useAuth();
   const currentBuCode = bu_code ?? buCode;
-  const { workflows, isLoading } = useWorkflowQuery(token, currentBuCode, type);
+  const { workflows, isLoading } = useWorkflowTypeQuery(token, currentBuCode, type);
   const t = useTranslations("Workflow");
 
   let selectContent;

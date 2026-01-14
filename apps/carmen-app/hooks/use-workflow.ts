@@ -1,4 +1,4 @@
-import { WorkflowData, WorkflowCreateModel } from "@/dtos/workflows.dto";
+import { WorkflowData, WorkflowCreateModel, enum_workflow_type } from "@/dtos/workflows.dto";
 import { backendApi } from "@/lib/backend-api";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -44,7 +44,7 @@ export const useWorkflow = (token: string, buCode: string, params?: ParamsGetDto
       const data = await getAllApiRequest(
         API_URL,
         token,
-        "Failed to fetch price list",
+        "Failed to fetch workflow list",
         params ?? {}
       );
 
@@ -149,4 +149,27 @@ export const useWorkflowMutation = (token: string, buCode: string) => {
       return await postApiRequest(API_URL, token, data, "Error creating vendor");
     },
   });
+};
+
+export const useWorkflowTypeQuery = (token: string, buCode: string, type: enum_workflow_type) => {
+  const API_URL = `${backendApi}/api/${buCode}/workflow/type/${type}`;
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["workflow", buCode, type],
+    queryFn: async () => {
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
+      }
+      const data = await getAllApiRequest(API_URL, token, "Failed to fetch workflow list");
+
+      return data;
+    },
+    enabled: !!token && !!buCode,
+  });
+
+  return {
+    workflows: data?.data,
+    isLoading,
+    error,
+  };
 };
