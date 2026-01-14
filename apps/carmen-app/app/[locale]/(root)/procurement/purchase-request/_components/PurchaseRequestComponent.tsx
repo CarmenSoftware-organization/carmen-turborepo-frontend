@@ -24,6 +24,7 @@ import ExportDropdown, { ExportFormat } from "@/components/ui-custom/ExportDropd
 import { exportToExcel, exportToPDF, exportToWord, ExportData } from "@/utils/export";
 import ErrorBoundary from "./ErrorBoundary";
 import SelectWorkflowStage from "./form-pr/SelectWorkflowStage";
+import { set } from "date-fns";
 
 export default function PurchaseRequestComponent() {
   const { token, buCode, businessUnits } = useAuth();
@@ -294,6 +295,7 @@ export default function PurchaseRequestComponent() {
             setCurrentBuCode(buCode);
             setFetchType(undefined);
             setActiveTab(buCode);
+            setFilterStage("");
           }}
         >
           {tDataControls("allDoc")}

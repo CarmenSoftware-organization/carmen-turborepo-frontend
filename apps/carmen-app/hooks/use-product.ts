@@ -1,8 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { backendApi } from "@/lib/backend-api";
 import { ParamsGetDto } from "@/dtos/param.dto";
-import { getAllApiRequest, getByIdApiRequest, postApiRequest, updateApiRequest } from "@/lib/config.api";
-import axios from "axios";
+import { getAllApiRequest, getByIdApiRequest, postApiRequest, updateApiRequest, deleteApiRequest } from "@/lib/config.api";
 
 // API URL helper
 const productApiUrl = (buCode: string, id?: string) => {
@@ -70,16 +69,9 @@ export const useCategoryByItemGroupQuery = ({
 
   return useQuery({
     queryKey: ["category-by-item-group", buCode, itemGroupId],
-    queryFn: async () => {
+    queryFn: () => {
       if (!token || !buCode || !itemGroupId) throw new Error("Unauthorized");
-
-      const response = await axios.get(API_URL, {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-      return response.data;
+      return getByIdApiRequest(API_URL, token, "Error fetching category by item group");
     },
     staleTime: 300000, // 5 minutes (rarely changes)
     enabled: enabled && !!token && !!buCode && !!itemGroupId,
@@ -135,23 +127,14 @@ export const useDeleteProductMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ token, buCode, id }: {
+    mutationFn: ({ token, buCode, id }: {
       token: string;
       buCode: string;
       id: string;
     }) => {
       if (!token || !buCode || !id) throw new Error("Unauthorized");
-
       const API_URL_BY_ID = productApiUrl(buCode, id);
-
-      const response = await axios.delete(API_URL_BY_ID, {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-
-      return response.data;
+      return deleteApiRequest(API_URL_BY_ID, token, "Error deleting product");
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["products", variables.buCode] });

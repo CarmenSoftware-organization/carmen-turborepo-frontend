@@ -29,9 +29,14 @@ export const usePurchaseRequest = (
         throw new Error("Unauthorized: Missing token or buCode");
       }
 
-      const queryParams = { ...params, bu_code: buCode };
+      const queryParams = { ...params, bu_code: API_URL === MY_PENDING ? undefined : buCode };
 
-      return await getAllApiRequest(API_URL, token, "Error fetching PRs", queryParams);
+      return await getAllApiRequest(
+        API_URL,
+        token,
+        "Error fetching PRs",
+        API_URL === MY_PENDING ? undefined : queryParams
+      );
     },
     enabled: !!token && !!buCode,
   });

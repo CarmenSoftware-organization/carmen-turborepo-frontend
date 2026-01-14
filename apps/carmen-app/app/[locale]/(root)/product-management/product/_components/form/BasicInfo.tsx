@@ -35,6 +35,20 @@ interface BasicInfoProps {
   readonly handleCancelClick?: (e: React.MouseEvent) => void;
 }
 
+interface ActiveUnitItem {
+  id?: string;
+  product_order_unit_id?: string;
+  from_unit_id: string;
+  from_unit_name?: string;
+  from_unit_qty: number;
+  to_unit_id: string;
+  to_unit_name?: string;
+  to_unit_qty: number;
+  description?: string;
+  is_active?: boolean;
+  is_default?: boolean;
+}
+
 export default function BasicInfo({
   control,
   currentMode,
@@ -108,7 +122,7 @@ export default function BasicInfo({
   const defaultUnit = useMemo(() => {
     if (!orderUnits) return undefined;
 
-    let activeUnits: any[] = [];
+    let activeUnits: ActiveUnitItem[] = [];
 
     // 1. Collect all potential active units
     // From Added
@@ -302,6 +316,7 @@ export default function BasicInfo({
                     {...field}
                     disabled={currentMode === formType.VIEW}
                     className={cn(currentMode === formType.VIEW && "bg-muted")}
+                    maxLength={10}
                   />
                 </FormControl>
                 <FormMessage />
@@ -322,6 +337,7 @@ export default function BasicInfo({
                     {...field}
                     disabled={currentMode === formType.VIEW}
                     className={cn(currentMode === formType.VIEW && "bg-muted")}
+                    maxLength={100}
                   />
                 </FormControl>
                 <FormMessage />

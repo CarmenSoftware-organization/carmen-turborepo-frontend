@@ -74,8 +74,7 @@ export default function ProductList({
     [currentPage, perpage]
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const columns = useMemo<ColumnDef<any>[]>(
+  const columns = useMemo<ColumnDef<ProductListDto>[]>(
     () => [
       {
         id: "select",

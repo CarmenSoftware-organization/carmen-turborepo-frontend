@@ -2,11 +2,14 @@ import { ParamsGetDto } from "@/dtos/param.dto";
 import axios from "axios";
 import { xAppId } from "./backend-api";
 
-export const requestHeaders = (token: string) => ({
-  Authorization: `Bearer ${token}`,
-  "Content-Type": "application/json",
-  "x-app-id": xAppId,
-});
+export const requestHeaders = (token: string) => {
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+    "x-app-id": xAppId ?? "",
+  };
+  return headers;
+};
 
 export const getAllApiRequest = async (
   API_URL: string,
@@ -84,6 +87,19 @@ export const updateApiRequest = async <T = unknown, R = unknown>(
       method === "PUT"
         ? await axios.put<R>(API_URL, data, config)
         : await axios.patch<R>(API_URL, data, config);
+
+    return response.data;
+  } catch (error) {
+    console.error(`${errorContext}:`, error);
+    throw error;
+  }
+};
+
+export const deleteApiRequest = async (API_URL: string, token: string, errorContext: string) => {
+  try {
+    const response = await axios.delete(API_URL, {
+      headers: requestHeaders(token),
+    });
 
     return response.data;
   } catch (error) {

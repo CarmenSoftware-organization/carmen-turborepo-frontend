@@ -171,6 +171,23 @@ export interface ProductInitialValues {
     }>;
   };
   product_item_group?: { id: string; name?: string };
+  // Legacy flat fields (for backward compatibility with old API responses)
+  product_item_group_id?: string;
+  price?: number;
+  tax_type?: "none" | "included" | "excluded";
+  tax_profile_id?: string;
+  tax_profile_name?: string;
+  tax_rate?: number;
+  price_deviation_limit?: number;
+  qty_deviation_limit?: number;
+  is_used_in_recipe?: boolean;
+  is_sold_directly?: boolean;
+  barcode?: string;
+  info?: Array<{
+    label: string;
+    value: string;
+    data_type: string;
+  }>;
   locations?:
     | {
         add: { location_id: string }[];
