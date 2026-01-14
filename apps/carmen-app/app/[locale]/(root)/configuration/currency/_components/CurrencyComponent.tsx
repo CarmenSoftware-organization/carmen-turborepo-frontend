@@ -10,7 +10,6 @@ import { formType } from "@/dtos/form.dto";
 import CurrencyList from "./CurrencyList";
 import CurrencyDialog from "./CurrencyDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
-import SignInDialog from "@/components/SignInDialog";
 import { useState } from "react";
 import { parseSortString } from "@/utils/table";
 import { useAuth } from "@/context/AuthContext";
@@ -37,7 +36,6 @@ export default function CurrencyComponent() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyGetDto | undefined>();
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
   const tCurrency = useTranslations("Currency");
@@ -271,7 +269,6 @@ export default function CurrencyComponent() {
         title={tCurrency("deactivate_currency")}
         description={tCurrency("deactivate_currency_description")}
       />
-      <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
     </div>
   );
 }
