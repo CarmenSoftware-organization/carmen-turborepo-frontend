@@ -138,6 +138,7 @@ interface User {
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
+  isChangingBu: boolean;
   user: User | null;
   permissions: Permissions | undefined;
   setSession: (accessToken: string, refreshToken: string) => void;
@@ -164,6 +165,7 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   isLoading: true,
+  isChangingBu: false,
   user: null,
   permissions: undefined,
   setSession: () => {},
@@ -202,6 +204,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const [token, setToken] = useState<string>("");
   const [buCode, setBuCode] = useState<string>("");
   const [isFromStorageEvent, setIsFromStorageEvent] = useState(false);
+  const [isChangingBu, setIsChangingBu] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -224,6 +227,14 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const signInPage = `/${locale}/sign-in`;
   const dashboardPage = `/${locale}/dashboard`;
   const isSignInPage = pathname === signInPage;
+  const isDashboardPage = pathname === dashboardPage;
+
+  // Reset isChangingBu เมื่อถึงหน้า dashboard แล้ว
+  useEffect(() => {
+    if (isDashboardPage && isChangingBu) {
+      setIsChangingBu(false);
+    }
+  }, [isDashboardPage, isChangingBu]);
 
   // ใช้ TanStack Query สำหรับ user profile - รอให้ hydrated ก่อน
   const { data: user, isLoading: isUserLoading } = useUserProfileQuery(
@@ -333,7 +344,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     return "";
   }, []);
 
-  // ฟังก์ชันจัดการการเปลี่ยน tenant
+  // ฟังก์ชันจัดการการเปลี่ยน business unit
   const handleChangeBu = useCallback(
     async (id: string) => {
       if (!id || !token || !user?.data.business_unit?.length) return;
@@ -351,6 +362,9 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         return;
       }
 
+      // เริ่มแสดง global loading
+      setIsChangingBu(true);
+
       updateBusinessUnitMutation.mutate(
         { token, buCode: id },
         {
@@ -365,11 +379,16 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
             }
             router.push(dashboardPage);
             toastSuccess({ message: "Changed Business Unit Success" });
+            // Note: isChangingBu จะถูก reset เมื่อหน้า dashboard โหลดเสร็จ
+          },
+          onError: () => {
+            // หยุดแสดง loading เมื่อเกิด error
+            setIsChangingBu(false);
           },
         }
       );
     },
-    [token, updateBusinessUnitMutation, isFromStorageEvent, user?.data.business_unit]
+    [token, updateBusinessUnitMutation, isFromStorageEvent, user?.data.business_unit, router, dashboardPage]
   );
 
   // จัดการการล้าง data เมื่อใน sign-in page (แต่ไม่ใช่เมื่อกำลัง login)
@@ -458,6 +477,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     () => ({
       isAuthenticated: hasToken && !!user,
       isLoading,
+      isChangingBu,
       user: user || null,
       permissions: user?.permissions,
       setSession,
@@ -483,6 +503,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       hasToken,
       user,
       isLoading,
+      isChangingBu,
       setSession,
       logout,
       token,
