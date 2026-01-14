@@ -59,7 +59,9 @@
     "select_delivery_point": "เลือกจุดส่งสินค้า",
     "search_delivery_point": "ค้นหาจุดส่งสินค้า...",
     "not_found_delivery_point": "ไม่พบจุดส่งสินค้า",
-    "not_ava_delivery_point": "ไม่พบจุดส่งสินค้าที่พร้อมใช้งาน"
+    "not_ava_delivery_point": "ไม่พบจุดส่งสินค้าที่พร้อมใช้งาน",
+    "del_success": "จุดส่งสินค้าถูกลบเรียบร้อยแล้ว",
+    "del_error": "ลบจุดส่งสินค้าไม่สำเร็จ"
   },
   "Department": {
     "title": "แผนก",
@@ -114,7 +116,9 @@
     "code_required": "กรุณากรอกรหัสสถานที่",
     "select_location": "เลือกสถานที่เก็บสินค้า",
     "location_not_found": "ไม่พบสถานที่เก็บสินค้า",
-    "search_location": "ค้นหาสถานที่เก็บสินค้า..."
+    "search_location": "ค้นหาสถานที่เก็บสินค้า...",
+    "del_success": "สถานที่เก็บสินค้าถูกลบเรียบร้อยแล้ว",
+    "del_error": "ลบสถานที่เก็บสินค้าไม่สำเร็จ"
   },
   "ExchangeRate": {
     "title": "อัตราแลกเปลี่ยนเงิน",

@@ -29,7 +29,6 @@ import { configurationPermission } from "@/lib/permission";
 export default function DeliveryPointComponent() {
   const { token, buCode, permissions } = useAuth();
 
-  // Get permissions for delivery_point resource
   const deliveryPointPerms = configurationPermission.get(permissions, "delivery_point");
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
@@ -43,14 +42,12 @@ export default function DeliveryPointComponent() {
   const [perpage, setPerpage] = useURL("perpage");
   const [statusOpen, setStatusOpen] = useState(false);
 
-  // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
   const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState<
     DeliveryPointUpdateDto | undefined
   >(undefined);
 
-  // Delete confirmation dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deliveryPointToDelete, setDeliveryPointToDelete] = useState<
     DeliveryPointUpdateDto | undefined
@@ -102,20 +99,18 @@ export default function DeliveryPointComponent() {
     if (deliveryPointToDelete?.id) {
       deleteDeliveryPoint(deliveryPointToDelete.id, {
         onSuccess: () => {
-          toastSuccess({ message: "Delete delivery point successfully" });
+          toastSuccess({ message: tDeliveryPoint("del_success") });
           refetchDeliveryPoints();
           setDeleteDialogOpen(false);
           setDeliveryPointToDelete(undefined);
         },
-        onError: (error: Error) => {
-          toastError({ message: "Failed to delete delivery point" });
-          console.error("Failed to delete delivery point:", error);
+        onError: () => {
+          toastError({ message: tDeliveryPoint("del_error") });
         },
       });
     }
   };
 
-  // Refetch delivery points after mutation
   const refetchDeliveryPoints = () => {
     queryClient.invalidateQueries({
       queryKey: ["delivery-point"],
@@ -125,7 +120,6 @@ export default function DeliveryPointComponent() {
 
   const handleDialogSubmit = (data: DeliveryPointUpdateDto | DeliveryPointCreateDto) => {
     if (dialogMode === formType.ADD) {
-      // Create new delivery point
       createDeliveryPoint(data, {
         onSuccess: () => {
           toastSuccess({ message: "Create delivery point successfully" });
@@ -133,13 +127,11 @@ export default function DeliveryPointComponent() {
           setDialogOpen(false);
           setSelectedDeliveryPoint(undefined);
         },
-        onError: (error: Error) => {
+        onError: () => {
           toastError({ message: "Failed to create delivery point" });
-          console.error("Failed to create delivery point:", error);
         },
       });
     } else if (dialogMode === formType.EDIT && selectedDeliveryPoint) {
-      // Update existing delivery point
       const updateData = { ...data, id: selectedDeliveryPoint.id } as DeliveryPointUpdateDto;
 
       updateDeliveryPoint(updateData, {
@@ -149,9 +141,8 @@ export default function DeliveryPointComponent() {
           setDialogOpen(false);
           setSelectedDeliveryPoint(undefined);
         },
-        onError: (error: Error) => {
+        onError: () => {
           toastError({ message: "Failed to update delivery point" });
-          console.error("Failed to update delivery point:", error);
         },
       });
     }

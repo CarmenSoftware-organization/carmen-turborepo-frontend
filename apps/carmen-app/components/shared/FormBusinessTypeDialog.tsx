@@ -20,7 +20,7 @@ import { createBuTypeFormSchema } from "@/dtos/bu-type-form.dto";
 import { InputValidate } from "../ui-custom/InputValidate";
 import { TextareaValidate } from "../ui-custom/TextareaValidate";
 
-interface FormBuTypeProps {
+interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: BuTypeFormDto) => void;
@@ -28,13 +28,13 @@ interface FormBuTypeProps {
   onCancel: () => void;
 }
 
-export const FormBuTypeDialog = ({
+export const FormBusinessTypeDialog = ({
   open,
   onOpenChange,
   onSubmit,
   editingProfile,
   onCancel,
-}: FormBuTypeProps) => {
+}: Props) => {
   const tCommon = useTranslations("Common");
   const tBusinessType = useTranslations("BusinessType");
 

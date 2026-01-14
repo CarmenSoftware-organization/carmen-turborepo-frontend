@@ -80,14 +80,13 @@ export default function LocationComponent() {
     if (locationToDelete?.id) {
       deleteLocation(locationToDelete.id, {
         onSuccess: () => {
-          toastSuccess({ message: "Location deleted successfully" });
+          toastSuccess({ message: tStoreLocation("del_success") });
           queryClient.invalidateQueries({ queryKey: ["locations", buCode] });
           setDeleteDialogOpen(false);
           setLocationToDelete(undefined);
         },
-        onError: (error: Error) => {
-          toastError({ message: "Failed to delete location" });
-          console.error("Failed to delete location:", error);
+        onError: () => {
+          toastError({ message: tStoreLocation("del_error") });
           setDeleteDialogOpen(false);
           setLocationToDelete(undefined);
         },

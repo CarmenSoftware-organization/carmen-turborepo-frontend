@@ -3,7 +3,12 @@
 import { BuTypeGetAllDto } from "@/dtos/bu-type.dto";
 import { Activity, Info, List, MoreHorizontal, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useMemo } from "react";
@@ -15,12 +20,16 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
-import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import {
+  DataGridTable,
+  DataGridTableRowSelect,
+  DataGridTableRowSelectAll,
+} from "@/components/ui/data-grid-table";
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-interface BuTypeListProps {
+interface Props {
   readonly buTypes: BuTypeGetAllDto[];
   readonly isLoading: boolean;
   readonly onEdit: (id: string) => void;
@@ -37,7 +46,7 @@ interface BuTypeListProps {
   readonly canDelete?: boolean;
 }
 
-export default function BuTypeList({
+export default function BusinessTypeList({
   buTypes,
   isLoading,
   onEdit,
@@ -52,7 +61,7 @@ export default function BuTypeList({
   setPerpage,
   canUpdate = true,
   canDelete = true,
-}: BuTypeListProps) {
+}: Props) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
 
@@ -87,9 +96,7 @@ export default function BuTypeList({
         id: "no",
         header: () => <div className="text-center">#</div>,
         cell: ({ row }) => (
-          <div className="text-center">
-            {(currentPage - 1) * perpage + row.index + 1}
-          </div>
+          <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
         ),
         enableSorting: false,
         size: 30,
@@ -101,7 +108,11 @@ export default function BuTypeList({
       {
         accessorKey: "name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("name")} icon={<List className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("name")}
+            icon={<List className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => {
           const buType = row.original;
@@ -127,13 +138,13 @@ export default function BuTypeList({
       {
         accessorKey: "description",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("description")} icon={<Info className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("description")}
+            icon={<Info className="h-4 w-4" />}
+          />
         ),
-        cell: ({ row }) => (
-          <p>
-            {row.original.description}
-          </p>
-        ),
+        cell: ({ row }) => <p>{row.original.description}</p>,
         enableSorting: false,
         size: 250,
         meta: {
@@ -160,7 +171,11 @@ export default function BuTypeList({
         accessorKey: "is_active",
         header: ({ column }) => (
           <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={t("status")} icon={<Activity className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={t("status")}
+              icon={<Activity className="h-4 w-4" />}
+            />
           </div>
         ),
         cell: ({ row }) => (
@@ -232,8 +247,7 @@ export default function BuTypeList({
     },
     enableRowSelection: true,
     onPaginationChange: (updater) => {
-      const newPagination =
-        typeof updater === "function" ? updater(pagination) : updater;
+      const newPagination = typeof updater === "function" ? updater(pagination) : updater;
       onPageChange(newPagination.pageIndex + 1);
       setPerpage(newPagination.pageSize);
     },

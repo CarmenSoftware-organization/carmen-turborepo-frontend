@@ -17,12 +17,12 @@ import {
   useUpdateBuType,
 } from "@/hooks/use-bu-type";
 import { toastSuccess } from "@/components/ui-custom/Toast";
-import BuTypeList from "./BuTypeList";
+import BusinessTypeList from "./BusinessTypeList";
 import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
-import { FormBuTypeDialog } from "@/components/shared/FormBuTypeDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import { FormBusinessTypeDialog } from "@/components/shared/FormBusinessTypeDialog";
 
 export default function BusinessTypeComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -203,7 +203,7 @@ export default function BusinessTypeComponent() {
   };
 
   const content = (
-    <BuTypeList
+    <BusinessTypeList
       buTypes={buTypesData}
       isLoading={isLoading}
       onEdit={handleEdit}
@@ -248,7 +248,7 @@ export default function BusinessTypeComponent() {
         content={content}
       />
 
-      <FormBuTypeDialog
+      <FormBusinessTypeDialog
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         onSubmit={handleSubmit}

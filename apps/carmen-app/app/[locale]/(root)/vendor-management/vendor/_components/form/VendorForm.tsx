@@ -32,7 +32,7 @@ import {
 import { MultiSelectCustom } from "@/components/ui/multi-select-custom";
 import { BuTypeGetAllDto, BuTypeFormDto } from "@/dtos/bu-type.dto";
 import { useBuTypeQuery, useBuTypeMutation } from "@/hooks/use-bu-type";
-import { FormBuTypeDialog } from "@/components/shared/FormBuTypeDialog";
+import { FormBusinessTypeDialog } from "@/components/shared/FormBusinessTypeDialog";
 
 const defaultValues: VendorFormValues = {
   id: "",
@@ -357,7 +357,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
           </Card>
         </form>
       </Form>
-      <FormBuTypeDialog
+      <FormBusinessTypeDialog
         open={isBuTypeInternalDialogOpen}
         onOpenChange={setIsBuTypeInternalDialogOpen}
         onSubmit={handleCreateBuType}
