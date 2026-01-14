@@ -59,7 +59,6 @@ const clusterSchema = z.object({
 export default function ClusterComponent() {
   const { token } = useAuth();
   const tCommon = useTranslations("Common");
-  const router = useRouter();
   const { data: clusters, isLoading, isError, error } = useClusterQuery(token);
   const { mutate: createCluster, isPending } = useClusterMutation(token);
 

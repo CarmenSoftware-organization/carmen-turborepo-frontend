@@ -32,17 +32,16 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
   const tCategory = useTranslations("Category");
   const tCommon = useTranslations("Common");
   const tAction = useTranslations("Action");
-  const tProducts = useTranslations("Products");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingData, setPendingData] = useState<CategoryDto | null>(null);
 
   const CategorySchema = useMemo(
     () =>
       createCategorySchema({
-        codeRequired: tCategory("name_required"),
-        nameRequired: tCategory("code_required"),
+        codeRequired: tCategory("code_required"),
+        nameRequired: tCategory("name_required"),
       }),
-    [tCommon]
+    [tCategory]
   );
 
   const form = useForm<CategoryDto>({
@@ -243,7 +242,7 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
           />
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={onCancel}>
-              {tAction("cancel")}
+              {tCommon("cancel")}
             </Button>
             <Button type="submit">
               {mode === formType.EDIT ? tAction("edit") : tAction("add")}

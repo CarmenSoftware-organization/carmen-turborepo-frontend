@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { CategoryNode, createItemGroupSchema, type ItemGroupFormData } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import FormBoolean from "@/components/form-custom/form-boolean";
@@ -22,6 +21,8 @@ import NumberInput from "@/components/form-custom/NumberInput";
 import { Percent } from "lucide-react";
 import { InputValidate } from "@/components/ui-custom/InputValidate";
 import { TextareaValidate } from "@/components/ui-custom/TextareaValidate";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+
 interface ItemGroupFormProps {
   readonly mode: formType;
   readonly selectedNode?: CategoryNode;
@@ -43,6 +44,8 @@ export function ItemGroupForm({
 
   const [parentName, setParentName] = useState("");
   const [parentId, setParentId] = useState("");
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingData, setPendingData] = useState<ItemGroupFormData | null>(null);
 
   useEffect(() => {
     if (mode === formType.EDIT && selectedNode) {
@@ -91,9 +94,32 @@ export function ItemGroupForm({
     }
   }, [parentId, form]);
 
+  const handleSubmit = (data: ItemGroupFormData) => {
+    // Check if is_used_in_recipe or is_sold_directly has changed
+    const isRecipeChanged = selectedNode?.is_used_in_recipe !== data.is_used_in_recipe;
+    const isSoldChanged = selectedNode?.is_sold_directly !== data.is_sold_directly;
+
+    if ((isRecipeChanged || isSoldChanged) && mode === formType.EDIT) {
+      setPendingData(data);
+      setShowConfirmDialog(true);
+      return;
+    }
+
+    // If no changes to these fields or in add mode, submit directly
+    onSubmit(data);
+  };
+
+  const handleConfirm = () => {
+    if (pendingData) {
+      onSubmit({ ...pendingData, is_edit_type: true });
+      setShowConfirmDialog(false);
+      setPendingData(null);
+    }
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2">
         <FormField
           control={form.control}
           name="product_subcategory_id"
@@ -272,6 +298,14 @@ export function ItemGroupForm({
           <Button type="submit">{mode === formType.EDIT ? tAction("edit") : tAction("add")}</Button>
         </div>
       </form>
+
+      <DeleteConfirmDialog
+        open={showConfirmDialog}
+        onOpenChange={setShowConfirmDialog}
+        onConfirm={handleConfirm}
+        title={tCategory("confirm_edit")}
+        description={tCategory("confirm_edit_description")}
+      />
     </Form>
   );
 }
