@@ -20,8 +20,11 @@ export default function SelectWorkflowStage({ token, buCode, onSetStage, value }
 
   const { data: workflowData } = useWorkflowStageQuery(token, buCode);
 
+  // Handle empty string as "all"
+  const selectValue = value === "" ? "all" : value;
+
   return (
-    <Select value={value} onValueChange={onSetStage}>
+    <Select value={selectValue} onValueChange={onSetStage}>
       <SelectTrigger className="w-[120px] h-8 bg-muted">
         <SelectValue placeholder={tDataControls("allStage")} />
       </SelectTrigger>

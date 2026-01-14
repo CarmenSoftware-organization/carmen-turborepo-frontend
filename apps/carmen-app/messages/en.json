@@ -350,7 +350,7 @@
     }
   },
   "DataControls": {
-    "myPening": "My Pending",
+    "myPending": "My Pending",
     "allDoc": "All Document",
     "allStage": "All Stage",
     "allStatus": "All Status",

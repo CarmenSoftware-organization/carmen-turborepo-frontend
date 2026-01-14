@@ -16,6 +16,7 @@ export const useWorkflowQuery = (token: string, buCode: string, type: enum_workf
       const { data } = await axios.get(API_URL, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 

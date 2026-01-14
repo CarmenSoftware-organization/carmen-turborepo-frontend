@@ -24,7 +24,6 @@ import ExportDropdown, { ExportFormat } from "@/components/ui-custom/ExportDropd
 import { exportToExcel, exportToPDF, exportToWord, ExportData } from "@/utils/export";
 import ErrorBoundary from "./ErrorBoundary";
 import SelectWorkflowStage from "./form-pr/SelectWorkflowStage";
-import { set } from "date-fns";
 
 export default function PurchaseRequestComponent() {
   const { token, buCode, businessUnits } = useAuth();
@@ -282,10 +281,11 @@ export default function PurchaseRequestComponent() {
             setCurrentBuCode(buCodes);
             setFetchType("my-pending");
             setActiveTab(buCode);
+            setFilterStage("");
           }}
           variant={fetchType === "my-pending" ? "default" : "outlinePrimary"}
         >
-          {tDataControls("myPening")}
+          {tDataControls("myPending")}
         </Button>
         <Button
           size={"sm"}
@@ -303,7 +303,12 @@ export default function PurchaseRequestComponent() {
         <SelectWorkflowStage
           token={token}
           buCode={currentBuCode}
-          onSetStage={setFilterStage}
+          onSetStage={(stage) => {
+            setFilterStage(stage);
+            if (stage && stage !== "all") {
+              setFetchType(undefined);
+            }
+          }}
           value={filterStage}
         />
       </div>
