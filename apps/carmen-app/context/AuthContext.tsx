@@ -21,7 +21,7 @@ enum LOCAL_STORAGE {
   ACCESS_TOKEN = "access_token",
   BU_CODE = "bu_code",
   REFRESH_TOKEN = "refresh_token",
-  TENANT_ID = "tenant_id",
+  BU_ID = "bu_id",
   USER = "user",
 }
 
@@ -144,8 +144,8 @@ interface AuthContextType {
   logout: () => void;
   token: string;
   getServerSideToken: () => string;
-  tenantId: string;
-  handleChangeTenant: (tenantId: string) => void;
+  buId: string;
+  handleChangeBu: (buId: string) => void;
   departments: BusinessUnit["department"] | null;
   currencyBase: NonNullable<BusinessUnit["config"]>["currency_base"] | null;
   dateFormat: NonNullable<BusinessUnit["config"]>["date_format"] | null;
@@ -170,8 +170,8 @@ export const AuthContext = createContext<AuthContextType>({
   logout: () => {},
   token: "",
   getServerSideToken: () => "",
-  tenantId: "",
-  handleChangeTenant: () => {},
+  buId: "",
+  handleChangeBu: () => {},
   departments: null,
   currencyBase: null,
   dateFormat: null,
@@ -198,7 +198,7 @@ export function getServerSideToken(): string {
 export function AuthProvider({ children }: { readonly children: ReactNode }) {
   // State สำหรับ track hydration
   const [isHydrated, setIsHydrated] = useState(false);
-  const [tenantId, setTenantId] = useState<string>("");
+  const [buId, setBuId] = useState<string>("");
   const [token, setToken] = useState<string>("");
   const [buCode, setBuCode] = useState<string>("");
   const [isFromStorageEvent, setIsFromStorageEvent] = useState(false);
@@ -209,10 +209,10 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   // Hydration effect - รันครั้งเดียวหลัง mount
   useEffect(() => {
     if (globalThis.window !== undefined) {
-      const storedTenantId = localStorage.getItem(LOCAL_STORAGE.TENANT_ID) ?? "";
+      const storedBuId = localStorage.getItem(LOCAL_STORAGE.BU_ID) ?? "";
       const storedToken = localStorage.getItem(LOCAL_STORAGE.ACCESS_TOKEN) ?? "";
       const storedBuCode = localStorage.getItem(LOCAL_STORAGE.BU_CODE) ?? "";
-      setTenantId(storedTenantId);
+      setBuId(storedBuId);
       setToken(storedToken);
       setBuCode(storedBuCode);
       setIsHydrated(true);
@@ -269,20 +269,20 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     if (user?.data.business_unit?.length && isHydrated) {
       const defaultBu = user.data.business_unit.find((bu: BusinessUnit) => bu.is_default === true);
       const firstBu = user.data.business_unit[0];
-      const newTenantId = defaultBu?.id ?? firstBu?.id ?? "";
+      const newBuId = defaultBu?.id ?? firstBu?.id ?? "";
       const newBuCode = defaultBu?.code ?? firstBu?.code ?? "";
 
-      // Set tenantId และ buCode แม้ว่าจะเหมือนเดิมก็ตาม (สำหรับ initial load)
-      if (newTenantId && newBuCode) {
-        if (newTenantId !== tenantId) {
-          setTenantId(newTenantId);
+      // Set buId และ buCode แม้ว่าจะเหมือนเดิมก็ตาม (สำหรับ initial load)
+      if (newBuId && newBuCode) {
+        if (newBuId !== buId) {
+          setBuId(newBuId);
         }
         if (newBuCode !== buCode) {
           setBuCode(newBuCode);
         }
 
         // อัปเดต localStorage เสมอ
-        localStorage.setItem(LOCAL_STORAGE.TENANT_ID, newTenantId);
+        localStorage.setItem(LOCAL_STORAGE.BU_ID, newBuId);
         localStorage.setItem(LOCAL_STORAGE.BU_CODE, newBuCode);
       }
     }
@@ -311,14 +311,14 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     if (globalThis.window !== undefined) {
       localStorage.removeItem(LOCAL_STORAGE.ACCESS_TOKEN);
       localStorage.removeItem(LOCAL_STORAGE.REFRESH_TOKEN);
-      localStorage.removeItem(LOCAL_STORAGE.TENANT_ID);
+      localStorage.removeItem(LOCAL_STORAGE.BU_ID);
       localStorage.removeItem(LOCAL_STORAGE.USER);
       localStorage.removeItem(LOCAL_STORAGE.BU_CODE);
     }
 
     // ล้าง cache และ reset state
     clearAuthCache();
-    setTenantId("");
+    setBuId("");
     setToken("");
     setBuCode("");
     // เปลี่ยนเส้นทางไปหน้า sign-in
@@ -334,7 +334,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   }, []);
 
   // ฟังก์ชันจัดการการเปลี่ยน tenant
-  const handleChangeTenant = useCallback(
+  const handleChangeBu = useCallback(
     async (id: string) => {
       if (!id || !token || !user?.data.business_unit?.length) return;
 
@@ -355,12 +355,12 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         { token, buCode: id },
         {
           onSuccess: () => {
-            setTenantId(id);
+            setBuId(id);
             setBuCode(selectedBu.code);
 
             // อัปเดต localStorage เพื่อ sync กับ tabs อื่น
             if (globalThis.window !== undefined) {
-              localStorage.setItem(LOCAL_STORAGE.TENANT_ID, id);
+              localStorage.setItem(LOCAL_STORAGE.BU_ID, id);
               localStorage.setItem(LOCAL_STORAGE.BU_CODE, selectedBu.code);
             }
             router.push(dashboardPage);
@@ -379,12 +379,12 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       if (globalThis.window !== undefined) {
         localStorage.removeItem(LOCAL_STORAGE.ACCESS_TOKEN);
         localStorage.removeItem(LOCAL_STORAGE.REFRESH_TOKEN);
-        localStorage.removeItem(LOCAL_STORAGE.TENANT_ID);
+        localStorage.removeItem(LOCAL_STORAGE.BU_ID);
         localStorage.removeItem(LOCAL_STORAGE.USER);
         localStorage.removeItem(LOCAL_STORAGE.BU_CODE);
       }
       clearAuthCache();
-      setTenantId("");
+      setBuId("");
       setToken("");
       setBuCode("");
     }
@@ -396,7 +396,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
     const handleStorageChange = (event: StorageEvent) => {
       // ตรวจสอบเฉพาะ keys ที่เกี่ยวข้องกับ auth
-      if (!event.key || !["access_token", "refresh_token", "tenant_id"].includes(event.key)) {
+      if (!event.key || !["access_token", "refresh_token", "bu_id"].includes(event.key)) {
         return;
       }
 
@@ -406,7 +406,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         case "access_token":
           if (event.newValue === null) {
             setToken("");
-            setTenantId("");
+            setBuId("");
             setBuCode("");
             clearAuthCache();
 
@@ -419,9 +419,9 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
           }
           break;
 
-        case "tenant_id":
-          if (event.newValue && event.newValue !== tenantId) {
-            setTenantId(event.newValue);
+        case "bu_id":
+          if (event.newValue && event.newValue !== buId) {
+            setBuId(event.newValue);
             // Auto refresh page เพื่อโหลดข้อมูลใหม่ตาม tenant ที่เปลี่ยน
             setTimeout(() => {
               globalThis.window.location.reload();
@@ -445,7 +445,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     return () => {
       globalThis.window.removeEventListener("storage", handleStorageChange);
     };
-  }, [isHydrated, token, tenantId, isSignInPage, signInPage, router, clearAuthCache, buCode]);
+  }, [isHydrated, token, buId, isSignInPage, signInPage, router, clearAuthCache, buCode]);
 
   // ตรวจสอบว่า user เข้าสู่ระบบหรือไม่
   const hasToken = isHydrated && !!token;
@@ -464,8 +464,8 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       logout,
       token,
       getServerSideToken,
-      tenantId,
-      handleChangeTenant,
+      buId,
+      handleChangeBu,
       departments,
       currencyBase,
       dateFormat,
@@ -487,8 +487,8 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       logout,
       token,
       getServerSideToken,
-      tenantId,
-      handleChangeTenant,
+      buId,
+      handleChangeBu,
       departments,
       currencyBase,
       dateFormat,
@@ -500,7 +500,6 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       quantity,
       recipe,
       buCode,
-      currencyBase,
     ]
   );
 
