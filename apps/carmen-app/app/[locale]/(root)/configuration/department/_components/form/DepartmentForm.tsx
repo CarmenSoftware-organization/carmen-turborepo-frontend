@@ -18,6 +18,7 @@ import {
   DepartmentFormData,
 } from "../../_schemas/department-form.schema";
 import { DepartmentGetByIdDto } from "@/dtos/department.dto";
+import { UserListDto } from "@/dtos/user.dto";
 import OverviewTab from "./OverviewTab";
 import UsersTab from "./UsersTab";
 import { useQueryClient } from "@tanstack/react-query";
@@ -82,8 +83,8 @@ export default function DepartmentForm({ initialData, mode, onViewMode }: Depart
     const initUserIds = new Set(initUsers.map((user) => user.key.toString()));
 
     return userList
-      .filter((user: any) => !initUserIds.has(user.user_id))
-      .map((user: any) => ({
+      .filter((user: UserListDto) => !initUserIds.has(user.user_id))
+      .map((user: UserListDto) => ({
         key: user.user_id,
         title: user.firstname + " " + user.lastname,
       }));

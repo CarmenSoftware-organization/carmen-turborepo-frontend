@@ -9,6 +9,21 @@ import { UserDpDto } from "../../_types/users-department.type";
 import UsersDepartment from "./UsersDepartment";
 import UserItem from "./UserItem";
 
+interface UserAddUpdateOperation {
+  id: string;
+  isHod: boolean;
+}
+
+interface UserRemoveOperation {
+  id: string;
+}
+
+interface CurrentUsersState {
+  add: UserAddUpdateOperation[];
+  update: UserAddUpdateOperation[];
+  remove: UserRemoveOperation[];
+}
+
 interface UsersTabProps {
   readonly form: UseFormReturn<DepartmentFormData>;
   readonly isViewMode: boolean;
@@ -35,7 +50,7 @@ export default function UsersTab({
   const tDepartment = useTranslations("Department");
 
   const handleMoveToRight = useCallback(
-    (moveKeys: (string | number)[], currentUsers: { add: any[]; update: any[]; remove: any[] }) => {
+    (moveKeys: (string | number)[], currentUsers: CurrentUsersState) => {
       const newAddArray = [...(currentUsers.add || [])];
       const newRemoveArray = [...(currentUsers.remove || [])];
 
@@ -71,7 +86,7 @@ export default function UsersTab({
   );
 
   const handleMoveToLeft = useCallback(
-    (moveKeys: (string | number)[], currentUsers: { add: any[]; update: any[]; remove: any[] }) => {
+    (moveKeys: (string | number)[], currentUsers: CurrentUsersState) => {
       const newAddArray = [...(currentUsers.add || [])];
       const newRemoveArray = [...(currentUsers.remove || [])];
 

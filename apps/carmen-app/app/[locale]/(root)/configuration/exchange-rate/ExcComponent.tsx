@@ -39,7 +39,7 @@ export default function ExcComponent() {
   const title = tExchangeRate("title");
 
   const onSubmit = () => {
-    const transformed = excData.map((exc: any) => ({
+    const transformed = excData.map((exc: ExchangeRateItem) => ({
       currency_id: exc.currency_id,
       at_date: new Date().toISOString(),
       exchange_rate: exchangeRates?.[exc.currency_code] ?? 0,
