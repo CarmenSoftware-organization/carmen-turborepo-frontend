@@ -150,15 +150,3 @@ export interface CategoryNode {
   tax_rate?: number;
 }
 
-// Re-export Zod schemas for backward compatibility
-export {
-  CategorySchema,
-  SubCategorySchema,
-  ItemGroupSchema,
-  CategoryFormSchema,
-  SubCategoryFormSchema,
-  ItemGroupFormSchema,
-  createCategorySchema,
-  createSubCategorySchema,
-  createItemGroupSchema,
-} from "@/app/[locale]/(root)/product-management/category/_schemas/category-form.schema";

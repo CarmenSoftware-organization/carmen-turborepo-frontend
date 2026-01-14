@@ -1,3 +1,5 @@
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
@@ -8,16 +10,10 @@ import {
 } from "@/components/form-custom/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  CategoryNode,
-  createSubCategorySchema,
-  type SubCategoryFormData,
-} from "@/dtos/category.dto";
+import { CategoryNode } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
 import { Switch } from "@/components/ui/switch";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import LookupTaxProfile from "@/components/lookup/LookupTaxProfile";
@@ -26,21 +22,42 @@ import { Percent } from "lucide-react";
 import { InputValidate } from "@/components/ui-custom/InputValidate";
 import { TextareaValidate } from "@/components/ui-custom/TextareaValidate";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
-interface SubCategoryFormProps {
+import { z } from "zod";
+
+export type CategoryType = "category" | "subcategory" | "itemgroup";
+
+const categorySchema = (messages?: { codeRequired?: string; nameRequired?: string }) =>
+  z.object({
+    id: z.string().optional(),
+    code: z.string().min(1, { message: messages?.codeRequired ?? "Code is required" }),
+    name: z.string().min(1, { message: messages?.nameRequired ?? "Name is required" }),
+    price_deviation_limit: z.number(),
+    qty_deviation_limit: z.number(),
+    description: z.string().optional(),
+    is_active: z.boolean(),
+    is_used_in_recipe: z.boolean(),
+    is_sold_directly: z.boolean(),
+    is_edit_type: z.boolean().optional(),
+    tax_profile_id: z.string().optional(),
+    tax_profile_name: z.string().optional(),
+    tax_rate: z.number().optional(),
+    // Parent fields - optional depending on type
+    product_category_id: z.string().optional(),
+    product_subcategory_id: z.string().optional(),
+  });
+
+export type CategoryFormData = z.infer<ReturnType<typeof categorySchema>>;
+
+interface Props {
+  readonly type: CategoryType;
   readonly mode: formType;
   readonly selectedNode?: CategoryNode;
   readonly parentNode?: CategoryNode;
-  readonly onSubmit: (data: SubCategoryFormData) => void;
+  readonly onSubmit: (data: CategoryFormData) => void;
   readonly onCancel: () => void;
 }
 
-export function SubCategoryForm({
-  mode,
-  selectedNode,
-  parentNode,
-  onSubmit,
-  onCancel,
-}: SubCategoryFormProps) {
+export function CategoryForm({ type, mode, selectedNode, parentNode, onSubmit, onCancel }: Props) {
   const tCommon = useTranslations("Common");
   const tCategory = useTranslations("Category");
   const tAction = useTranslations("Action");
@@ -48,41 +65,41 @@ export function SubCategoryForm({
   const [parentName, setParentName] = useState("");
   const [parentId, setParentId] = useState("");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [pendingData, setPendingData] = useState<SubCategoryFormData | null>(null);
+  const [pendingData, setPendingData] = useState<CategoryFormData | null>(null);
 
-  // Set parent information when editing or creating
+  // Set parent information for subcategory and itemgroup
   useEffect(() => {
-    if (mode === formType.EDIT && selectedNode) {
-      // When editing, get the parent ID from the selected node
-      setParentId(selectedNode.product_category_id || "");
+    if (type === "category") return;
 
-      // For edit mode, we need to find the parent name from the parent_category_id
-      if (parentNode && selectedNode.product_category_id === parentNode.id) {
-        setParentName(parentNode.name);
+    const parentIdField = type === "subcategory" ? "product_category_id" : "product_subcategory_id";
+
+    if (mode === formType.EDIT && selectedNode) {
+      const nodeParentId = selectedNode[parentIdField as keyof CategoryNode] as string;
+      setParentId(nodeParentId || "");
+      if (parentNode && nodeParentId === parentNode.id) {
+        setParentName(`${parentNode.code} - ${parentNode.name}`);
       }
     } else if (parentNode) {
-      // When creating, use the parent node provided
       setParentId(parentNode.id);
-      setParentName(parentNode.name);
+      setParentName(`${parentNode.code} - ${parentNode.name}`);
     }
-  }, [mode, selectedNode, parentNode]);
+  }, [type, mode, selectedNode, parentNode]);
 
-  const SubCategoryFormSchema = useMemo(
+  // Create schema with translated messages
+  const formSchema = useMemo(
     () =>
-      createSubCategorySchema({
+      categorySchema({
         codeRequired: tCategory("code_required"),
         nameRequired: tCategory("name_required"),
       }),
     [tCategory]
-  ).omit({ id: true });
+  );
 
-  const form = useForm<SubCategoryFormData>({
-    resolver: zodResolver(SubCategoryFormSchema),
-    defaultValues: {
+  const defaultValues = useMemo((): CategoryFormData => {
+    const baseValues: CategoryFormData = {
       code: selectedNode?.code ?? "",
       name: selectedNode?.name ?? "",
       description: selectedNode?.description ?? "",
-      product_category_id: selectedNode?.product_category_id || parentNode?.id || "",
       is_active: selectedNode?.is_active ?? true,
       price_deviation_limit:
         selectedNode?.price_deviation_limit ?? parentNode?.price_deviation_limit ?? 0,
@@ -93,18 +110,57 @@ export function SubCategoryForm({
       tax_profile_id: selectedNode?.tax_profile_id ?? parentNode?.tax_profile_id ?? "",
       tax_profile_name: selectedNode?.tax_profile_name ?? parentNode?.tax_profile_name ?? "",
       tax_rate: selectedNode?.tax_rate ?? parentNode?.tax_rate ?? 0,
-    },
+    };
+
+    if (type === "category") {
+      return {
+        ...baseValues,
+        id: selectedNode?.id ?? "",
+      };
+    }
+
+    if (type === "subcategory") {
+      return {
+        ...baseValues,
+        product_category_id: selectedNode?.product_category_id || parentNode?.id || "",
+      };
+    }
+
+    // itemgroup
+    return {
+      ...baseValues,
+      product_subcategory_id: selectedNode?.product_subcategory_id || parentNode?.id || "",
+    };
+  }, [type, selectedNode, parentNode]);
+
+  const form = useForm<CategoryFormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues,
   });
 
-  // Update form values when parent information changes
-  useEffect(() => {
-    if (parentId) {
-      form.setValue("product_category_id", parentId);
-    }
-  }, [parentId, form]);
+  // Watch tax_profile_name for LookupTaxProfile
+  const taxProfileName = useWatch({
+    control: form.control,
+    name: "tax_profile_name",
+  });
 
-  const handleSubmit = (data: SubCategoryFormData) => {
-    // Check if is_used_in_recipe or is_sold_directly has changed
+  // Update parent ID in form when it changes
+  useEffect(() => {
+    if (type === "category" || !parentId) return;
+
+    const fieldName = type === "subcategory" ? "product_category_id" : "product_subcategory_id";
+    form.setValue(fieldName, parentId);
+  }, [type, parentId, form]);
+
+  const handleTaxProfileSelect = useCallback(
+    (selected: { name: string; tax_rate: string | number }) => {
+      form.setValue("tax_profile_name", selected.name);
+      form.setValue("tax_rate", Number(selected.tax_rate));
+    },
+    [form]
+  );
+
+  const handleSubmit = (data: CategoryFormData) => {
     const isRecipeChanged = selectedNode?.is_used_in_recipe !== data.is_used_in_recipe;
     const isSoldChanged = selectedNode?.is_sold_directly !== data.is_sold_directly;
 
@@ -114,7 +170,6 @@ export function SubCategoryForm({
       return;
     }
 
-    // If no changes to these fields or in add mode, submit directly
     onSubmit(data);
   };
 
@@ -126,24 +181,45 @@ export function SubCategoryForm({
     }
   };
 
+  // Get parent field label based on type
+  const getParentLabel = () => {
+    switch (type) {
+      case "subcategory":
+        return tCategory("category");
+      case "itemgroup":
+        return tCategory("subcategory");
+      default:
+        return "";
+    }
+  };
+
+  // Get parent field name based on type
+  const getParentFieldName = (): "product_category_id" | "product_subcategory_id" => {
+    return type === "subcategory" ? "product_category_id" : "product_subcategory_id";
+  };
+
   return (
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2">
-          <FormField
-            control={form.control}
-            name="product_category_id"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{tCategory("category")}</FormLabel>
-                <FormControl>
-                  <Input value={parentName} disabled className="bg-muted" />
-                </FormControl>
-                <input type="hidden" {...field} value={parentId || field.value} />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Parent Field - only for subcategory and itemgroup */}
+          {type !== "category" && (
+            <FormField
+              control={form.control}
+              name={getParentFieldName()}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{getParentLabel()}</FormLabel>
+                  <FormControl>
+                    <Input value={parentName} disabled className="bg-muted" />
+                  </FormControl>
+                  <input type="hidden" {...field} value={parentId || field.value} />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+
           <FormField
             control={form.control}
             name="code"
@@ -158,6 +234,7 @@ export function SubCategoryForm({
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="name"
@@ -172,6 +249,7 @@ export function SubCategoryForm({
               </FormItem>
             )}
           />
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <FormField
               control={form.control}
@@ -182,7 +260,7 @@ export function SubCategoryForm({
                   <FormControl>
                     <NumberInput
                       value={field.value ?? 0}
-                      onChange={(value) => field.onChange(value)}
+                      onChange={field.onChange}
                       min={0}
                       max={100}
                       suffix={<Percent className="h-3 w-3" />}
@@ -202,7 +280,7 @@ export function SubCategoryForm({
                   <FormControl>
                     <NumberInput
                       value={field.value ?? 0}
-                      onChange={(value) => field.onChange(value)}
+                      onChange={field.onChange}
                       min={0}
                       max={100}
                       suffix={<Percent className="h-3 w-3" />}
@@ -258,6 +336,7 @@ export function SubCategoryForm({
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="tax_profile_id"
@@ -267,12 +346,9 @@ export function SubCategoryForm({
                 <FormControl>
                   <LookupTaxProfile
                     value={field.value}
-                    displayName={form.watch("tax_profile_name")}
+                    displayName={taxProfileName}
                     onValueChange={field.onChange}
-                    onSelectObject={(selected) => {
-                      form.setValue("tax_profile_name", selected.name);
-                      form.setValue("tax_rate", Number(selected.tax_rate));
-                    }}
+                    onSelectObject={handleTaxProfileSelect}
                   />
                 </FormControl>
                 <FormMessage />
@@ -298,7 +374,7 @@ export function SubCategoryForm({
           />
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={onCancel}>
+            <Button type="button" variant="outline" onClick={onCancel}>
               {tCommon("cancel")}
             </Button>
             <Button type="submit">

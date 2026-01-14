@@ -1,30 +1,17 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CategoryNode, NODE_TYPE } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
-import { CategoryForm } from "./forms/CategoryForm";
-import { SubCategoryForm } from "./forms/SubCategoryForm";
-import { ItemGroupForm } from "./forms/ItemGroupForm";
-import type {
-  CategoryFormData,
-  SubCategoryFormData,
-  ItemGroupFormData,
-} from "@/dtos/category.dto";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { CategoryForm, CategoryFormData, CategoryType } from "./CategoryForm";
+
 interface CategoryDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
   readonly mode: formType;
   readonly selectedNode?: CategoryNode;
   readonly parentNode?: CategoryNode;
-  readonly onSubmit?: (
-    data: CategoryFormData | SubCategoryFormData | ItemGroupFormData
-  ) => void;
+  readonly onSubmit?: (data: CategoryFormData) => void;
 }
 
 export function CategoryDialog({
@@ -37,9 +24,9 @@ export function CategoryDialog({
 }: CategoryDialogProps) {
   const tCategory = useTranslations("Category");
   const tCommon = useTranslations("Common");
-  const [effectiveParentNode, setEffectiveParentNode] = useState<
-    CategoryNode | undefined
-  >(parentNode);
+  const [effectiveParentNode, setEffectiveParentNode] = useState<CategoryNode | undefined>(
+    parentNode
+  );
 
   // Update parent node when props change
   useEffect(() => {
@@ -76,9 +63,7 @@ export function CategoryDialog({
     return `${prefix} ${tCategory("itemGroup")}`;
   };
 
-  const handleFormSubmit = (
-    data: CategoryFormData | SubCategoryFormData | ItemGroupFormData
-  ) => {
+  const handleFormSubmit = (data: CategoryFormData) => {
     if (onSubmit) {
       onSubmit(data);
     }
@@ -88,68 +73,26 @@ export function CategoryDialog({
     onOpenChange(false);
   };
 
-  const renderForm = () => {
+  // Determine category type based on mode and nodes
+  const getCategoryType = (): CategoryType => {
     // Edit mode
     if (mode === formType.EDIT && selectedNode) {
       if (selectedNode.type === NODE_TYPE.CATEGORY) {
-        return (
-          <CategoryForm
-            mode={mode}
-            selectedNode={selectedNode}
-            onSubmit={handleFormSubmit}
-            onCancel={handleClose}
-          />
-        );
+        return "category";
       } else if (selectedNode.type === NODE_TYPE.SUBCATEGORY) {
-        return (
-          <SubCategoryForm
-            mode={mode}
-            selectedNode={selectedNode}
-            parentNode={effectiveParentNode}
-            onSubmit={handleFormSubmit}
-            onCancel={handleClose}
-          />
-        );
+        return "subcategory";
       } else {
-        return (
-          <ItemGroupForm
-            mode={mode}
-            selectedNode={selectedNode}
-            parentNode={effectiveParentNode}
-            onSubmit={handleFormSubmit}
-            onCancel={handleClose}
-          />
-        );
+        return "itemgroup";
       }
     }
 
     // Add mode
     if (!parentNode) {
-      return (
-        <CategoryForm
-          mode={mode}
-          onSubmit={handleFormSubmit}
-          onCancel={handleClose}
-        />
-      );
+      return "category";
     } else if (parentNode.type === NODE_TYPE.CATEGORY) {
-      return (
-        <SubCategoryForm
-          mode={mode}
-          parentNode={effectiveParentNode}
-          onSubmit={handleFormSubmit}
-          onCancel={handleClose}
-        />
-      );
+      return "subcategory";
     } else {
-      return (
-        <ItemGroupForm
-          mode={mode}
-          parentNode={effectiveParentNode}
-          onSubmit={handleFormSubmit}
-          onCancel={handleClose}
-        />
-      );
+      return "itemgroup";
     }
   };
 
@@ -159,7 +102,16 @@ export function CategoryDialog({
         <DialogHeader>
           <DialogTitle>{getTitle()}</DialogTitle>
         </DialogHeader>
-        {open && renderForm()}
+        {open && (
+          <CategoryForm
+            type={getCategoryType()}
+            mode={mode}
+            selectedNode={selectedNode}
+            parentNode={effectiveParentNode}
+            onSubmit={handleFormSubmit}
+            onCancel={handleClose}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
