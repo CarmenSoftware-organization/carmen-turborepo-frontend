@@ -44,6 +44,13 @@ export default function PurchaseRequestComponent() {
   const [currentBuCode, setCurrentBuCode] = useState(buCodes);
   const [activeTab, setActiveTab] = useState(buCode);
 
+  // Sync currentBuCode when buCodes changes (e.g., after businessUnits loads)
+  useEffect(() => {
+    if (fetchType === "my-pending") {
+      setCurrentBuCode(buCodes);
+    }
+  }, [buCodes, fetchType]);
+
   useEffect(() => {
     if (debouncedKeyword !== search) {
       setSearch(debouncedKeyword);
@@ -307,6 +314,7 @@ export default function PurchaseRequestComponent() {
             setFilterStage(stage);
             if (stage && stage !== "all") {
               setFetchType(undefined);
+              setCurrentBuCode(buCode);
             }
           }}
           value={filterStage}
