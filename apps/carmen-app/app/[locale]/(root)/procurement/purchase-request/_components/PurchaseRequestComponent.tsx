@@ -29,7 +29,7 @@ import { FETCH_TYPE } from "../_constants/pr-status";
 import DataGridLoading from "@/components/loading/DataGridLoading";
 
 export default function PurchaseRequestComponent() {
-  const { token, buCode, businessUnits } = useAuth();
+  const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tTableHeader = useTranslations("TableHeader");
   const tPurchaseRequest = useTranslations("PurchaseRequest");
@@ -41,18 +41,7 @@ export default function PurchaseRequestComponent() {
   const [keyword, setKeyword] = useState(search || "");
   const debouncedKeyword = useDebounce(keyword, 500);
   const [fetchType, setFetchType] = useState<FETCH_TYPE | undefined>(FETCH_TYPE.MY_PENDING);
-
-  const buCodes = businessUnits?.map((bu) => bu.code).join(",") || buCode;
-
-  const [currentBuCode, setCurrentBuCode] = useState(buCodes);
   const [activeTab, setActiveTab] = useState(buCode);
-
-  // Sync currentBuCode when buCodes changes (e.g., after businessUnits loads)
-  useEffect(() => {
-    if (fetchType === "my-pending") {
-      setCurrentBuCode(buCodes);
-    }
-  }, [buCodes, fetchType]);
 
   useEffect(() => {
     if (debouncedKeyword !== search) {
@@ -106,7 +95,7 @@ export default function PurchaseRequestComponent() {
 
   const { prs, isLoading } = usePurchaseRequest(
     token,
-    currentBuCode,
+    buCode,
     {
       page: page,
       sort,
@@ -117,15 +106,6 @@ export default function PurchaseRequestComponent() {
     },
     fetchType
   );
-
-  useEffect(() => {
-    if (prs?.data && prs.data.length > 0) {
-      const availableBuCodes = prs.data.map((bu: any) => bu.bu_code);
-      if (!activeTab || !availableBuCodes.includes(activeTab)) {
-        setActiveTab(availableBuCodes[0]);
-      }
-    }
-  }, [prs?.data, activeTab]);
 
   useEffect(() => {
     if (search) {
@@ -297,9 +277,7 @@ export default function PurchaseRequestComponent() {
           size={"sm"}
           className="h-8"
           onClick={() => {
-            setCurrentBuCode(buCodes);
             setFetchType(FETCH_TYPE.MY_PENDING);
-            setActiveTab(buCode);
             setFilterStage("");
           }}
           variant={fetchType === FETCH_TYPE.MY_PENDING ? "default" : "outlinePrimary"}
@@ -311,9 +289,7 @@ export default function PurchaseRequestComponent() {
           className="h-8"
           variant={fetchType ? "outlinePrimary" : "default"}
           onClick={() => {
-            setCurrentBuCode(buCode);
             setFetchType(undefined);
-            setActiveTab(buCode);
             setFilterStage("");
           }}
         >
@@ -326,7 +302,7 @@ export default function PurchaseRequestComponent() {
 
         <SelectWorkflowStage
           token={token}
-          buCode={currentBuCode}
+          buCode={buCode}
           onSetStage={(stage) => {
             setFilterStage(stage);
             if (stage && stage !== "all") {
@@ -382,7 +358,7 @@ export default function PurchaseRequestComponent() {
                     onPageChange={handlePageChange}
                     sort={parseSortString(sort)}
                     onSort={setSort}
-                    setPerpage={handleSetPerpage} // Note: global perpage change
+                    setPerpage={handleSetPerpage}
                     convertStatus={getStatusLabel}
                     buCode={bu.bu_code}
                   />

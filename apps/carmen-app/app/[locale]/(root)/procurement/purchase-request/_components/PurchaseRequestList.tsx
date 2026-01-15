@@ -215,7 +215,7 @@ export default function PurchaseRequestList({
         ),
         cell: ({ row }) => <p>{row.original.workflow_name}</p>,
         enableSorting: true,
-        size: 120,
+        size: 100,
         meta: {
           headerTitle: tTableHeader("type"),
         },
@@ -241,7 +241,7 @@ export default function PurchaseRequestList({
           </>
         ),
         enableSorting: true,
-        size: 180,
+        size: 150,
         meta: {
           headerTitle: tTableHeader("status"),
           cellClassName: "text-center",
@@ -265,7 +265,7 @@ export default function PurchaseRequestList({
           </div>
         ),
         enableSorting: true,
-        size: 100,
+        size: 150,
         meta: {
           headerTitle: tTableHeader("stage"),
           cellClassName: "text-center",
@@ -305,7 +305,7 @@ export default function PurchaseRequestList({
           </span>
         ),
         enableSorting: true,
-        size: 150,
+        size: 120,
         meta: {
           headerTitle: tTableHeader("department"),
         },
@@ -313,28 +313,24 @@ export default function PurchaseRequestList({
       {
         accessorKey: "total_amount",
         header: ({ column }) => (
-          <div className="flex justify-end">
-            <DataGridColumnHeader
-              column={column}
-              title={tTableHeader("amount")}
-              icon={<DollarSign className="h-4 w-4" />}
-            />
-          </div>
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("amount")}
+            icon={<DollarSign className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
-          <div className="text-right">
-            <span>
-              {formatPrice(
-                row.original.total_amount,
-                currencyBase ?? "THB",
-                amount?.locales ?? defaultAmount.locales,
-                amount?.minimumFractionDigits ?? defaultAmount.minimumFractionDigits
-              )}
-            </span>
-          </div>
+          <span>
+            {formatPrice(
+              row.original.total_amount,
+              currencyBase ?? "THB",
+              amount?.locales ?? defaultAmount.locales,
+              amount?.minimumFractionDigits ?? defaultAmount.minimumFractionDigits
+            )}
+          </span>
         ),
         enableSorting: false,
-        size: 150,
+        size: 140,
         meta: {
           headerTitle: tTableHeader("amount"),
           cellClassName: "text-right",
