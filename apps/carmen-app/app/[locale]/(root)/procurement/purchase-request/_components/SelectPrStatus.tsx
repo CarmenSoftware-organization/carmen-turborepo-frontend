@@ -24,11 +24,32 @@ export default function SelectPrStatus({ status, setStatus }: Props) {
 
   const statusOptions = useMemo(
     () => [
-      { label: tStatus("draft"), value: "draft" },
-      { label: tStatus("pending"), value: "pending" },
-      { label: tStatus("approved"), value: "approved" },
-      { label: tStatus("rejected"), value: "rejected" },
-      { label: tStatus("completed"), value: "completed" },
+      {
+        label: tStatus("draft"),
+        value: "draft",
+        badgeClassName: "bg-gray-100 hover:bg-gray-100/80 text-gray-800 border-none font-bold",
+      },
+      {
+        label: tStatus("in_progress"),
+        value: "in_progress",
+        badgeClassName:
+          "bg-yellow-100 hover:bg-yellow-100/80 text-yellow-800 border-none font-bold",
+      },
+      {
+        label: tStatus("approved"),
+        value: "approved",
+        badgeClassName: "bg-green-100 hover:bg-green-100/80 text-green-800 border-none font-bold",
+      },
+      {
+        label: tStatus("voided"),
+        value: "voided",
+        badgeClassName: "bg-red-100 hover:bg-red-100/80 text-red-800 border-none font-bold",
+      },
+      {
+        label: tStatus("completed"),
+        value: "completed",
+        badgeClassName: "bg-blue-100 hover:bg-blue-100/80 text-blue-800 border-none font-bold",
+      },
     ],
     [tStatus]
   );
@@ -39,7 +60,7 @@ export default function SelectPrStatus({ status, setStatus }: Props) {
       defaultValue={statusArray}
       onValueChange={handleChange}
       placeholder={tDataControls("allStatus")}
-      className="h-8 text-xs min-w-[150px] w-fit"
+      className="w-fit h-8"
       maxCount={2}
     />
   );
