@@ -136,8 +136,15 @@ export default function ExchangeRateList({
     },
     onPaginationChange: (updater) => {
       const newPagination = typeof updater === "function" ? updater(pagination) : updater;
-      onPageChange?.(newPagination.pageIndex + 1);
-      setPerpage?.(newPagination.pageSize);
+      const newPage = newPagination.pageIndex + 1;
+      const newPerpage = newPagination.pageSize;
+
+      if (newPage !== currentPage) {
+        onPageChange?.(newPage);
+      }
+      if (newPerpage !== perpage) {
+        setPerpage?.(newPerpage);
+      }
     },
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
@@ -166,7 +173,7 @@ export default function ExchangeRateList({
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
         </DataGridContainer>
-        {totalItems > 0 && <DataGridPagination sizes={[5, 10, 25, 50, 100]} />}
+        <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
       </div>
     </DataGrid>
   );

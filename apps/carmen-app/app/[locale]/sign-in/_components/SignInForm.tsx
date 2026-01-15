@@ -158,6 +158,7 @@ export default function SignInForm() {
                           placeholder={t("password")}
                           {...field}
                           className="h-11"
+                          autoComplete="current-password"
                         />
                       </FormControl>
                       <FormMessage />

@@ -6,15 +6,26 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
-import { useExchangeRateQuery } from "@/hooks/use-exchange-rate";
+import { useExchangeRateMutation, useExchangeRateQuery } from "@/hooks/use-exchange-rate";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import { useURL } from "@/hooks/useURL";
 import { RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ExchangeRateList from "./ExchangeRateList";
 import ExchangeRateDialog from "./ExchangeRateDialog";
 import { ExchangeRateItem } from "@/dtos/exchange-rate.dto";
+import { useCurrenciesQuery } from "@/hooks/use-currency";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+
+interface CurrencyWithDiff {
+  id: string;
+  code: string;
+  oldRate: number;
+  newRate: number;
+  diff: number;
+  diffPercent: number;
+}
 
 export default function ExchangeRateComponent() {
   const { token, buCode, currencyBase } = useAuth();
@@ -26,11 +37,51 @@ export default function ExchangeRateComponent() {
   const { exchangeRates, lastUpdated, isLoading, isError, error, refetch, isRefetching } =
     useExchangeRate({ baseCurrency: currencyBase ?? "THB" });
 
-  const { excData } = useExchangeRateQuery(token, buCode);
+  const { currencies, isLoading: isLoadingCurrencies } = useCurrenciesQuery(token, buCode, {
+    perpage: -1,
+  });
+
+  const currencyList = currencies?.data;
+
+  // Map currencyList กับ exchangeRates และคำนวณ diff rate
+  const currencyWithDiff: CurrencyWithDiff[] = useMemo(() => {
+    if (!currencyList || !exchangeRates) return [];
+
+    return currencyList.map((currency: (typeof currencyList)[number]) => {
+      const oldRate = currency.exchange_rate ?? 0;
+      const newRate = exchangeRates[currency.code] ?? 0;
+      const diff = newRate - oldRate;
+      const diffPercent = oldRate === 0 ? 0 : (diff / oldRate) * 100;
+
+      return {
+        id: currency.id,
+        code: currency.code,
+        oldRate,
+        newRate,
+        diff,
+        diffPercent,
+      };
+    });
+  }, [currencyList, exchangeRates]);
 
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
   const [sort, setSort] = useURL("sort");
+  const [page, setPage] = useURL("page");
+  const [perpage, setPerpage] = useURL("perpage");
+
+  const {
+    excData,
+    isLoading: isLoadingExc,
+    totalItems,
+    totalPages,
+    currentPage,
+    perpage: perpageData,
+  } = useExchangeRateQuery(token, buCode, {
+    page: page ? Number(page) : 1,
+    perpage: perpage ? Number(perpage) : 10,
+  });
+  const { mutate: updateExchangeRates } = useExchangeRateMutation(token, buCode);
 
   const [statusOpen, setStatusOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -39,13 +90,20 @@ export default function ExchangeRateComponent() {
   const title = tExchangeRate("title");
 
   const onSubmit = () => {
-    const transformed = excData.map((exc: ExchangeRateItem) => ({
-      currency_id: exc.currency_id,
+    const payload = currencyWithDiff.map((item) => ({
+      currency_id: item.id,
       at_date: new Date().toISOString(),
-      exchange_rate: exchangeRates?.[exc.currency_code] ?? 0,
+      exchange_rate: item.newRate,
     }));
 
-    console.log("transformed:", transformed);
+    updateExchangeRates(payload, {
+      onSuccess: () => {
+        toastSuccess({ message: tExchangeRate("update_success") });
+      },
+      onError: () => {
+        toastError({ message: tExchangeRate("update_error") });
+      },
+    });
   };
 
   const sortFields = [
@@ -97,7 +155,28 @@ export default function ExchangeRateComponent() {
     </div>
   );
 
-  const content = <ExchangeRateList excList={excData} onEdit={onEdit} />;
+  const handlePageChange = (newPage: number) => {
+    setPage(String(newPage));
+  };
+
+  const handlePerpageChange = (newPerpage: number) => {
+    setPerpage(String(newPerpage));
+    setPage("1");
+  };
+
+  const content = (
+    <ExchangeRateList
+      excList={excData}
+      onEdit={onEdit}
+      isLoading={isLoadingExc}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      totalItems={totalItems}
+      perpage={perpageData}
+      onPageChange={handlePageChange}
+      setPerpage={handlePerpageChange}
+    />
+  );
 
   return (
     <>
