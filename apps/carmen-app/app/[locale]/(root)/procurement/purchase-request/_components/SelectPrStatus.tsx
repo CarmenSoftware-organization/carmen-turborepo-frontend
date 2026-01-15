@@ -1,33 +1,46 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { MultiSelect } from "@/components/ui/multi-select";
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 
 interface Props {
-  status: string;
+  status: string; // comma-separated string from URL params
   setStatus: (status: string) => void;
 }
 
 export default function SelectPrStatus({ status, setStatus }: Props) {
   const tDataControls = useTranslations("DataControls");
   const tStatus = useTranslations("Status");
+
+  // แปลง string เป็น array (split by comma)
+  const statusArray = useMemo(() => {
+    if (!status) return [];
+    return status.split(",").filter(Boolean);
+  }, [status]);
+
+  // แปลง array กลับเป็น string (join by comma)
+  const handleChange = (values: string[]) => {
+    setStatus(values.join(","));
+  };
+
+  const statusOptions = useMemo(
+    () => [
+      { label: tStatus("draft"), value: "draft" },
+      { label: tStatus("pending"), value: "pending" },
+      { label: tStatus("approved"), value: "approved" },
+      { label: tStatus("rejected"), value: "rejected" },
+      { label: tStatus("completed"), value: "completed" },
+    ],
+    [tStatus]
+  );
+
   return (
-    <Select value={status} onValueChange={setStatus}>
-      <SelectTrigger className="h-8 text-xs w-[150px]">
-        <SelectValue placeholder={tDataControls("allStatus")} />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">{tDataControls("allStatus")}</SelectItem>
-        <SelectItem value="draft">{tStatus("draft")}</SelectItem>
-        <SelectItem value="pending">{tStatus("pending")}</SelectItem>
-        <SelectItem value="approved">{tStatus("approved")}</SelectItem>
-        <SelectItem value="rejected">{tStatus("rejected")}</SelectItem>
-        <SelectItem value="completed">{tStatus("completed")}</SelectItem>
-      </SelectContent>
-    </Select>
+    <MultiSelect
+      options={statusOptions}
+      defaultValue={statusArray}
+      onValueChange={handleChange}
+      placeholder={tDataControls("allStatus")}
+      className="h-8 text-xs min-w-[150px] w-fit"
+      maxCount={2}
+    />
   );
 }

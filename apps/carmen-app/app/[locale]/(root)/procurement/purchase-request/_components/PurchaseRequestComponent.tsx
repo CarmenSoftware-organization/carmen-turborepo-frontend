@@ -25,6 +25,7 @@ import { exportToExcel, exportToPDF, exportToWord, ExportData } from "@/utils/ex
 import ErrorBoundary from "./ErrorBoundary";
 import SelectWorkflowStage from "./form-pr/SelectWorkflowStage";
 import SelectPrStatus from "./SelectPrStatus";
+import { FETCH_TYPE } from "../_constants/pr-status";
 
 export default function PurchaseRequestComponent() {
   const { token, buCode, businessUnits } = useAuth();
@@ -38,7 +39,7 @@ export default function PurchaseRequestComponent() {
   const [search, setSearch] = useURL("search");
   const [keyword, setKeyword] = useState(search || "");
   const debouncedKeyword = useDebounce(keyword, 500);
-  const [fetchType, setFetchType] = useState<string | undefined>("my-pending");
+  const [fetchType, setFetchType] = useState<FETCH_TYPE | undefined>(FETCH_TYPE.MY_PENDING);
 
   const buCodes = businessUnits?.map((bu) => bu.code).join(",") || buCode;
 
@@ -116,11 +117,9 @@ export default function PurchaseRequestComponent() {
     fetchType
   );
 
-  // Sync activeTab when prs data loads - ensure activeTab matches available tabs
   useEffect(() => {
     if (prs?.data && prs.data.length > 0) {
       const availableBuCodes = prs.data.map((bu: any) => bu.bu_code);
-      // If activeTab is not in available tabs, set to first available
       if (!activeTab || !availableBuCodes.includes(activeTab)) {
         setActiveTab(availableBuCodes[0]);
       }
@@ -298,11 +297,11 @@ export default function PurchaseRequestComponent() {
           className="h-8"
           onClick={() => {
             setCurrentBuCode(buCodes);
-            setFetchType("my-pending");
+            setFetchType(FETCH_TYPE.MY_PENDING);
             setActiveTab(buCode);
             setFilterStage("");
           }}
-          variant={fetchType === "my-pending" ? "default" : "outlinePrimary"}
+          variant={fetchType === FETCH_TYPE.MY_PENDING ? "default" : "outlinePrimary"}
         >
           {tDataControls("myPending")}
         </Button>
@@ -319,6 +318,11 @@ export default function PurchaseRequestComponent() {
         >
           {tDataControls("allDoc")}
         </Button>
+
+        {fetchType !== FETCH_TYPE.MY_PENDING && (
+          <SelectPrStatus status={filterStatus} setStatus={setFilterStatus} />
+        )}
+
         <SelectWorkflowStage
           token={token}
           buCode={currentBuCode}
@@ -326,13 +330,10 @@ export default function PurchaseRequestComponent() {
             setFilterStage(stage);
             if (stage && stage !== "all") {
               setFetchType(undefined);
-              setCurrentBuCode(buCode);
             }
           }}
           value={filterStage}
         />
-
-        <SelectPrStatus status={filterStatus} setStatus={setFilterStatus} />
       </div>
     </div>
   );

@@ -39,3 +39,8 @@ export const PR_FIELD_NAMES = {
 } as const;
 
 export type PrFieldName = (typeof PR_FIELD_NAMES)[keyof typeof PR_FIELD_NAMES];
+
+export enum FETCH_TYPE {
+  MY_PENDING = "my-pending",
+  ALL_DOCS = "all-docs",
+}
