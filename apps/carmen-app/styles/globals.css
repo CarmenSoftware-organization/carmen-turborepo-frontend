@@ -176,7 +176,7 @@
   }
 
   .link-primary {
-    @apply hover:underline text-primary dark:text-primary-foreground hover:text-primary/80 cursor-pointer text-[12px] md:text-sm;
+    @apply hover:underline text-primary dark:text-primary-foreground hover:text-primary/80 cursor-pointer text-xs xl:text-sm;
   }
 
   .fxr-c {
