@@ -34,8 +34,7 @@ export default function ExchangeRateComponent() {
   const tExchangeRate = useTranslations("ExchangeRate");
   const tHeader = useTranslations("TableHeader");
 
-  const { exchangeRates, lastUpdated, isLoading, isError, error, refetch, isRefetching } =
-    useExchangeRate({ baseCurrency: currencyBase ?? "THB" });
+  const { exchangeRates, isRefetching } = useExchangeRate({ baseCurrency: currencyBase ?? "THB" });
 
   const { currencies, isLoading: isLoadingCurrencies } = useCurrenciesQuery(token, buCode, {
     perpage: -1,
@@ -43,26 +42,28 @@ export default function ExchangeRateComponent() {
 
   const currencyList = currencies?.data;
 
-  // Map currencyList กับ exchangeRates และคำนวณ diff rate
+  // Map currencyList กับ exchangeRates และคำนวณ diff rate (filter out base currency)
   const currencyWithDiff: CurrencyWithDiff[] = useMemo(() => {
     if (!currencyList || !exchangeRates) return [];
 
-    return currencyList.map((currency: (typeof currencyList)[number]) => {
-      const oldRate = currency.exchange_rate ?? 0;
-      const newRate = exchangeRates[currency.code] ?? 0;
-      const diff = newRate - oldRate;
-      const diffPercent = oldRate === 0 ? 0 : (diff / oldRate) * 100;
+    return currencyList
+      .filter((currency: (typeof currencyList)[number]) => currency.code !== currencyBase)
+      .map((currency: (typeof currencyList)[number]) => {
+        const oldRate = currency.exchange_rate ?? 0;
+        const newRate = exchangeRates[currency.code] ?? 0;
+        const diff = newRate - oldRate;
+        const diffPercent = oldRate === 0 ? 0 : (diff / oldRate) * 100;
 
-      return {
-        id: currency.id,
-        code: currency.code,
-        oldRate,
-        newRate,
-        diff,
-        diffPercent,
-      };
-    });
-  }, [currencyList, exchangeRates]);
+        return {
+          id: currency.id,
+          code: currency.code,
+          oldRate,
+          newRate,
+          diff,
+          diffPercent,
+        };
+      });
+  }, [currencyList, exchangeRates, currencyBase]);
 
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
@@ -80,6 +81,7 @@ export default function ExchangeRateComponent() {
   } = useExchangeRateQuery(token, buCode, {
     page: page ? Number(page) : 1,
     perpage: perpage ? Number(perpage) : 10,
+    sort: "at_date:desc",
   });
   const { mutate: updateExchangeRates } = useExchangeRateMutation(token, buCode);
 
@@ -118,9 +120,14 @@ export default function ExchangeRateComponent() {
   ];
 
   const actionButtons = (
-    <Button onClick={onSubmit} disabled={isRefetching} data-id="exchange-rate-refresh-button">
+    <Button
+      onClick={onSubmit}
+      disabled={isLoadingCurrencies || isRefetching}
+      data-id="exchange-rate-refresh-button"
+      size={"sm"}
+    >
       <RefreshCw className="h-4 w-4" />
-      Refresh
+      {tExchangeRate("update_exchange_rates")}
     </Button>
   );
 

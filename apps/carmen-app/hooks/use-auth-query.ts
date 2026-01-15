@@ -166,6 +166,8 @@ export const useUserProfileQuery = (token: string, enabled: boolean = true) => {
         },
       });
 
+      console.log("User Profile Response:", response.data);
+
       // TODO: Remove mock permissions when backend is ready
 
       return {

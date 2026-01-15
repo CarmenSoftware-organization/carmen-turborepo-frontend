@@ -125,7 +125,8 @@
     "found": "Found",
     "no_results_found": "No results found for",
     "update_success": "Exchange rate updated successfully",
-    "update_error": "Failed to update exchange rate"
+    "update_error": "Failed to update exchange rate",
+    "update_exchange_rates": "Update Exchange Rates"
   },
   "TaxProfile": {
     "title": "Tax Profile",

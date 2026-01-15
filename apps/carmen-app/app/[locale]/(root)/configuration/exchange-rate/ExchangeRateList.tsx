@@ -57,49 +57,11 @@ export default function ExchangeRateList({
           <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
         ),
         enableSorting: false,
-        size: 50,
         meta: {
           cellClassName: "text-center",
           headerClassName: "text-center",
         },
-      },
-      {
-        accessorKey: "currency_code",
-        header: ({ column }) => (
-          <DataGridColumnHeader
-            column={column}
-            title={t("code")}
-            icon={<Hash className="h-4 w-4" />}
-          />
-        ),
-        cell: ({ row }) => (
-          <button type="button" className="btn-dialog text-sm" onClick={() => onEdit(row.original)}>
-            {row.original.currency_code}
-          </button>
-        ),
-        enableSorting: false,
-        size: 50,
-        meta: {
-          headerTitle: t("code"),
-        },
-      },
-      {
-        accessorKey: "exchange_rate",
-        header: ({ column }) => (
-          <DataGridColumnHeader
-            column={column}
-            title={t("exchangeRate")}
-            icon={<Banknote className="h-4 w-4" />}
-          />
-        ),
-        cell: ({ row }) => <span>{row.original.exchange_rate.toLocaleString()}</span>,
-        enableSorting: false,
-        size: 50,
-        meta: {
-          headerTitle: t("exchangeRate"),
-          cellClassName: "text-right",
-          headerClassName: "text-right",
-        },
+        size: 5,
       },
       {
         accessorKey: "at_date",
@@ -117,9 +79,44 @@ export default function ExchangeRateList({
           </span>
         ),
         enableSorting: false,
-        size: 150,
         meta: {
           headerTitle: t("date"),
+        },
+      },
+      {
+        accessorKey: "currency_code",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={t("code")}
+            icon={<Hash className="h-4 w-4" />}
+          />
+        ),
+        cell: ({ row }) => (
+          <button type="button" className="btn-dialog text-sm" onClick={() => onEdit(row.original)}>
+            {row.original.currency_code}
+          </button>
+        ),
+        enableSorting: false,
+        meta: {
+          headerTitle: t("code"),
+        },
+      },
+      {
+        accessorKey: "exchange_rate",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={t("exchangeRate")}
+            icon={<Banknote className="h-4 w-4" />}
+          />
+        ),
+        cell: ({ row }) => <span>{row.original.exchange_rate.toLocaleString()}</span>,
+        enableSorting: false,
+        meta: {
+          headerTitle: t("exchangeRate"),
+          cellClassName: "text-right",
+          headerClassName: "text-right",
         },
       },
     ],

@@ -104,6 +104,7 @@ interface BusinessUnit {
     calculation_method?: string;
     currency_base?: string;
     date_format?: string;
+    date_time_format?: string;
     long_time_format?: string;
     perpage?: number;
     short_time_format?: string;
@@ -150,6 +151,7 @@ interface AuthContextType {
   departments: BusinessUnit["department"] | null;
   currencyBase: NonNullable<BusinessUnit["config"]>["currency_base"] | null;
   dateFormat: NonNullable<BusinessUnit["config"]>["date_format"] | null;
+  dateTimeFormat: NonNullable<BusinessUnit["config"]>["date_time_format"] | null;
   longTimeFormat: NonNullable<BusinessUnit["config"]>["long_time_format"] | null;
   perpage: NonNullable<BusinessUnit["config"]>["perpage"] | null;
   shortTimeFormat: NonNullable<BusinessUnit["config"]>["short_time_format"] | null;
@@ -177,6 +179,7 @@ export const AuthContext = createContext<AuthContextType>({
   departments: null,
   currencyBase: null,
   dateFormat: null,
+  dateTimeFormat: null,
   longTimeFormat: null,
   perpage: null,
   shortTimeFormat: null,
@@ -249,6 +252,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     departments,
     currencyBase,
     dateFormat,
+    dateTimeFormat,
     longTimeFormat,
     perpage,
     shortTimeFormat,
@@ -266,6 +270,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       departments: defaultBu?.department || null,
       currencyBase: selectedBu?.config?.currency_base.code || null,
       dateFormat: selectedBu?.config?.date_format || null,
+      dateTimeFormat: selectedBu?.config?.date_time_format || null,
       longTimeFormat: selectedBu?.config?.long_time_format || null,
       perpage: selectedBu?.config?.perpage || null,
       shortTimeFormat: selectedBu?.config?.short_time_format || null,
@@ -388,7 +393,14 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         }
       );
     },
-    [token, updateBusinessUnitMutation, isFromStorageEvent, user?.data.business_unit, router, dashboardPage]
+    [
+      token,
+      updateBusinessUnitMutation,
+      isFromStorageEvent,
+      user?.data.business_unit,
+      router,
+      dashboardPage,
+    ]
   );
 
   // จัดการการล้าง data เมื่อใน sign-in page (แต่ไม่ใช่เมื่อกำลัง login)
@@ -489,6 +501,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       departments,
       currencyBase,
       dateFormat,
+      dateTimeFormat,
       longTimeFormat,
       perpage,
       shortTimeFormat,
@@ -513,6 +526,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       departments,
       currencyBase,
       dateFormat,
+      dateTimeFormat,
       longTimeFormat,
       perpage,
       shortTimeFormat,
@@ -523,8 +537,6 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       buCode,
     ]
   );
-
-  // console.log("value", value);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
