@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Grid, List, Plus, Printer } from "lucide-react";
+import { FileDown, FileStack, Grid, List, ListTodo, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
@@ -242,7 +242,8 @@ export default function PurchaseRequestComponent() {
             }}
             variant={fetchType === FETCH_TYPE.MY_PENDING ? "default" : "outlinePrimary"}
           >
-            {tDataControls("myPending")}
+            <ListTodo />
+            <span className="hidden xl:block">{tDataControls("myPending")}</span>
           </Button>
           <Button
             size={"sm"}
@@ -253,7 +254,8 @@ export default function PurchaseRequestComponent() {
               setFilterStage("");
             }}
           >
-            {tDataControls("allDoc")}
+            <FileStack />
+            <span className="hidden xl:block">{tDataControls("allDoc")}</span>
           </Button>
 
           {fetchType !== FETCH_TYPE.MY_PENDING && (
