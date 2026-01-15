@@ -15,14 +15,13 @@ interface Props {
   readonly containerClassName?: string;
   readonly buttonClassName?: string;
   readonly inputClassName?: string;
-  readonly debounceMs?: number;
   readonly onInputChange?: (value: string) => void;
 }
 export default function SearchInput({
   defaultValue,
   onSearch,
   placeholder,
-  containerClassName = "w-full md:w-[405px]",
+  containerClassName = "w-full md:w-[305px] xl:w-[380px]",
   buttonClassName = "absolute right-0 top-0 h-full px-3 text-muted-foreground hover:bg-transparent hover:text-muted-foreground/80",
   inputClassName = "",
   onInputChange,

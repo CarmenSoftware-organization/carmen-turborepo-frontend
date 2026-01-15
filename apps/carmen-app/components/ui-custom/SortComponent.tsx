@@ -54,7 +54,7 @@ const SortComponent = <T extends Record<string, unknown>>({
       <DropdownMenuTrigger asChild>
         <Button variant="outlinePrimary" size="sm">
           <ArrowUpDown className="h-4 w-4" />
-          <p>{tCommon("sort")}</p>
+          <p className="hidden xl:block">{tCommon("sort")}</p>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>

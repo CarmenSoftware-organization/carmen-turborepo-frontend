@@ -16,7 +16,6 @@ import SignInDialog from "@/components/SignInDialog";
 import { useAuth } from "@/context/AuthContext";
 import { usePurchaseRequest } from "@/hooks/use-purchase-request";
 import { useDebounce } from "../_hooks/use-debounce";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { parseSortString } from "@/utils/table";
 import { convertStatus } from "@/utils/status";
 import FilterPurchaseRequest, { PurchaseRequestFilterValues } from "./FilterPurchaseRequest";
@@ -41,7 +40,6 @@ export default function PurchaseRequestComponent() {
   const [keyword, setKeyword] = useState(search || "");
   const debouncedKeyword = useDebounce(keyword, 500);
   const [fetchType, setFetchType] = useState<FETCH_TYPE | undefined>(FETCH_TYPE.MY_PENDING);
-  const [activeTab, setActiveTab] = useState(buCode);
 
   useEffect(() => {
     if (debouncedKeyword !== search) {
@@ -202,7 +200,7 @@ export default function PurchaseRequestComponent() {
     <div className="action-btn-container" data-id="purchase-request-action-buttons">
       <Button size={"sm"} onClick={handleOpenDialog}>
         <Plus className="h-4 w-4" />
-        {tCommon("add")}
+        <p className="hidden xl:block">{tCommon("add")}</p>
       </Button>
 
       <ExportDropdown onExport={handleExport}>
@@ -213,13 +211,13 @@ export default function PurchaseRequestComponent() {
           data-id="pr-list-export-button"
         >
           <FileDown className="h-4 w-4" />
-          <p>{tCommon("export")}</p>
+          <p className="hidden xl:block">{tCommon("export")}</p>
         </Button>
       </ExportDropdown>
 
       <Button variant="outlinePrimary" size={"sm"} data-id="pr-list-print-button">
         <Printer className="h-4 w-4" />
-        <p>{tCommon("print")}</p>
+        <p className="hidden xl:block">{tCommon("print")}</p>
       </Button>
     </div>
   );
@@ -227,13 +225,54 @@ export default function PurchaseRequestComponent() {
   const filters = (
     <div className="space-y-2">
       <div className="filter-container" data-id="pr-list-filters">
-        <SearchInput
-          defaultValue={search}
-          onSearch={setSearch}
-          onInputChange={setKeyword}
-          placeholder={tCommon("search")}
-          data-id="pr-list-search-input"
-        />
+        <div className="flex items-center gap-2">
+          <SearchInput
+            defaultValue={search}
+            onSearch={setSearch}
+            onInputChange={setKeyword}
+            placeholder={tCommon("search")}
+            data-id="pr-list-search-input"
+          />
+          <Button
+            size={"sm"}
+            className="h-8"
+            onClick={() => {
+              setFetchType(FETCH_TYPE.MY_PENDING);
+              setFilterStage("");
+            }}
+            variant={fetchType === FETCH_TYPE.MY_PENDING ? "default" : "outlinePrimary"}
+          >
+            {tDataControls("myPending")}
+          </Button>
+          <Button
+            size={"sm"}
+            className="h-8"
+            variant={fetchType ? "outlinePrimary" : "default"}
+            onClick={() => {
+              setFetchType(undefined);
+              setFilterStage("");
+            }}
+          >
+            {tDataControls("allDoc")}
+          </Button>
+
+          {fetchType !== FETCH_TYPE.MY_PENDING && (
+            <SelectPrStatus status={filterStatus} setStatus={setFilterStatus} />
+          )}
+
+          <SelectWorkflowStage
+            token={token}
+            buCode={buCode}
+            onSetStage={(stage) => {
+              setFilterStage(stage);
+              if (stage && stage !== "all") {
+                setFetchType(undefined);
+              }
+            }}
+            value={filterStage}
+          />
+        </div>
+
         <div className="flex items-center gap-2">
           <SortComponent
             fieldConfigs={sortFields}
@@ -257,7 +296,7 @@ export default function PurchaseRequestComponent() {
                 aria-label="List view"
               >
                 <List className="h-4 w-4" />
-                {tCommon("list_view")}
+                <p className="hidden xl:block">{tCommon("list_view")}</p>
               </Button>
               <Button
                 variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
@@ -266,51 +305,11 @@ export default function PurchaseRequestComponent() {
                 aria-label="Grid view"
               >
                 <Grid className="h-4 w-4" />
-                {tCommon("grid_view")}
+                <p className="hidden xl:block">{tCommon("grid_view")}</p>
               </Button>
             </div>
           </div>
         </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <Button
-          size={"sm"}
-          className="h-8"
-          onClick={() => {
-            setFetchType(FETCH_TYPE.MY_PENDING);
-            setFilterStage("");
-          }}
-          variant={fetchType === FETCH_TYPE.MY_PENDING ? "default" : "outlinePrimary"}
-        >
-          {tDataControls("myPending")}
-        </Button>
-        <Button
-          size={"sm"}
-          className="h-8"
-          variant={fetchType ? "outlinePrimary" : "default"}
-          onClick={() => {
-            setFetchType(undefined);
-            setFilterStage("");
-          }}
-        >
-          {tDataControls("allDoc")}
-        </Button>
-
-        {fetchType !== FETCH_TYPE.MY_PENDING && (
-          <SelectPrStatus status={filterStatus} setStatus={setFilterStatus} />
-        )}
-
-        <SelectWorkflowStage
-          token={token}
-          buCode={buCode}
-          onSetStage={(stage) => {
-            setFilterStage(stage);
-            if (stage && stage !== "all") {
-              setFetchType(undefined);
-            }
-          }}
-          value={filterStage}
-        />
       </div>
     </div>
   );
@@ -326,16 +325,9 @@ export default function PurchaseRequestComponent() {
       {isLoading ? (
         <DataGridLoading />
       ) : (
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-4">
-            {prs?.data?.map((bu: any) => (
-              <TabsTrigger key={bu.bu_code} value={bu.bu_code}>
-                {bu.bu_name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        <div className="space-y-4">
           {prs?.data?.map((bu: any) => (
-            <TabsContent key={bu.bu_code} value={bu.bu_code}>
+            <div key={bu.bu_code}>
               <div className="block lg:hidden">
                 <PurchaseRequestGrid
                   purchaseRequests={bu.data}
@@ -373,9 +365,9 @@ export default function PurchaseRequestComponent() {
                   />
                 )}
               </div>
-            </TabsContent>
+            </div>
           ))}
-        </Tabs>
+        </div>
       )}
     </ErrorBoundary>
   );
