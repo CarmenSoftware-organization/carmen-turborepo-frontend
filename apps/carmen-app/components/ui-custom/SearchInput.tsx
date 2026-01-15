@@ -21,9 +21,9 @@ export default function SearchInput({
   defaultValue,
   onSearch,
   placeholder,
-  containerClassName = "w-full md:w-[305px] xl:w-[380px]",
-  buttonClassName = "absolute right-0 top-0 h-full px-3 text-muted-foreground hover:bg-transparent hover:text-muted-foreground/80",
-  inputClassName = "",
+  containerClassName = "w-full md:w-[250px] xl:w-[380px]",
+  buttonClassName = "absolute right-0 top-0 h-full px-2 xl:px-3 text-muted-foreground hover:bg-transparent hover:text-muted-foreground/80",
+  inputClassName = "h-8 xl:h-10 placeholder:text-xs xl:placeholder:text-sm",
   onInputChange,
 }: Props) {
   const tCommon = useTranslations("Common");
@@ -80,9 +80,9 @@ export default function SearchInput({
           aria-label={inputValue ? "Clear search" : "Search"}
         >
           {inputValue ? (
-            <X className="h-4 w-4 text-muted-foreground" />
+            <X className="h-3.5 w-3.5 xl:h-4 xl:w-4 text-muted-foreground" />
           ) : (
-            <Search className="h-4 w-4 text-muted-foreground" />
+            <Search className="h-3.5 w-3.5 xl:h-4 xl:w-4 text-muted-foreground" />
           )}
         </Button>
       </div>

@@ -40,19 +40,19 @@ export default function ModuleMobile() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline">
-          {activeModule?.icon && <activeModule.icon className="h-4 w-4" />}
+        <Button variant="outline" className="text-xs xl:text-sm px-2 xl:px-3 h-8 xl:h-9 gap-1 xl:gap-2">
+          {activeModule?.icon && <activeModule.icon className="h-3 w-3 xl:h-4 xl:w-4" />}
           {activeModule ? t(activeModule.labelKey.split(".").pop() ?? "") : t("dashboard")}
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-full">
+      <SheetContent side="right" className="w-full p-4 xl:p-6">
         <SheetHeader>
-          <SheetTitle>
+          <SheetTitle className="text-base xl:text-lg">
             {activeModule ? t(activeModule.labelKey.split(".").pop() ?? "") : t("dashboard")}
           </SheetTitle>
         </SheetHeader>
-        <div className="mt-6">
-          <div className="grid grid-cols-3 gap-2">
+        <div className="mt-4 xl:mt-6">
+          <div className="grid grid-cols-3 gap-1.5 xl:gap-2">
             {moduleItems.map((module) => {
               const key = module.labelKey.split(".").pop() ?? "";
               const Icon = module.icon;
@@ -60,15 +60,15 @@ export default function ModuleMobile() {
               return (
                 <button
                   key={module.labelKey}
-                  className={`w-full text-left cursor-pointer rounded-md p-3 ${
+                  className={`w-full text-left cursor-pointer rounded-md p-2 xl:p-3 ${
                     isActive ? "bg-accent border-primary" : "hover:bg-accent/50 border-gray-200"
                   }`}
                   onClick={() => handleModuleClick(module.href)}
                   aria-label={t(key)}
                 >
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    {Icon && <Icon className="h-8 w-8" />}
-                    <span className="text-xs text-center">{t(key)}</span>
+                  <div className="flex flex-col items-center justify-center gap-1.5 xl:gap-2">
+                    {Icon && <Icon className="h-6 w-6 xl:h-8 xl:w-8" />}
+                    <span className="text-[10px] xl:text-xs text-center">{t(key)}</span>
                   </div>
                 </button>
               );

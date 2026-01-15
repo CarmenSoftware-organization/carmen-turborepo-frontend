@@ -42,14 +42,14 @@ export default function LanguageSwitcher({ dense = false }: Props = {}) {
       <SelectTrigger
         className={cn(
           "border border-border text-muted-foreground",
-          dense ? "w-12 h-8 px-1.5" : "w-[100px] focus:ring-ring"
+          dense ? "w-10 xl:w-12 h-7 xl:h-8 px-1 xl:px-1.5 text-[10px] xl:text-xs" : "w-[80px] xl:w-[100px] h-7 xl:h-8 text-[10px] xl:text-xs focus:ring-ring"
         )}
       >
         <SelectValue>
           {dense ? (
             <p>{currentLocale.toUpperCase()}</p>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 xl:gap-2">
               <span>{currentLocale === "en" ? "English" : "ไทย"}</span>
             </div>
           )}
@@ -57,7 +57,7 @@ export default function LanguageSwitcher({ dense = false }: Props = {}) {
       </SelectTrigger>
       <SelectContent>
         {locales.map((locale) => (
-          <SelectItem key={locale} value={locale} className="cursor-pointer">
+          <SelectItem key={locale} value={locale} className="cursor-pointer text-[10px] xl:text-xs py-1 xl:py-1.5">
             <p>{locale.toUpperCase()}</p>
           </SelectItem>
         ))}

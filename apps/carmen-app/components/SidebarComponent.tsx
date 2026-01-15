@@ -206,7 +206,7 @@ const SidebarContent = () => {
         <div className="flex items-center gap-2">
           {item.icon && <item.icon className="h-4 w-4" />}
           {!isActuallyCollapsed && (
-            <span className="font-medium text-muted-foreground">{t(`${section}.${subItem}`)}</span>
+            <span className="font-medium text-muted-foreground text-xs xl:text-sm">{t(`${section}.${subItem}`)}</span>
           )}
         </div>
         {!isActuallyCollapsed && renderChevron(level, openMenus[item.href])}
@@ -252,7 +252,7 @@ const SidebarContent = () => {
           {!isActuallyCollapsed && (
             <span
               className={cn(
-                "font-medium transition-colors",
+                "font-medium transition-colors text-xs xl:text-sm",
                 isActive ? "text-primary" : "group-hover:text-primary"
               )}
             >
@@ -309,7 +309,7 @@ const SidebarContent = () => {
             )}
           >
             {Icon && <Icon className="h-5 w-5 text-muted-foreground" />}
-            <h2 className="font-bold text-muted-foreground text-lg tracking-tight truncate">
+            <h2 className="font-bold text-muted-foreground text-sm xl:text-lg leading-none tracking-tight truncate">
               {t(moduleKey)}
             </h2>
           </MotionDiv>

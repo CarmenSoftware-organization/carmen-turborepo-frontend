@@ -40,20 +40,20 @@ const DataDisplayTemplate: React.FC<Props> = ({
       className={`flex w-full flex-col justify-center transition-all duration-300 ease-in-out`}
     >
       <MotionDiv
-        className="sticky top-0 bg-background z-10 space-y-2 pb-4"
+        className="sticky top-0 bg-background z-10 space-y-1 xl:space-y-2 pb-2 xl:pb-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
         <MotionDiv className="md:flex justify-between items-start" {...fadeIn}>
           <MotionDiv
-            className="text-2xl font-semibold tracking-tight text-primary/90 hover:text-primary transition-colors"
+            className="text-lg xl:text-2xl font-semibold tracking-tight text-primary/90 hover:text-primary transition-colors"
             {...fadeInUp}
           >
             {title}
           </MotionDiv>
           {actionButtons && (
-            <MotionDiv className="mt-4 md:mt-0" {...fadeInUp}>
+            <MotionDiv className="mt-2 xl:mt-4 md:mt-0" {...fadeInUp}>
               {actionButtons}
             </MotionDiv>
           )}
@@ -61,7 +61,7 @@ const DataDisplayTemplate: React.FC<Props> = ({
         <AnimatePresence>
           {filters && <MotionDiv {...fadeIn}>{filters}</MotionDiv>}
           {bulkActions && (
-            <MotionDiv className="mb-4" {...fadeIn}>
+            <MotionDiv className="mb-2 xl:mb-4" {...fadeIn}>
               {bulkActions}
             </MotionDiv>
           )}
