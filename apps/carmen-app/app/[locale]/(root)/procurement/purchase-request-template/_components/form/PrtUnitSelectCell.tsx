@@ -1,4 +1,4 @@
-import { PurchaseRequestTemplateDetailDto } from "@/dtos/pr-template.dto";
+import { CreatePrtDetailDto } from "../../_schema/prt.schema";
 import {
   Select,
   SelectContent,
@@ -22,7 +22,7 @@ interface Props {
   productId: string;
   currentUnitId: string;
   requestedQty: number;
-  updateItemField: (rowIndex: number, updates: Partial<PurchaseRequestTemplateDetailDto>) => void;
+  updateItemField: (rowIndex: number, updates: Partial<CreatePrtDetailDto>) => void;
   token: string;
   buCode: string;
 }
@@ -53,11 +53,11 @@ export default function PrtUnitSelectCell({
       updateItemField(rowIndex, {
         requested_unit_id: firstUnit.id,
         requested_unit_name: firstUnit.name,
-        requested_unit_conversion_factor: String(firstUnit.conversion),
-        requested_base_qty: String(baseQty),
+        requested_unit_conversion_factor: firstUnit.conversion,
+        requested_base_qty: baseQty,
         foc_unit_id: firstUnit.id,
         foc_unit_name: firstUnit.name,
-        foc_unit_conversion_factor: String(firstUnit.conversion),
+        foc_unit_conversion_factor: firstUnit.conversion,
       });
     }
   }, [orderUnitsData, currentUnitId, rowIndex, requestedQty, updateItemField]);
@@ -82,11 +82,11 @@ export default function PrtUnitSelectCell({
           updateItemField(rowIndex, {
             requested_unit_id: selectedUnit.id,
             requested_unit_name: selectedUnit.name,
-            requested_unit_conversion_factor: String(selectedUnit.conversion),
-            requested_base_qty: String(baseQty),
+            requested_unit_conversion_factor: selectedUnit.conversion,
+            requested_base_qty: baseQty,
             foc_unit_id: selectedUnit.id,
             foc_unit_name: selectedUnit.name,
-            foc_unit_conversion_factor: String(selectedUnit.conversion),
+            foc_unit_conversion_factor: selectedUnit.conversion,
           });
         }
         setOpen(false);

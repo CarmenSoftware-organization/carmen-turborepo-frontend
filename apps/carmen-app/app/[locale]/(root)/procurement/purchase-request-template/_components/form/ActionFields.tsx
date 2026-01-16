@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { ChevronLeft, FileDown, Pencil, Printer, Save, Share, X } from "lucide-react";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "@/lib/navigation";
+import { Link, useRouter } from "@/lib/navigation";
 
 interface Props {
   readonly currentMode: formType;
@@ -18,9 +18,11 @@ export default function ActionFields({ currentMode, setCurrentMode, title }: Pro
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center gap-2">
-        <ButtonLink href="/procurement/purchase-request-template">
-          <ChevronLeft className="h-4 w-4" />
-        </ButtonLink>
+        <Button variant="outline" size="sm" className="hover:bg-transparent w-8 h-8" asChild>
+          <Link href="/procurement/purchase-request-template">
+            <ChevronLeft />
+          </Link>
+        </Button>
         {currentMode === formType.ADD ? (
           <p className="text-xl font-bold">{tPurchaseRequest("template")}</p>
         ) : (

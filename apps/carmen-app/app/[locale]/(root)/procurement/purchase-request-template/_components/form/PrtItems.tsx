@@ -1,272 +1,214 @@
 import { Button } from "@/components/ui/button";
-import { MapPin, Package, Pencil, Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useCurrenciesQuery } from "@/hooks/use-currency";
 import { UseFormReturn } from "react-hook-form";
-import { PrtFormValues } from "./PrtForm";
-import { useMemo } from "react";
-import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { PrtFormValues, CreatePrtDetailDto, UpdatePrtDetailDto } from "../../_schema/prt.schema";
+import { useMemo, useState, useCallback } from "react";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
-import {
-  DataGridTable,
-  DataGridTableRowSelect,
-  DataGridTableRowSelectAll,
-} from "@/components/ui/data-grid-table";
-import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
-import { PurchaseRequestTemplateDetailDto } from "@/dtos/pr-template.dto";
+import { DataGridTable } from "@/components/ui/data-grid-table";
 import { formType } from "@/dtos/form.dto";
-import LookupLocation from "@/components/lookup/LookupLocation";
-import LookupProductLocation from "@/components/lookup/LookupProductLocation";
-import NumberInput from "@/components/form-custom/NumberInput";
-import PrtUnitSelectCell from "./PrtUnitSelectCell";
+import { PurchaseRequestTemplateDetailDto } from "@/dtos/pr-template.dto";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
+import { createPrtItemColumns, PrtDetailItem } from "./PrtItemColumns";
 
 interface Props {
   readonly form: UseFormReturn<PrtFormValues>;
   currentMode: formType;
+  originalItems: PurchaseRequestTemplateDetailDto[];
 }
 
-export default function PrtItems({ form, currentMode }: Props) {
+interface DetailState {
+  add: CreatePrtDetailDto[];
+  update: UpdatePrtDetailDto[];
+  delete: { id: string }[];
+}
+
+export default function PrtItems({ form, currentMode, originalItems }: Props) {
   const tPurchaseRequest = useTranslations("PurchaseRequest");
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
   const { token, buCode } = useAuth();
   const { getCurrencyCode } = useCurrenciesQuery(token, buCode);
 
-  const items = form.watch("purchase_request_template_detail") || [];
+  // Use local state instead of form.watch to avoid re-render loops
+  const [detailState, setDetailState] = useState<DetailState>({
+    add: [],
+    update: [],
+    delete: [],
+  });
 
-  const isEditMode = currentMode === formType.EDIT;
+  // Sync state to form
+  const syncToForm = useCallback(
+    (newState: DetailState) => {
+      const formValue: PrtFormValues["purchase_request_template_detail"] = {};
+      if (newState.add.length > 0) formValue.add = newState.add;
+      if (newState.update.length > 0) formValue.update = newState.update;
+      if (newState.delete.length > 0) formValue.delete = newState.delete;
 
-  const updateItemField = (
-    rowIndex: number,
-    updates: Partial<PurchaseRequestTemplateDetailDto>
-  ) => {
-    const currentItems = form.getValues("purchase_request_template_detail");
-    const updatedItems = currentItems.map((item, index) =>
-      index === rowIndex ? { ...item, ...updates } : item
-    );
-    form.setValue("purchase_request_template_detail", updatedItems);
-  };
+      if (Object.keys(formValue).length > 0) {
+        form.setValue("purchase_request_template_detail", formValue);
+      } else {
+        form.setValue("purchase_request_template_detail", undefined);
+      }
+    },
+    [form]
+  );
 
-  const columns = useMemo<ColumnDef<PurchaseRequestTemplateDetailDto>[]>(
-    () => [
-      {
-        id: "select",
-        header: () => <DataGridTableRowSelectAll />,
-        cell: ({ row }) => <DataGridTableRowSelect row={row} />,
-        enableSorting: false,
-        enableHiding: false,
-        size: 30,
-      },
-      {
-        id: "no",
-        header: () => "#",
-        cell: ({ row }) => <span>{row.index + 1}</span>,
-        enableSorting: false,
-        size: 30,
-        meta: {
-          cellClassName: "text-center",
-          headerClassName: "text-center",
-        },
-      },
-      {
-        accessorKey: "location_name",
-        header: ({ column }) => (
-          <DataGridColumnHeader
-            column={column}
-            title={tTableHeader("location")}
-            icon={<MapPin className="h-4 w-4" />}
-          />
-        ),
-        cell: ({ row }) =>
-          isEditMode ? (
-            <LookupLocation
-              value={row.original.location_id}
-              bu_code={buCode}
-              onValueChange={(value, selectedLocation) => {
-                updateItemField(row.index, {
-                  location_id: value,
-                  location_name: selectedLocation?.name || "",
-                });
-              }}
-              classNames="text-xs h-7 w-full"
-            />
-          ) : (
-            <span>{row.original.location_name}</span>
-          ),
-        enableSorting: false,
-        size: 180,
-      },
-      {
-        accessorKey: "product_name",
-        header: ({ column }) => (
-          <DataGridColumnHeader
-            column={column}
-            title={tTableHeader("product")}
-            icon={<Package className="h-4 w-4" />}
-          />
-        ),
-        cell: ({ row }) =>
-          isEditMode ? (
-            <LookupProductLocation
-              location_id={row.original.location_id}
-              value={row.original.product_id}
-              bu_code={buCode}
-              onValueChange={(value, selectedProduct) => {
-                updateItemField(row.index, {
-                  product_id: value,
-                  product_name: selectedProduct?.name || "",
-                  inventory_unit_id: selectedProduct?.inventory_unit?.id || "",
-                  inventory_unit_name: selectedProduct?.inventory_unit?.name || "",
-                });
-              }}
-              classNames="text-xs h-7 w-full"
-              initialDisplayName={row.original.product_name}
-            />
-          ) : (
-            <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium">{row.original.product_name}</p>
-              <p className="text-xs text-muted-foreground">{row.original.description}</p>
-            </div>
-          ),
-        enableSorting: false,
-        size: 200,
-      },
-      {
-        accessorKey: "requested_qty",
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("requested")} />
-        ),
-        cell: ({ row }) =>
-          isEditMode ? (
-            <div className="flex flex-col items-end gap-1">
-              <NumberInput
-                value={Number(row.original.requested_qty) || 0}
-                onChange={(value) => {
-                  const conversionFactor =
-                    Number(row.original.requested_unit_conversion_factor) || 1;
-                  const baseQty = value * conversionFactor;
-                  updateItemField(row.index, {
-                    requested_qty: String(value),
-                    requested_base_qty: String(baseQty),
-                  });
-                }}
-                classNames="h-7 text-xs bg-background w-20"
-                disabled={!row.original.product_id}
-              />
-              <PrtUnitSelectCell
-                rowIndex={row.index}
-                productId={row.original.product_id}
-                currentUnitId={row.original.requested_unit_id}
-                requestedQty={Number(row.original.requested_qty) || 0}
-                updateItemField={updateItemField}
-                token={token}
-                buCode={buCode}
-              />
-            </div>
-          ) : (
-            <div className="flex flex-col text-xs">
-              <p>{row.original.requested_qty}</p>
-              <p className="text-xs text-muted-foreground">
-                {row.original.requested_unit_name || "-"}
-              </p>
-            </div>
-          ),
-        enableSorting: false,
-        size: 110,
-        meta: {
-          cellClassName: "text-right",
-          headerClassName: "text-right",
-        },
-      },
-      {
-        accessorKey: "foc_qty",
-        header: () => "FOC",
-        cell: ({ row }) =>
-          isEditMode ? (
-            <div className="flex flex-col items-end gap-1">
-              <NumberInput
-                value={Number(row.original.foc_qty) || 0}
-                onChange={(value) => {
-                  const conversionFactor = Number(row.original.foc_unit_conversion_factor) || 1;
-                  const baseQty = value * conversionFactor;
-                  updateItemField(row.index, {
-                    foc_qty: String(value),
-                    foc_base_qty: String(baseQty),
-                  });
-                }}
-                classNames="h-7 text-xs bg-background w-20"
-                disabled={!row.original.product_id}
-              />
-              <Input
-                className="text-xs text-right h-7"
-                defaultValue={row.original.foc_unit_name}
-                disabled
-              />
-            </div>
-          ) : (
-            <div className="flex flex-col text-xs">
-              <p>{row.original.foc_qty}</p>
-              <p>{row.original.foc_unit_name || "-"}</p>
-            </div>
-          ),
-        enableSorting: false,
-        size: 100,
-        meta: {
-          cellClassName: "text-right",
-          headerClassName: "text-right",
-        },
-      },
-      {
-        accessorKey: "tax_amount",
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("price")} />
-        ),
-        cell: ({ row }) =>
-          isEditMode ? (
-            <p>Edit Mode</p>
-          ) : (
-            <div className="flex flex-col gap-1">
-              <p>
-                {getCurrencyCode(row.original.currency_id)} {row.original.tax_amount}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Discount: {row.original.discount_amount}
-              </p>
-            </div>
-          ),
-        enableSorting: false,
-        size: 120,
-        meta: {
-          cellClassName: "text-right",
-          headerClassName: "text-right",
-        },
-      },
-      {
-        id: "action",
-        header: () => tTableHeader("action"),
-        cell: () => (
-          <Button variant="ghost" size={"sm"}>
-            <Trash2 className="h-3 w-3" />
-          </Button>
-        ),
-        enableSorting: false,
-        size: 120,
-        meta: {
-          cellClassName: "text-right",
-          headerClassName: "text-right",
-        },
-      },
-    ],
-    [tTableHeader, getCurrencyCode, isEditMode, buCode, updateItemField]
+  const updatedIds = useMemo(
+    () => new Set(detailState.update.map((item) => item.id)),
+    [detailState.update]
+  );
+  const deletedIds = useMemo(
+    () => new Set(detailState.delete.map((item) => item.id)),
+    [detailState.delete]
+  );
+
+  // Combine add, update, and original items for display
+  const items: PrtDetailItem[] = useMemo(() => {
+    const addWithType = detailState.add.map((item, index) => ({
+      ...item,
+      _type: "add" as const,
+      _index: index,
+    }));
+    const updateWithType = detailState.update.map((item, index) => ({
+      ...item,
+      _type: "update" as const,
+      _index: index,
+    }));
+    const originalWithType = originalItems
+      .filter((item) => !updatedIds.has(item.id) && !deletedIds.has(item.id))
+      .map((item, index) => ({
+        ...item,
+        _type: "original" as const,
+        _index: index,
+      }));
+    return [...addWithType, ...updateWithType, ...originalWithType];
+  }, [detailState.add, detailState.update, originalItems, updatedIds, deletedIds]);
+
+  const isEditMode = currentMode !== formType.VIEW;
+
+  const onAdd = useCallback(() => {
+    const newItem: CreatePrtDetailDto = {
+      location_id: "",
+      location_name: "",
+      product_id: "",
+      product_name: "",
+      inventory_unit_id: "",
+      inventory_unit_name: null,
+      requested_qty: 0,
+      requested_unit_id: "",
+      requested_unit_name: "",
+      requested_unit_conversion_factor: 1,
+      foc_qty: 0,
+      foc_unit_name: "",
+      currency_id: "",
+      tax_amount: 0,
+      discount_amount: 0,
+      is_active: true,
+    };
+    setDetailState((prev) => {
+      const newState = { ...prev, add: [newItem, ...prev.add] };
+      syncToForm(newState);
+      return newState;
+    });
+  }, [syncToForm]);
+
+  const onDelete = useCallback(
+    (item: PrtDetailItem) => {
+      setDetailState((prev) => {
+        let newState: DetailState;
+
+        if (item._type === "add") {
+          const filteredAdd = prev.add.filter((_, index) => index !== item._index);
+          newState = { ...prev, add: filteredAdd };
+        } else if (item._type === "update") {
+          const itemToDelete = prev.update[item._index];
+          const filteredUpdate = prev.update.filter((_, index) => index !== item._index);
+          newState = {
+            ...prev,
+            update: filteredUpdate,
+            delete: [...prev.delete, { id: itemToDelete.id }],
+          };
+        } else {
+          // Original item
+          const originalItem = item as PurchaseRequestTemplateDetailDto & {
+            _type: "original";
+            _index: number;
+          };
+          newState = {
+            ...prev,
+            delete: [...prev.delete, { id: originalItem.id }],
+          };
+        }
+
+        syncToForm(newState);
+        return newState;
+      });
+    },
+    [syncToForm]
+  );
+
+  const updateItemField = useCallback(
+    (item: PrtDetailItem, updates: Partial<CreatePrtDetailDto>) => {
+      setDetailState((prev) => {
+        let newState: DetailState;
+
+        if (item._type === "add") {
+          const updatedAdd = prev.add.map((addItem, index) =>
+            index === item._index ? { ...addItem, ...updates } : addItem
+          );
+          newState = { ...prev, add: updatedAdd };
+        } else if (item._type === "update") {
+          const updatedUpdate = prev.update.map((updateItem, index) =>
+            index === item._index ? { ...updateItem, ...updates } : updateItem
+          );
+          newState = { ...prev, update: updatedUpdate };
+        } else {
+          // Move original item to update array with changes
+          const { _type, _index, ...originalFields } = item as PurchaseRequestTemplateDetailDto & {
+            _type: "original";
+            _index: number;
+          };
+          const newUpdateItem: UpdatePrtDetailDto = {
+            ...originalFields,
+            ...updates,
+          };
+          newState = { ...prev, update: [...prev.update, newUpdateItem] };
+        }
+
+        syncToForm(newState);
+        return newState;
+      });
+    },
+    [syncToForm]
+  );
+
+  const columns = useMemo(
+    () =>
+      createPrtItemColumns({
+        currentMode,
+        buCode,
+        token,
+        tTableHeader,
+        getCurrencyCode,
+        updateItemField,
+        onDelete,
+      }),
+    [currentMode, buCode, token, tTableHeader, getCurrencyCode, updateItemField, onDelete]
   );
 
   const table = useReactTable({
     data: items,
     columns,
-    getRowId: (row) => row.id,
+    getRowId: (row, index) => {
+      if (row._type === "update") return (row as UpdatePrtDetailDto).id;
+      if (row._type === "original")
+        return (row as PurchaseRequestTemplateDetailDto & { _type: "original" }).id;
+      return `new-${index}`;
+    },
     getCoreRowModel: getCoreRowModel(),
     enableRowSelection: true,
   });
@@ -275,10 +217,12 @@ export default function PrtItems({ form, currentMode }: Props) {
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <p className="font-medium">{tPurchaseRequest("items")}</p>
-        <Button size={"sm"} className="h-7 text-xs">
-          <Plus className="h-3 w-3" />
-          {tPurchaseRequest("add_item")}
-        </Button>
+        {isEditMode && (
+          <Button onClick={onAdd} size={"sm"} className="h-7 text-xs">
+            <Plus className="h-3 w-3" />
+            {tPurchaseRequest("add_item")}
+          </Button>
+        )}
       </div>
       <DataGrid
         table={table}

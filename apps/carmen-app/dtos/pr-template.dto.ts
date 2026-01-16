@@ -15,27 +15,27 @@ export interface PurchaseRequestTemplateDetailDto {
   comment: string;
   currency_id: string;
   currency_name: string | null;
-  exchange_rate: string;
+  exchange_rate: number;
   exchange_rate_date: string | null;
-  requested_qty: string;
+  requested_qty: number;
   requested_unit_id: string;
   requested_unit_name: string;
-  requested_unit_conversion_factor: string;
-  requested_base_qty: string;
-  foc_qty: string;
+  requested_unit_conversion_factor: number;
+  requested_base_qty: number;
+  foc_qty: number;
   foc_unit_id: string;
   foc_unit_name: string;
-  foc_unit_conversion_factor: string;
-  foc_base_qty: string;
+  foc_unit_conversion_factor: number;
+  foc_base_qty: number;
   tax_profile_id: string | null;
   tax_profile_name: string | null;
-  tax_rate: string;
-  tax_amount: string;
-  base_tax_amount: string;
+  tax_rate: number;
+  tax_amount: number;
+  base_tax_amount: number;
   is_tax_adjustment: boolean;
-  discount_rate: string;
-  discount_amount: string;
-  base_discount_amount: string;
+  discount_rate: number;
+  discount_amount: number;
+  base_discount_amount: number;
   is_discount_adjustment: boolean;
   is_active: boolean;
   info: Record<string, unknown>;
@@ -115,27 +115,27 @@ const examplePo: PurchaseRequestTemplateDto[] = [
         comment: "Prefer recycled paper",
         currency_id: "db3283c4-54cb-47e3-82ef-44f9abdb68c0",
         currency_name: null,
-        exchange_rate: "1",
+        exchange_rate: 1,
         exchange_rate_date: null,
-        requested_qty: "100",
+        requested_qty: 100,
         requested_unit_id: "566c45dd-d5fa-4820-99d6-29b24ef06289",
         requested_unit_name: "BAG",
-        requested_unit_conversion_factor: "1",
-        requested_base_qty: "100",
-        foc_qty: "5",
+        requested_unit_conversion_factor: 1,
+        requested_base_qty: 100,
+        foc_qty: 5,
         foc_unit_id: "566c45dd-d5fa-4820-99d6-29b24ef06289",
         foc_unit_name: "BAG",
-        foc_unit_conversion_factor: "1",
-        foc_base_qty: "5",
+        foc_unit_conversion_factor: 1,
+        foc_base_qty: 5,
         tax_profile_id: null,
         tax_profile_name: null,
-        tax_rate: "7",
-        tax_amount: "350",
-        base_tax_amount: "350",
+        tax_rate: 7,
+        tax_amount: 350,
+        base_tax_amount: 350,
         is_tax_adjustment: false,
-        discount_rate: "5",
-        discount_amount: "250",
-        base_discount_amount: "250",
+        discount_rate: 5,
+        discount_amount: 250,
+        base_discount_amount: 250,
         is_discount_adjustment: false,
         is_active: true,
         info: {},

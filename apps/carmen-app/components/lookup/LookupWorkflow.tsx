@@ -20,6 +20,7 @@ interface WorkflowDto {
 interface PropsWorkflowLookup {
   readonly value?: string;
   readonly onValueChange: (value: string) => void;
+  readonly onSelectObject?: (workflow: WorkflowDto | null) => void;
   readonly disabled?: boolean;
   readonly type: enum_workflow_type;
   readonly bu_code: string;
@@ -28,6 +29,7 @@ interface PropsWorkflowLookup {
 export default function LookupWorkflow({
   value,
   onValueChange,
+  onSelectObject,
   disabled = false,
   type,
   bu_code,
@@ -36,6 +38,14 @@ export default function LookupWorkflow({
   const currentBuCode = bu_code ?? buCode;
   const { workflows, isLoading } = useWorkflowTypeQuery(token, currentBuCode, type);
   const t = useTranslations("Workflow");
+
+  const handleValueChange = (newValue: string) => {
+    onValueChange(newValue);
+    if (onSelectObject && workflows?.data) {
+      const selectedWorkflow = workflows.data.find((w: WorkflowDto) => w.id === newValue) || null;
+      onSelectObject(selectedWorkflow);
+    }
+  };
 
   let selectContent;
 
@@ -62,7 +72,7 @@ export default function LookupWorkflow({
   }
 
   return (
-    <Select value={value || ""} onValueChange={onValueChange} disabled={disabled || isLoading}>
+    <Select value={value || ""} onValueChange={handleValueChange} disabled={disabled || isLoading}>
       <SelectTrigger
         className={cn("w-full text-sm", disabled ? "bg-muted cursor-not-allowed" : "")}
       >
