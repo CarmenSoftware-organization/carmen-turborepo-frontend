@@ -80,7 +80,7 @@ export default function PrtForm({ prtData, mode }: PrtFormProps) {
 
   return (
     <DetailsAndComments activityComponent={<ActivityLog />} commentComponent={<CommentPrt />}>
-      <Card className="p-4 space-y-4">
+      <Card className="p-2">
         <ActionFields
           currentMode={currentMode}
           setCurrentMode={setCurrentMode}
@@ -89,7 +89,7 @@ export default function PrtForm({ prtData, mode }: PrtFormProps) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <HeadPrtForm form={form} />
-            <Tabs defaultValue="items">
+            <Tabs defaultValue="items" className="pt-4">
               <TabsList className="w-full">
                 <TabsTrigger className="w-full" value="items">
                   {tPurchaseRequest("items")}

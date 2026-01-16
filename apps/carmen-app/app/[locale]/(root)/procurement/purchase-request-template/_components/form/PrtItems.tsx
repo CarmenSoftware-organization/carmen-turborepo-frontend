@@ -20,6 +20,8 @@ import LookupLocation from "@/components/lookup/LookupLocation";
 import LookupProductLocation from "@/components/lookup/LookupProductLocation";
 import NumberInput from "@/components/form-custom/NumberInput";
 import PrtUnitSelectCell from "./PrtUnitSelectCell";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
 
 interface Props {
   readonly form: UseFormReturn<PrtFormValues>;
@@ -56,14 +58,14 @@ export default function PrtItems({ form, currentMode }: Props) {
         cell: ({ row }) => <DataGridTableRowSelect row={row} />,
         enableSorting: false,
         enableHiding: false,
-        size: 40,
+        size: 30,
       },
       {
         id: "no",
         header: () => "#",
         cell: ({ row }) => <span>{row.index + 1}</span>,
         enableSorting: false,
-        size: 40,
+        size: 30,
         meta: {
           cellClassName: "text-center",
           headerClassName: "text-center",
@@ -95,7 +97,7 @@ export default function PrtItems({ form, currentMode }: Props) {
             <span>{row.original.location_name}</span>
           ),
         enableSorting: false,
-        size: 250,
+        size: 180,
       },
       {
         accessorKey: "product_name",
@@ -130,7 +132,7 @@ export default function PrtItems({ form, currentMode }: Props) {
             </div>
           ),
         enableSorting: false,
-        size: 250,
+        size: 200,
       },
       {
         accessorKey: "requested_qty",
@@ -165,17 +167,15 @@ export default function PrtItems({ form, currentMode }: Props) {
               />
             </div>
           ) : (
-            <div className="flex flex-col gap-1">
-              <p>
-                {row.original.requested_qty} {row.original.requested_unit_name || "-"}
-              </p>
+            <div className="flex flex-col text-xs">
+              <p>{row.original.requested_qty}</p>
               <p className="text-xs text-muted-foreground">
-                (≈ {row.original.requested_base_qty} {row.original.inventory_unit_name || "-"})
+                {row.original.requested_unit_name || "-"}
               </p>
             </div>
           ),
         enableSorting: false,
-        size: 120,
+        size: 110,
         meta: {
           cellClassName: "text-right",
           headerClassName: "text-right",
@@ -190,8 +190,7 @@ export default function PrtItems({ form, currentMode }: Props) {
               <NumberInput
                 value={Number(row.original.foc_qty) || 0}
                 onChange={(value) => {
-                  const conversionFactor =
-                    Number(row.original.foc_unit_conversion_factor) || 1;
+                  const conversionFactor = Number(row.original.foc_unit_conversion_factor) || 1;
                   const baseQty = value * conversionFactor;
                   updateItemField(row.index, {
                     foc_qty: String(value),
@@ -201,22 +200,20 @@ export default function PrtItems({ form, currentMode }: Props) {
                 classNames="h-7 text-xs bg-background w-20"
                 disabled={!row.original.product_id}
               />
-              <span className="text-xs text-muted-foreground">
-                {row.original.foc_unit_name || "-"}
-              </span>
+              <Input
+                className="text-xs text-right h-7"
+                defaultValue={row.original.foc_unit_name}
+                disabled
+              />
             </div>
           ) : (
-            <div className="flex flex-col gap-1">
-              <p>
-                {row.original.foc_qty} {row.original.foc_unit_name || "-"}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                (≈ {row.original.foc_base_qty} {row.original.inventory_unit_name || "-"})
-              </p>
+            <div className="flex flex-col text-xs">
+              <p>{row.original.foc_qty}</p>
+              <p>{row.original.foc_unit_name || "-"}</p>
             </div>
           ),
         enableSorting: false,
-        size: 120,
+        size: 100,
         meta: {
           cellClassName: "text-right",
           headerClassName: "text-right",
@@ -251,14 +248,9 @@ export default function PrtItems({ form, currentMode }: Props) {
         id: "action",
         header: () => tTableHeader("action"),
         cell: () => (
-          <div className="flex items-center justify-end">
-            <Button variant="ghost" size={"sm"}>
-              <Pencil className="h-3 w-3" />
-            </Button>
-            <Button variant="ghost" size={"sm"}>
-              <Trash2 className="h-3 w-3" />
-            </Button>
-          </div>
+          <Button variant="ghost" size={"sm"}>
+            <Trash2 className="h-3 w-3" />
+          </Button>
         ),
         enableSorting: false,
         size: 120,
@@ -280,11 +272,11 @@ export default function PrtItems({ form, currentMode }: Props) {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="flex items-center justify-between">
         <p className="font-medium">{tPurchaseRequest("items")}</p>
-        <Button variant="outlinePrimary" size={"sm"}>
-          <Plus className="h-4 w-4" />
+        <Button size={"sm"} className="h-7 text-xs">
+          <Plus className="h-3 w-3" />
           {tPurchaseRequest("add_item")}
         </Button>
       </div>
@@ -298,12 +290,16 @@ export default function PrtItems({ form, currentMode }: Props) {
           rowBorder: true,
           headerBackground: true,
           headerBorder: true,
-          width: "fixed",
         }}
       >
-        <DataGridContainer>
-          <DataGridTable />
-        </DataGridContainer>
+        <div className="w-full space-y-2.5">
+          <DataGridContainer>
+            <ScrollArea className="max-h-[calc(100vh-250px)]">
+              <DataGridTable />
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </DataGridContainer>
+        </div>
       </DataGrid>
     </div>
   );

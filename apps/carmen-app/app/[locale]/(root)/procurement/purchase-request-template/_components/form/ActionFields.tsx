@@ -18,7 +18,7 @@ export default function ActionFields({ currentMode, setCurrentMode, title }: Pro
   return (
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center gap-2">
-        <ButtonLink href="/procurement/purchase-order">
+        <ButtonLink href="/procurement/purchase-request-template">
           <ChevronLeft className="h-4 w-4" />
         </ButtonLink>
         {currentMode === formType.ADD ? (
