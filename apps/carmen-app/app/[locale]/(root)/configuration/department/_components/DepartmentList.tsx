@@ -89,12 +89,24 @@ export default function DepartmentList({
       },
       {
         id: "no",
-        header: () => <div className="text-center">#</div>,
-        cell: ({ row }) => (
-          <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
-        ),
+        header: () => <span>#</span>,
+        cell: ({ row }) => <span>{(currentPage - 1) * perpage + row.index + 1}</span>,
         enableSorting: false,
         size: 20,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
+      },
+      {
+        accessorKey: "code",
+        header: ({ column }) => <DataGridColumnHeader column={column} title={t("code")} />,
+        cell: ({ row }) => {
+          const department = row.original;
+          return <span>{department.code}</span>;
+        },
+        enableSorting: true,
+        size: 100,
         meta: {
           cellClassName: "text-center",
           headerClassName: "text-center",
@@ -129,30 +141,7 @@ export default function DepartmentList({
           headerTitle: t("name"),
         },
       },
-      {
-        accessorKey: "code",
-        header: ({ column }) => (
-          <DataGridColumnHeader
-            column={column}
-            title={t("code")}
-            icon={<List className="h-4 w-4" />}
-          />
-        ),
-        cell: ({ row }) => {
-          const department = row.original;
-          if (canUpdate) {
-            return <span className="max-w-[200px] truncate">{row.original.code}</span>;
-          }
-          return <span className="max-w-[200px] break-words">{department.code}</span>;
-        },
-        enableSorting: true,
-        size: 100,
-        meta: {
-          headerTitle: t("code"),
-          cellClassName: "text-center",
-          headerClassName: "text-center",
-        },
-      },
+
       {
         accessorKey: "description",
         header: ({ column }) => (
