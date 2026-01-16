@@ -89,7 +89,7 @@ export default function DepartmentList({
       },
       {
         id: "no",
-        header: () => <span>#</span>,
+        header: () => "#",
         cell: ({ row }) => <span>{(currentPage - 1) * perpage + row.index + 1}</span>,
         enableSorting: false,
         size: 20,
@@ -137,9 +137,6 @@ export default function DepartmentList({
         },
         enableSorting: true,
         size: 280,
-        meta: {
-          headerTitle: t("name"),
-        },
       },
 
       {
@@ -154,9 +151,6 @@ export default function DepartmentList({
         cell: ({ row }) => <p className="max-w-[200px] truncate">{row.original.description}</p>,
         enableSorting: false,
         size: 200,
-        meta: {
-          headerTitle: t("description"),
-        },
       },
       {
         accessorKey: "is_active",
@@ -175,40 +169,36 @@ export default function DepartmentList({
         enableSorting: true,
         size: 120,
         meta: {
-          headerTitle: t("status"),
           cellClassName: "text-center",
           headerClassName: "text-center",
         },
       },
       {
         id: "action",
-        header: () => <span className="text-right">{t("action")}</span>,
+        header: () => {
+          t("action");
+        },
         cell: ({ row }) => {
           if (!canDelete) return null;
 
           const department = row.original;
 
           return (
-            <div className="flex justify-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {canDelete && onDelete && (
-                    <DropdownMenuItem
-                      className="cursor-pointer"
-                      onClick={() => onDelete(department)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      {tCommon("delete")}
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {canDelete && onDelete && (
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => onDelete(department)}>
+                    <Trash2 className="h-4 w-4" />
+                    {tCommon("delete")}
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           );
         },
         enableSorting: false,

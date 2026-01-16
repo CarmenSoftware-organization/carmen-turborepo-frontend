@@ -4,7 +4,12 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Activity, FileCheck, FileType, List, MapPin, MoreHorizontal, Trash2 } from "lucide-react";
 import { INVENTORY_TYPE } from "@/constants/enum";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useMemo } from "react";
 import {
@@ -15,7 +20,11 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
-import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import {
+  DataGridTable,
+  DataGridTableRowSelect,
+  DataGridTableRowSelectAll,
+} from "@/components/ui/data-grid-table";
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -78,16 +87,11 @@ export default function ListLocations({
     return tStoreLocation("inventory");
   };
 
-  // Action header component
-  const ActionHeader = () => <div className="text-right">{t("action")}</div>;
-
-  // Convert sort to TanStack Table format
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
   }, [sort]);
 
-  // Pagination state
   const pagination: PaginationState = useMemo(
     () => ({
       pageIndex: currentPage - 1,
@@ -96,7 +100,6 @@ export default function ListLocations({
     [currentPage, perpage]
   );
 
-  // Define columns
   const columns = useMemo<ColumnDef<Location>[]>(
     () => [
       {
@@ -109,12 +112,8 @@ export default function ListLocations({
       },
       {
         id: "no",
-        header: () => <div className="text-center">#</div>,
-        cell: ({ row }) => (
-          <div className="text-center">
-            {(currentPage - 1) * perpage + row.index + 1}
-          </div>
-        ),
+        header: () => "#",
+        cell: ({ row }) => <span>{(currentPage - 1) * perpage + row.index + 1}</span>,
         enableSorting: false,
         size: 30,
         meta: {
@@ -125,7 +124,11 @@ export default function ListLocations({
       {
         accessorKey: "name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("name")} icon={<List className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("name")}
+            icon={<List className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => {
           const location = row.original;
@@ -143,45 +146,38 @@ export default function ListLocations({
         },
         enableSorting: true,
         size: 250,
-        meta: {
-          headerTitle: t("name"),
-        },
       },
       {
         accessorKey: "location_type",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("type")} icon={<FileType className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("type")}
+            icon={<FileType className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => {
           const location = row.original;
-          return (
-            <p className="text-xs md:text-base">
-              {getLocationType(location.location_type)}
-            </p>
-          );
+          return <p>{getLocationType(location.location_type)}</p>;
         },
         enableSorting: true,
         size: 150,
-        meta: {
-          headerTitle: t("type"),
-        },
       },
       {
         accessorKey: "physical_count_type",
         header: ({ column }) => (
-          <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title="EOP" icon={<FileCheck className="h-4 w-4" />} />
-          </div>
+          <DataGridColumnHeader
+            column={column}
+            title="EOP"
+            icon={<FileCheck className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
-          <div className="text-center">
-            {row.original.physical_count_type === "yes" ? tCommon("yes") : tCommon("no")}
-          </div>
+          <span>{row.original.physical_count_type === "yes" ? tCommon("yes") : tCommon("no")}</span>
         ),
         enableSorting: true,
         size: 100,
         meta: {
-          headerTitle: "EOP",
           cellClassName: "text-center",
           headerClassName: "text-center",
         },
@@ -189,66 +185,66 @@ export default function ListLocations({
       {
         id: "delivery_point",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("delivery_point")} icon={<MapPin className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("delivery_point")}
+            icon={<MapPin className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => <span>{row.original.delivery_point?.name || "-"}</span>,
         enableSorting: false,
         size: 180,
-        meta: {
-          headerTitle: t("delivery_point"),
-        },
       },
       {
         accessorKey: "is_active",
         header: ({ column }) => (
-          <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={t("status")} icon={<Activity className="h-4 w-4" />} />
-          </div>
+          <DataGridColumnHeader
+            column={column}
+            title={t("status")}
+            icon={<Activity className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
-          <div className="flex justify-center">
-            <StatusCustom is_active={row.original.is_active}>
-              {row.original.is_active ? tCommon("active") : tCommon("inactive")}
-            </StatusCustom>
-          </div>
+          <StatusCustom is_active={row.original.is_active}>
+            {row.original.is_active ? tCommon("active") : tCommon("inactive")}
+          </StatusCustom>
         ),
         enableSorting: true,
         size: 120,
         meta: {
-          headerTitle: t("status"),
           cellClassName: "text-center",
           headerClassName: "text-center",
         },
       },
       {
         id: "action",
-        header: ActionHeader,
+        header: () => {
+          t("action");
+        },
         cell: ({ row }) => {
           if (!canDelete) return null;
 
           const location = row.original;
 
           return (
-            <div className="flex justify-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {canDelete && onDelete && (
-                    <DropdownMenuItem
-                      className="text-destructive cursor-pointer hover:bg-transparent"
-                      onClick={() => onDelete(location as unknown as StoreLocationDto)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      {tCommon("delete")}
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {canDelete && onDelete && (
+                  <DropdownMenuItem
+                    className="text-destructive cursor-pointer hover:bg-transparent"
+                    onClick={() => onDelete(location as unknown as StoreLocationDto)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {tCommon("delete")}
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           );
         },
         enableSorting: false,
@@ -272,7 +268,6 @@ export default function ListLocations({
     ]
   );
 
-  // Initialize table
   const table = useReactTable({
     data: locations,
     columns,
@@ -284,8 +279,7 @@ export default function ListLocations({
     },
     enableRowSelection: true,
     onPaginationChange: (updater) => {
-      const newPagination =
-        typeof updater === "function" ? updater(pagination) : updater;
+      const newPagination = typeof updater === "function" ? updater(pagination) : updater;
       onPageChange(newPagination.pageIndex + 1);
       setPerpage(newPagination.pageSize);
     },
