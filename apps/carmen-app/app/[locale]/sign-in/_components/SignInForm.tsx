@@ -11,19 +11,9 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { toast } from "sonner";
-// import InputCustom from "@/components/ui-custom/InputCustom";
 import { useSignInMutation } from "@/hooks/use-auth-query";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { userList } from "./user-list";
-import { Input } from "@/components/ui/input";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import InputCustom from "@/components/ui-custom/InputCustom";
 
 export default function SignInForm() {
   const router = useRouter();
@@ -39,7 +29,7 @@ export default function SignInForm() {
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",
-      password: "12345678",
+      password: "",
     },
   });
 
@@ -101,7 +91,7 @@ export default function SignInForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        {/* <InputCustom
+                        <InputCustom
                           label={t("email")}
                           labelPlacement="inside"
                           placeholder="This shows when input has value"
@@ -109,28 +99,7 @@ export default function SignInForm() {
                           autoComplete="username"
                           {...field}
                           className="h-12 sm:h-11"
-                        /> */}
-                        <Select
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            // Auto-fill password when email is selected
-                            form.setValue("password", "12345678");
-                          }}
-                          defaultValue={field.value}
-                        >
-                          <SelectTrigger className="h-11">
-                            <SelectValue placeholder="Select a Email" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              {userList.map((user) => (
-                                <SelectItem key={user.email} value={user.email}>
-                                  {user.email}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -143,22 +112,14 @@ export default function SignInForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        {/* <InputCustom
+                        <InputCustom
                           label={t("password")}
                           labelPlacement="inside"
-                          placeholder="This shows when input has value"
                           required
                           type="password"
                           autoComplete="current-password"
                           {...field}
                           className="h-12 sm:h-11"
-                        /> */}
-                        <Input
-                          type="password"
-                          placeholder={t("password")}
-                          {...field}
-                          className="h-11"
-                          autoComplete="current-password"
                         />
                       </FormControl>
                       <FormMessage />
