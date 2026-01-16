@@ -147,19 +147,6 @@ export interface ActivityPrDto {
   details: string;
 }
 
-export interface PurchaseRequestTemplateDto {
-  id: string;
-  title: string;
-  department: string;
-  status: string;
-  date_created: string;
-  type: string;
-  prt_number: string;
-  requestor: string;
-  amount: number;
-  workflow_status: string;
-}
-
 export interface VendorComparisonDto {
   id: string;
   vendor_name: string;

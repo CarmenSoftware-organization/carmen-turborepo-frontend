@@ -298,17 +298,22 @@ function DataGridColumnHeader<TData, TValue>({
     className?.includes("justify-center") ||
     headerClassName?.includes("text-center") ||
     headerClassName?.includes("justify-center");
+  const shouldEnd =
+    className?.includes("text-right") ||
+    className?.includes("justify-end") ||
+    headerClassName?.includes("text-right") ||
+    headerClassName?.includes("justify-end");
 
   if (column.getCanSort() || (props.tableLayout?.columnsResizable && column.getCanResize())) {
     return (
-      <div className={cn("flex items-center h-full", shouldCenter && "justify-center")}>
+      <div className={cn("flex items-center h-full", shouldCenter && "justify-center", shouldEnd && "justify-end")}>
         {headerButton()}
       </div>
     );
   }
 
   return (
-    <div className={cn("flex items-center h-full", shouldCenter && "justify-center")}>
+    <div className={cn("flex items-center h-full", shouldCenter && "justify-center", shouldEnd && "justify-end")}>
       {headerLabel()}
     </div>
   );

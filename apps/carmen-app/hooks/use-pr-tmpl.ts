@@ -31,8 +31,12 @@ export const usePrTemplateQuery = (token: string, buCode: string, params?: Param
 
   const isUnauthorized = error instanceof Error && error.message.includes("Unauthorized");
 
+  const prTmplData = data?.data.data;
+  const paginate = data?.data.paginate;
+
   return {
-    data,
+    prTmplData,
+    paginate,
     isLoading,
     error,
     isUnauthorized,

@@ -13,8 +13,11 @@ import { mockPurchaseRequestTemplates } from "@/mock-data/procurement";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { useRouter } from "@/lib/navigation";
 import { parseSortString } from "@/utils/table";
+import { useAuth } from "@/context/AuthContext";
+import { usePrTemplateQuery } from "@/hooks/use-pr-tmpl";
 
 export default function PurchaseRequestTemplateComponent() {
+  const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tDataControls = useTranslations("DataControls");
   const tPurchaseRequest = useTranslations("PurchaseRequest");
@@ -23,6 +26,18 @@ export default function PurchaseRequestTemplateComponent() {
   const [status, setStatus] = useURL("status");
   const [statusOpen, setStatusOpen] = useState(false);
   const [sort, setSort] = useURL("sort");
+  const [page, setPage] = useURL("page");
+
+  const { prTmplData, paginate, isLoading } = usePrTemplateQuery(token, buCode, {
+    page: page ? Number(page) : 1,
+    sort,
+    search,
+  });
+
+  const currentPage = paginate?.page || 1;
+  const totalItems = paginate?.total || 0;
+  const perpageItem = paginate?.perpage || 10;
+  const totalPages = paginate?.pages || 1;
 
   const sortFields = [{ key: "no", label: tDataControls("pr_no") }];
 
@@ -79,12 +94,12 @@ export default function PurchaseRequestTemplateComponent() {
 
   const content = (
     <PurchaseRequestTemplateList
-      prts={mockPurchaseRequestTemplates}
-      isLoading={false}
-      totalItems={mockPurchaseRequestTemplates.length}
-      currentPage={1}
-      totalPages={1}
-      perpage={10}
+      prts={prTmplData ?? []}
+      isLoading={isLoading}
+      totalItems={totalItems ?? 0}
+      currentPage={currentPage}
+      totalPages={totalPages ?? 1}
+      perpage={perpageItem ?? 10}
       onPageChange={() => {}}
       sort={parseSortString(sort)}
       onSort={setSort}

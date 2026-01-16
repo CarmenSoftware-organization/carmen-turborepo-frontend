@@ -1,10 +1,22 @@
 "use client";
 
-import { PurchaseRequestTemplateDto } from "@/dtos/procurement.dto";
 import { Button } from "@/components/ui/button";
-import { Activity, Calendar, DollarSign, FileText, MoreHorizontal, Trash2, TypeIcon, User } from "lucide-react";
+import {
+  Activity,
+  Calendar,
+  DollarSign,
+  FileText,
+  MoreHorizontal,
+  Trash2,
+  TypeIcon,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import ButtonLink from "@/components/ButtonLink";
 import { useMemo } from "react";
 import {
@@ -15,10 +27,32 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
-import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import {
+  DataGridTable,
+  DataGridTableRowSelect,
+  DataGridTableRowSelectAll,
+} from "@/components/ui/data-grid-table";
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import {
+  PurchaseRequestTemplateDto,
+  PurchaseRequestTemplateDetailDto,
+} from "@/dtos/pr-template.dto";
+import { useAuth } from "@/context/AuthContext";
+import { formatDate } from "@/utils/format/date";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
+
+const calculateTotalAmount = (details: PurchaseRequestTemplateDetailDto[]): number => {
+  if (!details || details.length === 0) return 0;
+
+  return details.reduce((total, item) => {
+    const taxAmount = Number.parseFloat(item.tax_amount) || 0;
+    const discountAmount = Number.parseFloat(item.discount_amount) || 0;
+    const lineTotal = taxAmount - discountAmount;
+    return total + lineTotal;
+  }, 0);
+};
 
 interface PurchaseRequestTemplateListProps {
   readonly prts: PurchaseRequestTemplateDto[];
@@ -47,17 +81,13 @@ export default function PurchaseRequestTemplateList({
 }: PurchaseRequestTemplateListProps) {
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
+  const { dateFormat } = useAuth();
 
-  // Action header component
-  const ActionHeader = () => <div className="text-right">{tTableHeader("action")}</div>;
-
-  // Convert sort to TanStack Table format
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
   }, [sort]);
 
-  // Pagination state
   const pagination: PaginationState = useMemo(
     () => ({
       pageIndex: currentPage - 1,
@@ -66,7 +96,6 @@ export default function PurchaseRequestTemplateList({
     [currentPage, perpage]
   );
 
-  // Define columns
   const columns = useMemo<ColumnDef<PurchaseRequestTemplateDto>[]>(
     () => [
       {
@@ -75,50 +104,49 @@ export default function PurchaseRequestTemplateList({
         cell: ({ row }) => <DataGridTableRowSelect row={row} />,
         enableSorting: false,
         enableHiding: false,
-        size: 20,
+        size: 40,
       },
       {
         id: "no",
-        header: () => <div className="text-center">#</div>,
-        cell: ({ row }) => (
-          <div className="text-center">
-            {(currentPage - 1) * perpage + row.index + 1}
-          </div>
-        ),
+        header: () => "#",
+        cell: ({ row }) => <span>{(currentPage - 1) * perpage + row.index + 1}</span>,
         enableSorting: false,
-        size: 20,
+        size: 40,
         meta: {
           cellClassName: "text-center",
           headerClassName: "text-center",
         },
       },
       {
-        accessorKey: "prt_number",
+        accessorKey: "name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("pr_no")} icon={<FileText className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("name")}
+            icon={<FileText className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <div className="max-w-[150px] truncate">
             <ButtonLink href={`/procurement/purchase-request-template/${row.original.id}`}>
-              {row.original.prt_number}
+              {row.original.name}
             </ButtonLink>
           </div>
         ),
         enableSorting: true,
         size: 150,
-        meta: {
-          headerTitle: tTableHeader("pr_no"),
-        },
       },
       {
         accessorKey: "title",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("description")} icon={<FileText className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("description")}
+            icon={<FileText className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
-          <span className="truncate max-w-[200px] inline-block">
-            {row.original.title}
-          </span>
+          <span className="truncate max-w-[200px] inline-block">{row.original.description}</span>
         ),
         enableSorting: false,
         size: 200,
@@ -129,17 +157,18 @@ export default function PurchaseRequestTemplateList({
       {
         accessorKey: "date_created",
         header: ({ column }) => (
-          <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={tTableHeader("date")} icon={<Calendar className="h-4 w-4" />} />
-          </div>
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("date")}
+            icon={<Calendar className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
-          <div className="text-center">{row.original.date_created}</div>
+          <span>{formatDate(row.original.created_at, dateFormat || "yyyy-MM-dd")}</span>
         ),
         enableSorting: false,
         size: 120,
         meta: {
-          headerTitle: tTableHeader("date"),
           cellClassName: "text-center",
           headerClassName: "text-center",
         },
@@ -147,51 +176,36 @@ export default function PurchaseRequestTemplateList({
       {
         accessorKey: "type",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("type")} icon={<TypeIcon className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("type")}
+            icon={<TypeIcon className="h-4 w-4" />}
+          />
         ),
-        cell: ({ row }) => (
-          <span className="truncate max-w-[120px] inline-block">
-            {row.original.type}
-          </span>
-        ),
+        cell: ({ row }) => <span>{row.original.workflow_name}</span>,
         enableSorting: false,
         size: 120,
         meta: {
-          headerTitle: tTableHeader("type"),
-        },
-      },
-      {
-        accessorKey: "requestor",
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("requestor")} icon={<User className="h-4 w-4" />} />
-        ),
-        cell: ({ row }) => (
-          <span className="truncate max-w-[150px] inline-block">
-            {row.original.requestor}
-          </span>
-        ),
-        enableSorting: false,
-        size: 150,
-        meta: {
-          headerTitle: tTableHeader("requestor"),
+          cellClassName: "text-center",
+          headerClassName: "text-center",
         },
       },
       {
         accessorKey: "amount",
         header: ({ column }) => (
-          <div className="flex justify-end">
-            <DataGridColumnHeader column={column} title={tTableHeader("amount")} icon={<DollarSign className="h-4 w-4" />} />
-          </div>
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("amount")}
+            icon={<DollarSign className="h-4 w-4" />}
+          />
         ),
-        cell: ({ row }) => (
-          <div className="text-right">
-            <span className="font-mono text-sm">{row.original.amount}</span>
-          </div>
-        ),
+        cell: ({ row }) => {
+          const totalAmount = calculateTotalAmount(row.original.purchase_request_template_detail);
+          return <span>{totalAmount.toLocaleString()}</span>;
+        },
         enableSorting: false,
         size: 130,
         meta: {
-          headerTitle: tTableHeader("amount"),
           cellClassName: "text-right",
           headerClassName: "text-right",
         },
@@ -199,46 +213,49 @@ export default function PurchaseRequestTemplateList({
       {
         accessorKey: "status",
         header: ({ column }) => (
-          <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={tTableHeader("status")} icon={<Activity className="h-4 w-4" />} />
-          </div>
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("status")}
+            icon={<Activity className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
-          <div className="text-center">{row.original.status}</div>
+          <StatusCustom is_active={row.original.is_active}>
+            {row.original.is_active ? tCommon("active") : tCommon("inactive")}
+          </StatusCustom>
         ),
         enableSorting: false,
         size: 120,
         meta: {
-          headerTitle: tTableHeader("status"),
           cellClassName: "text-center",
           headerClassName: "text-center",
         },
       },
       {
         id: "action",
-        header: ActionHeader,
+        header: () => {
+          tTableHeader("action");
+        },
         cell: ({ row }) => {
           const prt = row.original;
           return (
-            <div className="flex justify-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">More options</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    className="text-destructive cursor-pointer hover:bg-transparent"
-                    onClick={() => console.log("Delete", prt.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    {tCommon("delete")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7">
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">More options</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  className="text-destructive cursor-pointer hover:bg-transparent"
+                  onClick={() => console.log("Delete", prt.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  {tCommon("delete")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           );
         },
         enableSorting: false,
@@ -264,8 +281,7 @@ export default function PurchaseRequestTemplateList({
     },
     enableRowSelection: true,
     onPaginationChange: (updater) => {
-      const newPagination =
-        typeof updater === "function" ? updater(pagination) : updater;
+      const newPagination = typeof updater === "function" ? updater(pagination) : updater;
       onPageChange(newPagination.pageIndex + 1);
       setPerpage(newPagination.pageSize);
     },

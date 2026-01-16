@@ -73,10 +73,7 @@ export default function ExchangeRateList({
           />
         ),
         cell: ({ row }) => (
-          // <span>{row.original.at_date}</span>
-          <span className="text-left">
-            {formatDate(row.original.at_date, dateFormat || "yyyy-MM-dd")}
-          </span>
+          <span>{formatDate(row.original.at_date, dateFormat || "yyyy-MM-dd")}</span>
         ),
         enableSorting: false,
         meta: {
