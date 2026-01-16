@@ -43,6 +43,36 @@ export const usePrTemplateQuery = (token: string, buCode: string, params?: Param
   };
 };
 
+export const usePrTemplateByIdQuery = (token: string, buCode: string, id: string) => {
+  const API_URL = prTemplateApiUrl(buCode, id);
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["pr-template", buCode, id],
+    queryFn: async () => {
+      if (!token || !buCode || !id) {
+        throw new Error("Unauthorized: Missing token, buCode, or id");
+      }
+      const response = await axios.get(API_URL, {
+        headers: requestHeaders(token),
+      });
+      return response.data;
+    },
+    enabled: !!token && !!buCode && !!id,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const isUnauthorized = error instanceof Error && error.message.includes("Unauthorized");
+
+  const prTemplate = data?.data;
+
+  return {
+    prTemplate,
+    isLoading,
+    error,
+    isUnauthorized,
+  };
+};
+
 export const useCreatePrTemplate = (token: string, buCode: string) => {
   const API_URL = prTemplateApiUrl(buCode);
   return useMutation({

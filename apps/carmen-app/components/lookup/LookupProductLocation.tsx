@@ -167,8 +167,8 @@ export default function LookupProductLocation({
                   value={`${productLocationItem.code || ""} ${productLocationItem.name}`}
                   onSelect={() => handleValueChange(productLocationItem.id)}
                 >
-                  {productLocationItem.name} -
-                  <Badge variant="product_badge">{productLocationItem.code}</Badge>
+                  <Badge variant="product_badge">{productLocationItem.code}</Badge>-{" "}
+                  {productLocationItem.name}
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
