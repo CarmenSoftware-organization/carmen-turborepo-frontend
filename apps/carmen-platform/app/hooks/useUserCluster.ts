@@ -1,6 +1,6 @@
 "use client";
 
-import { backendApi } from "@/lib/backend-api";
+import { backendApi, xAppId } from "@/lib/backend-api";
 import { useAuth } from "../context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 
@@ -15,6 +15,7 @@ export const useUserCluster = () => {
             const res = await fetch(apiUrl, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
+                    "x-app-id": xAppId,
                 },
             });
 

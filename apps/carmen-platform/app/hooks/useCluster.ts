@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
-import { backendApi } from "@/lib/backend-api";
+import { backendApi, xAppId } from "@/lib/backend-api";
 import { ClusterDtoId, GetClusterDto, ClusterPayloadDto } from "@/dto/cluster.dto";
 import { useCallback } from "react";
 
@@ -17,6 +17,7 @@ export const useCluster = () => {
             const res = await fetch(apiUrl, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
+                    "x-app-id": xAppId,
                 },
             });
 
@@ -63,6 +64,7 @@ export const useCreateCluster = () => {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
+                    "x-app-id": xAppId,
                 },
                 body: JSON.stringify(payload),
             });
@@ -90,6 +92,7 @@ export const useUpdateCluster = () => {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
+                    "x-app-id": xAppId,
                 },
                 body: JSON.stringify(payload),
             });
@@ -116,6 +119,7 @@ export const useDeleteCluster = () => {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
+                    "x-app-id": xAppId,
                 },
             });
 
@@ -140,6 +144,7 @@ export const useClusterById = (id: string) => {
             const response = await fetch(`${apiUrl}/${id}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
+                    "x-app-id": xAppId,
                 },
             });
 

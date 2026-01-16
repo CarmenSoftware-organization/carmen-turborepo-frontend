@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
+import { xAppId } from "@/lib/backend-api";
 
 export const useUserProfile = () => {
     const { accessToken } = useAuth();
@@ -10,6 +11,7 @@ export const useUserProfile = () => {
             const response = await fetch('/api/user/profile', {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
+                    "x-app-id": xAppId,
                 },
             });
 

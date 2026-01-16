@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
-import { backendApi } from "@/lib/backend-api";
+import { backendApi, xAppId } from "@/lib/backend-api";
 
 const apiUrl = `${backendApi}/api-system/business-unit`;
 
@@ -23,6 +23,7 @@ export const useBu = () => {
       const response = await fetch(apiUrl, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
+          "x-app-id": xAppId,
         },
       });
       if (!response.ok) {
@@ -45,6 +46,7 @@ export const useBuById = (id: string) => {
       const response = await fetch(`${apiUrl}/${id}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
+          "x-app-id": xAppId,
         },
       });
       if (!response.ok) {
@@ -70,6 +72,7 @@ export const useCreateBu = () => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
+          "x-app-id": xAppId,
         },
         body: JSON.stringify(payload),
       });
@@ -98,6 +101,7 @@ export const useUpdateBu = () => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
+          "x-app-id": xAppId,
         },
         body: JSON.stringify(payload),
       });
@@ -126,6 +130,7 @@ export const useDeleteBu = () => {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${accessToken}`,
+          "x-app-id": xAppId,
         },
       });
 

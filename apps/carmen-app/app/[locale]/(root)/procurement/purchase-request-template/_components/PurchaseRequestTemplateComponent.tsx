@@ -9,7 +9,6 @@ import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import PurchaseRequestTemplateList from "./PurchaseRequestTemplateList";
-import { mockPurchaseRequestTemplates } from "@/mock-data/procurement";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { useRouter } from "@/lib/navigation";
 import { parseSortString } from "@/utils/table";

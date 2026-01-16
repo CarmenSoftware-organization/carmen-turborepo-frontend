@@ -11,7 +11,7 @@ import React, {
 } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@/i18n/routing";
-import { backendApi } from "@/lib/backend-api";
+import { backendApi, xAppId } from "@/lib/backend-api";
 
 enum LOCAL_STORAGE {
   ACCESS_TOKEN = "access_token",
@@ -136,6 +136,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const response = await fetch(profileUrl, {
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "x-app-id": xAppId,
       },
     });
 
@@ -180,6 +182,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "x-app-id": xAppId,
           },
           body: JSON.stringify(credentials),
         });
