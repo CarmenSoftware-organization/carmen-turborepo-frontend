@@ -47,8 +47,8 @@ const calculateTotalAmount = (details: PurchaseRequestTemplateDetailDto[]): numb
   if (!details || details.length === 0) return 0;
 
   return details.reduce((total, item) => {
-    const taxAmount = Number.parseFloat(item.tax_amount) || 0;
-    const discountAmount = Number.parseFloat(item.discount_amount) || 0;
+    const taxAmount = item.tax_amount || 0;
+    const discountAmount = item.discount_amount || 0;
     const lineTotal = taxAmount - discountAmount;
     return total + lineTotal;
   }, 0);

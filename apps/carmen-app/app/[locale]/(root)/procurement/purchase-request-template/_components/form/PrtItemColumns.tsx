@@ -108,8 +108,8 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
       cell: ({ row }) =>
         isEditMode ? (
           <LookupProductLocation
-            location_id={row.original.location_id}
-            value={row.original.product_id}
+            location_id={row.original.location_id || ""}
+            value={row.original.product_id || ""}
             bu_code={buCode}
             onValueChange={(value, selectedProduct) => {
               updateItemField(row.original, {
@@ -154,8 +154,8 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
             />
             <PrtUnitSelectCell
               rowIndex={row.index}
-              productId={row.original.product_id}
-              currentUnitId={row.original.requested_unit_id}
+              productId={row.original.product_id || ""}
+              currentUnitId={row.original.requested_unit_id || ""}
               requestedQty={row.original.requested_qty || 0}
               updateItemField={(_, updates) => updateItemField(row.original, updates)}
               token={token}
@@ -260,7 +260,7 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
         ) : (
           <div className="flex flex-col text-xs">
             <p>
-              {getCurrencyCode(row.original.currency_id)} {row.original.tax_amount}
+              {getCurrencyCode(row.original.currency_id || "")} {row.original.tax_amount}
             </p>
             <p className="text-muted-foreground">Disc: {row.original.discount_amount}</p>
           </div>

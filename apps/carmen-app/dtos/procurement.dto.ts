@@ -156,3 +156,17 @@ export interface VendorComparisonDto {
   res_time: number;
   delivery_time: number;
 }
+
+// Mock type for dashboard/list view (different from pr-template.dto.ts)
+export interface PurchaseRequestTemplateDto {
+  id: string;
+  title: string;
+  department: string;
+  status: string;
+  date_created: string;
+  type: string;
+  prt_number: string;
+  requestor: string;
+  amount: number;
+  workflow_status: string;
+}
