@@ -17,6 +17,7 @@ import PrtItems from "./PrtItems";
 import { CreatePrtDto, UpdatePrtDto, PrtFormValues } from "../../_schema/prt.schema";
 import JsonViewer from "@/components/JsonViewer";
 import { useAuth } from "@/context/AuthContext";
+import { useCreatePrTemplate, useUpdatePrTemplate } from "@/hooks/use-pr-tmpl";
 
 interface PrtFormProps {
   readonly prtData?: PurchaseRequestTemplateDto;
@@ -24,9 +25,12 @@ interface PrtFormProps {
 }
 
 export default function PrtForm({ prtData, mode }: PrtFormProps) {
-  const { buCode, departments } = useAuth();
+  const { buCode, departments, token } = useAuth();
   const tPurchaseRequest = useTranslations("PurchaseRequest");
   const [currentMode, setCurrentMode] = useState<formType>(mode);
+
+  const createPrTemplate = useCreatePrTemplate(token, buCode);
+  const updatePrTemplate = useUpdatePrTemplate(token, buCode, prtData?.id ?? "");
 
   const defaultValues: PrtFormValues = {
     name: "",
@@ -60,50 +64,23 @@ export default function PrtForm({ prtData, mode }: PrtFormProps) {
   }, [prtData, form]);
 
   const onSubmit = (data: PrtFormValues) => {
-    const details = data.purchase_request_template_detail;
-
     if (currentMode === formType.ADD) {
-      const payload: CreatePrtDto = {
-        name: data.name,
-        description: data.description || undefined,
-        workflow_id: data.workflow_id || undefined,
-        department_id: data.department_id || undefined,
-        is_active: data.is_active,
-        note: data.note || undefined,
-        purchase_request_template_detail: {
-          add: details?.add,
-        },
-      };
-      console.log("Create PRT payload:", payload);
-    } else if (currentMode === formType.EDIT) {
-      const payload: UpdatePrtDto = {
-        id: data.id,
-        name: data.name,
-        description: data.description || undefined,
-        workflow_id: data.workflow_id || undefined,
-        department_id: data.department_id || undefined,
-        is_active: data.is_active,
-        note: data.note || undefined,
-        purchase_request_template_detail: {
-          add: details?.add?.length ? details.add : undefined,
-          update: details?.update?.length ? details.update : undefined,
-          delete: details?.delete?.length ? details.delete : undefined,
-        },
-      };
-      console.log("Update PRT payload:", payload);
+      createPrTemplate.mutate(data);
+    } else if (currentMode === formType.EDIT && prtData?.id) {
+      updatePrTemplate.mutate(data);
     }
   };
 
   return (
     <DetailsAndComments activityComponent={<ActivityLog />} commentComponent={<CommentPrt />}>
       <Card className="p-4">
-        <ActionFields
-          currentMode={currentMode}
-          setCurrentMode={setCurrentMode}
-          title={prtData?.name ?? ""}
-        />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
+            <ActionFields
+              currentMode={currentMode}
+              setCurrentMode={setCurrentMode}
+              title={prtData?.name ?? ""}
+            />
             <HeadPrtForm
               form={form}
               currentMode={currentMode}

@@ -1,4 +1,8 @@
 import { ParamsGetDto } from "@/dtos/param.dto";
+import {
+  CreatePrtDto,
+  UpdatePrtDto,
+} from "@/app/[locale]/(root)/procurement/purchase-request-template/_schema/prt.schema";
 import { backendApi } from "@/lib/backend-api";
 import {
   getAllApiRequest,
@@ -6,7 +10,7 @@ import {
   requestHeaders,
   updateApiRequest,
 } from "@/lib/config.api";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 const prTemplateApiUrl = (buCode: string, id?: string) => {
@@ -74,25 +78,33 @@ export const usePrTemplateByIdQuery = (token: string, buCode: string, id: string
 };
 
 export const useCreatePrTemplate = (token: string, buCode: string) => {
+  const queryClient = useQueryClient();
   const API_URL = prTemplateApiUrl(buCode);
   return useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (data: CreatePrtDto) => {
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
       return postApiRequest(API_URL, token, data, "Failed to create pr template");
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pr-template", buCode] });
+    },
   });
 };
 
 export const useUpdatePrTemplate = (token: string, buCode: string, id: string) => {
+  const queryClient = useQueryClient();
   const API_URL_BY_ID = prTemplateApiUrl(buCode, id);
   return useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (data: UpdatePrtDto) => {
       if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }
       return updateApiRequest(API_URL_BY_ID, token, data, "Failed to update pr template", "PATCH");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pr-template", buCode, id] });
     },
   });
 };

@@ -1,10 +1,6 @@
 import { z } from "zod";
 import { InfoSchema } from "@/dtos/embedded.dto";
-import { PurchaseRequestTemplateDetailDto } from "@/dtos/pr-template.dto";
 
-// ===== Detail Schemas =====
-
-// Schema สำหรับ detail item ที่จะ add (ไม่มี id)
 export const CreatePrtDetailSchema = z.object({
   location_id: z.string().optional(),
   location_name: z.string().optional(),
@@ -40,7 +36,6 @@ export const CreatePrtDetailSchema = z.object({
   is_active: z.boolean().optional(),
 });
 
-// Schema สำหรับ detail item ที่จะ update (ต้องมี id)
 export const UpdatePrtDetailSchema = CreatePrtDetailSchema.extend({
   id: z.string(),
 });
