@@ -16,9 +16,10 @@ interface Props {
   currentMode: formType;
   buCode: string;
   departName: string;
+  workflowName?: string;
 }
 
-export default function HeadPrtForm({ form, currentMode, buCode, departName }: Props) {
+export default function HeadPrtForm({ form, currentMode, buCode, departName, workflowName }: Props) {
   const tPurchaseRequest = useTranslations("PurchaseRequest");
   const isViewMode = currentMode === formType.VIEW;
 
@@ -28,14 +29,11 @@ export default function HeadPrtForm({ form, currentMode, buCode, departName }: P
         <FormField
           control={form.control}
           name="name"
+          required
+          icon={<Hash className="h-4 w-4 text-muted-foreground" />}
           render={({ field }) => (
             <FormItem className="col-span-1">
-              <FormLabel className="text-xs font-medium">
-                <div className="flex items-center gap-1">
-                  <Hash className="h-3 w-3" />
-                  {tPurchaseRequest("pr_name")}
-                </div>
-              </FormLabel>
+              <FormLabel className="text-xs font-medium">{tPurchaseRequest("pr_name")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -50,14 +48,11 @@ export default function HeadPrtForm({ form, currentMode, buCode, departName }: P
         <FormField
           control={form.control}
           name="workflow_id"
+          icon={<FileText className="h-4 w-4 text-muted-foreground" />}
+          required
           render={({ field }) => (
             <FormItem className="col-span-1">
-              <FormLabel className="text-xs font-medium">
-                <div className="flex items-center gap-1">
-                  <FileText className="h-3 w-3" />
-                  {tPurchaseRequest("pr_type")}
-                </div>
-              </FormLabel>
+              <FormLabel className="text-xs font-medium">{tPurchaseRequest("pr_type")}</FormLabel>
               <FormControl>
                 <LookupWorkflow
                   value={field.value || ""}
@@ -65,6 +60,7 @@ export default function HeadPrtForm({ form, currentMode, buCode, departName }: P
                   type={enum_workflow_type.purchase_request}
                   disabled={isViewMode}
                   bu_code={buCode}
+                  initialDisplayName={workflowName || form.watch("workflow_name")}
                 />
               </FormControl>
             </FormItem>
@@ -72,7 +68,7 @@ export default function HeadPrtForm({ form, currentMode, buCode, departName }: P
         />
         <div className="space-y-2">
           <Label>
-            <div className="flex items-center gap-1.5 text-muted-foreground">
+            <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
               <Building2 className="h-4 w-4" />
               {tPurchaseRequest("department")}
             </div>

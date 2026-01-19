@@ -24,6 +24,7 @@ interface PropsWorkflowLookup {
   readonly disabled?: boolean;
   readonly type: enum_workflow_type;
   readonly bu_code: string;
+  readonly initialDisplayName?: string;
 }
 
 export default function LookupWorkflow({
@@ -33,6 +34,7 @@ export default function LookupWorkflow({
   disabled = false,
   type,
   bu_code,
+  initialDisplayName,
 }: Readonly<PropsWorkflowLookup>) {
   const { token, buCode } = useAuth();
   const currentBuCode = bu_code ?? buCode;
@@ -49,26 +51,64 @@ export default function LookupWorkflow({
 
   let selectContent;
 
+  // Find display name from workflows or use initialDisplayName
+  const getDisplayName = () => {
+    if (workflows && value) {
+      const found = workflows.find((w: WorkflowDto) => w.id === value);
+      if (found) return found.name;
+    }
+    return initialDisplayName || value || "";
+  };
+
   if (isLoading) {
     selectContent = (
-      <SelectItem value="loading" disabled>
-        <div className="flex items-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin" />
-        </div>
-      </SelectItem>
+      <>
+        {/* Keep current value visible while loading */}
+        {value && (
+          <SelectItem value={value}>
+            {getDisplayName()}
+          </SelectItem>
+        )}
+        <SelectItem value="loading" disabled>
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+          </div>
+        </SelectItem>
+      </>
     );
   } else if (!workflows || workflows.length === 0) {
     selectContent = (
-      <SelectItem value="empty" disabled>
-        {t("no_workflow_history")}
-      </SelectItem>
+      <>
+        {/* Keep current value visible if no workflows */}
+        {value && (
+          <SelectItem value={value}>
+            {getDisplayName()}
+          </SelectItem>
+        )}
+        <SelectItem value="empty" disabled>
+          {t("no_workflow_history")}
+        </SelectItem>
+      </>
     );
   } else {
-    selectContent = workflows.map((workflow: WorkflowDto) => (
-      <SelectItem key={workflow.id} value={workflow.id}>
-        {workflow.name}
-      </SelectItem>
-    ));
+    // Check if current value exists in workflows
+    const valueExistsInList = value && workflows.some((w: WorkflowDto) => w.id === value);
+
+    selectContent = (
+      <>
+        {/* If value doesn't exist in list, add a temporary item to display it */}
+        {value && !valueExistsInList && (
+          <SelectItem value={value}>
+            {initialDisplayName || value}
+          </SelectItem>
+        )}
+        {workflows.map((workflow: WorkflowDto) => (
+          <SelectItem key={workflow.id} value={workflow.id}>
+            {workflow.name}
+          </SelectItem>
+        ))}
+      </>
+    );
   }
 
   return (

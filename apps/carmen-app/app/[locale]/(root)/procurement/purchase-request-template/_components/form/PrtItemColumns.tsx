@@ -2,10 +2,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { MapPin, Package, Trash2 } from "lucide-react";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
-import {
-  DataGridTableRowSelect,
-  DataGridTableRowSelectAll,
-} from "@/components/ui/data-grid-table";
+import { DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestTemplateDetailDto } from "@/dtos/pr-template.dto";
 import LookupLocation from "@/components/lookup/LookupLocation";
@@ -13,14 +10,14 @@ import LookupProductLocation from "@/components/lookup/LookupProductLocation";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
 import NumberInput from "@/components/form-custom/NumberInput";
 import PrtUnitSelectCell from "./PrtUnitSelectCell";
-import { Input } from "@/components/ui/input";
-import {
-  CreatePrtDetailDto,
-  UpdatePrtDetailDto,
-} from "../../_schema/prt.schema";
+import { CreatePrtDetailDto, UpdatePrtDetailDto } from "../../_schema/prt.schema";
 
 // Combined type for display (add, update, and original items)
-export type PrtDetailItem = (CreatePrtDetailDto | UpdatePrtDetailDto | PurchaseRequestTemplateDetailDto) & {
+export type PrtDetailItem = (
+  | CreatePrtDetailDto
+  | UpdatePrtDetailDto
+  | PurchaseRequestTemplateDetailDto
+) & {
   _type: "add" | "update" | "original";
   _index: number;
 };
@@ -36,15 +33,8 @@ interface ColumnConfig {
 }
 
 export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailItem>[] => {
-  const {
-    currentMode,
-    buCode,
-    token,
-    tTableHeader,
-    getCurrencyCode,
-    updateItemField,
-    onDelete,
-  } = config;
+  const { currentMode, buCode, token, tTableHeader, getCurrencyCode, updateItemField, onDelete } =
+    config;
 
   const isEditMode = currentMode !== formType.VIEW;
 
@@ -55,14 +45,14 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
       cell: ({ row }) => <DataGridTableRowSelect row={row} />,
       enableSorting: false,
       enableHiding: false,
-      size: 30,
+      size: 40,
     },
     {
       id: "no",
       header: () => "#",
       cell: ({ row }) => <span>{row.index + 1}</span>,
       enableSorting: false,
-      size: 30,
+      size: 40,
       meta: {
         cellClassName: "text-center",
         headerClassName: "text-center",
@@ -94,7 +84,7 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
           <span>{row.original.location_name}</span>
         ),
       enableSorting: false,
-      size: 180,
+      size: 150,
     },
     {
       accessorKey: "product_name",
@@ -129,7 +119,7 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
           </div>
         ),
       enableSorting: false,
-      size: 200,
+      size: 180,
     },
     {
       accessorKey: "requested_qty",
@@ -138,40 +128,48 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
       ),
       cell: ({ row }) =>
         isEditMode ? (
-          <div className="flex flex-col items-end gap-1">
-            <NumberInput
-              value={row.original.requested_qty || 0}
-              onChange={(value) => {
-                const conversionFactor = row.original.requested_unit_conversion_factor || 1;
-                const baseQty = value * conversionFactor;
-                updateItemField(row.original, {
-                  requested_qty: value,
-                  requested_base_qty: baseQty,
-                });
-              }}
-              classNames="h-7 text-xs bg-background w-20"
-              disabled={!row.original.product_id}
-            />
-            <PrtUnitSelectCell
-              rowIndex={row.index}
-              productId={row.original.product_id || ""}
-              currentUnitId={row.original.requested_unit_id || ""}
-              requestedQty={row.original.requested_qty || 0}
-              updateItemField={(_, updates) => updateItemField(row.original, updates)}
-              token={token}
-              buCode={buCode}
-            />
-          </div>
+          <NumberInput
+            value={row.original.requested_qty || 0}
+            onChange={(value) => {
+              const conversionFactor = row.original.requested_unit_conversion_factor || 1;
+              const baseQty = value * conversionFactor;
+              updateItemField(row.original, {
+                requested_qty: value,
+                requested_base_qty: baseQty,
+              });
+            }}
+            classNames="h-7 text-xs"
+            disabled={!row.original.product_id}
+          />
         ) : (
-          <div className="flex flex-col text-xs">
-            <p>{row.original.requested_qty}</p>
-            <p className="text-xs text-muted-foreground">
-              {row.original.requested_unit_name || "-"}
-            </p>
-          </div>
+          <span>{row.original.requested_qty}</span>
         ),
       enableSorting: false,
-      size: 110,
+      size: 100,
+      meta: {
+        cellClassName: "text-right",
+        headerClassName: "text-right",
+      },
+    },
+    {
+      id: "requested_unit",
+      header: () => tTableHeader("unit"),
+      cell: ({ row }) =>
+        isEditMode ? (
+          <PrtUnitSelectCell
+            rowIndex={row.index}
+            productId={row.original.product_id || ""}
+            currentUnitId={row.original.requested_unit_id || ""}
+            requestedQty={row.original.requested_qty || 0}
+            updateItemField={(_, updates) => updateItemField(row.original, updates)}
+            token={token}
+            buCode={buCode}
+          />
+        ) : (
+          <span>{row.original.requested_unit_name || "-"}</span>
+        ),
+      enableSorting: false,
+      size: 120,
       meta: {
         cellClassName: "text-right",
         headerClassName: "text-right",
@@ -182,31 +180,21 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
       header: () => "FOC",
       cell: ({ row }) =>
         isEditMode ? (
-          <div className="flex flex-col items-end gap-1">
-            <NumberInput
-              value={row.original.foc_qty || 0}
-              onChange={(value) => {
-                const conversionFactor = row.original.foc_unit_conversion_factor || 1;
-                const baseQty = value * conversionFactor;
-                updateItemField(row.original, {
-                  foc_qty: value,
-                  foc_base_qty: baseQty,
-                });
-              }}
-              classNames="h-7 text-xs bg-background w-20"
-              disabled={!row.original.product_id}
-            />
-            <Input
-              className="text-xs text-right h-7"
-              defaultValue={row.original.foc_unit_name}
-              disabled
-            />
-          </div>
+          <NumberInput
+            value={row.original.foc_qty || 0}
+            onChange={(value) => {
+              const conversionFactor = row.original.foc_unit_conversion_factor || 1;
+              const baseQty = value * conversionFactor;
+              updateItemField(row.original, {
+                foc_qty: value,
+                foc_base_qty: baseQty,
+              });
+            }}
+            classNames="h-7 text-xs"
+            disabled={!row.original.product_id}
+          />
         ) : (
-          <div className="flex flex-col text-xs">
-            <p>{row.original.foc_qty}</p>
-            <p>{row.original.foc_unit_name || "-"}</p>
-          </div>
+          <span>{row.original.foc_qty}</span>
         ),
       enableSorting: false,
       size: 100,
@@ -222,54 +210,75 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
       ),
       cell: ({ row }) =>
         isEditMode ? (
-          <div className="flex flex-col items-end gap-1">
-            <div className="flex items-center gap-1">
-              <NumberInput
-                value={row.original.tax_amount || 0}
-                onChange={(value) => {
-                  updateItemField(row.original, {
-                    tax_amount: value,
-                  });
-                }}
-                classNames="h-7 text-xs bg-background w-16"
-                disabled={!row.original.product_id}
-              />
-              <LookupCurrency
-                value={row.original.currency_id}
-                bu_code={buCode}
-                onValueChange={(value) => {
-                  updateItemField(row.original, {
-                    currency_id: value,
-                  });
-                }}
-                classNames="h-7 text-xs w-24"
-                disabled={!row.original.product_id}
-              />
-            </div>
-            <NumberInput
-              value={row.original.discount_amount || 0}
-              onChange={(value) => {
-                updateItemField(row.original, {
-                  discount_amount: value,
-                });
-              }}
-              classNames="h-7 text-xs bg-background w-16"
-              disabled={!row.original.product_id}
-            />
-          </div>
+          <NumberInput
+            value={row.original.tax_amount || 0}
+            onChange={(value) => {
+              updateItemField(row.original, {
+                tax_amount: value,
+              });
+            }}
+            classNames="h-7 text-xs"
+            disabled={!row.original.product_id}
+          />
         ) : (
-          <div className="flex flex-col text-xs">
-            <p>
-              {getCurrencyCode(row.original.currency_id || "")} {row.original.tax_amount}
-            </p>
-            <p className="text-muted-foreground">Disc: {row.original.discount_amount}</p>
-          </div>
+          <span>{row.original.tax_amount}</span>
         ),
       enableSorting: false,
-      size: 220,
+      size: 100,
       meta: {
         cellClassName: "text-right",
         headerClassName: "text-right",
+      },
+    },
+    {
+      id: "discount_amount",
+      header: () => tTableHeader("discount"),
+      cell: ({ row }) =>
+        isEditMode ? (
+          <NumberInput
+            value={row.original.discount_amount || 0}
+            onChange={(value) => {
+              updateItemField(row.original, {
+                discount_amount: value,
+              });
+            }}
+            classNames="h-7 text-xs"
+            disabled={!row.original.product_id}
+          />
+        ) : (
+          <span>{row.original.discount_amount}</span>
+        ),
+      enableSorting: false,
+      size: 100,
+      meta: {
+        cellClassName: "text-right",
+        headerClassName: "text-right",
+      },
+    },
+    {
+      id: "currency_id",
+      header: () => tTableHeader("currency"),
+      cell: ({ row }) =>
+        isEditMode ? (
+          <LookupCurrency
+            value={row.original.currency_id}
+            bu_code={buCode}
+            onValueChange={(value) => {
+              updateItemField(row.original, {
+                currency_id: value,
+              });
+            }}
+            classNames="text-xs h-7"
+            disabled={!row.original.product_id}
+          />
+        ) : (
+          <span>{getCurrencyCode(row.original.currency_id || "")}</span>
+        ),
+      enableSorting: false,
+      size: 180,
+      meta: {
+        cellClassName: "text-center",
+        headerClassName: "text-center",
       },
     },
     {
@@ -278,6 +287,7 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
       cell: ({ row }) =>
         isEditMode ? (
           <Button
+            type="button"
             variant="ghost"
             size={"sm"}
             onClick={() => onDelete(row.original)}
@@ -287,7 +297,7 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
           </Button>
         ) : null,
       enableSorting: false,
-      size: 80,
+      size: 60,
       meta: {
         cellClassName: "text-center",
         headerClassName: "text-center",

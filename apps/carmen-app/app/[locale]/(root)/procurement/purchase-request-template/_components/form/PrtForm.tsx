@@ -14,10 +14,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PurchaseRequestTemplateDto } from "@/dtos/pr-template.dto";
 import { Form } from "@/components/form-custom/form";
 import PrtItems from "./PrtItems";
-import { CreatePrtDto, UpdatePrtDto, PrtFormValues } from "../../_schema/prt.schema";
-import JsonViewer from "@/components/JsonViewer";
+import { PrtFormValues } from "../../_schema/prt.schema";
 import { useAuth } from "@/context/AuthContext";
-import { useCreatePrTemplate, useUpdatePrTemplate } from "@/hooks/use-pr-tmpl";
+import { useCreatePrTemplate, useDeletePrTemplate, useUpdatePrTemplate } from "@/hooks/use-pr-tmpl";
+import { useRouter } from "@/lib/navigation";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 interface PrtFormProps {
   readonly prtData?: PurchaseRequestTemplateDto;
@@ -27,10 +29,19 @@ interface PrtFormProps {
 export default function PrtForm({ prtData, mode }: PrtFormProps) {
   const { buCode, departments, token } = useAuth();
   const tPurchaseRequest = useTranslations("PurchaseRequest");
+  const router = useRouter();
   const [currentMode, setCurrentMode] = useState<formType>(mode);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const createPrTemplate = useCreatePrTemplate(token, buCode);
-  const updatePrTemplate = useUpdatePrTemplate(token, buCode, prtData?.id ?? "");
+  const { mutate: createMutate, isPending: isCreating } = useCreatePrTemplate(token, buCode);
+  const { mutate: updateMutate, isPending: isUpdating } = useUpdatePrTemplate(
+    token,
+    buCode,
+    prtData?.id ?? ""
+  );
+  const { mutate: deleteMutate, isPending: isDeleting } = useDeletePrTemplate(token, buCode);
+
+  const isPending = isCreating || isUpdating || isDeleting;
 
   const defaultValues: PrtFormValues = {
     name: "",
@@ -44,6 +55,10 @@ export default function PrtForm({ prtData, mode }: PrtFormProps) {
   const form = useForm<PrtFormValues>({
     defaultValues,
   });
+
+  const watchName = form.watch("name");
+  const watchWorkflowId = form.watch("workflow_id");
+  const canSubmit = Boolean(watchName && watchWorkflowId);
 
   useEffect(() => {
     if (prtData) {
@@ -63,11 +78,46 @@ export default function PrtForm({ prtData, mode }: PrtFormProps) {
     }
   }, [prtData, form]);
 
+  const handleOpenDeleteDialog = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!prtData?.id) return;
+    deleteMutate(prtData.id, {
+      onSuccess: () => {
+        setIsDeleteDialogOpen(false);
+        toastSuccess({ message: tPurchaseRequest("delete_prt_success") });
+        router.push("/procurement/purchase-request-template");
+      },
+      onError: () => {
+        toastError({ message: tPurchaseRequest("delete_prt_failed") });
+      },
+    });
+  };
+
   const onSubmit = (data: PrtFormValues) => {
     if (currentMode === formType.ADD) {
-      createPrTemplate.mutate(data);
+      createMutate(data, {
+        onSuccess: (response) => {
+          toastSuccess({ message: tPurchaseRequest("add_prt_success") });
+          setCurrentMode(formType.VIEW);
+          router.replace(`/procurement/purchase-request-template/${response.data.id}`);
+        },
+        onError: () => {
+          toastError({ message: tPurchaseRequest("add_prt_failed") });
+        },
+      });
     } else if (currentMode === formType.EDIT && prtData?.id) {
-      updatePrTemplate.mutate(data);
+      updateMutate(data, {
+        onSuccess: () => {
+          toastSuccess({ message: tPurchaseRequest("update_prt_success") });
+          setCurrentMode(formType.VIEW);
+        },
+        onError: () => {
+          toastError({ message: tPurchaseRequest("update_prt_failed") });
+        },
+      });
     }
   };
 
@@ -80,12 +130,17 @@ export default function PrtForm({ prtData, mode }: PrtFormProps) {
               currentMode={currentMode}
               setCurrentMode={setCurrentMode}
               title={prtData?.name ?? ""}
+              isPending={isPending}
+              canSubmit={canSubmit}
+              onDelete={prtData?.id ? handleOpenDeleteDialog : undefined}
+              isDeleting={isDeleting}
             />
             <HeadPrtForm
               form={form}
               currentMode={currentMode}
               buCode={buCode}
               departName={departments?.name ?? ""}
+              workflowName={prtData?.workflow_name}
             />
             <Tabs defaultValue="items" className="pt-4">
               <TabsList className="w-full">
@@ -109,8 +164,15 @@ export default function PrtForm({ prtData, mode }: PrtFormProps) {
             </Tabs>
           </form>
         </Form>
-        <JsonViewer data={form.watch()} />
       </Card>
+      <DeleteConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={handleConfirmDelete}
+        title={tPurchaseRequest("delete_prt_title")}
+        description={tPurchaseRequest("delete_prt_desc")}
+        isLoading={isDeleting}
+      />
     </DetailsAndComments>
   );
 }

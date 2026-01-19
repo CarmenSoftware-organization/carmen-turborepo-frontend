@@ -13,6 +13,17 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
+interface CreatePrtResponse {
+  data: {
+    id: string;
+  };
+  paginate: null;
+  status: number;
+  success: boolean;
+  message: string;
+  timestamp: string;
+}
+
 const prTemplateApiUrl = (buCode: string, id?: string) => {
   const baseUrl = `${backendApi}/api/${buCode}/purchase-request-template`;
   return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
@@ -80,7 +91,7 @@ export const usePrTemplateByIdQuery = (token: string, buCode: string, id: string
 export const useCreatePrTemplate = (token: string, buCode: string) => {
   const queryClient = useQueryClient();
   const API_URL = prTemplateApiUrl(buCode);
-  return useMutation({
+  return useMutation<CreatePrtResponse, Error, CreatePrtDto>({
     mutationFn: async (data: CreatePrtDto) => {
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
@@ -101,7 +112,7 @@ export const useUpdatePrTemplate = (token: string, buCode: string, id: string) =
       if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }
-      return updateApiRequest(API_URL_BY_ID, token, data, "Failed to update pr template", "PATCH");
+      return updateApiRequest(API_URL_BY_ID, token, data, "Failed to update pr template", "PUT");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pr-template", buCode, id] });
@@ -110,21 +121,20 @@ export const useUpdatePrTemplate = (token: string, buCode: string, id: string) =
 };
 
 export const useDeletePrTemplate = (token: string, buCode: string) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
       if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }
-      try {
-        const API_URL_BY_ID = prTemplateApiUrl(buCode, id);
-        const response = await axios.delete(API_URL_BY_ID, {
-          headers: requestHeaders(token),
-        });
-        return response.data;
-      } catch (error) {
-        console.error("Error deleting pr template:", error);
-        throw error;
-      }
+      const API_URL_BY_ID = prTemplateApiUrl(buCode, id);
+      const response = await axios.delete(API_URL_BY_ID, {
+        headers: requestHeaders(token),
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pr-template", buCode] });
     },
   });
 };

@@ -52,7 +52,6 @@
     "no_pricelist_found": "No price list found",
     "loading": "Loading...",
     "error_load_pricelist": "Failed to load price list data. Please try again later.",
-
     "review_reason": "Reason for Review",
     "reject_reason": "Reason for Rejection",
     "select_stage_for_review": "Select Stage for Review",
@@ -131,7 +130,15 @@
         "network_error": "Network error. Please check your connection",
         "unknown_error": "An unexpected error occurred"
       }
-    }
+    },
+    "add_prt_success": "Add PR Template success",
+    "update_prt_success": "Update PR Template success",
+    "delete_prt_success": "Delete PR Template success",
+    "add_prt_failed": "Add PR Template failed",
+    "update_prt_failed": "Update PR Template failed",
+    "delete_prt_failed": "Delete PR Template failed",
+    "delete_prt_title": "Delete PR Template",
+    "delete_prt_desc": "Are you sure you want to delete this PR Template?"
   },
   "PurchaseOrder": {
     "title": "Purchase Order",

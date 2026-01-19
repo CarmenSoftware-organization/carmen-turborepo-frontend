@@ -94,7 +94,7 @@ export default function PrtUnitSelectCell({
       disabled={!productId || isLoadingOrderUnits}
     >
       <SelectTrigger
-        className="h-7 text-xs w-24 justify-end [&>span]:text-right gap-1"
+        className="h-7 text-xs justify-end [&>span]:text-right gap-1"
         onKeyDown={handleKeyDown}
       >
         <SelectValue

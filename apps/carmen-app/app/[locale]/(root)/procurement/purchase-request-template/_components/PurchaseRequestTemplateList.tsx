@@ -18,7 +18,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import ButtonLink from "@/components/ButtonLink";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { useDeletePrTemplate } from "@/hooks/use-pr-tmpl";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -79,9 +82,37 @@ export default function PurchaseRequestTemplateList({
   onSort,
   setPerpage,
 }: PurchaseRequestTemplateListProps) {
+  const { dateFormat, token, buCode } = useAuth();
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
-  const { dateFormat } = useAuth();
+  const tPurchaseRequest = useTranslations("PurchaseRequest");
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedPrtId, setSelectedPrtId] = useState<string | null>(null);
+  const [selectedPrtName, setSelectedPrtName] = useState<string>("");
+
+  const { mutate: deleteMutate, isPending: isDeleting } = useDeletePrTemplate(token, buCode);
+
+  const handleOpenDeleteDialog = (id: string, name: string) => {
+    setSelectedPrtId(id);
+    setSelectedPrtName(name);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!selectedPrtId) return;
+    deleteMutate(selectedPrtId, {
+      onSuccess: () => {
+        setIsDeleteDialogOpen(false);
+        setSelectedPrtId(null);
+        setSelectedPrtName("");
+        toastSuccess({ message: tPurchaseRequest("delete_prt_success") });
+      },
+      onError: () => {
+        toastError({ message: tPurchaseRequest("delete_prt_failed") });
+      },
+    });
+  };
 
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
@@ -249,7 +280,7 @@ export default function PurchaseRequestTemplateList({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
                   className="text-destructive cursor-pointer hover:bg-transparent"
-                  onClick={() => console.log("Delete", prt.id)}
+                  onClick={() => handleOpenDeleteDialog(prt.id, prt.name)}
                 >
                   <Trash2 className="h-4 w-4" />
                   {tCommon("delete")}
@@ -266,7 +297,7 @@ export default function PurchaseRequestTemplateList({
         },
       },
     ],
-    [tTableHeader, tCommon, currentPage, perpage]
+    [tTableHeader, tCommon, currentPage, perpage, dateFormat]
   );
 
   // Initialize table
@@ -304,30 +335,40 @@ export default function PurchaseRequestTemplateList({
   });
 
   return (
-    <DataGrid
-      table={table}
-      recordCount={totalItems}
-      isLoading={isLoading}
-      loadingMode="skeleton"
-      emptyMessage={tCommon("no_data")}
-      tableLayout={{
-        headerSticky: true,
-        dense: false,
-        rowBorder: true,
-        headerBackground: true,
-        headerBorder: true,
-        width: "fixed",
-      }}
-    >
-      <div className="w-full space-y-2.5">
-        <DataGridContainer>
-          <ScrollArea className="max-h-[calc(100vh-250px)]">
-            <DataGridTable />
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </DataGridContainer>
-        <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
-      </div>
-    </DataGrid>
+    <>
+      <DataGrid
+        table={table}
+        recordCount={totalItems}
+        isLoading={isLoading}
+        loadingMode="skeleton"
+        emptyMessage={tCommon("no_data")}
+        tableLayout={{
+          headerSticky: true,
+          dense: false,
+          rowBorder: true,
+          headerBackground: true,
+          headerBorder: true,
+          width: "fixed",
+        }}
+      >
+        <div className="w-full space-y-2.5">
+          <DataGridContainer>
+            <ScrollArea className="max-h-[calc(100vh-250px)]">
+              <DataGridTable />
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </DataGridContainer>
+          <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
+        </div>
+      </DataGrid>
+      <DeleteConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={handleConfirmDelete}
+        title={tPurchaseRequest("delete_prt_title")}
+        description={`${tPurchaseRequest("delete_prt_desc")} "${selectedPrtName}"`}
+        isLoading={isDeleting}
+      />
+    </>
   );
 }

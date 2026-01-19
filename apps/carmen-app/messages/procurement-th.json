@@ -52,7 +52,6 @@
     "no_pricelist_found": "ไม่พบรายการราคา",
     "loading": "กำลังโหลด...",
     "error_load_pricelist": "ไม่สามารถโหลดข้อมูลรายการราคาได้ กรุณาลองใหม่อีกครั้ง",
-
     "review_reason": "เหตุผลในการส่ง Review",
     "reject_reason": "เหตุผลในการ Reject",
     "select_stage_for_review": "เลือก Stage สำหรับ Review",
@@ -131,7 +130,15 @@
         "network_error": "เกิดข้อผิดพลาดของเครือข่าย กรุณาตรวจสอบการเชื่อมต่อ",
         "unknown_error": "เกิดข้อผิดพลาดที่ไม่คาดคิด"
       }
-    }
+    },
+    "add_prt_success": "เพิ่มแบบแบบใบขอซื้อสำเร็จ",
+    "update_prt_success": "อัปเดตแบบแบบใบขอซื้อสำเร็จ",
+    "delete_prt_success": "ลบแบบแบบใบขอซื้อสำเร็จ",
+    "add_prt_failed": "เพิ่มแบบแบบใบขอซื้อไม่สำเร็จ",
+    "update_prt_failed": "อัปเดตแบบแบบใบขอซื้อไม่สำเร็จ",
+    "delete_prt_failed": "ลบแบบแบบใบขอซื้อไม่สำเร็จ",
+    "delete_prt_title": "ลบแบบแบบใบขอซื้อ ?",
+    "delete_prt_desc": "คุณแน่ใจหรือไม่ว่าต้องการลบแบบแบบใบขอซื้อนี้ ?"
   },
   "PurchaseOrder": {
     "title": "ใบสั่งซื้อ",
