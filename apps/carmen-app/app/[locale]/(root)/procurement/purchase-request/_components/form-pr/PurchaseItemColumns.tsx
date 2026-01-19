@@ -18,10 +18,13 @@ import { UnitSelectCell } from "../UnitSelectCell";
 import ExpandedContent from "./ExpandedContent";
 import { PR_STATUS } from "../../_constants/pr-status";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
+import { PurchaseRequestTemplateDetailDto } from "@/dtos/pr-template.dto";
+
+type InitValuesType = PurchaseRequestDetail[] | PurchaseRequestTemplateDetailDto[];
 
 interface ColumnConfig {
   currentMode: formType;
-  initValues: PurchaseRequestDetail[];
+  initValues?: InitValuesType;
   addFields: unknown[];
   prStatus?: string;
   getItemValue: (item: PurchaseRequestDetail, fieldName: string) => unknown;
@@ -94,7 +97,11 @@ export const createPurchaseItemColumns = (
     usedProductIdsMap,
   } = config;
 
-  const initValues = [...unsortedInitValues].sort((a, b) => a.sequence_no - b.sequence_no);
+  const initValues = [...(unsortedInitValues || [])].sort((a, b) => {
+    const seqA = "sequence_no" in a ? (a.sequence_no ?? 0) : 0;
+    const seqB = "sequence_no" in b ? (b.sequence_no ?? 0) : 0;
+    return seqA - seqB;
+  });
 
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
 

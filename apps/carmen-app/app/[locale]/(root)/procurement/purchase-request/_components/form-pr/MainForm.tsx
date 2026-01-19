@@ -48,6 +48,8 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
   const { user, departments } = useAuth();
   const tPR = useTranslations("PurchaseRequest");
 
+  console.log("initValues", initValues);
+
   const form = useForm<CreatePrDtoType>({
     resolver: zodResolver(CreatePrSchema),
     defaultValues: {
@@ -55,7 +57,7 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
       details: {
         pr_date: initValues?.pr_date ? initValues.pr_date : new Date().toISOString(),
         requestor_id: user?.data.id || "",
-        department_id: departments?.id || "",
+        department_id: initValues?.department_id || departments?.id || "",
         workflow_id: initValues?.workflow_id || "",
         description: initValues?.description || "",
         note: initValues?.note || "",

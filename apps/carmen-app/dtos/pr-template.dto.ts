@@ -1,6 +1,7 @@
 export interface PurchaseRequestTemplateDetailDto {
   id: string;
   purchase_request_template_id: string;
+  sequence_no?: number;
   location_id: string;
   location_code: string | null;
   location_name: string;

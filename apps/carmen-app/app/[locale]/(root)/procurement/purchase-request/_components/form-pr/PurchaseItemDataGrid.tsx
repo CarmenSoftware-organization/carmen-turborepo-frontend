@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestDetail, StageStatus } from "@/dtos/purchase-request.dto";
+import { PurchaseRequestTemplateDetailDto } from "@/dtos/pr-template.dto";
 import { useMemo, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -20,12 +21,12 @@ import SelectAllDialog from "./dialogs/SelectAllDialog";
 import { useCurrenciesQuery } from "@/hooks/use-currency";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
-const EMPTY_ARRAY: PurchaseRequestDetail[] = [];
+type InitValuesType = PurchaseRequestDetail[] | PurchaseRequestTemplateDetailDto[];
 
 interface Props {
   currentMode: formType;
   items: PurchaseRequestDetail[];
-  initValues?: PurchaseRequestDetail[];
+  initValues?: InitValuesType;
   addFields: unknown[];
   onItemUpdate: (
     itemId: string,
@@ -45,7 +46,7 @@ interface Props {
 export default function PurchaseItemDataGrid({
   currentMode,
   items,
-  initValues = EMPTY_ARRAY,
+  initValues,
   addFields,
   onItemUpdate,
   onItemRemove,
@@ -145,8 +146,8 @@ export default function PurchaseItemDataGrid({
 
   const sortedItems = useMemo(() => {
     return [...items].sort((a, b) => {
-      const isNewA = !initValues.some((initItem) => initItem.id === a.id);
-      const isNewB = !initValues.some((initItem) => initItem.id === b.id);
+      const isNewA = !initValues?.some((initItem) => initItem.id === a.id);
+      const isNewB = !initValues?.some((initItem) => initItem.id === b.id);
 
       if (isNewA && !isNewB) return -1;
       if (!isNewA && isNewB) return 1;
