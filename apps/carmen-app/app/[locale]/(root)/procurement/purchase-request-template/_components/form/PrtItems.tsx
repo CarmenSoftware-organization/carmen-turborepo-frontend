@@ -218,7 +218,7 @@ export default function PrtItems({ form, currentMode, originalItems }: Props) {
       <div className="flex items-center justify-between">
         <p className="font-medium">{tPurchaseRequest("items")}</p>
         {isEditMode && (
-          <Button onClick={onAdd} size={"sm"} className="h-7 text-xs">
+          <Button type="button" onClick={onAdd} size={"sm"} className="h-7 text-xs">
             <Plus className="h-3 w-3" />
             {tPurchaseRequest("add_item")}
           </Button>

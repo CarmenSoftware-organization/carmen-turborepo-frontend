@@ -1,4 +1,3 @@
-import ButtonLink from "@/components/ButtonLink";
 import { useTranslations } from "next-intl";
 import { ChevronLeft, FileDown, Pencil, Printer, Save, Share, X } from "lucide-react";
 import { formType } from "@/dtos/form.dto";
@@ -33,6 +32,7 @@ export default function ActionFields({ currentMode, setCurrentMode, title }: Pro
         {currentMode === formType.VIEW ? (
           <>
             <Button
+              type="button"
               variant="outline"
               size="sm"
               className="px-2 text-xs"
@@ -41,6 +41,7 @@ export default function ActionFields({ currentMode, setCurrentMode, title }: Pro
               <ChevronLeft /> {tCommon("back")}
             </Button>
             <Button
+              type="button"
               variant="default"
               size="sm"
               className="px-2 text-xs"
@@ -52,6 +53,7 @@ export default function ActionFields({ currentMode, setCurrentMode, title }: Pro
         ) : (
           <>
             <Button
+              type="button"
               variant="outline"
               size="sm"
               className="px-2 text-xs"
@@ -66,13 +68,13 @@ export default function ActionFields({ currentMode, setCurrentMode, title }: Pro
             </Button>
           </>
         )}
-        <Button variant="outline" size="sm" className="px-2 text-xs">
+        <Button type="button" variant="outline" size="sm" className="px-2 text-xs">
           <Printer /> {tCommon("print")}
         </Button>
-        <Button variant="outline" size="sm" className="px-2 text-xs">
+        <Button type="button" variant="outline" size="sm" className="px-2 text-xs">
           <FileDown /> {tCommon("export")}
         </Button>
-        <Button variant="outline" size="sm" className="px-2 text-xs">
+        <Button type="button" variant="outline" size="sm" className="px-2 text-xs">
           <Share /> {tCommon("share")}
         </Button>
       </div>

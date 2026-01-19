@@ -41,8 +41,8 @@ export default function LookupWorkflow({
 
   const handleValueChange = (newValue: string) => {
     onValueChange(newValue);
-    if (onSelectObject && workflows?.data) {
-      const selectedWorkflow = workflows.data.find((w: WorkflowDto) => w.id === newValue) || null;
+    if (onSelectObject && workflows) {
+      const selectedWorkflow = workflows.find((w: WorkflowDto) => w.id === newValue) || null;
       onSelectObject(selectedWorkflow);
     }
   };
@@ -64,7 +64,7 @@ export default function LookupWorkflow({
       </SelectItem>
     );
   } else {
-    selectContent = workflows?.data.map((workflow: WorkflowDto) => (
+    selectContent = workflows.map((workflow: WorkflowDto) => (
       <SelectItem key={workflow.id} value={workflow.id}>
         {workflow.name}
       </SelectItem>
