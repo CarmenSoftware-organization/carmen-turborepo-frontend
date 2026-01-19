@@ -113,5 +113,7 @@ export const useOrderUnitByProduct = ({
     enabled: !!token && !!buCode && !!productId && enabled,
   });
 
-  return { data, isLoading, error };
+  const orderUnits = data?.data;
+
+  return { orderUnits, isLoading, error };
 };

@@ -39,7 +39,7 @@ export default function PrtUnitSelectCell({
   const [open, setOpen] = useState(false);
   const tUnit = useTranslations("Unit");
 
-  const { data: orderUnitsData, isLoading: isLoadingOrderUnits } = useOrderUnitByProduct({
+  const { orderUnits, isLoading: isLoadingOrderUnits } = useOrderUnitByProduct({
     token,
     buCode,
     productId,
@@ -47,8 +47,8 @@ export default function PrtUnitSelectCell({
   });
 
   useEffect(() => {
-    if (orderUnitsData && orderUnitsData.length > 0 && !currentUnitId) {
-      const firstUnit = orderUnitsData[0];
+    if (orderUnits && orderUnits.length > 0 && !currentUnitId) {
+      const firstUnit = orderUnits[0];
       const baseQty = requestedQty * firstUnit.conversion;
       updateItemField(rowIndex, {
         requested_unit_id: firstUnit.id,
@@ -60,9 +60,9 @@ export default function PrtUnitSelectCell({
         foc_unit_conversion_factor: firstUnit.conversion,
       });
     }
-  }, [orderUnitsData, currentUnitId, rowIndex, requestedQty, updateItemField]);
+  }, [orderUnits, currentUnitId, rowIndex, requestedQty, updateItemField]);
 
-  const selectValue = currentUnitId || orderUnitsData?.[0]?.id || "";
+  const selectValue = currentUnitId || orderUnits?.[0]?.id || "";
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Tab") {
@@ -76,7 +76,7 @@ export default function PrtUnitSelectCell({
       open={open}
       onOpenChange={setOpen}
       onValueChange={(value) => {
-        const selectedUnit = orderUnitsData?.find((unit: UnitOderProduct) => unit.id === value);
+        const selectedUnit = orderUnits?.find((unit: UnitOderProduct) => unit.id === value);
         if (selectedUnit) {
           const baseQty = requestedQty * selectedUnit.conversion;
           updateItemField(rowIndex, {
@@ -104,7 +104,7 @@ export default function PrtUnitSelectCell({
         />
       </SelectTrigger>
       <SelectContent>
-        {orderUnitsData?.map((unit: UnitOderProduct) => (
+        {orderUnits?.map((unit: UnitOderProduct) => (
           <SelectItem key={unit.id} value={unit.id}>
             {unit.name}
           </SelectItem>

@@ -37,7 +37,7 @@ export const UnitSelectCell = ({
   const [open, setOpen] = useState(false);
   const t = useTranslations("Unit");
 
-  const { data: orderUnitsData, isLoading: isLoadingOrderUnits } = useOrderUnitByProduct({
+  const { orderUnits, isLoading: isLoadingOrderUnits } = useOrderUnitByProduct({
     token,
     buCode,
     productId: productId,
@@ -45,8 +45,8 @@ export const UnitSelectCell = ({
   });
 
   useEffect(() => {
-    if (orderUnitsData && orderUnitsData.length > 0 && !currentUnitId) {
-      const firstUnit = orderUnitsData[0];
+    if (orderUnits && orderUnits.length > 0 && !currentUnitId) {
+      const firstUnit = orderUnits[0];
       // Auto-set approved unit same as requested for new items
       onItemUpdate(item.id, "requested_unit_id", firstUnit.id);
       onItemUpdate(item.id, "requested_unit_name", firstUnit.name);
@@ -65,9 +65,9 @@ export const UnitSelectCell = ({
       onItemUpdate(item.id, "requested_base_qty", requestedQty * firstUnit.conversion);
       onItemUpdate(item.id, "approved_base_qty", approvedQty * firstUnit.conversion);
     }
-  }, [orderUnitsData, currentUnitId, item.id, onItemUpdate]);
+  }, [orderUnits, currentUnitId, item.id, onItemUpdate]);
 
-  const selectValue = currentUnitId || orderUnitsData?.[0]?.id || "";
+  const selectValue = currentUnitId || orderUnits?.[0]?.id || "";
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Tab") {
@@ -81,7 +81,7 @@ export const UnitSelectCell = ({
       open={open}
       onOpenChange={setOpen}
       onValueChange={(value) => {
-        const selectedUnit = orderUnitsData?.find((unit: UnitOderProduct) => unit.id === value);
+        const selectedUnit = orderUnits?.find((unit: UnitOderProduct) => unit.id === value);
         if (selectedUnit) {
           // requested
           onItemUpdate(item.id, "requested_unit_name", selectedUnit.name);
@@ -117,7 +117,7 @@ export const UnitSelectCell = ({
         />
       </SelectTrigger>
       <SelectContent>
-        {orderUnitsData?.map((unit: UnitOderProduct) => (
+        {orderUnits?.map((unit: UnitOderProduct) => (
           <SelectItem key={unit.id} value={unit.id}>
             {unit.name}
           </SelectItem>
