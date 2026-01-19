@@ -5,6 +5,7 @@ export const CreatePrtDetailSchema = z.object({
   location_id: z.string().optional(),
   location_name: z.string().optional(),
   delivery_point_id: z.string().optional(),
+  delivery_point_name: z.string().optional(),
   product_id: z.string().optional(),
   product_name: z.string().optional(),
   inventory_unit_id: z.string().optional(),

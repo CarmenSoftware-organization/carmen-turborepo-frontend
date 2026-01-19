@@ -8,6 +8,7 @@ import { PurchaseRequestTemplateDetailDto } from "@/dtos/pr-template.dto";
 import LookupLocation from "@/components/lookup/LookupLocation";
 import LookupProductLocation from "@/components/lookup/LookupProductLocation";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
+import { LookupDeliveryPointSelect } from "@/components/lookup/LookupDeliveryPointSelect";
 import NumberInput from "@/components/form-custom/NumberInput";
 import PrtUnitSelectCell from "./PrtUnitSelectCell";
 import { CreatePrtDetailDto, UpdatePrtDetailDto } from "../../_schema/prt.schema";
@@ -280,6 +281,29 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
         cellClassName: "text-center",
         headerClassName: "text-center",
       },
+    },
+    {
+      accessorKey: "delivery_point_id",
+      header: ({ column }) => (
+        <DataGridColumnHeader column={column} title={tTableHeader("delivery_point")} />
+      ),
+      cell: ({ row }) =>
+        isEditMode ? (
+          <LookupDeliveryPointSelect
+            value={row.original.delivery_point_id || ""}
+            onValueChange={(value) => {
+              updateItemField(row.original, {
+                delivery_point_id: value,
+              });
+            }}
+            className="h-7 text-xs w-full"
+            disabled={!row.original.location_id}
+          />
+        ) : (
+          <span>{row.original.delivery_point_name || "-"}</span>
+        ),
+      enableSorting: false,
+      size: isEditMode ? 200 : 130,
     },
     {
       id: "action",

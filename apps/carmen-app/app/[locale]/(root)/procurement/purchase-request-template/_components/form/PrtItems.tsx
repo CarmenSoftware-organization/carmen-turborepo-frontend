@@ -174,6 +174,10 @@ export default function PrtItems({ form, currentMode, originalItems }: Props) {
           };
           const newUpdateItem: UpdatePrtDetailDto = {
             ...originalFields,
+            delivery_point_name: originalFields.delivery_point_name ?? undefined,
+            inventory_unit_name: originalFields.inventory_unit_name ?? undefined,
+            exchange_rate_date: originalFields.exchange_rate_date ?? undefined,
+            tax_profile_id: originalFields.tax_profile_id ?? undefined,
             ...updates,
           };
           newState = { ...prev, update: [...prev.update, newUpdateItem] };
