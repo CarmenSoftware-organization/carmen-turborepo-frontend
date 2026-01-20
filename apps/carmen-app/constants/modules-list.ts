@@ -488,11 +488,11 @@ export const moduleItems: ModuleItem[] = [
       //   href: "/system-administration/business-unit",
       //   icon: Briefcase,
       // },
-      // {
-      //   labelKey: "Modules.SystemAdministration.user",
-      //   href: "/system-administration/user",
-      //   icon: UserCheck,
-      // },
+      {
+        labelKey: "Modules.SystemAdministration.user",
+        href: "/system-administration/user",
+        icon: UserCheck,
+      },
     ],
   },
   {

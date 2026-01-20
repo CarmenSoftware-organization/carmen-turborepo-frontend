@@ -49,7 +49,7 @@ export const useRoleQuery = ({
     [data]
   );
 
-  const roles = data;
+  const roles = data?.data;
   return { roles, isLoading, error, getRoleName };
 };
 
@@ -111,4 +111,15 @@ export const useRoleByIdQuery = (token: string, buCode: string, id: string) => {
   const roleData = data?.data;
 
   return { roleData, isLoading, error };
+};
+
+export const useAssignRoleToUser = (token: string, buCode: string) => {
+  return useMutation({
+    mutationFn: async (data: { user_id: string; application_role_id: string }) => {
+      if (!token || !buCode || !data.user_id) throw new Error("Unauthorized");
+      const pathName = `api/config/${buCode}/user-application-roles`;
+      const API_URL = `${backendApi}/${pathName}`;
+      return await postApiRequest(API_URL, token, data, "Error assigning role to user");
+    },
+  });
 };
