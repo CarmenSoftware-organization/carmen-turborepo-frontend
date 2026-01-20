@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { backendApi } from "@/lib/backend-api";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import {
   getAllApiRequest,

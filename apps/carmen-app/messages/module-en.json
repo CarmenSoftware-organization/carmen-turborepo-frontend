@@ -115,6 +115,7 @@
       "systemAdministration": "System Administration",
       "userManagement": "User Management",
       "workflowManagement": "Workflow Management",
+      "role": "Role",
       "generalSettings": "General Settings",
       "notificationPreferences": "Notification Preferences",
       "licenseManagement": "License Management",

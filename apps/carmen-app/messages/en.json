@@ -433,5 +433,24 @@
     "mark_read": "Mark Read",
     "mark_all_read": "Mark all as read",
     "view_all": "View all"
+  },
+  "Role": {
+    "title": "Role Management",
+    "pls_fill_role_name": "Please enter role name",
+    "add_role": "Add Role",
+    "edit_role": "Edit Role",
+    "add_role_description": "Create a new role with permissions.",
+    "edit_role_description": "Edit role details and permissions.",
+    "del_role": "Delete Role",
+    "del_role_description": "Are you sure you want to delete this role? This action cannot be undone.",
+    "del_success": "Role deleted successfully",
+    "del_error": "Failed to delete role",
+    "create_success": "Role created successfully",
+    "create_error": "Failed to create role",
+    "update_success": "Role updated successfully",
+    "update_error": "Failed to update role",
+    "permissions": "Permissions",
+    "selected": "selected",
+    "no_permissions": "No permissions available"
   }
 }

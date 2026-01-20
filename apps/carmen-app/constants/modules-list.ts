@@ -438,56 +438,61 @@ export const moduleItems: ModuleItem[] = [
     href: "/system-administration",
     icon: Settings,
     children: [
-      {
-        labelKey: "Modules.SystemAdministration.userManagement",
-        href: "/system-administration/user-management",
-        icon: Users,
-      },
+      // {
+      //   labelKey: "Modules.SystemAdministration.userManagement",
+      //   href: "/system-administration/user-management",
+      //   icon: Users,
+      // },
       {
         labelKey: "Modules.SystemAdministration.workflowManagement",
         href: "/system-administration/workflow-management",
         icon: Network,
       },
       {
-        labelKey: "Modules.SystemAdministration.generalSettings",
-        href: "/system-administration/general-setting",
-        icon: Settings,
-      },
-      {
-        labelKey: "Modules.SystemAdministration.notificationPreferences",
-        href: "/system-administration/notification-preferences",
-        icon: Bell,
-      },
-      {
-        labelKey: "Modules.SystemAdministration.licenseManagement",
-        href: "/system-administration/license-management",
-        icon: Key,
-      },
-      {
-        labelKey: "Modules.SystemAdministration.securitySettings",
-        href: "/system-administration/security-setting",
-        icon: Shield,
-      },
-      {
-        labelKey: "Modules.SystemAdministration.dataBackupAndRecovery",
-        href: "/system-administration/data-backup-and-recovery",
-        icon: HardDrive,
-      },
-      {
-        labelKey: "Modules.SystemAdministration.cluster",
-        href: "/system-administration/cluster",
-        icon: Network,
-      },
-      {
-        labelKey: "Modules.SystemAdministration.businessUnit",
-        href: "/system-administration/business-unit",
-        icon: Briefcase,
-      },
-      {
-        labelKey: "Modules.SystemAdministration.user",
-        href: "/system-administration/user",
+        labelKey: "Modules.SystemAdministration.role",
+        href: "/system-administration/role",
         icon: UserCheck,
       },
+      // {
+      //   labelKey: "Modules.SystemAdministration.generalSettings",
+      //   href: "/system-administration/general-setting",
+      //   icon: Settings,
+      // },
+      // {
+      //   labelKey: "Modules.SystemAdministration.notificationPreferences",
+      //   href: "/system-administration/notification-preferences",
+      //   icon: Bell,
+      // },
+      // {
+      //   labelKey: "Modules.SystemAdministration.licenseManagement",
+      //   href: "/system-administration/license-management",
+      //   icon: Key,
+      // },
+      // {
+      //   labelKey: "Modules.SystemAdministration.securitySettings",
+      //   href: "/system-administration/security-setting",
+      //   icon: Shield,
+      // },
+      // {
+      //   labelKey: "Modules.SystemAdministration.dataBackupAndRecovery",
+      //   href: "/system-administration/data-backup-and-recovery",
+      //   icon: HardDrive,
+      // },
+      // {
+      //   labelKey: "Modules.SystemAdministration.cluster",
+      //   href: "/system-administration/cluster",
+      //   icon: Network,
+      // },
+      // {
+      //   labelKey: "Modules.SystemAdministration.businessUnit",
+      //   href: "/system-administration/business-unit",
+      //   icon: Briefcase,
+      // },
+      // {
+      //   labelKey: "Modules.SystemAdministration.user",
+      //   href: "/system-administration/user",
+      //   icon: UserCheck,
+      // },
     ],
   },
   {

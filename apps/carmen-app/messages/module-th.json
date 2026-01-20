@@ -115,6 +115,7 @@
       "systemAdministration": "การจัดการระบบ",
       "userManagement": "การจัดการผู้ใช้งาน",
       "workflowManagement": "การจัดการกระบวนการ",
+      "role": "บทบาท",
       "generalSettings": "การตั้งค่าทั่วไป",
       "notificationPreferences": "การตั้งค่าการแจ้งเตือน",
       "licenseManagement": "การจัดการสิทธิ์ใช้งาน",
