@@ -8,12 +8,15 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
 import { useEffect, useState } from "react";
 import PurchaseOrderList from "./PurchaseOrderList";
-import { mockPurchaseOrders } from "@/mock-data/procurement";
 import DialogNewPo from "./DialogNewPo";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { parseSortString } from "@/utils/table";
+import { useAuth } from "@/context/AuthContext";
+import { usePoQuery } from "@/hooks/use-po";
 
 export default function PurchaseOrderComponent() {
+  const { token, buCode } = useAuth();
+
   const tCommon = useTranslations("Common");
   const tDataControls = useTranslations("DataControls");
   const tPurchaseOrder = useTranslations("PurchaseOrder");
@@ -22,6 +25,10 @@ export default function PurchaseOrderComponent() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
+
+  const { poData, paginate, isLoading, isUnauthorized } = usePoQuery(token, buCode);
+
+  console.log("paginate", paginate);
 
   const sortFields = [
     { key: "code", label: "Code" },
@@ -35,8 +42,7 @@ export default function PurchaseOrderComponent() {
     setDialogOpen(true);
   };
 
-  const totalItems = mockPurchaseOrders.length;
-  const totalPages = 1;
+  const totalItems = paginate?.total;
 
   useEffect(() => {
     if (search) {
@@ -102,9 +108,9 @@ export default function PurchaseOrderComponent() {
 
   const content = (
     <PurchaseOrderList
-      purchaseOrders={mockPurchaseOrders}
+      purchaseOrders={poData}
       currentPage={page ? Number(page) : 1}
-      totalPages={totalPages}
+      totalPages={paginate?.pages || 1}
       totalItems={totalItems}
       perpage={perpage ? Number(perpage) : 10}
       onPageChange={handlePageChange}

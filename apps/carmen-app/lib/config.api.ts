@@ -1,6 +1,12 @@
 import { ParamsGetDto } from "@/dtos/param.dto";
 import axios from "axios";
-import { xAppId } from "./backend-api";
+import { backendApi, xAppId } from "./backend-api";
+import path from "path";
+
+export const getApiUrl = (pathName: string, id?: string) => {
+  const baseUrl = `${backendApi}/${pathName}`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
 
 export const requestHeaders = (token: string) => {
   const headers = {

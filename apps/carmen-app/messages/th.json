@@ -314,7 +314,8 @@
     "days": "วัน",
     "effective_period": "ระยะเวลาใช้งาน",
     "items": "รายการ",
-    "price_list_no": "หมายเลขรายการราคา"
+    "price_list_no": "หมายเลขรายการราคา",
+    "order_date": "วันที่สั่งซื้อ"
   },
   "InventoryManagement": {
     "StockOverview": {

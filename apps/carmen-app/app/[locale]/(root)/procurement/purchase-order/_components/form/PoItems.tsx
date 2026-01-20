@@ -1,192 +1,273 @@
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Checkbox } from "@/components/ui/checkbox";
-import { PurchaseOrderItemDto } from "@/dtos/procurement.dto";
-import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { useAuth } from "@/context/AuthContext";
+import { UseFormReturn } from "react-hook-form";
+import {
+  PoFormValues,
+  CreatePoDetailDto,
+  UpdatePoDetailDto,
+  PoDetailItemDto,
+} from "../../_schema/po.schema";
+import { useMemo, useState, useCallback } from "react";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
+import { formType } from "@/dtos/form.dto";
+import { PoDetailItemDto as PoDetailItemDtoFromDto } from "@/dtos/po.dto";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useMemo } from "react";
+import { createPoItemColumns, PoDetailItem } from "./PoItemColumns";
 
-interface PoItemsProps {
-  readonly items: PurchaseOrderItemDto[];
+interface Props {
+  readonly form: UseFormReturn<PoFormValues>;
+  currentMode: formType;
+  originalItems: PoDetailItemDtoFromDto[];
 }
 
-export default function PoItems({ items }: PoItemsProps) {
+interface DetailState {
+  add: CreatePoDetailDto[];
+  update: UpdatePoDetailDto[];
+  delete: { id: string }[];
+}
+
+export default function PoItems({ form, currentMode, originalItems }: Props) {
   const tPurchaseOrder = useTranslations("PurchaseOrder");
   const tTableHeader = useTranslations("TableHeader");
+  const tCommon = useTranslations("Common");
+  const { token, buCode } = useAuth();
 
-  const columns = useMemo<ColumnDef<PurchaseOrderItemDto>[]>(
-    () => [
-      {
-        id: "select",
-        header: ({ table }) => (
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label="Select all"
-          />
-        ),
-        cell: ({ row }) => (
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
-          />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-        size: 48,
-      },
-      {
-        id: "no",
-        accessorKey: "no",
-        header: "#",
-        cell: ({ row, table }) => {
-          const index = table.getSortedRowModel().flatRows.indexOf(row);
-          return <div className="text-muted-foreground">{index + 1}</div>;
-        },
-        size: 60,
-      },
-      {
-        accessorKey: "name",
-        header: tTableHeader("name"),
-        cell: ({ row }) => {
-          return (
-            <div className="flex flex-col gap-0.5 min-w-[200px]">
-              <p className="text-sm font-medium text-foreground">{row.original.name}</p>
-              <p className="text-xs text-muted-foreground">{row.original.description}</p>
-            </div>
+  // Use local state instead of form.watch to avoid re-render loops
+  const [detailState, setDetailState] = useState<DetailState>({
+    add: [],
+    update: [],
+    delete: [],
+  });
+
+  // Sync state to form
+  const syncToForm = useCallback(
+    (newState: DetailState) => {
+      const formValue: PoFormValues["details"] = {};
+      if (newState.add.length > 0) formValue.add = newState.add;
+      if (newState.update.length > 0) formValue.update = newState.update;
+      if (newState.delete.length > 0) formValue.delete = newState.delete;
+
+      if (Object.keys(formValue).length > 0) {
+        form.setValue("details", formValue);
+      } else {
+        form.setValue("details", undefined);
+      }
+    },
+    [form]
+  );
+
+  const updatedIds = useMemo(
+    () => new Set(detailState.update.map((item) => item.id)),
+    [detailState.update]
+  );
+  const deletedIds = useMemo(
+    () => new Set(detailState.delete.map((item) => item.id)),
+    [detailState.delete]
+  );
+
+  // Combine add, update, and original items for display
+  const items: PoDetailItem[] = useMemo(() => {
+    const addWithType = detailState.add.map((item, index) => ({
+      ...item,
+      _type: "add" as const,
+      _index: index,
+    }));
+    const updateWithType = detailState.update.map((item, index) => ({
+      ...item,
+      _type: "update" as const,
+      _index: index,
+    }));
+    const originalWithType = originalItems
+      .filter((item) => item.id && !updatedIds.has(item.id) && !deletedIds.has(item.id))
+      .map((item, index) => ({
+        ...item,
+        _type: "original" as const,
+        _index: index,
+      }));
+    return [...addWithType, ...updateWithType, ...originalWithType];
+  }, [detailState.add, detailState.update, originalItems, updatedIds, deletedIds]);
+
+  const isEditMode = currentMode !== formType.VIEW;
+
+  const getNextSequence = useCallback(() => {
+    const allSequences = [
+      ...detailState.add.map((item) => item.sequence),
+      ...detailState.update.map((item) => item.sequence),
+      ...originalItems.map((item) => item.sequence),
+    ];
+    return allSequences.length > 0 ? Math.max(...allSequences) + 1 : 1;
+  }, [detailState.add, detailState.update, originalItems]);
+
+  const onAdd = useCallback(() => {
+    const newItem: CreatePoDetailDto = {
+      sequence: getNextSequence(),
+      product_id: "",
+      product_name: "",
+      product_local_name: null,
+      order_unit_id: "",
+      order_unit_name: "",
+      order_unit_conversion_factor: 1,
+      order_qty: 0,
+      base_unit_id: "",
+      base_unit_name: "",
+      base_qty: 0,
+      price: 0,
+      sub_total_price: 0,
+      net_amount: 0,
+      total_price: 0,
+      tax_profile_id: null,
+      tax_profile_name: null,
+      tax_rate: 0,
+      tax_amount: 0,
+      is_tax_adjustment: false,
+      discount_rate: 0,
+      discount_amount: 0,
+      is_discount_adjustment: false,
+      is_foc: false,
+      pr_detail: [],
+      description: "",
+      note: "",
+    };
+    setDetailState((prev) => {
+      const newState = { ...prev, add: [newItem, ...prev.add] };
+      syncToForm(newState);
+      return newState;
+    });
+  }, [syncToForm, getNextSequence]);
+
+  const onDelete = useCallback(
+    (item: PoDetailItem) => {
+      setDetailState((prev) => {
+        let newState: DetailState;
+
+        if (item._type === "add") {
+          const filteredAdd = prev.add.filter((_, index) => index !== item._index);
+          newState = { ...prev, add: filteredAdd };
+        } else if (item._type === "update") {
+          const itemToDelete = prev.update[item._index];
+          const filteredUpdate = prev.update.filter((_, index) => index !== item._index);
+          newState = {
+            ...prev,
+            update: filteredUpdate,
+            delete: [...prev.delete, { id: itemToDelete.id }],
+          };
+        } else {
+          // Original item
+          const originalItem = item as PoDetailItemDtoFromDto & {
+            _type: "original";
+            _index: number;
+          };
+          newState = {
+            ...prev,
+            delete: [...prev.delete, { id: originalItem.id! }],
+          };
+        }
+
+        syncToForm(newState);
+        return newState;
+      });
+    },
+    [syncToForm]
+  );
+
+  const updateItemField = useCallback(
+    (item: PoDetailItem, updates: Partial<CreatePoDetailDto>) => {
+      setDetailState((prev) => {
+        let newState: DetailState;
+
+        if (item._type === "add") {
+          const updatedAdd = prev.add.map((addItem, index) =>
+            index === item._index ? { ...addItem, ...updates } : addItem
           );
-        },
-        size: 200,
-      },
-      {
-        id: "order",
-        header: tTableHeader("order"),
-        cell: ({ row }) => {
-          return (
-            <div className="flex items-center justify-end gap-1">
-              <span>{row.original.order_qty}</span>
-              <span className="text-muted-foreground text-xs">{row.original.unit}</span>
-            </div>
+          newState = { ...prev, add: updatedAdd };
+        } else if (item._type === "update") {
+          const updatedUpdate = prev.update.map((updateItem, index) =>
+            index === item._index ? { ...updateItem, ...updates } : updateItem
           );
-        },
-        meta: {
-          align: "text-right",
-          headerClassName: "text-right",
-        },
-        size: 100,
-      },
-      {
-        accessorKey: "tax",
-        header: tTableHeader("tax"),
-        cell: ({ row }) => <span className="text-muted-foreground">{row.original.tax}</span>,
-        meta: {
-          cellClassName: "text-right",
-          headerClassName: "text-right",
-        },
-      },
-      {
-        accessorKey: "net",
-        header: tTableHeader("net"),
-        cell: ({ row }) => <span className="text-muted-foreground">{row.original.net}</span>,
-        meta: {
-          cellClassName: "text-right",
-          headerClassName: "text-right",
-        },
-      },
-      {
-        accessorKey: "discount",
-        header: tTableHeader("discount"),
-        cell: ({ row }) => <span className="text-muted-foreground">{row.original.discount}</span>,
-        meta: {
-          cellClassName: "text-right",
-          headerClassName: "text-right",
-        },
-      },
-      {
-        accessorKey: "amount",
-        header: tTableHeader("amount"),
-        cell: ({ row }) => <span className="font-medium">{row.original.amount}</span>,
-        meta: {
-          cellClassName: "text-right",
-          headerClassName: "text-right",
-        },
-      },
-      {
-        id: "actions",
-        header: tTableHeader("action"),
-        cell: () => {
-          return (
-            <div className="flex items-center justify-end gap-1">
-              <Button
-                variant="ghost"
-                size={"icon"}
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
-              >
-                <Pencil className="h-3.5 w-3.5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size={"icon"}
-                className="h-8 w-8 text-muted-foreground hover:text-destructive"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          );
-        },
-        size: 100,
-        meta: {
-          align: "right",
-          headerClassName: "text-right",
-        },
-      },
-    ],
-    [tTableHeader]
+          newState = { ...prev, update: updatedUpdate };
+        } else {
+          // Move original item to update array with changes
+          const { _type, _index, ...originalFields } = item as PoDetailItemDtoFromDto & {
+            _type: "original";
+            _index: number;
+          };
+          const newUpdateItem: UpdatePoDetailDto = {
+            ...originalFields,
+            id: originalFields.id!,
+            product_local_name: originalFields.product_local_name ?? null,
+            tax_profile_id: originalFields.tax_profile_id ?? null,
+            tax_profile_name: originalFields.tax_profile_name ?? null,
+            description: originalFields.description ?? "",
+            note: originalFields.note ?? "",
+            ...updates,
+          };
+          newState = { ...prev, update: [...prev.update, newUpdateItem] };
+        }
+
+        syncToForm(newState);
+        return newState;
+      });
+    },
+    [syncToForm]
+  );
+
+  const columns = useMemo(
+    () =>
+      createPoItemColumns({
+        currentMode,
+        buCode,
+        token,
+        tTableHeader,
+        updateItemField,
+        onDelete,
+      }),
+    [currentMode, buCode, token, tTableHeader, updateItemField, onDelete]
   );
 
   const table = useReactTable({
     data: items,
     columns,
+    getRowId: (row, index) => {
+      if (row._type === "update") return (row as UpdatePoDetailDto).id;
+      if (row._type === "original")
+        return (row as PoDetailItemDtoFromDto & { _type: "original" }).id ?? `original-${index}`;
+      return `new-${index}`;
+    },
     getCoreRowModel: getCoreRowModel(),
+    enableRowSelection: true,
   });
 
   return (
-    <div className="space-y-4 pt-2">
+    <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <p className="font-semibold text-muted-foreground">{tPurchaseOrder("items")}</p>
-        <Button variant="outlinePrimary" size={"sm"} className="h-7">
-          <Plus className="h-4 w-4 mr-1.5" />
-          {tPurchaseOrder("add_item")}
-        </Button>
+        <p className="font-medium">{tPurchaseOrder("items")}</p>
+        {isEditMode && (
+          <Button type="button" onClick={onAdd} size={"sm"} className="h-7 text-xs">
+            <Plus className="h-3 w-3" />
+            {tPurchaseOrder("add_item")}
+          </Button>
+        )}
       </div>
-
       <DataGrid
         table={table}
         recordCount={items.length}
-        isLoading={false}
-        loadingMode="skeleton"
+        emptyMessage={tCommon("no_data")}
         tableLayout={{
           headerSticky: true,
-          dense: true,
+          dense: false,
           rowBorder: true,
-          headerBackground: false,
+          headerBackground: true,
           headerBorder: true,
-          width: "fixed",
         }}
       >
-        <div className="w-full space-y-2">
+        <div className="w-full space-y-2.5">
           <DataGridContainer>
-            <ScrollArea>
-              <div className="pb-3">
-                <DataGridTable />
-              </div>
+            <ScrollArea className="max-h-[calc(100vh-250px)]">
+              <DataGridTable />
               <ScrollBar orientation="horizontal" />
             </ScrollArea>
           </DataGridContainer>

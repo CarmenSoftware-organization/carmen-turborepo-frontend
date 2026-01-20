@@ -317,7 +317,8 @@
     "days": "Days",
     "effective_period": "Effective Period",
     "items": "Items",
-    "price_list_no": "Price List No."
+    "price_list_no": "Price List No.",
+    "order_date": "Order Date"
   },
   "InventoryManagement": {
     "StockOverview": {

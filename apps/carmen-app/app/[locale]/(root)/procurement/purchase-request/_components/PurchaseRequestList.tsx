@@ -111,8 +111,7 @@ export default function PurchaseRequestList({
         setAlertOpen(false);
         setPrToDelete(null);
       },
-      onError: (error) => {
-        console.error("Delete error:", error);
+      onError: () => {
         toastError({ message: tPr("delete_failed") });
         setAlertOpen(false);
       },
@@ -145,9 +144,7 @@ export default function PurchaseRequestList({
       {
         id: "no",
         header: () => "#",
-        cell: ({ row }) => (
-          <span className="text-center">{(currentPage - 1) * perpage + row.index + 1}</span>
-        ),
+        cell: ({ row }) => <span>{(currentPage - 1) * perpage + row.index + 1}</span>,
         enableSorting: false,
         size: 30,
         meta: {
@@ -180,9 +177,6 @@ export default function PurchaseRequestList({
         ),
         enableSorting: true,
         size: 200,
-        meta: {
-          headerTitle: tTableHeader("pr_no"),
-        },
       },
       {
         accessorKey: "pr_date",
@@ -194,15 +188,10 @@ export default function PurchaseRequestList({
           />
         ),
         cell: ({ row }) => (
-          <span className="text-left">
-            {formatDate(row.original.pr_date, dateFormat || "yyyy-MM-dd")}
-          </span>
+          <span>{formatDate(row.original.pr_date, dateFormat || "yyyy-MM-dd")}</span>
         ),
         enableSorting: true,
         size: 120,
-        meta: {
-          headerTitle: tTableHeader("date"),
-        },
       },
       {
         accessorKey: "workflow_name",
@@ -213,23 +202,18 @@ export default function PurchaseRequestList({
             icon={<TypeIcon className="h-4 w-4" />}
           />
         ),
-        cell: ({ row }) => <p>{row.original.workflow_name}</p>,
+        cell: ({ row }) => <span>{row.original.workflow_name}</span>,
         enableSorting: true,
         size: 100,
-        meta: {
-          headerTitle: tTableHeader("type"),
-        },
       },
       {
         accessorKey: "pr_status",
         header: ({ column }) => (
-          <div className="flex justify-center">
-            <DataGridColumnHeader
-              column={column}
-              title={tTableHeader("status")}
-              icon={<Activity className="h-4 w-4" />}
-            />
-          </div>
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("status")}
+            icon={<Activity className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <>
@@ -243,7 +227,6 @@ export default function PurchaseRequestList({
         enableSorting: true,
         size: 150,
         meta: {
-          headerTitle: tTableHeader("status"),
           cellClassName: "text-center",
           headerClassName: "text-center",
         },
@@ -251,23 +234,22 @@ export default function PurchaseRequestList({
       {
         accessorKey: "workflow_current_stage",
         header: ({ column }) => (
-          <div className="flex justify-center">
-            <DataGridColumnHeader
-              column={column}
-              title={tTableHeader("stage")}
-              icon={<Workflow className="h-4 w-4" />}
-            />
-          </div>
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("stage")}
+            icon={<Workflow className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
-          <div className="flex justify-center">
-            {row.original.pr_status !== "voided" && <p>{row.original.workflow_current_stage}</p>}
-          </div>
+          <p>
+            {row.original.pr_status !== "voided" && (
+              <span>{row.original.workflow_current_stage}</span>
+            )}
+          </p>
         ),
         enableSorting: true,
         size: 150,
         meta: {
-          headerTitle: tTableHeader("stage"),
           cellClassName: "text-center",
           headerClassName: "text-center",
         },
@@ -286,9 +268,6 @@ export default function PurchaseRequestList({
         ),
         enableSorting: true,
         size: 150,
-        meta: {
-          headerTitle: tTableHeader("requestor"),
-        },
       },
       {
         accessorKey: "department_name",
@@ -306,9 +285,6 @@ export default function PurchaseRequestList({
         ),
         enableSorting: true,
         size: 120,
-        meta: {
-          headerTitle: tTableHeader("department"),
-        },
       },
       {
         accessorKey: "total_amount",
@@ -332,58 +308,57 @@ export default function PurchaseRequestList({
         enableSorting: false,
         size: 140,
         meta: {
-          headerTitle: tTableHeader("amount"),
           cellClassName: "text-right",
           headerClassName: "text-right",
         },
       },
       {
         id: "action",
-        header: () => <span className="text-right">{tTableHeader("action")}</span>,
+        header: () => {
+          tTableHeader("action");
+        },
         cell: ({ row }) => {
           const pr = row.original;
           return (
-            <div className="flex justify-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">More options</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      console.log("Print", pr.id);
-                    }}
-                  >
-                    <Printer className="h-4 w-4" />
-                    {tPr("print")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      console.log("Export", pr.id);
-                    }}
-                  >
-                    <FileDown className="h-4 w-4" />
-                    {tPr("export")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteClick(pr);
-                    }}
-                    className="text-destructive cursor-pointer"
-                    disabled={isDeleting}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    {tPr("delete")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                <Button variant="ghost" size="icon" className="h-7 w-7">
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">More options</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log("Print", pr.id);
+                  }}
+                >
+                  <Printer className="h-4 w-4" />
+                  {tPr("print")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log("Export", pr.id);
+                  }}
+                >
+                  <FileDown className="h-4 w-4" />
+                  {tPr("export")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteClick(pr);
+                  }}
+                  className="text-destructive cursor-pointer"
+                  disabled={isDeleting}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  {tPr("delete")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           );
         },
         enableSorting: false,

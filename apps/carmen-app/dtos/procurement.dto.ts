@@ -74,59 +74,6 @@ export interface WorkflowPrDto {
   date_approved: string;
   comments: string;
 }
-
-export const poFormSchema = z.object({
-  vendor: z.string().min(1, "Vendor is required"),
-  status: z.string(),
-  date_created: z.string(),
-  delivery_date: z.string(),
-  po_number: z.string(),
-  currency: z.string(),
-  net_amount: z.number(),
-  tax_amount: z.number(),
-  amount: z.number(),
-});
-
-export type PoFormDto = z.infer<typeof poFormSchema>;
-
-export interface PurchaseOrderlDto {
-  id: string;
-  vendor: string;
-  status: string;
-  date_created: string;
-  delivery_date: string;
-  po_number: string;
-  currency: string;
-  net_amount: number;
-  tax_amount: number;
-  amount: number;
-}
-
-export interface PurchaseOrderItemDto {
-  id: string;
-  no: number;
-  name: string;
-  description: string;
-  order_qty: number;
-  unit: string;
-  price: number;
-  tax: number;
-  net: number;
-  discount: number;
-  amount: number;
-}
-
-export interface PurchaseOrderDetailDto extends PurchaseOrderlDto {
-  exchange_rate: number;
-  credit_term: string;
-  requestor: string;
-  description: string;
-  note: string;
-  items: PurchaseOrderItemDto[];
-  grns: any[]; // Define proper type if available
-  documents: any[]; // Define proper type if available
-}
-
 export interface AttachmentPrDto {
   id: string;
   name: string;

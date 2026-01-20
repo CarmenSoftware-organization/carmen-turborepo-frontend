@@ -1,6 +1,6 @@
 import ButtonLink from "@/components/ButtonLink";
 import { useTranslations } from "next-intl";
-import { ChevronLeft, FileDown, Pencil, Printer, Save, Share, X } from "lucide-react";
+import { ChevronLeft, FileDown, Loader2, Pencil, Printer, Save, Share, Trash2, X } from "lucide-react";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -10,9 +10,19 @@ interface Props {
   readonly currentMode: formType;
   readonly setCurrentMode: (mode: formType) => void;
   readonly title: string;
+  readonly isPending?: boolean;
+  readonly canSubmit?: boolean;
+  readonly onDelete?: () => void;
 }
 
-export default function ActionFields({ currentMode, setCurrentMode, title }: Props) {
+export default function ActionFields({
+  currentMode,
+  setCurrentMode,
+  title,
+  isPending = false,
+  canSubmit = true,
+  onDelete,
+}: Props) {
   const tPurchaseOrder = useTranslations("PurchaseOrder");
   const tCommon = useTranslations("Common");
   const router = useRouter();
@@ -91,8 +101,19 @@ export default function ActionFields({ currentMode, setCurrentMode, title }: Pro
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="default" size="sm" className="px-2 text-xs" type="submit">
-                    <Save /> {tCommon("save")}
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="px-2 text-xs"
+                    type="submit"
+                    disabled={isPending || !canSubmit}
+                  >
+                    {isPending ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <Save />
+                    )}{" "}
+                    {tCommon("save")}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -100,6 +121,23 @@ export default function ActionFields({ currentMode, setCurrentMode, title }: Pro
                 </TooltipContent>
               </Tooltip>
             </>
+          )}
+          {currentMode === formType.VIEW && onDelete && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="px-2 text-xs text-destructive hover:text-destructive"
+                  onClick={onDelete}
+                >
+                  <Trash2 /> {tCommon("delete")}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{tCommon("delete")}</p>
+              </TooltipContent>
+            </Tooltip>
           )}
           <Tooltip>
             <TooltipTrigger asChild>

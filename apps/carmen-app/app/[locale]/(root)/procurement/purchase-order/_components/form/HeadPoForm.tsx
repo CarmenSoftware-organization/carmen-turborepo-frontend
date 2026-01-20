@@ -1,3 +1,5 @@
+"use client";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,147 +9,305 @@ import {
   Clock,
   DollarSign,
   FileText,
-  Hash,
-  MapPin,
+  Mail,
   NotebookPen,
   User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-
-import { PurchaseOrderDetailDto } from "@/dtos/procurement.dto";
+import { UseFormReturn } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
+import { PoFormValues } from "../../_schema/po.schema";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import LookupVendor from "@/components/lookup/LookupVendor";
+import LookupCurrency from "@/components/lookup/LookupCurrency";
+import { DatePicker } from "@/components/ui-custom/date-picker";
+import { useAuth } from "@/context/AuthContext";
 
 interface Props {
-  readonly poData: PurchaseOrderDetailDto;
-  readonly mode: formType;
+  readonly form: UseFormReturn<PoFormValues>;
+  readonly currentMode: formType;
+  readonly buCode: string;
 }
 
-interface RenderPoHeadProps {
-  readonly label: string;
-  readonly icon: React.ReactNode;
-  readonly value: string | number;
-  readonly mode: formType;
-}
-
-export default function HeadPoForm({ poData, mode }: Props) {
+export default function HeadPoForm({ form, currentMode, buCode }: Props) {
   const tPurchaseOrder = useTranslations("PurchaseOrder");
+  const { dateFormat } = useAuth();
+
+  const isViewMode = currentMode === formType.VIEW;
+  const isEditMode = currentMode === formType.EDIT || currentMode === formType.ADD;
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Row 1: General Information */}
-        <RenderPoHead
-          label={tPurchaseOrder("po_number")}
-          icon={<Hash className="h-4 w-4 text-muted-foreground" />}
-          value={poData.po_number}
-          mode={mode}
-        />
-        <RenderPoHead
-          label={tPurchaseOrder("vendor")}
-          icon={<Building2 className="h-4 w-4 text-muted-foreground" />}
-          value={poData.vendor}
-          mode={mode}
-        />
-        <RenderPoHead
-          label={tPurchaseOrder("po_date")}
-          icon={<CalendarIcon className="h-4 w-4 text-muted-foreground" />}
-          value={poData.date_created}
-          mode={mode}
-        />
-        <RenderPoHead
-          label={tPurchaseOrder("requestor")}
-          icon={<User className="h-4 w-4 text-muted-foreground" />}
-          value={poData.requestor}
-          mode={mode}
-        />
-
-        {/* Row 2: Terms & Logistics */}
-        <RenderPoHead
-          label={tPurchaseOrder("delivery_date")}
-          icon={<MapPin className="h-4 w-4 text-muted-foreground" />}
-          value={poData.delivery_date}
-          mode={mode}
-        />
-        <RenderPoHead
-          label={tPurchaseOrder("credit_term")}
-          icon={<Clock className="h-4 w-4 text-muted-foreground" />}
-          value={poData.credit_term}
-          mode={mode}
-        />
-        <RenderPoHead
-          label={tPurchaseOrder("currency")}
-          icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
-          value={poData.currency}
-          mode={mode}
-        />
-        <RenderPoHead
-          label={tPurchaseOrder("exchange_rate")}
-          icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
-          value={poData.exchange_rate}
-          mode={mode}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Row 1: Vendor & Order Info */}
+        <FormField
+          control={form.control}
+          name="vendor_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
+                <Building2 className="h-4 w-4" />
+                {tPurchaseOrder("vendor")}
+              </FormLabel>
+              <FormControl>
+                {isEditMode ? (
+                  <LookupVendor
+                    value={field.value}
+                    onValueChange={(value, vendor) => {
+                      field.onChange(value);
+                      if (vendor) {
+                        form.setValue("vendor_name", vendor.name);
+                      }
+                    }}
+                    bu_code={buCode}
+                    className="h-9"
+                  />
+                ) : (
+                  <Input
+                    value={form.watch("vendor_name") ?? "-"}
+                    className="h-9 bg-muted"
+                    disabled
+                  />
+                )}
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
-        {/* Row 3: Financial Summary */}
-        <RenderPoHead
-          label={tPurchaseOrder("net_amount")}
-          icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
-          value={poData.net_amount}
-          mode={mode}
+        <FormField
+          control={form.control}
+          name="order_date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
+                <CalendarIcon className="h-4 w-4" />
+                {tPurchaseOrder("order_date")}
+              </FormLabel>
+              <FormControl>
+                {isEditMode ? (
+                  <DatePicker
+                    value={field.value ? new Date(field.value) : undefined}
+                    onChange={(date) => field.onChange(date?.toISOString())}
+                    dateFormat={dateFormat || "yyyy-MM-dd"}
+                    className="h-9"
+                  />
+                ) : (
+                  <Input value={field.value ?? "-"} className="h-9 bg-muted" disabled />
+                )}
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        <RenderPoHead
-          label={tPurchaseOrder("tax_amount")}
-          icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
-          value={poData.tax_amount}
-          mode={mode}
+
+        <FormField
+          control={form.control}
+          name="delivery_date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
+                <CalendarIcon className="h-4 w-4" />
+                {tPurchaseOrder("delivery_date")}
+              </FormLabel>
+              <FormControl>
+                {isEditMode ? (
+                  <DatePicker
+                    value={field.value ? new Date(field.value) : undefined}
+                    onChange={(date) => field.onChange(date?.toISOString())}
+                    dateFormat={dateFormat || "yyyy-MM-dd"}
+                    className="h-9"
+                  />
+                ) : (
+                  <Input value={field.value ?? "-"} className="h-9 bg-muted" disabled />
+                )}
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        <RenderPoHead
-          label={tPurchaseOrder("amount")}
-          icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
-          value={poData.amount}
-          mode={mode}
+
+        <FormField
+          control={form.control}
+          name="buyer_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
+                <User className="h-4 w-4" />
+                {tPurchaseOrder("buyer")}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  value={field.value ?? ""}
+                  className={cn("h-9", isViewMode && "bg-muted")}
+                  disabled={isViewMode}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Row 2: Currency & Credit Term */}
+        <FormField
+          control={form.control}
+          name="currency_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
+                <DollarSign className="h-4 w-4" />
+                {tPurchaseOrder("currency")}
+              </FormLabel>
+              <FormControl>
+                {isEditMode ? (
+                  <LookupCurrency
+                    value={field.value}
+                    onValueChange={(value, currency) => {
+                      field.onChange(value);
+                      if (currency) {
+                        form.setValue("currency_name", currency.name);
+                        form.setValue("exchange_rate", currency.exchange_rate || 1);
+                      }
+                    }}
+                    bu_code={buCode}
+                    className="h-9"
+                  />
+                ) : (
+                  <Input
+                    value={form.watch("currency_name") ?? "-"}
+                    className="h-9 bg-muted"
+                    disabled
+                  />
+                )}
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="exchange_rate"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
+                <DollarSign className="h-4 w-4" />
+                {tPurchaseOrder("exchange_rate")}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="number"
+                  value={field.value ?? 1}
+                  className={cn("h-9", isViewMode && "bg-muted")}
+                  disabled={isViewMode}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="credit_term_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                {tPurchaseOrder("credit_term")}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  value={field.value ?? ""}
+                  className={cn("h-9", isViewMode && "bg-muted")}
+                  disabled={isViewMode}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
+                <Mail className="h-4 w-4" />
+                {tPurchaseOrder("email")}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="email"
+                  value={field.value ?? ""}
+                  className={cn("h-9", isViewMode && "bg-muted")}
+                  disabled={isViewMode}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
       </div>
+
+      {/* Description & Note */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-border/50">
-        <div className="space-y-2">
-          <Label className="flex items-center gap-1.5 text-muted-foreground">
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            {tPurchaseOrder("description")}
-          </Label>
-          <Textarea
-            defaultValue={poData.description}
-            className={cn("min-h-[100px]", mode !== formType.EDIT && "bg-muted")}
-            disabled={mode !== formType.EDIT}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label className="flex items-center gap-1.5 text-muted-foreground">
-            <NotebookPen className="h-4 w-4 text-muted-foreground" />
-            {tPurchaseOrder("note")}
-          </Label>
-          <Textarea
-            defaultValue={poData.note}
-            className={cn("min-h-[100px]", mode !== formType.EDIT && "bg-muted")}
-            disabled={mode !== formType.EDIT}
-          />
-        </div>
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
+                <FileText className="h-4 w-4" />
+                {tPurchaseOrder("description")}
+              </FormLabel>
+              <FormControl>
+                <Textarea
+                  {...field}
+                  value={field.value ?? ""}
+                  className={cn("min-h-[100px]", isViewMode && "bg-muted")}
+                  disabled={isViewMode}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="note"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
+                <NotebookPen className="h-4 w-4" />
+                {tPurchaseOrder("note")}
+              </FormLabel>
+              <FormControl>
+                <Textarea
+                  {...field}
+                  value={field.value ?? ""}
+                  className={cn("min-h-[100px]", isViewMode && "bg-muted")}
+                  disabled={isViewMode}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
     </div>
   );
 }
-
-const RenderPoHead = ({ label, icon, value, mode }: RenderPoHeadProps) => {
-  return (
-    <div className="col-span-1 space-y-2">
-      <Label className="flex items-center gap-1.5 text-muted-foreground">
-        {icon}
-        {label}
-      </Label>
-      <Input
-        defaultValue={value}
-        className={cn("h-9", mode !== formType.EDIT && "bg-muted")}
-        disabled={mode !== formType.EDIT}
-      />
-    </div>
-  );
-};

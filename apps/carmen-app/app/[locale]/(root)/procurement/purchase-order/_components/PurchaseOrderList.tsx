@@ -1,6 +1,6 @@
 "use client";
 
-import { PurchaseOrderlDto } from "@/dtos/procurement.dto";
+import { PoListDto } from "@/dtos/po.dto";
 import {
   Building2,
   Calendar,
@@ -9,7 +9,6 @@ import {
   FileText,
   MoreHorizontal,
   Printer,
-  TagIcon,
   Trash2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -20,7 +19,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import ButtonLink from "@/components/ButtonLink";
-import { StatusBadge } from "@/components/ui-custom/StatusBadge";
 import { useMemo } from "react";
 import {
   ColumnDef,
@@ -39,9 +37,12 @@ import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/utils/format/date";
+import { useAuth } from "@/context/AuthContext";
+import { formatPrice } from "@/utils/format/currency";
 
 interface PurchaseOrderListProps {
-  readonly purchaseOrders: PurchaseOrderlDto[];
+  readonly purchaseOrders: PoListDto[];
   readonly currentPage: number;
   readonly totalPages: number;
   readonly totalItems: number;
@@ -52,12 +53,6 @@ interface PurchaseOrderListProps {
   readonly onSort?: (sortString: string) => void;
   readonly setPerpage: (perpage: number) => void;
 }
-
-const ActionHeader = () => {
-  const tTableHeader = useTranslations("TableHeader");
-  return <div className="text-right">{tTableHeader("action")}</div>;
-};
-
 export default function PurchaseOrderList({
   purchaseOrders,
   currentPage,
@@ -70,16 +65,17 @@ export default function PurchaseOrderList({
   onSort,
   setPerpage,
 }: PurchaseOrderListProps) {
+  const { dateFormat, amount, currencyBase } = useAuth();
+  const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
+
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
 
-  // Convert sort to TanStack Table format
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
   }, [sort]);
 
-  // Pagination state
   const pagination: PaginationState = useMemo(
     () => ({
       pageIndex: currentPage - 1,
@@ -89,7 +85,7 @@ export default function PurchaseOrderList({
   );
 
   // Define columns
-  const columns = useMemo<ColumnDef<PurchaseOrderlDto>[]>(
+  const columns = useMemo<ColumnDef<PoListDto>[]>(
     () => [
       {
         id: "select",
@@ -101,9 +97,9 @@ export default function PurchaseOrderList({
       },
       {
         id: "no",
-        header: () => <div className="text-center">#</div>,
+        header: () => "#",
         cell: ({ row }) => (
-          <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
+          <span className="text-center">{(currentPage - 1) * perpage + row.index + 1}</span>
         ),
         enableSorting: false,
         size: 30,
@@ -113,7 +109,7 @@ export default function PurchaseOrderList({
         },
       },
       {
-        accessorKey: "po_number",
+        accessorKey: "po_no",
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
@@ -123,17 +119,14 @@ export default function PurchaseOrderList({
         ),
         cell: ({ row }) => (
           <ButtonLink href={`/procurement/purchase-order/${row.original.id}`}>
-            {row.original.po_number ?? "-"}
+            {row.original.po_no ?? "-"}
           </ButtonLink>
         ),
         enableSorting: true,
         size: 200,
-        meta: {
-          headerTitle: tTableHeader("po_number"),
-        },
       },
       {
-        accessorKey: "vendor",
+        accessorKey: "vendor_name",
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
@@ -141,29 +134,38 @@ export default function PurchaseOrderList({
             icon={<Building2 className="h-4 w-4" />}
           />
         ),
-        cell: ({ row }) => <span>{row.original.vendor ?? "-"}</span>,
+        cell: ({ row }) => <span>{row.original.vendor_name ?? "-"}</span>,
         enableSorting: true,
         size: 200,
-        meta: {
-          headerTitle: tTableHeader("vendor"),
-        },
       },
       {
-        accessorKey: "date_created",
+        accessorKey: "description",
         header: ({ column }) => (
-          <div className="flex justify-center">
-            <DataGridColumnHeader
-              column={column}
-              title={tTableHeader("date")}
-              icon={<Calendar className="h-4 w-4" />}
-            />
-          </div>
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("description")}
+            icon={<FileText className="h-4 w-4" />}
+          />
         ),
-        cell: ({ row }) => <div className="text-center">{row.original.date_created}</div>,
+        cell: ({ row }) => <span>{row.original.description ?? "-"}</span>,
         enableSorting: false,
-        size: 120,
+        size: 200,
+      },
+      {
+        accessorKey: "order_date",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("order_date")}
+            icon={<Calendar className="h-4 w-4" />}
+          />
+        ),
+        cell: ({ row }) => (
+          <span>{formatDate(row.original.order_date, dateFormat || "yyyy-MM-dd")}</span>
+        ),
+        enableSorting: false,
+        size: 140,
         meta: {
-          headerTitle: tTableHeader("date"),
           cellClassName: "text-center",
           headerClassName: "text-center",
         },
@@ -171,187 +173,96 @@ export default function PurchaseOrderList({
       {
         accessorKey: "delivery_date",
         header: ({ column }) => (
-          <div className="flex justify-center">
-            <DataGridColumnHeader
-              column={column}
-              title={tTableHeader("delivery_date")}
-              icon={<Calendar className="h-4 w-4" />}
-            />
-          </div>
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("delivery_date")}
+            icon={<Calendar className="h-4 w-4" />}
+          />
         ),
-        cell: ({ row }) => <div className="text-center">{row.original.delivery_date}</div>,
+
+        cell: ({ row }) => (
+          <span>{formatDate(row.original.delivery_date, dateFormat || "yyyy-MM-dd")}</span>
+        ),
         enableSorting: false,
-        size: 120,
+        size: 140,
         meta: {
-          headerTitle: tTableHeader("delivery_date"),
           cellClassName: "text-center",
           headerClassName: "text-center",
         },
       },
       {
-        accessorKey: "currency",
+        accessorKey: "total_amount",
         header: ({ column }) => (
-          <div className="flex justify-center">
-            <DataGridColumnHeader
-              column={column}
-              title={tTableHeader("currency")}
-              icon={<DollarSign className="h-4 w-4" />}
-            />
-          </div>
-        ),
-        cell: ({ row }) => <div className="text-center">{row.original.currency}</div>,
-        enableSorting: false,
-        size: 100,
-        meta: {
-          headerTitle: tTableHeader("currency"),
-          cellClassName: "text-center",
-          headerClassName: "text-center",
-        },
-      },
-      {
-        accessorKey: "net_amount",
-        header: ({ column }) => (
-          <div className="flex justify-end">
-            <DataGridColumnHeader
-              column={column}
-              title={tTableHeader("net_amount")}
-              icon={<DollarSign className="h-4 w-4" />}
-            />
-          </div>
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("amount")}
+            icon={<DollarSign className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
-          <div className="text-right">
-            <span className="text-sm">{row.original.net_amount}</span>
-          </div>
-        ),
-        enableSorting: false,
-        size: 130,
-        meta: {
-          headerTitle: tTableHeader("net_amount"),
-          cellClassName: "text-right",
-          headerClassName: "text-right",
-        },
-      },
-      {
-        accessorKey: "tax_amount",
-        header: ({ column }) => (
-          <div className="flex justify-end">
-            <DataGridColumnHeader
-              column={column}
-              title={tTableHeader("tax_amount")}
-              icon={<DollarSign className="h-4 w-4" />}
-            />
-          </div>
-        ),
-        cell: ({ row }) => (
-          <div className="text-right">
-            <span className="text-sm">{row.original.tax_amount}</span>
-          </div>
+         <span>
+            {formatPrice(
+              row.original.total_amount,
+              currencyBase ?? "THB",
+              amount?.locales ?? defaultAmount.locales,
+              amount?.minimumFractionDigits ?? defaultAmount.minimumFractionDigits
+            )}
+          </span>
+          // <span>{row.original.total_amount}</span>
         ),
         enableSorting: false,
         size: 150,
         meta: {
-          headerTitle: tTableHeader("tax_amount"),
           cellClassName: "text-right",
           headerClassName: "text-right",
-        },
-      },
-      {
-        accessorKey: "amount",
-        header: ({ column }) => (
-          <div className="flex justify-end">
-            <DataGridColumnHeader
-              column={column}
-              title={tTableHeader("amount")}
-              icon={<DollarSign className="h-4 w-4" />}
-            />
-          </div>
-        ),
-        cell: ({ row }) => (
-          <div className="text-right">
-            <span className="text-sm font-medium">{row.original.amount}</span>
-          </div>
-        ),
-        enableSorting: false,
-        size: 130,
-        meta: {
-          headerTitle: tTableHeader("amount"),
-          cellClassName: "text-right",
-          headerClassName: "text-right",
-        },
-      },
-      {
-        accessorKey: "status",
-        header: ({ column }) => (
-          <div className="flex justify-center">
-            <DataGridColumnHeader
-              column={column}
-              title={tTableHeader("status")}
-              icon={<TagIcon className="h-4 w-4" />}
-            />
-          </div>
-        ),
-        cell: ({ row }) => (
-          <div className="flex justify-center">
-            {row.original.status && (
-              <StatusBadge status={row.original.status}>{row.original.status}</StatusBadge>
-            )}
-          </div>
-        ),
-        enableSorting: false,
-        size: 120,
-        meta: {
-          headerTitle: tTableHeader("status"),
-          cellClassName: "text-center",
-          headerClassName: "text-center",
         },
       },
       {
         id: "action",
-        header: ActionHeader,
+        header: () => {
+          tTableHeader("action");
+        },
         cell: ({ row }) => {
           const po = row.original;
           return (
-            <div className="flex justify-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">More options</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      console.log("Print", po.id);
-                    }}
-                  >
-                    <Printer className="h-4 w-4" />
-                    {tCommon("print")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      console.log("Export", po.id);
-                    }}
-                  >
-                    <FileDown className="h-4 w-4" />
-                    {tCommon("export")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      console.log("Delete", po.id);
-                    }}
-                    className="text-destructive cursor-pointer"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    {tCommon("delete")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                <Button variant="ghost" size="icon" className="h-7 w-7">
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">More options</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log("Print", po.id);
+                  }}
+                >
+                  <Printer className="h-4 w-4" />
+                  {tCommon("print")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log("Export", po.id);
+                  }}
+                >
+                  <FileDown className="h-4 w-4" />
+                  {tCommon("export")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log("Delete", po.id);
+                  }}
+                  className="text-destructive cursor-pointer"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  {tCommon("delete")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           );
         },
         enableSorting: false,
