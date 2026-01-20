@@ -11,10 +11,7 @@ export {
   formatNumber,
   formatCurrencyWithSymbol,
   formatCurrency,
-  formatCurrencyIntl,
-  formatThaiCurrency,
   formatPrice,
-  CURRENCIES,
   type Currency,
 } from "./currency";
 

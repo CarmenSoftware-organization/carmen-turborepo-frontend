@@ -11,16 +11,27 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { PropsLookup } from "@/dtos/lookup.dto";
 import { useProductQuery } from "@/hooks/use-product-query";
 import { useAuth } from "@/context/AuthContext";
+
+interface LookupProductProps {
+  readonly value?: string;
+  readonly onValueChange: (value: string, selectedProduct?: any) => void;
+  readonly placeholder?: string;
+  readonly disabled?: boolean;
+  readonly classNames?: string;
+  readonly bu_code?: string;
+  readonly initialDisplayName?: string;
+}
 
 export default function LookupProduct({
   value,
   onValueChange,
   placeholder = "Select Product",
   disabled = false,
-}: Readonly<PropsLookup>) {
+  classNames,
+  initialDisplayName,
+}: Readonly<LookupProductProps>) {
   const { token, buCode } = useAuth();
   const { products, isLoading } = useProductQuery({
     token,
@@ -29,11 +40,13 @@ export default function LookupProduct({
   const [open, setOpen] = useState(false);
 
   const selectedProductName = useMemo(() => {
-    if (!value || !products?.data || !Array.isArray(products.data)) return null;
+    if (!value || !products?.data || !Array.isArray(products.data)) {
+      return initialDisplayName || null;
+    }
     const found = products.data.find((product: any) => product.id === value);
-    if (!found) return null;
+    if (!found) return initialDisplayName || null;
     return `${found.code} - ${found.name}`;
-  }, [value, products]);
+  }, [value, products, initialDisplayName]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -41,7 +54,7 @@ export default function LookupProduct({
         <Button
           variant="outline"
           aria-expanded={open}
-          className="w-full justify-between"
+          className={cn("w-full justify-between", classNames)}
           disabled={disabled}
         >
           {value && selectedProductName ? selectedProductName : placeholder}
@@ -74,7 +87,7 @@ export default function LookupProduct({
                         value={product.id}
                         onSelect={() => {
                           if (product.id) {
-                            onValueChange(product.id);
+                            onValueChange(product.id, product);
                           }
                           setOpen(false);
                         }}

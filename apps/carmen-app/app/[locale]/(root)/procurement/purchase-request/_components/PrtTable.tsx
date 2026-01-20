@@ -1,7 +1,6 @@
 "use client";
 
 import { PurchaseRequestTemplateDto } from "@/dtos/pr-template.dto";
-import { PaginateDto } from "@/dtos/paginate.dto";
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
@@ -25,7 +24,8 @@ import { Activity, FileText, Info, Building2 } from "lucide-react";
 
 interface Props {
   readonly prtDatas: PurchaseRequestTemplateDto[];
-  readonly paginate?: PaginateDto;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  readonly paginate?: any;
   readonly isLoading?: boolean;
   readonly currentPage: number;
   readonly perpage: number;
@@ -89,9 +89,7 @@ export default function PrtTable({
             icon={<FileText className="h-4 w-4" />}
           />
         ),
-        cell: ({ row }) => (
-          <span className="font-medium">{row.original.name}</span>
-        ),
+        cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
         enableSorting: true,
         size: 200,
       },
