@@ -170,7 +170,13 @@
     "related_docs": "Related Documents",
     "remarks": "Remarks",
     "del_po_title": "Delete Purchase Order?",
-    "del_po_desc": "Are you sure you want to delete this purchase order?"
+    "del_po_desc": "Are you sure you want to delete this purchase order?",
+    "add_po_success": "Add Purchase Order success",
+    "add_po_failed": "Add Purchase Order failed",
+    "update_po_success": "Update Purchase Order success",
+    "update_po_failed": "Update Purchase Order failed",
+    "del_po_success": "Delete Purchase Order success",
+    "del_po_failed": "Delete Purchase Order failed"
   },
   "GoodsReceivedNote": {
     "title": "Goods Received Note"

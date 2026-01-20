@@ -25,6 +25,8 @@ import { PoFormSchema, PoFormValues } from "../../_schema/po.schema";
 import { useAuth } from "@/context/AuthContext";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import { usePoCreateMutation, usePoUpdateMutation } from "@/hooks/use-po";
+import { useRouter } from "next/navigation";
 
 interface PoFormProps {
   readonly poData?: PoDetailDto;
@@ -33,11 +35,15 @@ interface PoFormProps {
 
 export default function PoForm({ poData, mode }: PoFormProps) {
   const { buCode, token } = useAuth();
+  const router = useRouter();
   const tPurchaseOrder = useTranslations("PurchaseOrder");
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const isPending = false; // TODO: Replace with actual mutation state
+  const createMutation = usePoCreateMutation(token, buCode);
+  const updateMutation = usePoUpdateMutation(token, buCode);
+
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   const defaultValues: PoFormValues = {
     vendor_id: "",
@@ -98,23 +104,40 @@ export default function PoForm({ poData, mode }: PoFormProps) {
   const handleConfirmDelete = () => {
     // TODO: Implement delete mutation
     setIsDeleteDialogOpen(false);
-    toastSuccess({ message: tPurchaseOrder("delete_po_success") });
+    toastSuccess({ message: tPurchaseOrder("del_po_success") });
   };
 
   const onSubmit = (data: PoFormValues) => {
-    console.log("Form data:", data);
     if (currentMode === formType.ADD) {
-      // TODO: Implement create mutation
-      toastSuccess({ message: tPurchaseOrder("add_po_success") });
-      setCurrentMode(formType.VIEW);
+      createMutation.mutate(data, {
+        onSuccess: (response) => {
+          toastSuccess({ message: tPurchaseOrder("add_po_success") });
+          const newId = response?.data?.id;
+          if (newId) {
+            router.push(`/procurement/purchase-order/${newId}`);
+          } else {
+            setCurrentMode(formType.VIEW);
+          }
+        },
+        onError: () => {
+          toastError({ message: tPurchaseOrder("add_po_failed") });
+        },
+      });
     } else if (currentMode === formType.EDIT && poData?.id) {
-      // TODO: Implement update mutation
-      toastSuccess({ message: tPurchaseOrder("update_po_success") });
-      setCurrentMode(formType.VIEW);
+      updateMutation.mutate(
+        { id: poData.id, data },
+        {
+          onSuccess: () => {
+            toastSuccess({ message: tPurchaseOrder("update_po_success") });
+            setCurrentMode(formType.VIEW);
+          },
+          onError: () => {
+            toastError({ message: tPurchaseOrder("update_po_failed") });
+          },
+        }
+      );
     }
   };
-
-  console.log("po data", poData);
 
   return (
     <DetailsAndComments activityComponent={<ActivityLog />} commentComponent={<CommentPo />}>

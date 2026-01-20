@@ -6,10 +6,20 @@ import {
   getApiUrl,
   getByIdApiRequest,
   postApiRequest,
-  requestHeaders,
   updateApiRequest,
 } from "@/lib/config.api";
-import axios from "axios";
+
+interface CreatePoResponse {
+  data: {
+    id: string;
+    po_no: string;
+  };
+  paginate: null;
+  status: number;
+  success: boolean;
+  message: string;
+  timestamp: string;
+}
 
 const queryKey = "purchase-order";
 
@@ -21,7 +31,7 @@ export const usePoQuery = (token: string, buCode: string, params?: ParamsGetDto)
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: [queryKey, buCode, params],
     queryFn: async () => {
-      return getAllApiRequest(API_URL, token, "Failed to fetch po", params);
+      return getAllApiRequest(API_URL, token, "Failed to fetch all PO", params);
     },
     enabled: isEnabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -51,10 +61,7 @@ export const usePoIdQuery = (token: string, buCode: string, id: string) => {
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: [queryKey, buCode, id],
     queryFn: async () => {
-      const response = await axios.get(API_URL, {
-        headers: requestHeaders(token),
-      });
-      return response.data;
+      return await getByIdApiRequest(API_URL, token, "Error fetching PO by ID");
     },
     enabled: isEnabled,
     staleTime: 5 * 60 * 1000,
@@ -74,14 +81,13 @@ export const usePoIdQuery = (token: string, buCode: string, id: string) => {
   };
 };
 
-export const usePoMutation = (token: string, buCode: string) => {
+export const usePoCreateMutation = (token: string, buCode: string) => {
   const queryClient = useQueryClient();
   const pathName = `api/${buCode}/purchase-order`;
-
   const API_URL = getApiUrl(pathName);
 
-  return useMutation<CommonResponseDto>({
-    mutationFn: async (data) => {
+  return useMutation<CreatePoResponse, Error, unknown>({
+    mutationFn: async (data: unknown) => {
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
@@ -90,10 +96,26 @@ export const usePoMutation = (token: string, buCode: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [queryKey, buCode] });
     },
-    onError: (error) => {
-      if (error instanceof Error) {
-        throw new Error(error.message);
+  });
+};
+
+export const usePoUpdateMutation = (token: string, buCode: string) => {
+  const queryClient = useQueryClient();
+  const pathName = `api/${buCode}/purchase-order`;
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: unknown }) => {
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
+      const API_URL = getApiUrl(pathName, id);
+      return updateApiRequest(API_URL, token, data, "Failed to update po", "PATCH");
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: [queryKey, buCode] });
+      queryClient.invalidateQueries({ queryKey: [queryKey, buCode, variables.id] });
     },
   });
 };
+
+export const usePoMutation = usePoCreateMutation;
