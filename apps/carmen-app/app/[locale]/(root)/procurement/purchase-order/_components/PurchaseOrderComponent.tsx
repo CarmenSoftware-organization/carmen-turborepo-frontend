@@ -108,11 +108,11 @@ export default function PurchaseOrderComponent() {
     <PurchaseOrderList
       purchaseOrders={poData || []}
       currentPage={page ? Number(page) : 1}
-      totalPages={paginate?.pages || 1}
-      totalItems={totalItems}
+      totalPages={paginate?.pages ?? 1}
+      totalItems={totalItems ?? 0}
       perpage={perpage ? Number(perpage) : 10}
       onPageChange={handlePageChange}
-      isLoading={false}
+      isLoading={isLoading}
       sort={parseSortString(sort)}
       onSort={setSort}
       setPerpage={handleSetPerpage}

@@ -145,6 +145,9 @@
     "title": "Purchase Order",
     "po_number": "PO Number",
     "po_date": "PO Date",
+    "order_date": "Order Date",
+    "buyer": "Buyer",
+    "email": "Email",
     "vendor": "Vendor",
     "status": "Status",
     "date_created": "Date Created",
@@ -164,7 +167,10 @@
     "add_item": "Add Item",
     "select_workflow_first": "Please select PR Type first",
     "grns": "Goods Receipt Notes",
-    "related_docs": "Related Documents"
+    "related_docs": "Related Documents",
+    "remarks": "Remarks",
+    "del_po_title": "Delete Purchase Order?",
+    "del_po_desc": "Are you sure you want to delete this purchase order?"
   },
   "GoodsReceivedNote": {
     "title": "Goods Received Note"

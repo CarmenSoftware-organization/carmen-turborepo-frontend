@@ -1,6 +1,16 @@
 import ButtonLink from "@/components/ButtonLink";
 import { useTranslations } from "next-intl";
-import { ChevronLeft, FileDown, Loader2, Pencil, Printer, Save, Share, Trash2, X } from "lucide-react";
+import {
+  ChevronLeft,
+  FileDown,
+  Loader2,
+  Pencil,
+  Printer,
+  Save,
+  Share,
+  Trash2,
+  X,
+} from "lucide-react";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -108,12 +118,7 @@ export default function ActionFields({
                     type="submit"
                     disabled={isPending || !canSubmit}
                   >
-                    {isPending ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      <Save />
-                    )}{" "}
-                    {tCommon("save")}
+                    {isPending ? <Loader2 className="animate-spin" /> : <Save />} {tCommon("save")}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -122,23 +127,7 @@ export default function ActionFields({
               </Tooltip>
             </>
           )}
-          {currentMode === formType.VIEW && onDelete && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="px-2 text-xs text-destructive hover:text-destructive"
-                  onClick={onDelete}
-                >
-                  <Trash2 /> {tCommon("delete")}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{tCommon("delete")}</p>
-              </TooltipContent>
-            </Tooltip>
-          )}
+
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="outline" size="sm" className="px-2 text-xs">
@@ -169,6 +158,18 @@ export default function ActionFields({
               <p>{tCommon("share")}</p>
             </TooltipContent>
           </Tooltip>
+          {currentMode === formType.VIEW && onDelete && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="destructive" size="sm" onClick={onDelete}>
+                  <Trash2 /> {tCommon("delete")}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{tCommon("delete")}</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
       </div>
     </TooltipProvider>

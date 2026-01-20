@@ -114,9 +114,11 @@ export default function PoForm({ poData, mode }: PoFormProps) {
     }
   };
 
+  console.log("po data", poData);
+
   return (
     <DetailsAndComments activityComponent={<ActivityLog />} commentComponent={<CommentPo />}>
-      <Card className="p-4 space-y-4 shadow-sm border-border/60">
+      <Card className="p-4 space-y-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <ActionFields
@@ -157,8 +159,8 @@ export default function PoForm({ poData, mode }: PoFormProps) {
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
-        title={tPurchaseOrder("delete_po_title")}
-        description={tPurchaseOrder("delete_po_desc")}
+        title={tPurchaseOrder("del_po_title")}
+        description={tPurchaseOrder("del_po_desc")}
       />
     </DetailsAndComments>
   );

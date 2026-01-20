@@ -5,16 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import {
-  Building2,
-  CalendarIcon,
-  Clock,
-  DollarSign,
-  FileText,
-  Mail,
-  NotebookPen,
-  User,
-} from "lucide-react";
+import { Building2, CalendarIcon, Clock, DollarSign, FileText, Mail, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { UseFormReturn } from "react-hook-form";
@@ -43,7 +34,7 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Row 1: Vendor & Order Info */}
         <FormField
           control={form.control}
@@ -116,9 +107,7 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                 ) : (
                   <Input
                     value={
-                      field.value
-                        ? format(new Date(field.value), dateFormat || "yyyy-MM-dd")
-                        : "-"
+                      field.value ? format(new Date(field.value), dateFormat || "yyyy-MM-dd") : "-"
                     }
                     className="h-9 bg-muted"
                     disabled
@@ -168,9 +157,7 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                 ) : (
                   <Input
                     value={
-                      field.value
-                        ? format(new Date(field.value), dateFormat || "yyyy-MM-dd")
-                        : "-"
+                      field.value ? format(new Date(field.value), dateFormat || "yyyy-MM-dd") : "-"
                     }
                     className="h-9 bg-muted"
                     disabled
@@ -328,74 +315,27 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
         />
       </div>
 
-      {/* Description, Note & Remarks */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-border/50">
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
-                <FileText className="h-4 w-4" />
-                {tPurchaseOrder("description")}
-              </FormLabel>
-              <FormControl>
-                <Textarea
-                  {...field}
-                  value={field.value ?? ""}
-                  className={cn("min-h-[100px]", isViewMode && "bg-muted")}
-                  disabled={isViewMode}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="note"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
-                <NotebookPen className="h-4 w-4" />
-                {tPurchaseOrder("note")}
-              </FormLabel>
-              <FormControl>
-                <Textarea
-                  {...field}
-                  value={field.value ?? ""}
-                  className={cn("min-h-[100px]", isViewMode && "bg-muted")}
-                  disabled={isViewMode}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="remarks"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
-                <FileText className="h-4 w-4" />
-                {tPurchaseOrder("remarks")}
-              </FormLabel>
-              <FormControl>
-                <Textarea
-                  {...field}
-                  value={field.value ?? ""}
-                  className={cn("min-h-[100px]", isViewMode && "bg-muted")}
-                  disabled={isViewMode}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+      <FormField
+        control={form.control}
+        name="description"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
+              <FileText className="h-4 w-4" />
+              {tPurchaseOrder("description")}
+            </FormLabel>
+            <FormControl>
+              <Textarea
+                {...field}
+                value={field.value ?? ""}
+                className={cn(isViewMode && "bg-muted")}
+                disabled={isViewMode}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   );
 }
