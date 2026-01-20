@@ -1,8 +1,10 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Building2,
   CalendarIcon,
@@ -18,17 +20,13 @@ import { cn } from "@/lib/utils";
 import { UseFormReturn } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
 import { PoFormValues } from "../../_schema/po.schema";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import LookupVendor from "@/components/lookup/LookupVendor";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
-import { DatePicker } from "@/components/ui-custom/date-picker";
+import LookupCreditTerm from "@/components/lookup/LookupCreditTerm";
+import LookupUserList from "@/components/lookup/LookupUserList";
 import { useAuth } from "@/context/AuthContext";
+import { format } from "date-fns";
 
 interface Props {
   readonly form: UseFormReturn<PoFormValues>;
@@ -60,14 +58,12 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                 {isEditMode ? (
                   <LookupVendor
                     value={field.value}
-                    onValueChange={(value, vendor) => {
-                      field.onChange(value);
-                      if (vendor) {
-                        form.setValue("vendor_name", vendor.name);
-                      }
+                    onValueChange={field.onChange}
+                    onSelectObject={(vendor) => {
+                      form.setValue("vendor_name", vendor.name);
                     }}
                     bu_code={buCode}
-                    className="h-9"
+                    classNames="h-9"
                   />
                 ) : (
                   <Input
@@ -93,14 +89,40 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
               </FormLabel>
               <FormControl>
                 {isEditMode ? (
-                  <DatePicker
-                    value={field.value ? new Date(field.value) : undefined}
-                    onChange={(date) => field.onChange(date?.toISOString())}
-                    dateFormat={dateFormat || "yyyy-MM-dd"}
-                    className="h-9"
-                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full h-9 justify-start text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {field.value
+                          ? format(new Date(field.value), dateFormat || "yyyy-MM-dd")
+                          : tPurchaseOrder("select_date")}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value ? new Date(field.value) : undefined}
+                        onSelect={(date) => field.onChange(date?.toISOString())}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 ) : (
-                  <Input value={field.value ?? "-"} className="h-9 bg-muted" disabled />
+                  <Input
+                    value={
+                      field.value
+                        ? format(new Date(field.value), dateFormat || "yyyy-MM-dd")
+                        : "-"
+                    }
+                    className="h-9 bg-muted"
+                    disabled
+                  />
                 )}
               </FormControl>
               <FormMessage />
@@ -119,14 +141,40 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
               </FormLabel>
               <FormControl>
                 {isEditMode ? (
-                  <DatePicker
-                    value={field.value ? new Date(field.value) : undefined}
-                    onChange={(date) => field.onChange(date?.toISOString())}
-                    dateFormat={dateFormat || "yyyy-MM-dd"}
-                    className="h-9"
-                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full h-9 justify-start text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {field.value
+                          ? format(new Date(field.value), dateFormat || "yyyy-MM-dd")
+                          : tPurchaseOrder("select_date")}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value ? new Date(field.value) : undefined}
+                        onSelect={(date) => field.onChange(date?.toISOString())}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                 ) : (
-                  <Input value={field.value ?? "-"} className="h-9 bg-muted" disabled />
+                  <Input
+                    value={
+                      field.value
+                        ? format(new Date(field.value), dateFormat || "yyyy-MM-dd")
+                        : "-"
+                    }
+                    className="h-9 bg-muted"
+                    disabled
+                  />
                 )}
               </FormControl>
               <FormMessage />
@@ -136,7 +184,7 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
 
         <FormField
           control={form.control}
-          name="buyer_name"
+          name="buyer_id"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
@@ -144,12 +192,22 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                 {tPurchaseOrder("buyer")}
               </FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  value={field.value ?? ""}
-                  className={cn("h-9", isViewMode && "bg-muted")}
-                  disabled={isViewMode}
-                />
+                {isEditMode ? (
+                  <LookupUserList
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    onSelectObject={(user) => {
+                      form.setValue("buyer_name", `${user.firstname} ${user.lastname}`.trim());
+                    }}
+                    classNames="h-9"
+                  />
+                ) : (
+                  <Input
+                    value={form.watch("buyer_name") ?? "-"}
+                    className="h-9 bg-muted"
+                    disabled
+                  />
+                )}
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -170,15 +228,13 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                 {isEditMode ? (
                   <LookupCurrency
                     value={field.value}
-                    onValueChange={(value, currency) => {
-                      field.onChange(value);
-                      if (currency) {
-                        form.setValue("currency_name", currency.name);
-                        form.setValue("exchange_rate", currency.exchange_rate || 1);
-                      }
+                    onValueChange={field.onChange}
+                    onSelectObject={(currency) => {
+                      form.setValue("currency_name", currency.name);
+                      form.setValue("exchange_rate", currency.exchange_rate || 1);
                     }}
                     bu_code={buCode}
-                    className="h-9"
+                    classNames="h-9"
                   />
                 ) : (
                   <Input
@@ -218,7 +274,7 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
 
         <FormField
           control={form.control}
-          name="credit_term_name"
+          name="credit_term_id"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
@@ -226,12 +282,22 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                 {tPurchaseOrder("credit_term")}
               </FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  value={field.value ?? ""}
-                  className={cn("h-9", isViewMode && "bg-muted")}
-                  disabled={isViewMode}
-                />
+                {isEditMode ? (
+                  <LookupCreditTerm
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    onSelectObject={(creditTerm) => {
+                      form.setValue("credit_term_name", creditTerm.name);
+                      form.setValue("credit_term_value", creditTerm.value);
+                    }}
+                  />
+                ) : (
+                  <Input
+                    value={form.watch("credit_term_name") ?? "-"}
+                    className="h-9 bg-muted"
+                    disabled
+                  />
+                )}
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -262,8 +328,8 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
         />
       </div>
 
-      {/* Description & Note */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-border/50">
+      {/* Description, Note & Remarks */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-border/50">
         <FormField
           control={form.control}
           name="description"
@@ -294,6 +360,28 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
               <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
                 <NotebookPen className="h-4 w-4" />
                 {tPurchaseOrder("note")}
+              </FormLabel>
+              <FormControl>
+                <Textarea
+                  {...field}
+                  value={field.value ?? ""}
+                  className={cn("min-h-[100px]", isViewMode && "bg-muted")}
+                  disabled={isViewMode}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="remarks"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
+                <FileText className="h-4 w-4" />
+                {tPurchaseOrder("remarks")}
               </FormLabel>
               <FormControl>
                 <Textarea

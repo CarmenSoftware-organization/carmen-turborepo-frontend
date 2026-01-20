@@ -25,7 +25,6 @@ interface PrtFormProps {
   readonly prtData?: PurchaseRequestTemplateDto;
   readonly mode: formType;
 }
-
 export default function PrtForm({ prtData, mode }: PrtFormProps) {
   const { buCode, departments, token } = useAuth();
   const tPurchaseRequest = useTranslations("PurchaseRequest");

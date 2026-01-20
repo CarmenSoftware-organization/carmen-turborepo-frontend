@@ -17,13 +17,18 @@ import { useAuth } from "@/context/AuthContext";
 import { VendorGetDto } from "@/dtos/vendor-management";
 import { useTranslations } from "next-intl";
 
+interface LookupVendorProps extends PropsLookup {
+  readonly onSelectObject?: (obj: VendorGetDto) => void;
+}
+
 export default function LookupVendor({
   value,
   onValueChange,
   disabled = false,
   classNames,
   excludeIds = [],
-}: Readonly<PropsLookup>) {
+  onSelectObject,
+}: Readonly<LookupVendorProps>) {
   const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tVendor = useTranslations("Vendor");
@@ -97,6 +102,9 @@ export default function LookupVendor({
                       onSelect={() => {
                         if (vendor.id) {
                           onValueChange(vendor.id);
+                          if (onSelectObject) {
+                            onSelectObject(vendor);
+                          }
                         }
                         setOpen(false);
                       }}

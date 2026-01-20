@@ -28,8 +28,6 @@ export default function PurchaseOrderComponent() {
 
   const { poData, paginate, isLoading, isUnauthorized } = usePoQuery(token, buCode);
 
-  console.log("paginate", paginate);
-
   const sortFields = [
     { key: "code", label: "Code" },
     { key: "name", label: "Name" },
@@ -108,7 +106,7 @@ export default function PurchaseOrderComponent() {
 
   const content = (
     <PurchaseOrderList
-      purchaseOrders={poData}
+      purchaseOrders={poData || []}
       currentPage={page ? Number(page) : 1}
       totalPages={paginate?.pages || 1}
       totalItems={totalItems}

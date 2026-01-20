@@ -15,13 +15,24 @@ import { cn } from "@/lib/utils";
 import { PropsLookup } from "@/dtos/lookup.dto";
 import { useAuth } from "@/context/AuthContext";
 
+export interface UserListItem {
+  user_id: string;
+  firstname: string;
+  lastname: string;
+}
+
+interface LookupUserListProps extends PropsLookup {
+  readonly onSelectObject?: (obj: UserListItem) => void;
+}
+
 export default function LookupUserList({
   value,
   onValueChange,
   placeholder = "Select user",
   disabled = false,
   classNames,
-}: Readonly<PropsLookup>) {
+  onSelectObject,
+}: Readonly<LookupUserListProps>) {
   const { token, buCode } = useAuth();
   const { userList, isLoading } = useUserList(token, buCode);
   const [open, setOpen] = useState(false);
@@ -74,6 +85,9 @@ export default function LookupUserList({
                         onSelect={() => {
                           if (user.user_id) {
                             onValueChange(user.user_id);
+                            if (onSelectObject) {
+                              onSelectObject(user as UserListItem);
+                            }
                           }
                           setOpen(false);
                         }}

@@ -11,12 +11,17 @@ import { useAuth } from "@/context/AuthContext";
 import { useCreditTermQuery } from "@/hooks/use-credit-term";
 import { CreditTermGetAllDto } from "@/dtos/credit-term.dto";
 
+interface LookupCreditTermProps extends PropsLookup {
+  readonly onSelectObject?: (obj: CreditTermGetAllDto) => void;
+}
+
 export default function LookupCreditTerm({
   value,
   onValueChange,
   placeholder = "Select credit term",
   disabled = false,
-}: Readonly<PropsLookup>) {
+  onSelectObject,
+}: Readonly<LookupCreditTermProps>) {
   const { token, buCode } = useAuth();
 
   const { creditTerms, isLoading } = useCreditTermQuery(token, buCode);
@@ -38,7 +43,21 @@ export default function LookupCreditTerm({
   }
 
   return (
-    <Select value={value} onValueChange={onValueChange} disabled={disabled}>
+    <Select
+      value={value}
+      onValueChange={(newValue) => {
+        onValueChange(newValue);
+        if (onSelectObject && creditTermsData) {
+          const selectedItem = creditTermsData.find(
+            (item: CreditTermGetAllDto) => item.id === newValue
+          );
+          if (selectedItem) {
+            onSelectObject(selectedItem);
+          }
+        }
+      }}
+      disabled={disabled}
+    >
       <SelectTrigger className="w-full">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
