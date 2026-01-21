@@ -10,7 +10,7 @@ import { Shield, Save, X } from "lucide-react";
 import { Form } from "@/components/ui/form";
 import { formType } from "@/dtos/form.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
-import { useRoleMutation, useUpdateRole } from "@/hooks/use-role";
+import { roleKeyDetails, roleKeyList, useRoleMutation, useUpdateRole } from "@/hooks/use-role";
 import {
   RoleDto,
   RoleCreateDto,
@@ -120,7 +120,7 @@ export default function RoleForm({ initialData, mode }: RoleFormProps) {
         onSuccess: (response) => {
           const result = response as { data: { id: string } };
           toastSuccess({ message: tRole("create_success") });
-          queryClient.invalidateQueries({ queryKey: ["roles", buCode] });
+          queryClient.invalidateQueries({ queryKey: [roleKeyList, buCode] });
           router.replace(`/system-administration/role/${result.data.id}`);
         },
         onError: (error: unknown) => {
@@ -132,8 +132,8 @@ export default function RoleForm({ initialData, mode }: RoleFormProps) {
       updateRole(data as RoleUpdateDto, {
         onSuccess: () => {
           toastSuccess({ message: tRole("update_success") });
-          queryClient.invalidateQueries({ queryKey: ["roles", buCode] });
-          queryClient.invalidateQueries({ queryKey: ["role-id", initialData?.id] });
+          queryClient.invalidateQueries({ queryKey: [roleKeyList, buCode] });
+          queryClient.invalidateQueries({ queryKey: [roleKeyDetails, initialData?.id] });
           router.back();
         },
         onError: (error: unknown) => {

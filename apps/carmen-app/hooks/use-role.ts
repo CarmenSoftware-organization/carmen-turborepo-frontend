@@ -7,14 +7,16 @@ import {
   updateApiRequest,
   requestHeaders,
 } from "@/lib/config.api";
-import { useCallback } from "react";
-import { RoleDto, RoleCreateDto, RoleUpdateDto } from "@/dtos/role.dto";
+import { RoleCreateDto, RoleUpdateDto } from "@/dtos/role.dto";
 import axios from "axios";
 
 const roleApiUrl = (buCode: string, id?: string) => {
   const baseUrl = `${backendApi}/api/config/${buCode}/application-roles`;
   return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
 };
+
+export const roleKeyList = "roles";
+export const roleKeyDetails = "role-id";
 
 export const useRoleQuery = ({
   token,
@@ -28,7 +30,7 @@ export const useRoleQuery = ({
   const API_URL = roleApiUrl(buCode);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["roles", buCode, params],
+    queryKey: [roleKeyList, buCode, params],
     queryFn: async () => {
       try {
         const result = await getAllApiRequest(API_URL, token, "Error fetching roles", params);
@@ -41,16 +43,9 @@ export const useRoleQuery = ({
     enabled: !!token && !!buCode,
   });
 
-  const getRoleName = useCallback(
-    (roleId: string) => {
-      const role = data?.data.find((r: RoleDto) => r.id === roleId);
-      return role?.application_role_name || role?.name || "";
-    },
-    [data]
-  );
-
   const roles = data?.data;
-  return { roles, isLoading, error, getRoleName };
+  const paginate = data?.paginate;
+  return { roles, paginate, isLoading, error };
 };
 
 export const useRoleMutation = (token: string, buCode: string) => {
@@ -95,7 +90,7 @@ export const useRoleByIdQuery = (token: string, buCode: string, id: string) => {
   const API_URL = roleApiUrl(buCode, id);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["role-id", id],
+    queryKey: [roleKeyDetails, id],
     queryFn: async () => {
       try {
         const result = await getAllApiRequest(API_URL, token, "Error fetching role");
