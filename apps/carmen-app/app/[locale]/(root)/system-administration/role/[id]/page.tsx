@@ -18,5 +18,5 @@ export default function RoleIdPage() {
     return <DetailSkeleton />;
   }
 
-  return <RoleForm initialData={roleData} mode={formType.EDIT} />;
+  return <RoleForm initialData={roleData} mode={formType.VIEW} />;
 }
