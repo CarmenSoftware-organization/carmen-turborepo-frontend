@@ -56,6 +56,7 @@ import {
   Coins,
   Warehouse,
   File,
+  ShieldCheck,
 } from "lucide-react";
 
 export const moduleItems: ModuleItem[] = [
@@ -451,7 +452,7 @@ export const moduleItems: ModuleItem[] = [
       {
         labelKey: "Modules.SystemAdministration.role",
         href: "/system-administration/role",
-        icon: UserCheck,
+        icon: ShieldCheck,
       },
       // {
       //   labelKey: "Modules.SystemAdministration.generalSettings",

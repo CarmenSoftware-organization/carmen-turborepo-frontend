@@ -55,7 +55,7 @@ export default function RoleForm({ initialData, mode }: RoleFormProps) {
   const tCommon = useTranslations("Common");
   const tDataControls = useTranslations("DataControls");
 
-  const { permissions } = usePermissionQuery(token, buCode);
+  const { permissions } = usePermissionQuery(token, buCode, { perpage: -1 });
 
   const isAddMode = mode === formType.ADD;
   const isEditMode = mode === formType.EDIT;
@@ -145,7 +145,7 @@ export default function RoleForm({ initialData, mode }: RoleFormProps) {
   };
 
   return (
-    <div className="space-y-4 mx-auto max-w-3xl pb-10">
+    <div className="space-y-4 mx-auto max-w-5xl pb-10">
       {/* Header: Breadcrumb + Action buttons */}
       <div className="flex items-center justify-between">
         <Breadcrumb>

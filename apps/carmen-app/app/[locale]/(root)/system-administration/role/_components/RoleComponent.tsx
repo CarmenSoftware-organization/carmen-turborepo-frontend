@@ -140,7 +140,7 @@ export default function RoleComponent() {
 
   const content = (
     <ListRole
-      roles={roles}
+      roles={roles ?? []}
       isLoading={isLoading}
       currentPage={currentPage}
       totalPages={totalPages}

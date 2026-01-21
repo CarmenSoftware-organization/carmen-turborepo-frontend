@@ -23,7 +23,15 @@ interface PermissionSelectorProps {
   onChange: (payload: { add: string[]; remove: string[] }) => void;
 }
 
-const ACTION_COLUMNS = ["view", "view_all", "create", "update", "delete"];
+const ACTION_COLUMNS = [
+  "view",
+  "view_department",
+  "view_all",
+  "create",
+  "update",
+  "delete",
+  "execute",
+];
 
 export default function PermissionSelector({
   allPermissions,

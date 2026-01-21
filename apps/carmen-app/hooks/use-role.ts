@@ -6,6 +6,7 @@ import {
   postApiRequest,
   updateApiRequest,
   requestHeaders,
+  getByIdApiRequest,
 } from "@/lib/config.api";
 import { RoleCreateDto, RoleUpdateDto } from "@/dtos/role.dto";
 import axios from "axios";
@@ -93,7 +94,7 @@ export const useRoleByIdQuery = (token: string, buCode: string, id: string) => {
     queryKey: [roleKeyDetails, id],
     queryFn: async () => {
       try {
-        const result = await getAllApiRequest(API_URL, token, "Error fetching role");
+        const result = await getByIdApiRequest(API_URL, token, "Error fetching role");
         return result;
       } catch (error) {
         console.log("error", error);
@@ -115,6 +116,49 @@ export const useAssignRoleToUser = (token: string, buCode: string) => {
       const pathName = `api/config/${buCode}/user-application-roles`;
       const API_URL = `${backendApi}/${pathName}`;
       return await postApiRequest(API_URL, token, data, "Error assigning role to user");
+    },
+  });
+};
+
+export const useUserRoleIdQuery = (token: string, buCode: string, userId: string) => {
+  const API_URL = `${backendApi}/api/config/${buCode}/user-application-roles/${userId}`;
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: [roleKeyDetails, userId],
+    queryFn: async () => {
+      if (!token || !buCode || !userId) {
+        throw new Error("Unauthorized: Missing token, buCode or userId");
+      }
+      try {
+        const result = await getByIdApiRequest(API_URL, token, "Failed to fetch user roles");
+        return result;
+      } catch (err) {
+        console.error("API Error:", err);
+        throw err;
+      }
+    },
+    enabled: !!token && !!buCode && !!userId,
+  });
+
+  const userData = data?.data;
+
+  return {
+    userData,
+    isLoading,
+    error,
+  };
+};
+
+export const useUpdateUserRoles = (token: string, buCode: string) => {
+  return useMutation({
+    mutationFn: async (data: {
+      user_id: string;
+      application_role_id: { add?: string[]; remove?: string[] };
+    }) => {
+      if (!token || !buCode || !data.user_id) throw new Error("Unauthorized");
+      const pathName = `api/config/${buCode}/user-application-roles`;
+      const API_URL = `${backendApi}/${pathName}`;
+      return await updateApiRequest(API_URL, token, data, "Error updating user roles", "PATCH");
     },
   });
 };
