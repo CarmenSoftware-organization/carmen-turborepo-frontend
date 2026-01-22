@@ -118,7 +118,11 @@
     "location_not_found": "Location not found",
     "search_location": "Search Location...",
     "del_success": "Store location deleted successfully",
-    "del_error": "Failed to delete store location"
+    "del_error": "Failed to delete store location",
+    "add_success": "Store location created successfully",
+    "add_error": "Failed to add store location",
+    "edit_success": "Store location updated successfully",
+    "edit_error": "Failed to update store location"
   },
   "ExchangeRate": {
     "title": "Exchange Rate",

@@ -12,7 +12,6 @@ import { Save, X } from "lucide-react";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -50,6 +49,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { InputValidate } from "@/components/ui-custom/InputValidate";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
@@ -187,41 +187,39 @@ export default function LocationForm({
     [initProductKeys, form]
   );
 
-  const handleSubmit = async (data: FormLocationValues) => {
-    try {
-      if (mode === formType.EDIT) {
-        const res = await updateMutation.mutateAsync(data);
-        if (res) {
-          toastSuccess({ message: tLocation("edit_store_location_description") });
-          await Promise.all([
-            queryClient.invalidateQueries({ queryKey: ["location", buCode, initialData?.id] }),
-            queryClient.invalidateQueries({ queryKey: ["locations", buCode] }),
-            queryClient.invalidateQueries({ queryKey: ["users"] }),
-            queryClient.invalidateQueries({ queryKey: ["products"] }),
-          ]);
+  const handleSubmit = (data: FormLocationValues) => {
+    if (mode === formType.EDIT) {
+      updateMutation.mutate(data, {
+        onSuccess: () => {
+          toastSuccess({ message: tLocation("edit_success") });
+          queryClient.invalidateQueries({ queryKey: ["location", buCode, initialData?.id] });
+          queryClient.invalidateQueries({ queryKey: ["locations", buCode] });
+          queryClient.invalidateQueries({ queryKey: ["users"] });
+          queryClient.invalidateQueries({ queryKey: ["products"] });
           onViewMode();
-        }
-      } else {
-        const response = (await createMutation.mutateAsync(data)) as LocationResponse;
-        if (response?.id) {
-          toastSuccess({ message: tLocation("add_store_location_description") });
-          router.push(`/configuration/location/${response.id}`);
-          return;
-        }
-      }
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : tCommon("error_something_went_wrong");
-      toastError({ message: errorMessage });
-
-      if (process.env.NODE_ENV === "development") {
-        console.error("Location form error:", error);
-      }
+        },
+        onError: () => {
+          toastError({ message: tCommon("edit_error") });
+        },
+      });
+    } else {
+      createMutation.mutate(data, {
+        onSuccess: (response) => {
+          const result = response as LocationResponse;
+          if (result?.id) {
+            toastSuccess({ message: tLocation("add_success") });
+            router.push(`/configuration/location/${result.id}`);
+          }
+        },
+        onError: () => {
+          toastError({ message: tCommon("add_error") });
+        },
+      });
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto pb-10 p-1">
+    <div className="max-w-3xl mx-auto pb-10 p-1">
       <div className="sticky top-0 z-20 bg-background border-b border-border">
         <div className="flex items-center justify-between mb-2 pb-2">
           <Breadcrumb>
@@ -229,7 +227,7 @@ export default function LocationForm({
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link className="text-xs" href="/configuration/location">
-                    Location
+                    {tLocation("title")}
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -247,26 +245,27 @@ export default function LocationForm({
               )}
             </BreadcrumbList>
           </Breadcrumb>
+          <div className="flex items-center justify-end gap-2">
+            <Button variant="outline" size="sm" onClick={onCancel}>
+              <X className="w-4 h-4" />
+              {tCommon("cancel")}
+            </Button>
+            <Button
+              size="sm"
+              onClick={form.handleSubmit(handleSubmit)}
+              disabled={isPending || isViewMode}
+            >
+              <Save className="w-4 h-4" />
+              {tCommon("save")}
+            </Button>
+          </div>
         </div>
       </div>
-      <div className="flex items-center justify-end gap-2 pt-4">
-        <Button variant="outline" size="sm" onClick={onCancel}>
-          <X className="w-4 h-4" />
-          {tCommon("cancel")}
-        </Button>
-        <Button
-          size="sm"
-          onClick={form.handleSubmit(handleSubmit)}
-          disabled={isPending || isViewMode}
-        >
-          <Save className="w-4 h-4" />
-          {tCommon("save")}
-        </Button>
-      </div>
+
       <div className="flex-1 overflow-y-auto">
         <FormProvider {...form}>
           <div className="py-4 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="name"
@@ -275,7 +274,7 @@ export default function LocationForm({
                   <FormItem>
                     <FormLabel>{tLocation("store_location_name")}</FormLabel>
                     <FormControl>
-                      <Input {...field} disabled={isViewMode} />
+                      <InputValidate {...field} disabled={isViewMode} maxLength={100} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -289,7 +288,7 @@ export default function LocationForm({
                   <FormItem>
                     <FormLabel>{tLocation("store_location_code")}</FormLabel>
                     <FormControl>
-                      <Input {...field} disabled={isViewMode} />
+                      <InputValidate {...field} disabled={isViewMode} maxLength={10} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

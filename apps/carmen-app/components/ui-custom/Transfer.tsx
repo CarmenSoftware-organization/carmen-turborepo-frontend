@@ -28,8 +28,8 @@ export interface TransferProps {
   disabled?: boolean;
   operations?: [string, string];
   listStyle?:
-  | React.CSSProperties
-  | ((args: { direction: "left" | "right" }) => React.CSSProperties);
+    | React.CSSProperties
+    | ((args: { direction: "left" | "right" }) => React.CSSProperties);
   footer?: (props: { direction: "left" | "right" }) => React.ReactNode;
   showSelectAll?: boolean;
   pagination?: boolean | { pageSize: number };
@@ -55,16 +55,15 @@ export const Transfer: React.FC<TransferProps> = ({
   pagination = false,
 }) => {
   const tDataControls = useTranslations("DataControls");
-  const [sourceSelectedKeys, setSourceSelectedKeys] = useState<
-    (string | number)[]
-  >(() =>
+
+  const [sourceSelectedKeys, setSourceSelectedKeys] = useState<(string | number)[]>(() =>
     selectedKeys.filter((key: string | number) => !targetKeys.includes(key))
   );
-  const [targetSelectedKeys, setTargetSelectedKeys] = useState<
-    (string | number)[]
-  >(() =>
+
+  const [targetSelectedKeys, setTargetSelectedKeys] = useState<(string | number)[]>(() =>
     selectedKeys.filter((key: string | number) => targetKeys.includes(key))
   );
+
   const [sourceSearch, setSourceSearch] = useState("");
   const [targetSearch, setTargetSearch] = useState("");
   const [sourcePage, setSourcePage] = useState(1);
@@ -74,13 +73,14 @@ export const Transfer: React.FC<TransferProps> = ({
 
   const allItems = useMemo(() => {
     const safeDataSource = Array.isArray(dataSource) ? dataSource : [];
-    const safeLeftDataSource = Array.isArray(leftDataSource)
-      ? leftDataSource
-      : [];
+    const safeLeftDataSource = Array.isArray(leftDataSource) ? leftDataSource : [];
 
-    if (leftDataSource) {
-      // ถ้ามี leftDataSource ให้รวมกับ dataSource
-      return [...safeLeftDataSource, ...safeDataSource];
+    if (safeLeftDataSource.length > 0) {
+      // รวม dataSource กับ leftDataSource โดยกรอง duplicate ออก
+      // ใช้ dataSource เป็นหลัก (มีข้อมูลที่ถูกต้องกว่า เช่น ชื่อเต็ม)
+      const dataSourceKeys = new Set(safeDataSource.map((item) => item.key));
+      const uniqueLeftItems = safeLeftDataSource.filter((item) => !dataSourceKeys.has(item.key));
+      return [...safeDataSource, ...uniqueLeftItems];
     }
     return safeDataSource;
   }, [leftDataSource, dataSource]);
@@ -110,8 +110,7 @@ export const Transfer: React.FC<TransferProps> = ({
   };
 
   const moveTo = (direction: "right" | "left") => {
-    const moveKeys =
-      direction === "right" ? sourceSelectedKeys : targetSelectedKeys;
+    const moveKeys = direction === "right" ? sourceSelectedKeys : targetSelectedKeys;
     const newTargetKeys =
       direction === "right"
         ? [...targetKeys, ...moveKeys]
@@ -123,18 +122,10 @@ export const Transfer: React.FC<TransferProps> = ({
     onSelectChange?.([], []);
   };
 
-  const handleSelect = (
-    key: string | number,
-    selected: boolean,
-    direction: "left" | "right"
-  ) => {
-    const setKeys =
-      direction === "left" ? setTargetSelectedKeys : setSourceSelectedKeys;
-    const prevKeys =
-      direction === "left" ? targetSelectedKeys : sourceSelectedKeys;
-    const newKeys = selected
-      ? [...prevKeys, key]
-      : prevKeys.filter((k) => k !== key);
+  const handleSelect = (key: string | number, selected: boolean, direction: "left" | "right") => {
+    const setKeys = direction === "left" ? setTargetSelectedKeys : setSourceSelectedKeys;
+    const prevKeys = direction === "left" ? targetSelectedKeys : sourceSelectedKeys;
+    const newKeys = selected ? [...prevKeys, key] : prevKeys.filter((k) => k !== key);
 
     setKeys(newKeys);
     onSelectChange?.(
@@ -149,8 +140,7 @@ export const Transfer: React.FC<TransferProps> = ({
     direction: "left" | "right"
   ) => {
     const selectableKeys = items.filter((i) => !i.disabled).map((i) => i.key);
-    const setKeys =
-      direction === "left" ? setTargetSelectedKeys : setSourceSelectedKeys;
+    const setKeys = direction === "left" ? setTargetSelectedKeys : setSourceSelectedKeys;
     const newKeys = selected ? selectableKeys : [];
     setKeys(newKeys);
     onSelectChange?.(
@@ -168,8 +158,7 @@ export const Transfer: React.FC<TransferProps> = ({
     search: string,
     setSearch: (value: string) => void
   ) => {
-    const style =
-      typeof listStyle === "function" ? listStyle({ direction }) : listStyle;
+    const style = typeof listStyle === "function" ? listStyle({ direction }) : listStyle;
     const paginated = paginatedItems(items, page);
     const totalPages = Math.ceil(items.length / pageSize);
 
@@ -187,12 +176,8 @@ export const Transfer: React.FC<TransferProps> = ({
         {showSelectAll && items.length > 0 && (
           <div className="mb-2 flex items-center gap-2">
             <Checkbox
-              checked={
-                selected.length === items.filter((i) => !i.disabled).length
-              }
-              onCheckedChange={(checked) =>
-                handleSelectAll(items, Boolean(checked), direction)
-              }
+              checked={selected.length === items.filter((i) => !i.disabled).length}
+              onCheckedChange={(checked) => handleSelectAll(items, Boolean(checked), direction)}
               disabled={disabled}
             />
             <span className="text-muted-foreground text-xs">{tDataControls("select_all")}</span>
@@ -204,9 +189,7 @@ export const Transfer: React.FC<TransferProps> = ({
             <div key={item.key} className="flex items-center gap-2">
               <Checkbox
                 checked={selected.includes(item.key)}
-                onCheckedChange={(checked) =>
-                  handleSelect(item.key, Boolean(checked), direction)
-                }
+                onCheckedChange={(checked) => handleSelect(item.key, Boolean(checked), direction)}
                 disabled={disabled || item.disabled}
               />
               <div className="w-full">

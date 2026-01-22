@@ -79,7 +79,7 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
                       href="/configuration/location"
                       className="hover:text-primary transition-colors"
                     >
-                      Location
+                      {tStoreLocation("title")}
                     </Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
