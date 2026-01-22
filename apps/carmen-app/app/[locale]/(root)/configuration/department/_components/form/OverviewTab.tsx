@@ -9,10 +9,10 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/form-custom/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { DepartmentFormData } from "../../_schemas/department-form.schema";
 import FormBoolean from "@/components/form-custom/form-boolean";
+import { InputValidate } from "@/components/ui-custom/InputValidate";
+import { TextareaValidate } from "@/components/ui-custom/TextareaValidate";
 
 interface OverviewTabProps {
   readonly form: UseFormReturn<DepartmentFormData>;
@@ -26,7 +26,7 @@ export default function OverviewTab({ form, isViewMode }: OverviewTabProps) {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
         <FormField
           control={form.control}
           name="name"
@@ -35,7 +35,12 @@ export default function OverviewTab({ form, isViewMode }: OverviewTabProps) {
             <FormItem>
               <FormLabel>{tCommon("name")}</FormLabel>
               <FormControl>
-                <Input {...field} disabled={isViewMode} placeholder={tDepartment("enter_name")} />
+                <InputValidate
+                  {...field}
+                  disabled={isViewMode}
+                  placeholder={tDepartment("enter_name")}
+                  maxLength={100}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -50,7 +55,12 @@ export default function OverviewTab({ form, isViewMode }: OverviewTabProps) {
             <FormItem>
               <FormLabel>{tHeader("code")}</FormLabel>
               <FormControl>
-                <Input {...field} disabled={isViewMode} placeholder={tDepartment("enter_code")} />
+                <InputValidate
+                  {...field}
+                  disabled={isViewMode}
+                  placeholder={tDepartment("enter_code")}
+                  maxLength={10}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -64,12 +74,11 @@ export default function OverviewTab({ form, isViewMode }: OverviewTabProps) {
             <FormItem className="col-span-2">
               <FormLabel>{tHeader("description")}</FormLabel>
               <FormControl>
-                <Textarea
+                <TextareaValidate
                   {...field}
                   disabled={isViewMode}
                   placeholder={tDepartment("enter_description")}
-                  rows={3}
-                  className="resize-none"
+                  maxLength={256}
                 />
               </FormControl>
               <FormMessage />
