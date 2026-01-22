@@ -216,17 +216,17 @@ export function CategoryForm({ type, mode, selectedNode, parentNode, onSubmit, o
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-1.5">
           {/* Parent Field - only for subcategory and itemgroup */}
           {type !== "category" && (
             <FormField
               control={form.control}
               name={getParentFieldName()}
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="space-y-1">
                   <FormLabel>{getParentLabel()}</FormLabel>
                   <FormControl>
-                    <Input value={parentName} disabled className="bg-muted" />
+                    <Input value={parentName} disabled className="bg-muted h-8" />
                   </FormControl>
                   <input type="hidden" {...field} value={parentId || field.value} />
                   <FormMessage />
@@ -235,42 +235,43 @@ export function CategoryForm({ type, mode, selectedNode, parentNode, onSubmit, o
             />
           )}
 
-          <FormField
-            control={form.control}
-            name="code"
-            required
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{tCommon("code")}</FormLabel>
-                <FormControl>
-                  <InputValidate {...field} maxLength={15} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="grid grid-cols-2 gap-2">
+            <FormField
+              control={form.control}
+              name="code"
+              required
+              render={({ field }) => (
+                <FormItem className="space-y-1">
+                  <FormLabel>{tCommon("code")}</FormLabel>
+                  <FormControl>
+                    <InputValidate {...field} maxLength={5} className="h-8" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="name"
-            required
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{tCommon("name")}</FormLabel>
-                <FormControl>
-                  <InputValidate {...field} maxLength={100} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
+            <FormField
+              control={form.control}
+              name="name"
+              required
+              render={({ field }) => (
+                <FormItem className="space-y-1">
+                  <FormLabel>{tCommon("name")}</FormLabel>
+                  <FormControl>
+                    <InputValidate {...field} maxLength={100} className="h-8" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           <FormField
             control={form.control}
             name="tax_profile_id"
             required
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="space-y-1">
                 <FormLabel>{tCategory("tax_profile")}</FormLabel>
                 <FormControl>
                   <LookupTaxProfile
@@ -285,32 +286,12 @@ export function CategoryForm({ type, mode, selectedNode, parentNode, onSubmit, o
             )}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <FormField
-              control={form.control}
-              name="price_deviation_limit"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{tCategory("price_deviation_limit")}</FormLabel>
-                  <FormControl>
-                    <NumberInput
-                      value={field.value ?? 0}
-                      onChange={field.onChange}
-                      min={0}
-                      max={100}
-                      suffix={<Percent className="h-3 w-3" />}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+          <div className="grid grid-cols-2 gap-2">
             <FormField
               control={form.control}
               name="qty_deviation_limit"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="space-y-1">
                   <FormLabel>{tCategory("qty_deviation_limit")}</FormLabel>
                   <FormControl>
                     <NumberInput
@@ -325,17 +306,35 @@ export function CategoryForm({ type, mode, selectedNode, parentNode, onSubmit, o
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="price_deviation_limit"
+              render={({ field }) => (
+                <FormItem className="space-y-1">
+                  <FormLabel>{tCategory("price_deviation_limit")}</FormLabel>
+                  <FormControl>
+                    <NumberInput
+                      value={field.value ?? 0}
+                      onChange={field.onChange}
+                      min={0}
+                      max={100}
+                      suffix={<Percent className="h-3 w-3" />}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <FormField
               control={form.control}
               name="is_used_in_recipe"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-2">
-                  <div>
-                    <FormLabel className="text-xs">{tCategory("used_in_recipe")}</FormLabel>
-                  </div>
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border px-2 py-1.5">
+                  <FormLabel className="text-xs">{tCategory("used_in_recipe")}</FormLabel>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
@@ -346,10 +345,8 @@ export function CategoryForm({ type, mode, selectedNode, parentNode, onSubmit, o
               control={form.control}
               name="is_sold_directly"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-2">
-                  <div>
-                    <FormLabel className="text-xs">{tCategory("sold_directly")}</FormLabel>
-                  </div>
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border px-2 py-1.5">
+                  <FormLabel className="text-xs">{tCategory("sold_directly")}</FormLabel>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
@@ -357,43 +354,43 @@ export function CategoryForm({ type, mode, selectedNode, parentNode, onSubmit, o
               )}
             />
           </div>
-
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{tCommon("description")}</FormLabel>
-                <FormControl>
-                  <TextareaValidate {...field} maxLength={256} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           <FormField
             control={form.control}
             name="is_active"
             render={({ field }) => (
-              <FormItem className="py-2">
+              <FormItem>
                 <FormControl>
                   <FormBoolean
                     value={field.value}
                     onChange={field.onChange}
                     label={tCommon("active")}
                     type="checkbox"
+                    required
                   />
                 </FormControl>
               </FormItem>
             )}
           />
 
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onCancel}>
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem className="space-y-1">
+                <FormLabel>{tCommon("description")}</FormLabel>
+                <FormControl>
+                  <TextareaValidate {...field} maxLength={256} rows={2} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex justify-end gap-2 pt-2">
+            <Button type="button" variant="outline" size="sm" onClick={onCancel}>
               {tCommon("cancel")}
             </Button>
-            <Button type="submit">
+            <Button type="submit" size="sm">
               {mode === formType.EDIT ? tAction("edit") : tAction("add")}
             </Button>
           </div>

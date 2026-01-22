@@ -98,14 +98,14 @@ export default function TreeNode({
     <div className="tree-node">
       <div
         className={cn(
-          "fxr-c p-2 hover:bg-muted/50 rounded-md group transition-colors w-full",
+          "flex items-center p-2 hover:bg-muted/50 rounded-md group/node transition-colors isolate",
           level > 0 ? "ml-8" : ""
         )}
         style={{ paddingLeft: `${level * 12 + 8}px` }}
       >
         <button
           type="button"
-          className="fxr-c flex-1 text-left"
+          className="flex items-center text-left"
           onClick={() => toggleExpand(node.id)}
           aria-expanded={hasChildren ? isExpanded : undefined}
           aria-label={`${getTypeLabel(node.type)}: ${node.name}`}
@@ -120,14 +120,13 @@ export default function TreeNode({
             <div className="w-6 mr-1" aria-hidden="true"></div>
           )}
 
-          <div className="flex-1">
-            <div className="fxr-c gap-1 items-baseline">
+          <div>
+            <div className="flex items-center gap-1">
               <Badge variant="outline" className="text-xs bg-muted border-none">
                 {highlightText(node.code, search || "")}
               </Badge>
               {"-"}
               <p className="font-medium">{highlightText(node.name, search || "")}</p>
-              <p className="text-xs text-muted-foreground">{getTypeLabel(node.type)}</p>
             </div>
 
             <p className="text-muted-foreground">
@@ -139,7 +138,9 @@ export default function TreeNode({
           </div>
         </button>
 
-        <div className="flex items-center gap-2 group-hover:flex hidden">
+        <p className="text-xs text-muted-foreground ml-2">{getTypeLabel(node.type)}</p>
+
+        <div className="hidden items-center gap-1 group-hover/node:flex ml-auto">
           {node.type !== NODE_TYPE.ITEM_GROUP && (
             <Button variant="ghost" size={"sm"} onClick={() => onAdd(node)} className="h-6 w-6">
               <Plus className="h-4 w-4" />

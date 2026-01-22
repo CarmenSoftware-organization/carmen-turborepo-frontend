@@ -318,7 +318,6 @@ export default function CategoryComponent() {
         let result;
 
         if (nodeType === NODE_TYPE.CATEGORY) {
-          // Use direct deleteCategory service instead of setting is_active flag
           const categoryDto: CategoryDto = {
             id: node.id,
             code: node.code,
@@ -361,8 +360,6 @@ export default function CategoryComponent() {
           result = await deleteItemGroup(itemGroupDto);
         }
 
-        // Check if result indicates success
-        // API typically returns { statusCode: 200, data: ... } for success
         const isSuccess =
           result &&
           (result.statusCode === 200 ||
