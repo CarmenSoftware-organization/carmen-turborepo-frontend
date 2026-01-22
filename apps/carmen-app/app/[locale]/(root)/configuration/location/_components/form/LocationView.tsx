@@ -68,7 +68,7 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
   return (
     <>
       {currentMode === formType.VIEW ? (
-        <div className="space-y-4 mx-auto max-w-3xl">
+        <div className="space-y-4 mx-auto max-w-3xl pb-10">
           {/* Header: Breadcrumb + Edit button */}
           <div className="flex items-center justify-between">
             <Breadcrumb>

@@ -19,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Link, useRouter } from "@/lib/navigation";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
@@ -50,6 +49,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { InputValidate } from "@/components/ui-custom/InputValidate";
+import { TextareaValidate } from "@/components/ui-custom/TextareaValidate";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
@@ -219,7 +219,7 @@ export default function LocationForm({
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-1">
+    <div className="max-w-3xl mx-auto p-1 pb-10">
       <div className="sticky top-0 z-20 bg-background border-b border-border">
         <div className="flex items-center justify-between mb-2 pb-2">
           <Breadcrumb>
@@ -262,7 +262,7 @@ export default function LocationForm({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-10">
+      <div className="flex-1 overflow-y-auto">
         <FormProvider {...form}>
           <div className="py-4 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -359,7 +359,7 @@ export default function LocationForm({
                 <FormItem className="col-span-2">
                   <FormLabel>{tCommon("description")}</FormLabel>
                   <FormControl>
-                    <Textarea {...field} disabled={isViewMode} rows={3} />
+                    <TextareaValidate {...field} disabled={isViewMode} maxLength={256} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
