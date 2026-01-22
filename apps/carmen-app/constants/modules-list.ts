@@ -123,11 +123,6 @@ export const moduleItems: ModuleItem[] = [
         icon: Tag,
       },
       {
-        labelKey: "Modules.ProductManagement.report",
-        href: "/product-management/report",
-        icon: BarChart3,
-      },
-      {
         labelKey: "Modules.ProductManagement.unit",
         href: "/product-management/unit",
         icon: Ruler,
@@ -164,11 +159,11 @@ export const moduleItems: ModuleItem[] = [
         href: "/vendor-management/vendor-entry",
         icon: Factory,
       },
-      {
-        labelKey: "Modules.VendorManagement.priceComparisons",
-        href: "/vendor-management/price-comparison",
-        icon: Scale,
-      },
+      // {
+      //   labelKey: "Modules.VendorManagement.priceComparisons",
+      //   href: "/vendor-management/price-comparison",
+      //   icon: Scale,
+      // },
     ],
   },
   {
@@ -296,33 +291,33 @@ export const moduleItems: ModuleItem[] = [
       },
     ],
   },
-  {
-    labelKey: "Modules.production",
-    href: "/production",
-    icon: Factory,
-    children: [
-      {
-        labelKey: "Modules.Production.recipeExecution",
-        href: "/production/recipe-execution",
-        icon: BookOpen,
-      },
-      {
-        labelKey: "Modules.Production.batchProduction",
-        href: "/production/batch-production",
-        icon: Package,
-      },
-      {
-        labelKey: "Modules.Production.wastageTracking",
-        href: "/production/wastage-tracking",
-        icon: AlertTriangle,
-      },
-      {
-        labelKey: "Modules.Production.qualityControl",
-        href: "/production/quality-control",
-        icon: Shield,
-      },
-    ],
-  },
+  // {
+  //   labelKey: "Modules.production",
+  //   href: "/production",
+  //   icon: Factory,
+  //   children: [
+  //     {
+  //       labelKey: "Modules.Production.recipeExecution",
+  //       href: "/production/recipe-execution",
+  //       icon: BookOpen,
+  //     },
+  //     {
+  //       labelKey: "Modules.Production.batchProduction",
+  //       href: "/production/batch-production",
+  //       icon: Package,
+  //     },
+  //     {
+  //       labelKey: "Modules.Production.wastageTracking",
+  //       href: "/production/wastage-tracking",
+  //       icon: AlertTriangle,
+  //     },
+  //     {
+  //       labelKey: "Modules.Production.qualityControl",
+  //       href: "/production/quality-control",
+  //       icon: Shield,
+  //     },
+  //   ],
+  // },
   {
     labelKey: "Modules.reportingAndAnalytics",
     href: "/reporting-analytic",
@@ -380,11 +375,11 @@ export const moduleItems: ModuleItem[] = [
         href: "/finance/credit-term",
         icon: CreditCard,
       },
-      {
-        labelKey: "Modules.Finance.vat",
-        href: "/finance/vat",
-        icon: Receipt,
-      },
+      // {
+      //   labelKey: "Modules.Finance.vat",
+      //   href: "/finance/vat",
+      //   icon: Receipt,
+      // },
     ],
   },
   {
@@ -425,12 +420,17 @@ export const moduleItems: ModuleItem[] = [
       {
         labelKey: "Modules.Configuration.extra_cost",
         href: "/configuration/extra-cost",
-        icon: Plus,
+        icon: DollarSign,
       },
       {
         labelKey: "Modules.Configuration.business_type",
         href: "/configuration/business-type",
         icon: Briefcase,
+      },
+      {
+        labelKey: "Modules.ProductManagement.unit",
+        href: "/configuration/unit",
+        icon: Ruler,
       },
     ],
   },
@@ -496,50 +496,50 @@ export const moduleItems: ModuleItem[] = [
       },
     ],
   },
-  {
-    labelKey: "Modules.helpAndSupport",
-    href: "/help-support",
-    icon: HelpCircle,
-    children: [
-      {
-        labelKey: "Modules.HelpAndSupport.userManuals",
-        href: "/help-support/user-manuals",
-        icon: BookOpen,
-      },
-      {
-        labelKey: "Modules.HelpAndSupport.videoTutorials",
-        href: "/help-support/video-tutorials",
-        icon: Video,
-      },
-      {
-        labelKey: "Modules.HelpAndSupport.faqs",
-        href: "/help-support/faqs",
-        icon: HelpIcon,
-      },
-      {
-        labelKey: "Modules.HelpAndSupport.supportTicketSystem",
-        href: "/help-support/support-ticket-system",
-        icon: MessageCircle,
-      },
-      {
-        labelKey: "Modules.HelpAndSupport.systemUpdatesAndReleaseNotes",
-        href: "/help-support/system-updates-and-release-notes",
-        icon: Download,
-      },
-    ],
-  },
-  {
-    labelKey: "Modules.systemIntegration",
-    href: "/system-integration",
-    icon: Package,
-    children: [
-      {
-        labelKey: "Modules.SystemIntegration.pos",
-        href: "/system-integration/pos",
-        icon: Zap,
-      },
-    ],
-  },
+  // {
+  //   labelKey: "Modules.helpAndSupport",
+  //   href: "/help-support",
+  //   icon: HelpCircle,
+  //   children: [
+  //     {
+  //       labelKey: "Modules.HelpAndSupport.userManuals",
+  //       href: "/help-support/user-manuals",
+  //       icon: BookOpen,
+  //     },
+  //     {
+  //       labelKey: "Modules.HelpAndSupport.videoTutorials",
+  //       href: "/help-support/video-tutorials",
+  //       icon: Video,
+  //     },
+  //     {
+  //       labelKey: "Modules.HelpAndSupport.faqs",
+  //       href: "/help-support/faqs",
+  //       icon: HelpIcon,
+  //     },
+  //     {
+  //       labelKey: "Modules.HelpAndSupport.supportTicketSystem",
+  //       href: "/help-support/support-ticket-system",
+  //       icon: MessageCircle,
+  //     },
+  //     {
+  //       labelKey: "Modules.HelpAndSupport.systemUpdatesAndReleaseNotes",
+  //       href: "/help-support/system-updates-and-release-notes",
+  //       icon: Download,
+  //     },
+  //   ],
+  // },
+  // {
+  //   labelKey: "Modules.systemIntegration",
+  //   href: "/system-integration",
+  //   icon: Package,
+  //   children: [
+  //     {
+  //       labelKey: "Modules.SystemIntegration.pos",
+  //       href: "/system-integration/pos",
+  //       icon: Zap,
+  //     },
+  //   ],
+  // },
   {
     labelKey: "Modules.profile",
     href: "/profile",

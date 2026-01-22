@@ -16,10 +16,10 @@ import { UnitDto, CreateUnitDto, UpdateUnitDto } from "@/dtos/unit.dto";
 import UnitDialog from "@/components/shared/UnitDialog";
 import { formType } from "@/dtos/form.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
-import DeleteConfirmDialog from "./DeleteConfirmDialog";
 import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { productManagementPermission } from "@/lib/permission";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 export default function UnitComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -230,8 +230,10 @@ export default function UnitComponent() {
       />
       <DeleteConfirmDialog
         open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
+        onOpenChange={() => setDeleteDialogOpen(false)}
         onConfirm={handleConfirmDelete}
+        title={tCommon("delete")}
+        description={tCommon("del_desc")}
       />
     </>
   );

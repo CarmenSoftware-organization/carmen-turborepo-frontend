@@ -16,7 +16,13 @@ interface MenuCardGridProps {
 
 export function MenuCardGrid({ items, className }: MenuCardGridProps) {
   return (
-    <div className={cn("grid grid-cols-2 lg:grid-cols-4 gap-6", className)}>
+    <div
+      className={cn(
+        "grid gap-2 sm:gap-3 md:gap-4",
+        "grid-cols-2 sm:grid-cols-3 md:grid-cols-4",
+        className
+      )}
+    >
       {items.map((item) => (
         <MenuCard key={item.name} item={item} />
       ))}
@@ -38,11 +44,11 @@ export function MenuCard({ item, className }: MenuCardProps) {
     >
       <Card className="h-full transition-all duration-300 group-hover:shadow-xl group-focus-visible:shadow-xl group-hover:border-primary/50 group-focus-visible:border-primary/50 group-hover:-translate-y-1 group-focus-visible:-translate-y-1 relative overflow-hidden border-muted/60 group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300" />
-        <CardContent className="flex flex-col items-center justify-center p-8 space-y-4 relative z-10">
-          <div className="p-4 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-focus-visible:bg-primary group-hover:text-primary-foreground group-focus-visible:text-primary-foreground transition-all duration-300 shadow-sm">
-            <item.icon className="h-8 w-8" />
+        <CardContent className="flex flex-col items-center justify-center p-2 sm:p-3 md:p-4 space-y-1 sm:space-y-2 relative z-10">
+          <div className="p-1.5 sm:p-2 md:p-2.5 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-focus-visible:bg-primary group-hover:text-primary-foreground group-focus-visible:text-primary-foreground transition-all duration-300 shadow-sm">
+            <item.icon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
           </div>
-          <h2 className="text-lg font-semibold text-muted-foreground group-hover:text-primary group-focus-visible:text-primary transition-colors duration-300 text-center tracking-tight">
+          <h2 className="text-xs sm:text-sm md:text-base font-semibold text-muted-foreground group-hover:text-primary group-focus-visible:text-primary transition-colors duration-300 text-center tracking-tight">
             {item.name}
           </h2>
         </CardContent>
