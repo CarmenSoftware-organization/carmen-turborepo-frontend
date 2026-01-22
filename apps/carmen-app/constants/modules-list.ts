@@ -122,11 +122,6 @@ export const moduleItems: ModuleItem[] = [
         href: "/product-management/category",
         icon: Tag,
       },
-      {
-        labelKey: "Modules.ProductManagement.unit",
-        href: "/product-management/unit",
-        icon: Ruler,
-      },
     ],
   },
   {

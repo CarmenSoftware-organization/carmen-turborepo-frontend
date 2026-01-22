@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useRouter } from "@/lib/navigation";
 import { Building2, FileText } from "lucide-react";
 
@@ -16,12 +16,12 @@ export default function DialogNewPo({ open, onOpenChange }: DialogNewPoProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <p className="text-base font-semibold leading-none tracking-tight">
+          <DialogTitle>
             Create New Purchase Order
-          </p>
-          <p className="text-sm text-muted-foreground">
+          </DialogTitle>
+          <DialogDescription>
             Choose how you would like to create a new purchase order.
-          </p>
+          </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-4 py-4">
           <Card

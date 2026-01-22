@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { formType } from "@/dtos/form.dto";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ActionFields from "./ActionFields";
 import HeadPoForm from "./HeadPoForm";
@@ -69,47 +69,115 @@ export default function PoForm({ poData, mode }: PoFormProps) {
     defaultValues,
   });
 
+  // Reset form when poData changes
   useEffect(() => {
     if (poData) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const data = poData as any;
+      const rawItems = data?.purchase_order_detail ?? data?.details ?? [];
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const details = rawItems.map((item: any) => ({
+        id: item.id,
+        sequence: item.sequence_no ?? item.sequence ?? 0,
+        product_id: item.info?.product_id ?? item.product_id ?? "",
+        product_name: item.info?.product_name ?? item.product_name ?? "",
+        product_local_name: item.info?.product_local_name ?? item.product_local_name ?? null,
+        order_unit_id: item.order_unit_id ?? "",
+        order_unit_name: item.order_unit_name ?? "",
+        order_unit_conversion_factor: item.order_unit_conversion_factor ?? 1,
+        order_qty: item.order_qty ?? 0,
+        base_unit_id: item.base_unit_id ?? "",
+        base_unit_name: item.base_unit_name ?? "",
+        base_qty: item.base_qty ?? 0,
+        price: item.price ?? 0,
+        sub_total_price: item.sub_total_price ?? 0,
+        net_amount: item.net_amount ?? 0,
+        total_price: item.total_price ?? 0,
+        tax_profile_id: item.tax_profile_id ?? null,
+        tax_profile_name: item.tax_profile_name ?? null,
+        tax_rate: item.tax_rate ?? 0,
+        tax_amount: item.tax_amount ?? 0,
+        is_tax_adjustment: item.is_tax_adjustment ?? false,
+        discount_rate: item.discount_rate ?? 0,
+        discount_amount: item.discount_amount ?? 0,
+        is_discount_adjustment: item.is_discount_adjustment ?? false,
+        is_foc: item.is_foc ?? false,
+        pr_detail: item.pr_detail ?? [],
+        description: item.description ?? "",
+        note: item.note ?? "",
+      }));
+
+      // Get current form values to preserve fields not returned by API
+      const currentValues = form.getValues();
+
       form.reset({
-        id: poData.id,
-        vendor_id: poData.vendor_id,
-        vendor_name: poData.vendor_name,
-        delivery_date: poData.delivery_date,
-        currency_id: poData.currency_id,
-        currency_name: poData.currency_name,
-        exchange_rate: poData.exchange_rate,
-        description: poData.description,
-        order_date: poData.order_date,
-        credit_term_id: poData.credit_term_id,
-        credit_term_name: poData.credit_term_name,
-        credit_term_value: poData.credit_term_value,
-        buyer_id: poData.buyer_id,
-        buyer_name: poData.buyer_name,
-        email: poData.email,
-        remarks: poData.remarks,
-        note: poData.note,
+        id: data.id,
+        vendor_id: data.vendor_id,
+        vendor_name: data.vendor?.name ?? data.vendor_name ?? "",
+        delivery_date: data.delivery_date,
+        currency_id: data.currency_id,
+        currency_name: data.currency?.name ?? data.currency_name ?? "",
+        exchange_rate: data.exchange_rate ?? 1,
+        description: data.description ?? "",
+        order_date: data.order_date,
+        // credit_term: API returns only number value, preserve id/name from form
+        credit_term_id: data.credit_term_id ?? currentValues.credit_term_id ?? "",
+        credit_term_name: data.credit_term_name ?? currentValues.credit_term_name ?? "",
+        credit_term_value:
+          typeof data.credit_term === "number" ? data.credit_term : (data.credit_term_value ?? 0),
+        // buyer: API returns only name, preserve id from form
+        buyer_id: data.buyer_id ?? currentValues.buyer_id ?? "",
+        buyer_name: data.buyer_name ?? "",
+        email: data.email ?? "",
+        remarks: data.remarks ?? "",
+        note: data.note ?? "",
+        details,
       });
     }
-  }, [poData, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [poData]);
 
-  const watchVendorId = form.watch("vendor_id");
-  const watchCurrencyId = form.watch("currency_id");
-  const canSubmit = Boolean(watchVendorId && watchCurrencyId);
+  const vendorId = useWatch({ control: form.control, name: "vendor_id" });
+  const currencyId = useWatch({ control: form.control, name: "currency_id" });
+  const canSubmit = Boolean(vendorId && currencyId);
 
   const handleOpenDeleteDialog = () => {
     setIsDeleteDialogOpen(true);
   };
 
   const handleConfirmDelete = () => {
-    // TODO: Implement delete mutation
     setIsDeleteDialogOpen(false);
     toastSuccess({ message: tPurchaseOrder("del_po_success") });
   };
 
   const onSubmit = (data: PoFormValues) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, ...payloadWithoutId } = data;
+
+    // Prepare details array - remove id from new items, keep id for existing items
+    const details = data.details?.map((item) => {
+      // Remove undefined optional fields for cleaner payload
+      const cleanItem = { ...item };
+      if (cleanItem.product_local_name === null) delete cleanItem.product_local_name;
+      if (cleanItem.tax_profile_id === null) delete cleanItem.tax_profile_id;
+      if (cleanItem.tax_profile_name === null) delete cleanItem.tax_profile_name;
+      return cleanItem;
+    });
+
+    const payload = {
+      ...payloadWithoutId,
+      details: details && details.length > 0 ? details : undefined,
+    };
+
     if (currentMode === formType.ADD) {
-      createMutation.mutate(data, {
+      // Remove id from details for create
+      const createPayload = {
+        ...payload,
+        details: payload.details?.map(({ id: itemId, ...rest }) => rest),
+      };
+
+      createMutation.mutate(createPayload, {
         onSuccess: (response) => {
           toastSuccess({ message: tPurchaseOrder("add_po_success") });
           const newId = response?.data?.id;
@@ -125,7 +193,7 @@ export default function PoForm({ poData, mode }: PoFormProps) {
       });
     } else if (currentMode === formType.EDIT && poData?.id) {
       updateMutation.mutate(
-        { id: poData.id, data },
+        { id: poData.id, data: payload },
         {
           onSuccess: () => {
             toastSuccess({ message: tPurchaseOrder("update_po_success") });
@@ -164,11 +232,7 @@ export default function PoForm({ poData, mode }: PoFormProps) {
               </TabsList>
               <div className="mt-2">
                 <TabsContent value="items" className="mt-0">
-                  <PoItems
-                    form={form}
-                    currentMode={currentMode}
-                    originalItems={poData?.details || []}
-                  />
+                  <PoItems form={form} currentMode={currentMode} />
                 </TabsContent>
                 <TabsContent value="docs" className="mt-0">
                   <Docs docs={[]} />

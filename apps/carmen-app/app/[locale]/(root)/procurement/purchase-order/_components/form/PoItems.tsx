@@ -2,108 +2,40 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
-import { UseFormReturn } from "react-hook-form";
-import {
-  PoFormValues,
-  CreatePoDetailDto,
-  UpdatePoDetailDto,
-  PoDetailItemDto,
-} from "../../_schema/po.schema";
-import { useMemo, useState, useCallback } from "react";
+import { UseFormReturn, useWatch } from "react-hook-form";
+import { PoFormValues, PoDetailItemDto } from "../../_schema/po.schema";
+import { useMemo, useCallback } from "react";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
 import { formType } from "@/dtos/form.dto";
-import { PoDetailItemDto as PoDetailItemDtoFromDto } from "@/dtos/po.dto";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { createPoItemColumns, PoDetailItem } from "./PoItemColumns";
 
 interface Props {
   readonly form: UseFormReturn<PoFormValues>;
   currentMode: formType;
-  originalItems: PoDetailItemDtoFromDto[];
 }
 
-interface DetailState {
-  add: CreatePoDetailDto[];
-  update: UpdatePoDetailDto[];
-  delete: { id: string }[];
-}
-
-export default function PoItems({ form, currentMode, originalItems }: Props) {
+export default function PoItems({ form, currentMode }: Props) {
   const tPurchaseOrder = useTranslations("PurchaseOrder");
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
-  const { token, buCode } = useAuth();
+  const { buCode } = useAuth();
 
-  // Use local state instead of form.watch to avoid re-render loops
-  const [detailState, setDetailState] = useState<DetailState>({
-    add: [],
-    update: [],
-    delete: [],
-  });
-
-  // Sync state to form
-  const syncToForm = useCallback(
-    (newState: DetailState) => {
-      const formValue: PoFormValues["details"] = {};
-      if (newState.add.length > 0) formValue.add = newState.add;
-      if (newState.update.length > 0) formValue.update = newState.update;
-      if (newState.delete.length > 0) formValue.delete = newState.delete;
-
-      if (Object.keys(formValue).length > 0) {
-        form.setValue("details", formValue);
-      } else {
-        form.setValue("details", undefined);
-      }
-    },
-    [form]
-  );
-
-  const updatedIds = useMemo(
-    () => new Set(detailState.update.map((item) => item.id)),
-    [detailState.update]
-  );
-  const deletedIds = useMemo(
-    () => new Set(detailState.delete.map((item) => item.id)),
-    [detailState.delete]
-  );
-
-  // Combine add, update, and original items for display
-  const items: PoDetailItem[] = useMemo(() => {
-    const addWithType = detailState.add.map((item, index) => ({
-      ...item,
-      _type: "add" as const,
-      _index: index,
-    }));
-    const updateWithType = detailState.update.map((item, index) => ({
-      ...item,
-      _type: "update" as const,
-      _index: index,
-    }));
-    const originalWithType = originalItems
-      .filter((item) => item.id && !updatedIds.has(item.id) && !deletedIds.has(item.id))
-      .map((item, index) => ({
-        ...item,
-        _type: "original" as const,
-        _index: index,
-      }));
-    return [...addWithType, ...updateWithType, ...originalWithType];
-  }, [detailState.add, detailState.update, originalItems, updatedIds, deletedIds]);
+  // Read items directly from form using useWatch for better performance
+  const watchedDetails = useWatch({ control: form.control, name: "details" });
+  const items = watchedDetails ?? [];
 
   const isEditMode = currentMode !== formType.VIEW;
 
   const getNextSequence = useCallback(() => {
-    const allSequences = [
-      ...detailState.add.map((item) => item.sequence),
-      ...detailState.update.map((item) => item.sequence),
-      ...originalItems.map((item) => item.sequence),
-    ];
+    const allSequences = items.map((item) => item.sequence);
     return allSequences.length > 0 ? Math.max(...allSequences) + 1 : 1;
-  }, [detailState.add, detailState.update, originalItems]);
+  }, [items]);
 
   const onAdd = useCallback(() => {
-    const newItem: CreatePoDetailDto = {
+    const newItem: PoDetailItemDto = {
       sequence: getNextSequence(),
       product_id: "",
       product_name: "",
@@ -132,110 +64,53 @@ export default function PoItems({ form, currentMode, originalItems }: Props) {
       description: "",
       note: "",
     };
-    setDetailState((prev) => {
-      const newState = { ...prev, add: [newItem, ...prev.add] };
-      syncToForm(newState);
-      return newState;
-    });
-  }, [syncToForm, getNextSequence]);
+    form.setValue("details", [newItem, ...items]);
+  }, [form, items, getNextSequence]);
 
   const onDelete = useCallback(
     (item: PoDetailItem) => {
-      setDetailState((prev) => {
-        let newState: DetailState;
-
-        if (item._type === "add") {
-          const filteredAdd = prev.add.filter((_, index) => index !== item._index);
-          newState = { ...prev, add: filteredAdd };
-        } else if (item._type === "update") {
-          const itemToDelete = prev.update[item._index];
-          const filteredUpdate = prev.update.filter((_, index) => index !== item._index);
-          newState = {
-            ...prev,
-            update: filteredUpdate,
-            delete: [...prev.delete, { id: itemToDelete.id }],
-          };
-        } else {
-          // Original item
-          const originalItem = item as PoDetailItemDtoFromDto & {
-            _type: "original";
-            _index: number;
-          };
-          newState = {
-            ...prev,
-            delete: [...prev.delete, { id: originalItem.id! }],
-          };
-        }
-
-        syncToForm(newState);
-        return newState;
-      });
+      const newItems = items.filter((_, index) => index !== item._index);
+      form.setValue("details", newItems.length > 0 ? newItems : undefined);
     },
-    [syncToForm]
+    [form, items]
   );
 
   const updateItemField = useCallback(
-    (item: PoDetailItem, updates: Partial<CreatePoDetailDto>) => {
-      setDetailState((prev) => {
-        let newState: DetailState;
-
-        if (item._type === "add") {
-          const updatedAdd = prev.add.map((addItem, index) =>
-            index === item._index ? { ...addItem, ...updates } : addItem
-          );
-          newState = { ...prev, add: updatedAdd };
-        } else if (item._type === "update") {
-          const updatedUpdate = prev.update.map((updateItem, index) =>
-            index === item._index ? { ...updateItem, ...updates } : updateItem
-          );
-          newState = { ...prev, update: updatedUpdate };
-        } else {
-          // Move original item to update array with changes
-          const { _type, _index, ...originalFields } = item as PoDetailItemDtoFromDto & {
-            _type: "original";
-            _index: number;
-          };
-          const newUpdateItem: UpdatePoDetailDto = {
-            ...originalFields,
-            id: originalFields.id!,
-            product_local_name: originalFields.product_local_name ?? null,
-            tax_profile_id: originalFields.tax_profile_id ?? null,
-            tax_profile_name: originalFields.tax_profile_name ?? null,
-            description: originalFields.description ?? "",
-            note: originalFields.note ?? "",
-            ...updates,
-          };
-          newState = { ...prev, update: [...prev.update, newUpdateItem] };
-        }
-
-        syncToForm(newState);
-        return newState;
-      });
+    (item: PoDetailItem, updates: Partial<PoDetailItemDto>) => {
+      const newItems = items.map((prevItem, index) =>
+        index === item._index ? { ...prevItem, ...updates } : prevItem
+      );
+      form.setValue("details", newItems);
     },
-    [syncToForm]
+    [form, items]
   );
+
+  // Add _index to items for table rendering
+  const itemsWithIndex: PoDetailItem[] = useMemo(() => {
+    return items.map((item, index) => ({
+      ...item,
+      _type: item.id ? ("original" as const) : ("add" as const),
+      _index: index,
+    }));
+  }, [items]);
 
   const columns = useMemo(
     () =>
       createPoItemColumns({
         currentMode,
         buCode,
-        token,
         tTableHeader,
         updateItemField,
         onDelete,
       }),
-    [currentMode, buCode, token, tTableHeader, updateItemField, onDelete]
+    [currentMode, buCode, tTableHeader, updateItemField, onDelete]
   );
 
   const table = useReactTable({
-    data: items,
+    data: itemsWithIndex,
     columns,
     getRowId: (row, index) => {
-      if (row._type === "update") return (row as UpdatePoDetailDto).id;
-      if (row._type === "original")
-        return (row as PoDetailItemDtoFromDto & { _type: "original" }).id ?? `original-${index}`;
-      return `new-${index}`;
+      return row.id ?? `new-${index}`;
     },
     getCoreRowModel: getCoreRowModel(),
     enableRowSelection: true,
@@ -254,7 +129,7 @@ export default function PoItems({ form, currentMode, originalItems }: Props) {
       </div>
       <DataGrid
         table={table}
-        recordCount={items.length}
+        recordCount={itemsWithIndex.length}
         emptyMessage={tCommon("no_data")}
         tableLayout={{
           headerSticky: true,

@@ -4,29 +4,41 @@ import { Package, Trash2 } from "lucide-react";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
 import { formType } from "@/dtos/form.dto";
-import { PoDetailItemDto as PoDetailItemDtoFromDto } from "@/dtos/po.dto";
 import LookupProduct from "@/components/lookup/LookupProduct";
 import NumberInput from "@/components/form-custom/NumberInput";
-import { CreatePoDetailDto, UpdatePoDetailDto } from "../../_schema/po.schema";
+import { PoDetailItemDto } from "../../_schema/po.schema";
 import { Checkbox } from "@/components/ui/checkbox";
 
-// Combined type for display (add, update, and original items)
-export type PoDetailItem = (CreatePoDetailDto | UpdatePoDetailDto | PoDetailItemDtoFromDto) & {
-  _type: "add" | "update" | "original";
+// Type for display items with index
+export type PoDetailItem = PoDetailItemDto & {
+  _type: "add" | "original";
   _index: number;
 };
 
 interface ColumnConfig {
   currentMode: formType;
   buCode: string;
-  token: string;
   tTableHeader: (key: string) => string;
-  updateItemField: (item: PoDetailItem, updates: Partial<CreatePoDetailDto>) => void;
+  updateItemField: (item: PoDetailItem, updates: Partial<PoDetailItemDto>) => void;
   onDelete: (item: PoDetailItem) => void;
 }
 
+// Helper function to calculate prices
+const calculatePrices = (item: PoDetailItem, updates: Partial<PoDetailItemDto>) => {
+  const orderQty = updates.order_qty ?? item.order_qty ?? 0;
+  const price = updates.price ?? item.price ?? 0;
+  const discountAmount = updates.discount_amount ?? item.discount_amount ?? 0;
+  const taxAmount = updates.tax_amount ?? item.tax_amount ?? 0;
+
+  const subTotalPrice = orderQty * price;
+  const netAmount = subTotalPrice - discountAmount;
+  const totalPrice = netAmount + taxAmount;
+
+  return { sub_total_price: subTotalPrice, net_amount: netAmount, total_price: totalPrice };
+};
+
 export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailItem>[] => {
-  const { currentMode, buCode, token, tTableHeader, updateItemField, onDelete } = config;
+  const { currentMode, buCode, tTableHeader, updateItemField, onDelete } = config;
 
   const isEditMode = currentMode !== formType.VIEW;
 
@@ -97,19 +109,12 @@ export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailIte
             onChange={(value) => {
               const conversionFactor = row.original.order_unit_conversion_factor || 1;
               const baseQty = value * conversionFactor;
-              const price = row.original.price || 0;
-              const subTotalPrice = value * price;
-              const discountAmount = row.original.discount_amount || 0;
-              const netAmount = subTotalPrice - discountAmount;
-              const taxAmount = row.original.tax_amount || 0;
-              const totalPrice = netAmount + taxAmount;
+              const prices = calculatePrices(row.original, { order_qty: value });
 
               updateItemField(row.original, {
                 order_qty: value,
                 base_qty: baseQty,
-                sub_total_price: subTotalPrice,
-                net_amount: netAmount,
-                total_price: totalPrice,
+                ...prices,
               });
             }}
             classNames="h-7 text-xs"
@@ -138,19 +143,8 @@ export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailIte
           <NumberInput
             value={row.original.price || 0}
             onChange={(value) => {
-              const orderQty = row.original.order_qty || 0;
-              const subTotalPrice = orderQty * value;
-              const discountAmount = row.original.discount_amount || 0;
-              const netAmount = subTotalPrice - discountAmount;
-              const taxAmount = row.original.tax_amount || 0;
-              const totalPrice = netAmount + taxAmount;
-
-              updateItemField(row.original, {
-                price: value,
-                sub_total_price: subTotalPrice,
-                net_amount: netAmount,
-                total_price: totalPrice,
-              });
+              const prices = calculatePrices(row.original, { price: value });
+              updateItemField(row.original, { price: value, ...prices });
             }}
             classNames="h-7 text-xs"
             disabled={!row.original.product_id}
@@ -178,16 +172,8 @@ export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailIte
           <NumberInput
             value={row.original.discount_amount || 0}
             onChange={(value) => {
-              const subTotalPrice = row.original.sub_total_price || 0;
-              const netAmount = subTotalPrice - value;
-              const taxAmount = row.original.tax_amount || 0;
-              const totalPrice = netAmount + taxAmount;
-
-              updateItemField(row.original, {
-                discount_amount: value,
-                net_amount: netAmount,
-                total_price: totalPrice,
-              });
+              const prices = calculatePrices(row.original, { discount_amount: value });
+              updateItemField(row.original, { discount_amount: value, ...prices });
             }}
             classNames="h-7 text-xs"
             disabled={!row.original.product_id}
@@ -215,13 +201,8 @@ export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailIte
           <NumberInput
             value={row.original.tax_amount || 0}
             onChange={(value) => {
-              const netAmount = row.original.net_amount || 0;
-              const totalPrice = netAmount + value;
-
-              updateItemField(row.original, {
-                tax_amount: value,
-                total_price: totalPrice,
-              });
+              const prices = calculatePrices(row.original, { tax_amount: value });
+              updateItemField(row.original, { tax_amount: value, ...prices });
             }}
             classNames="h-7 text-xs"
             disabled={!row.original.product_id}

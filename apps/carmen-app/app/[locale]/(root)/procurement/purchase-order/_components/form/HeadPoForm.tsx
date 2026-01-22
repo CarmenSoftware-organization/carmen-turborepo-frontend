@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Building2, CalendarIcon, Clock, DollarSign, FileText, Mail, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, useWatch } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
 import { PoFormValues } from "../../_schema/po.schema";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -31,6 +31,12 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
 
   const isViewMode = currentMode === formType.VIEW;
   const isEditMode = currentMode === formType.EDIT || currentMode === formType.ADD;
+
+  // Use useWatch for display values in view mode (better performance than form.watch)
+  const vendorName = useWatch({ control: form.control, name: "vendor_name" });
+  const buyerName = useWatch({ control: form.control, name: "buyer_name" });
+  const currencyName = useWatch({ control: form.control, name: "currency_name" });
+  const creditTermName = useWatch({ control: form.control, name: "credit_term_name" });
 
   return (
     <div className="space-y-6">
@@ -58,7 +64,7 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                   />
                 ) : (
                   <Input
-                    value={form.watch("vendor_name") ?? "-"}
+                    value={vendorName ?? "-"}
                     className="h-9 bg-muted"
                     disabled
                   />
@@ -190,7 +196,7 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                   />
                 ) : (
                   <Input
-                    value={form.watch("buyer_name") ?? "-"}
+                    value={buyerName ?? "-"}
                     className="h-9 bg-muted"
                     disabled
                   />
@@ -225,7 +231,7 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                   />
                 ) : (
                   <Input
-                    value={form.watch("currency_name") ?? "-"}
+                    value={currencyName ?? "-"}
                     className="h-9 bg-muted"
                     disabled
                   />
@@ -280,7 +286,7 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                   />
                 ) : (
                   <Input
-                    value={form.watch("credit_term_name") ?? "-"}
+                    value={creditTermName ?? "-"}
                     className="h-9 bg-muted"
                     disabled
                   />

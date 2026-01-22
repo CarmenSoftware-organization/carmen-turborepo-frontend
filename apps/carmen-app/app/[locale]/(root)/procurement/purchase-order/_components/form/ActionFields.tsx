@@ -65,7 +65,11 @@ export default function ActionFields({
                     variant="outline"
                     size="sm"
                     className="px-2 text-xs"
-                    onClick={() => router.back()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      router.back();
+                    }}
                   >
                     <ChevronLeft /> {tCommon("back")}
                   </Button>
@@ -80,7 +84,11 @@ export default function ActionFields({
                     variant="default"
                     size="sm"
                     className="px-2 text-xs"
-                    onClick={() => setCurrentMode(formType.EDIT)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setCurrentMode(formType.EDIT);
+                    }}
                   >
                     <Pencil /> {tCommon("edit")}
                   </Button>
@@ -98,9 +106,11 @@ export default function ActionFields({
                     variant="outline"
                     size="sm"
                     className="px-2 text-xs"
-                    onClick={() =>
-                      currentMode === formType.ADD ? router.back() : setCurrentMode(formType.VIEW)
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      currentMode === formType.ADD ? router.back() : setCurrentMode(formType.VIEW);
+                    }}
                   >
                     <X /> {tCommon("cancel")}
                   </Button>
@@ -130,7 +140,15 @@ export default function ActionFields({
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="outline" size="sm" className="px-2 text-xs">
+              <Button
+                variant="outline"
+                size="sm"
+                className="px-2 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+              >
                 <Printer /> {tCommon("print")}
               </Button>
             </TooltipTrigger>
@@ -140,7 +158,15 @@ export default function ActionFields({
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="outline" size="sm" className="px-2 text-xs">
+              <Button
+                variant="outline"
+                size="sm"
+                className="px-2 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+              >
                 <FileDown /> {tCommon("export")}
               </Button>
             </TooltipTrigger>
@@ -150,7 +176,15 @@ export default function ActionFields({
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="outline" size="sm" className="px-2 text-xs">
+              <Button
+                variant="outline"
+                size="sm"
+                className="px-2 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+              >
                 <Share /> {tCommon("share")}
               </Button>
             </TooltipTrigger>
@@ -161,7 +195,15 @@ export default function ActionFields({
           {currentMode === formType.VIEW && onDelete && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="destructive" size="sm" onClick={onDelete}>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    onDelete();
+                  }}
+                >
                   <Trash2 /> {tCommon("delete")}
                 </Button>
               </TooltipTrigger>

@@ -43,7 +43,7 @@ export const PoDetailItemSchema = z.object({
   note: z.string().optional(),
 });
 
-// ===== Create PO Detail Schema (for add) =====
+// ===== Create PO Detail Schema (for add - no id) =====
 export const CreatePoDetailSchema = PoDetailItemSchema.omit({ id: true });
 
 // ===== Update PO Detail Schema (requires id) =====
@@ -54,13 +54,6 @@ export const UpdatePoDetailSchema = PoDetailItemSchema.extend({
 // ===== Delete PO Detail Schema =====
 export const DeletePoDetailSchema = z.object({
   id: z.string(),
-});
-
-// ===== PO Detail Form Schema (add/update/delete) =====
-export const PoDetailFormSchema = z.object({
-  add: z.array(CreatePoDetailSchema).optional(),
-  update: z.array(UpdatePoDetailSchema).optional(),
-  delete: z.array(DeletePoDetailSchema).optional(),
 });
 
 // ===== Base PO Schema =====
@@ -84,24 +77,22 @@ const BasePoSchema = z.object({
 });
 
 // ===== PO Form Schema (for react-hook-form) =====
+// details is an array of PoDetailItemSchema (with optional id)
 export const PoFormSchema = BasePoSchema.extend({
   id: z.string().optional(),
-  details: PoDetailFormSchema.optional(),
+  details: z.array(PoDetailItemSchema).optional(),
 });
 
 // ===== Create PO Schema (for API request) =====
+// details is an array without id
 export const CreatePoSchema = BasePoSchema.extend({
-  details: z
-    .object({
-      add: z.array(CreatePoDetailSchema).optional(),
-    })
-    .optional(),
+  details: z.array(CreatePoDetailSchema).optional(),
 });
 
 // ===== Update PO Schema (for API request) =====
+// details is an array (items can have id or not)
 export const UpdatePoSchema = BasePoSchema.extend({
-  id: z.string(),
-  details: PoDetailFormSchema.optional(),
+  details: z.array(PoDetailItemSchema).optional(),
 });
 
 // ===== Types =====
@@ -110,7 +101,6 @@ export type PoDetailItemDto = z.infer<typeof PoDetailItemSchema>;
 export type CreatePoDetailDto = z.infer<typeof CreatePoDetailSchema>;
 export type UpdatePoDetailDto = z.infer<typeof UpdatePoDetailSchema>;
 export type DeletePoDetailDto = z.infer<typeof DeletePoDetailSchema>;
-export type PoDetailFormDto = z.infer<typeof PoDetailFormSchema>;
 export type PoFormValues = z.infer<typeof PoFormSchema>;
 export type CreatePoDto = z.infer<typeof CreatePoSchema>;
 export type UpdatePoDto = z.infer<typeof UpdatePoSchema>;

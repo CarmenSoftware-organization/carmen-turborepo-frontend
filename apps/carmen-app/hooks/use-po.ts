@@ -108,7 +108,7 @@ export const usePoUpdateMutation = (token: string, buCode: string) => {
         throw new Error("Unauthorized: Missing token or buCode");
       }
       const API_URL = getApiUrl(pathName, id);
-      return updateApiRequest(API_URL, token, data, "Failed to update po", "PATCH");
+      return updateApiRequest(API_URL, token, data, "Failed to update po", "PUT");
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: [queryKey, buCode] });
