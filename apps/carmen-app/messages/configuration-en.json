@@ -61,7 +61,11 @@
     "not_found_delivery_point": "No delivery points found",
     "not_ava_delivery_point": "No delivery points available.",
     "del_success": "Delivery point deleted successfully",
-    "del_error": "Failed to delete delivery point"
+    "del_error": "Failed to delete delivery point",
+    "add_success": "Delivery point created successfully",
+    "add_error": "Failed to add delivery point",
+    "edit_success": "Delivery point updated successfully",
+    "edit_error": "Failed to update delivery point"
   },
   "Department": {
     "title": "Department",

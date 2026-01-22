@@ -9,6 +9,7 @@ import {
   useDeliveryPointQuery,
   useUpdateDeliveryPoint,
   useDeleteDeliveryPoint,
+  queryKeyDeliveryPoint,
 } from "@/hooks/use-delivery-point";
 import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer } from "lucide-react";
@@ -113,7 +114,7 @@ export default function DeliveryPointComponent() {
 
   const refetchDeliveryPoints = () => {
     queryClient.invalidateQueries({
-      queryKey: ["delivery-point"],
+      queryKey: [queryKeyDeliveryPoint],
       exact: false,
     });
   };
@@ -122,13 +123,13 @@ export default function DeliveryPointComponent() {
     if (dialogMode === formType.ADD) {
       createDeliveryPoint(data, {
         onSuccess: () => {
-          toastSuccess({ message: "Create delivery point successfully" });
+          toastSuccess({ message: tDeliveryPoint("add_success") });
           refetchDeliveryPoints();
           setDialogOpen(false);
           setSelectedDeliveryPoint(undefined);
         },
         onError: () => {
-          toastError({ message: "Failed to create delivery point" });
+          toastError({ message: tDeliveryPoint("add_error") });
         },
       });
     } else if (dialogMode === formType.EDIT && selectedDeliveryPoint) {
@@ -136,13 +137,13 @@ export default function DeliveryPointComponent() {
 
       updateDeliveryPoint(updateData, {
         onSuccess: () => {
-          toastSuccess({ message: "Update delivery point successfully" });
+          toastSuccess({ message: tDeliveryPoint("edit_success") });
           refetchDeliveryPoints();
           setDialogOpen(false);
           setSelectedDeliveryPoint(undefined);
         },
         onError: () => {
-          toastError({ message: "Failed to update delivery point" });
+          toastError({ message: tDeliveryPoint("edit_error") });
         },
       });
     }

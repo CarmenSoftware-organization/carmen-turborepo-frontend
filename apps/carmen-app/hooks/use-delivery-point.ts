@@ -15,6 +15,8 @@ import {
 } from "@/dtos/delivery-point.dto";
 import axios from "axios";
 
+export const queryKeyDeliveryPoint = "delivery-point";
+
 const deliveryPointApiUrl = (buCode: string, id?: string) => {
   const baseUrl = `${backendApi}/api/config/${buCode}/delivery-point`;
   return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
@@ -32,7 +34,7 @@ export const useDeliveryPointQuery = ({
   const API_URL = deliveryPointApiUrl(buCode);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["delivery-point", buCode, params],
+    queryKey: [queryKeyDeliveryPoint, buCode, params],
     queryFn: async () => {
       try {
         const result = await getAllApiRequest(

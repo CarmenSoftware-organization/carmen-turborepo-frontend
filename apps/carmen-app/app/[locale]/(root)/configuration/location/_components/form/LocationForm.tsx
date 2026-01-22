@@ -219,7 +219,7 @@ export default function LocationForm({
   };
 
   return (
-    <div className="max-w-3xl mx-auto pb-10 p-1">
+    <div className="max-w-3xl mx-auto p-1">
       <div className="sticky top-0 z-20 bg-background border-b border-border">
         <div className="flex items-center justify-between mb-2 pb-2">
           <Breadcrumb>
@@ -262,7 +262,7 @@ export default function LocationForm({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pb-10">
         <FormProvider {...form}>
           <div className="py-4 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
