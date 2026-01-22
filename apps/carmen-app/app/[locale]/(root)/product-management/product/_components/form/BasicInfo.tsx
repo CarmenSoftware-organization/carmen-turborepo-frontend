@@ -4,8 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useRef, useMemo } from "react";
 import { useCategoryByItemGroupQuery } from "@/hooks/use-product";
-import { useItemGroup } from "@/hooks/use-item-group";
-import { ItemGroupDto, itemGroupSelectDto } from "@/dtos/category.dto";
+import { itemGroupSelectDto } from "@/dtos/category.dto";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Save, X, Edit, Info } from "lucide-react";
@@ -22,11 +21,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/form-custom/form";
-import { Textarea } from "@/components/ui/textarea";
 import { ProductFormValues } from "@/dtos/product.dto";
 import { useRouter } from "@/lib/navigation";
 import { useSearchParams } from "next/navigation";
 import LookupTaxProfile from "@/components/lookup/LookupTaxProfile";
+import { InputValidate } from "@/components/ui-custom/InputValidate";
+import { TextareaValidate } from "@/components/ui-custom/TextareaValidate";
 
 interface BasicInfoProps {
   readonly control: Control<ProductFormValues>;
@@ -311,7 +311,7 @@ export default function BasicInfo({
               <FormItem>
                 <FormLabel>{tProducts("product_code")}</FormLabel>
                 <FormControl>
-                  <Input
+                  <InputValidate
                     placeholder={tProducts("product_code")}
                     {...field}
                     disabled={currentMode === formType.VIEW}
@@ -332,7 +332,7 @@ export default function BasicInfo({
               <FormItem>
                 <FormLabel>{tProducts("product_name")}</FormLabel>
                 <FormControl>
-                  <Input
+                  <InputValidate
                     placeholder={tProducts("product_name")}
                     {...field}
                     disabled={currentMode === formType.VIEW}
@@ -352,11 +352,12 @@ export default function BasicInfo({
               <FormItem>
                 <FormLabel>{tProducts("local_name")}</FormLabel>
                 <FormControl>
-                  <Input
+                  <InputValidate
                     placeholder={tProducts("local_name")}
                     {...field}
                     disabled={currentMode === formType.VIEW}
                     className={cn(currentMode === formType.VIEW && "bg-muted")}
+                    maxLength={100}
                   />
                 </FormControl>
                 <FormMessage />
@@ -518,11 +519,12 @@ export default function BasicInfo({
                 <FormItem className="col-span-full">
                   <FormLabel>{tProducts("description")}</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaValidate
                       placeholder={tProducts("description")}
                       {...field}
                       disabled={currentMode === formType.VIEW}
                       className={cn(currentMode === formType.VIEW && "bg-muted")}
+                      maxLength={256}
                     />
                   </FormControl>
                   <FormMessage />

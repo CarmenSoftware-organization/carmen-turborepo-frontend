@@ -14,7 +14,11 @@ export const productFormSchema = z.object({
     id: z.union([z.string().uuid(), z.literal("")]).optional(),
     is_used_in_recipe: z.boolean(),
     is_sold_directly: z.boolean(),
-    barcode: z.string().optional(),
+    barcode: z
+      .string()
+      .min(6, "Barcode must be at least 6 characters")
+      .max(100, "Barcode must be at most 100 characters")
+      .optional(),
     price_deviation_limit: z.number().optional(),
     qty_deviation_limit: z.number().optional(),
     is_ingredients: z.boolean(),

@@ -17,6 +17,7 @@ import FormBoolean from "@/components/form-custom/form-boolean";
 import { memo, useMemo } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ProductFormValues } from "@/dtos/product.dto";
+import { InputValidate } from "@/components/ui-custom/InputValidate";
 
 interface ProductAttributeProps {
   readonly control: Control<ProductFormValues>;
@@ -208,7 +209,13 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
             <FormItem>
               <FormLabel>{tProducts("barcode")}</FormLabel>
               <FormControl>
-                <Input placeholder={tProducts("barcode")} {...field} disabled={isViewMode} />
+                <InputValidate
+                  placeholder={tProducts("barcode")}
+                  {...field}
+                  disabled={isViewMode}
+                  minLength={6}
+                  maxLength={100}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
