@@ -100,7 +100,7 @@
     "title": "สถานที่เก็บสินค้า",
     "store_location_name": "ชื่อสถานที่เก็บสินค้า",
     "store_location_status": "สถานะสถานที่เก็บสินค้า",
-    "store_location_code": "รหัสสถานที่เก็บสินค้า",
+    "store_location_code": "รหัสถานที่เก็บสินค้า",
     "add_store_location": "เพิ่มสถานที่เก็บสินค้า",
     "edit_store_location": "แก้ไขสถานที่เก็บสินค้า",
     "add_store_location_description": "กรอกข้อมูลเพื่อสร้างสถานที่เก็บสินค้าใหม่",

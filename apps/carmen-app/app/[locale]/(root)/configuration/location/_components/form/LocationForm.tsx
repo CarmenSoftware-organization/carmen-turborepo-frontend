@@ -1,7 +1,6 @@
 import {
   FormLocationValues,
   LocationByIdDto,
-  LocationResponse,
   PHYSICAL_COUNT_TYPE,
   UserItemTransfer,
 } from "@/dtos/location.dto";
@@ -205,10 +204,13 @@ export default function LocationForm({
     } else {
       createMutation.mutate(data, {
         onSuccess: (response) => {
-          const result = response as LocationResponse;
-          if (result?.id) {
+          if (response?.data?.id) {
             toastSuccess({ message: tLocation("add_success") });
-            router.push(`/configuration/location/${result.id}`);
+            router.push(`/configuration/location/${response.data.id}`);
+            queryClient.invalidateQueries({ queryKey: ["locations", buCode] });
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+            queryClient.invalidateQueries({ queryKey: ["products"] });
+            onViewMode();
           }
         },
         onError: () => {

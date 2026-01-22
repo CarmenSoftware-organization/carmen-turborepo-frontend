@@ -9,7 +9,7 @@ import {
   requestHeaders,
 } from "@/lib/config.api";
 import { useCallback } from "react";
-import { FormLocationValues, StoreLocationDto } from "@/dtos/location.dto";
+import { FormLocationValues, LocationResponse, StoreLocationDto } from "@/dtos/location.dto";
 import axios from "axios";
 
 const locationApiUrl = (buCode: string, id?: string) => {
@@ -119,7 +119,7 @@ export const useLocationMutation = (token: string, buCode: string) => {
   return useMutation({
     mutationFn: (data: FormLocationValues) => {
       if (!token || !buCode) throw new Error("Unauthorized");
-      return postApiRequest(API_URL, token, data, "Error creating location");
+      return postApiRequest<FormLocationValues, { data: LocationResponse }>(API_URL, token, data, "Error creating location");
     },
   });
 };
