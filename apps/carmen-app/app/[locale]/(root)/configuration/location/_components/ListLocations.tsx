@@ -145,7 +145,7 @@ export default function ListLocations({
           return <span>{location.name}</span>;
         },
         enableSorting: true,
-        size: 250,
+        size: 200,
       },
       {
         accessorKey: "location_type",
@@ -161,7 +161,7 @@ export default function ListLocations({
           return <p>{getLocationType(location.location_type)}</p>;
         },
         enableSorting: true,
-        size: 150,
+        size: 120,
       },
       {
         accessorKey: "physical_count_type",

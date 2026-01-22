@@ -122,7 +122,7 @@ export default function CurrencyList({
           return <span>{currency.name}</span>;
         },
         enableSorting: true,
-        size: 250,
+        size: 200,
         meta: {
           headerTitle: t("name"),
         },

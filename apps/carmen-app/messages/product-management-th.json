@@ -107,6 +107,9 @@
     "try_different_keywords": "ลองคำค้นหาอื่น",
     "name_required": "กรุณากรอกชื่อ",
     "code_required": "กรุณากรอกรหัส",
-    "tax_profile": "ประเภทภาษี"
+    "tax_profile": "ประเภทภาษี",
+    "tax_profile_required": "กรุณาเลือกประเภทภาษี",
+    "tax_profile_name_required": "กรุณากรอกชื่อประเภทภาษี",
+    "tax_rate_required": "กรุณากรอกอัตราภาษี"
   }
 }

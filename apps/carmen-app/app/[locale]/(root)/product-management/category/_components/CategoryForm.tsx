@@ -26,7 +26,13 @@ import { z } from "zod";
 
 export type CategoryType = "category" | "subcategory" | "itemgroup";
 
-const categorySchema = (messages?: { codeRequired?: string; nameRequired?: string }) =>
+const categorySchema = (messages?: {
+  codeRequired?: string;
+  nameRequired?: string;
+  taxProfileRequired?: string;
+  taxProfileNameRequired?: string;
+  taxRateRequired?: string;
+}) =>
   z.object({
     id: z.string().optional(),
     code: z.string().min(1, { message: messages?.codeRequired ?? "Code is required" }),
@@ -38,9 +44,15 @@ const categorySchema = (messages?: { codeRequired?: string; nameRequired?: strin
     is_used_in_recipe: z.boolean(),
     is_sold_directly: z.boolean(),
     is_edit_type: z.boolean().optional(),
-    tax_profile_id: z.string().optional(),
-    tax_profile_name: z.string().optional(),
-    tax_rate: z.number().optional(),
+    tax_profile_id: z
+      .string()
+      .min(1, { message: messages?.taxProfileRequired ?? "Tax profile is required" }),
+    tax_profile_name: z
+      .string()
+      .min(1, { message: messages?.taxProfileNameRequired ?? "Tax profile name is required" }),
+    tax_rate: z
+      .number()
+      .min(0, { message: messages?.taxRateRequired ?? "Tax rate must be a positive number" }),
     // Parent fields - optional depending on type
     product_category_id: z.string().optional(),
     product_subcategory_id: z.string().optional(),
@@ -91,6 +103,9 @@ export function CategoryForm({ type, mode, selectedNode, parentNode, onSubmit, o
       categorySchema({
         codeRequired: tCategory("code_required"),
         nameRequired: tCategory("name_required"),
+        taxProfileRequired: tCategory("tax_profile_required"),
+        taxProfileNameRequired: tCategory("tax_profile_name_required"),
+        taxRateRequired: tCategory("tax_rate_required"),
       }),
     [tCategory]
   );
@@ -250,6 +265,26 @@ export function CategoryForm({ type, mode, selectedNode, parentNode, onSubmit, o
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="tax_profile_id"
+            required
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{tCategory("tax_profile")}</FormLabel>
+                <FormControl>
+                  <LookupTaxProfile
+                    value={field.value}
+                    displayName={taxProfileName}
+                    onValueChange={field.onChange}
+                    onSelectObject={handleTaxProfileSelect}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <FormField
               control={form.control}
@@ -331,25 +366,6 @@ export function CategoryForm({ type, mode, selectedNode, parentNode, onSubmit, o
                 <FormLabel>{tCommon("description")}</FormLabel>
                 <FormControl>
                   <TextareaValidate {...field} maxLength={256} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="tax_profile_id"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{tCategory("tax_profile")}</FormLabel>
-                <FormControl>
-                  <LookupTaxProfile
-                    value={field.value}
-                    displayName={taxProfileName}
-                    onValueChange={field.onChange}
-                    onSelectObject={handleTaxProfileSelect}
-                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

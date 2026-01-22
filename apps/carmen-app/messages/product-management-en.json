@@ -107,6 +107,9 @@
     "try_different_keywords": "Try different keywords",
     "name_required": "Please enter name",
     "code_required": "Please enter code",
-    "tax_profile": "Tax Profile"
+    "tax_profile": "Tax Profile",
+    "tax_profile_required": "Please select tax profile",
+    "tax_profile_name_required": "Please enter tax profile name",
+    "tax_rate_required": "Please enter tax rate"
   }
 }
