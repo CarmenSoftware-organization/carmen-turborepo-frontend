@@ -25,7 +25,7 @@ import { PoFormSchema, PoFormValues } from "../../_schema/po.schema";
 import { useAuth } from "@/context/AuthContext";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
-import { usePoCreateMutation, usePoUpdateMutation } from "@/hooks/use-po";
+import { usePoMutation, usePoUpdateMutation, usePoDeleteMutation } from "@/hooks/use-po";
 import { useRouter } from "next/navigation";
 
 interface PoFormProps {
@@ -40,10 +40,12 @@ export default function PoForm({ poData, mode }: PoFormProps) {
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const createMutation = usePoCreateMutation(token, buCode);
+  const createMutation = usePoMutation(token, buCode);
   const updateMutation = usePoUpdateMutation(token, buCode);
+  const deleteMutation = usePoDeleteMutation(token, buCode);
 
-  const isPending = createMutation.isPending || updateMutation.isPending;
+  const isPending =
+    createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
 
   const defaultValues: PoFormValues = {
     vendor_id: "",
@@ -147,8 +149,18 @@ export default function PoForm({ poData, mode }: PoFormProps) {
   };
 
   const handleConfirmDelete = () => {
-    setIsDeleteDialogOpen(false);
-    toastSuccess({ message: tPurchaseOrder("del_po_success") });
+    if (!poData?.id) return;
+
+    deleteMutation.mutate(poData.id, {
+      onSuccess: () => {
+        setIsDeleteDialogOpen(false);
+        toastSuccess({ message: tPurchaseOrder("del_po_success") });
+        router.push("/procurement/purchase-order");
+      },
+      onError: () => {
+        toastError({ message: tPurchaseOrder("del_po_failed") });
+      },
+    });
   };
 
   const onSubmit = (data: PoFormValues) => {

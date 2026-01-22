@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import {
+  deleteApiRequest,
   getAllApiRequest,
   getApiUrl,
   getByIdApiRequest,
@@ -80,7 +81,7 @@ export const usePoIdQuery = (token: string, buCode: string, id: string) => {
   };
 };
 
-export const usePoCreateMutation = (token: string, buCode: string) => {
+export const usePoMutation = (token: string, buCode: string) => {
   const queryClient = useQueryClient();
   const pathName = `api/${buCode}/purchase-order`;
   const API_URL = getApiUrl(pathName);
@@ -117,4 +118,20 @@ export const usePoUpdateMutation = (token: string, buCode: string) => {
   });
 };
 
-export const usePoMutation = usePoCreateMutation;
+export const usePoDeleteMutation = (token: string, buCode: string) => {
+  const queryClient = useQueryClient();
+  const pathName = `api/${buCode}/purchase-order`;
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      if (!token || !buCode || !id) {
+        throw new Error("Unauthorized: Missing required parameters");
+      }
+      const API_URL = getApiUrl(pathName, id);
+      return deleteApiRequest(API_URL, token, "Failed to delete PO");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [queryKey, buCode] });
+    },
+  });
+};
