@@ -221,7 +221,7 @@ export default function LocationForm({
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-1 pb-10">
+    <div className="m-4 pb-10">
       <div className="sticky top-0 z-20 bg-background border-b border-border">
         <div className="flex items-center justify-between mb-2 pb-2">
           <Breadcrumb>

@@ -27,8 +27,9 @@ export function TreeView({ tree, getCheckboxState, handleCheckboxChange }: TreeV
           const checkboxState = getCheckboxState(data.id);
 
           return (
-            <TreeItem key={item.getId()} item={item}>
-              <TreeItemLabel>
+            <TreeItem key={item.getId()} item={item} asChild>
+              <div>
+                <TreeItemLabel>
                 {data.type === "product" ? (
                   <div className="w-full flex items-start space-x-2 text-left">
                     <div
@@ -91,6 +92,7 @@ export function TreeView({ tree, getCheckboxState, handleCheckboxChange }: TreeV
                   </div>
                 )}
               </TreeItemLabel>
+              </div>
             </TreeItem>
           );
         })}
