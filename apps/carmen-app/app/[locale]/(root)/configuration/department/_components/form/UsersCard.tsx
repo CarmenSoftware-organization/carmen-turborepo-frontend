@@ -8,10 +8,11 @@ import { useCallback } from "react";
 import { UserDpDto } from "../../_types/users-department.type";
 import UsersDepartment from "./UsersDepartment";
 import UserItem from "./UserItem";
+import { TransferItem } from "@/dtos/transfer.dto";
 
 interface UserAddUpdateOperation {
   id: string;
-  isHod: boolean;
+  is_hod: boolean;
 }
 
 interface UserRemoveOperation {
@@ -24,7 +25,7 @@ interface CurrentUsersState {
   remove: UserRemoveOperation[];
 }
 
-interface UsersTabProps {
+interface Props {
   readonly form: UseFormReturn<DepartmentFormData>;
   readonly isViewMode: boolean;
   readonly availableUsers: UserDpDto[];
@@ -37,7 +38,7 @@ interface UsersTabProps {
   ) => void;
 }
 
-export default function UsersTab({
+export default function UsersCard({
   form,
   isViewMode,
   availableUsers,
@@ -46,7 +47,7 @@ export default function UsersTab({
   setTargetKeys,
   hodStates,
   setHodStates,
-}: UsersTabProps) {
+}: Props) {
   const tDepartment = useTranslations("Department");
 
   const handleMoveToRight = useCallback(
@@ -69,7 +70,7 @@ export default function UsersTab({
           if (!alreadyInAddArray) {
             newAddArray.push({
               id: keyStr,
-              isHod: hodStates[keyStr] || false,
+              is_hod: hodStates[keyStr] || false,
             });
           }
         }
@@ -113,7 +114,7 @@ export default function UsersTab({
 
       const currentUpdateArray = currentUsers.update || [];
       const updatedUpdateArray = currentUpdateArray.filter(
-        (user: { id: string; isHod: boolean }) =>
+        (user: { id: string; is_hod: boolean }) =>
           !moveKeys.some((key) => key.toString() === user.id)
       );
 
@@ -171,7 +172,7 @@ export default function UsersTab({
         const currentUpdateArray = currentUsers.update;
         const existingUpdateIndex = currentUpdateArray.findIndex((user) => user.id === key);
         const originalUser = initUsers.find((user) => user.key.toString() === key);
-        const originalIsHod = originalUser?.isHod || false;
+        const originalIsHod = originalUser?.is_hod || false;
 
         let updatedUpdateArray;
         if (checked === originalIsHod) {
@@ -180,18 +181,18 @@ export default function UsersTab({
         } else if (existingUpdateIndex >= 0) {
           // Update existing entry in update array
           updatedUpdateArray = currentUpdateArray.map((user, index) =>
-            index === existingUpdateIndex ? { ...user, isHod: checked } : user
+            index === existingUpdateIndex ? { ...user, is_hod: checked } : user
           );
         } else {
           // Add new entry to update array (no duplicate check needed due to findIndex above)
-          updatedUpdateArray = [...currentUpdateArray, { id: key, isHod: checked }];
+          updatedUpdateArray = [...currentUpdateArray, { id: key, is_hod: checked }];
         }
         form.setValue("users.update", updatedUpdateArray);
       } else if (isNewUser) {
         // Handle new user HOD change - update in add array
         const currentAddArray = currentUsers.add;
         const updatedAddArray = currentAddArray.map((user) =>
-          user.id === key ? { ...user, isHod: checked } : user
+          user.id === key ? { ...user, is_hod: checked } : user
         );
         form.setValue("users.add", updatedAddArray);
       }
@@ -200,7 +201,7 @@ export default function UsersTab({
   );
 
   const renderUserItem = useCallback(
-    (item: { key: string | number; title: string }) => (
+    (item: TransferItem) => (
       <UserItem
         item={item}
         hodStates={hodStates}

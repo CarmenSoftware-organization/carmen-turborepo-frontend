@@ -19,12 +19,12 @@ import {
 import { DepartmentGetByIdDto } from "@/dtos/department.dto";
 import { UserListDto } from "@/dtos/user.dto";
 import OverviewTab from "./OverviewTab";
-import UsersTab from "./UsersTab";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import UsersCard from "./UsersCard";
 
 export interface FormActions {
   onSave: () => void;
@@ -73,7 +73,7 @@ export default function DepartmentForm({
         key: user.user_id,
         title: user.firstname + " " + user.lastname,
         id: user.user_id,
-        isHod: user.is_hod,
+        is_hod: user.is_hod,
       })) || []
     );
   }, [initialData?.tb_department_user]);
@@ -98,7 +98,7 @@ export default function DepartmentForm({
   const [hodStates, setHodStates] = useState<Record<string, boolean>>(() => {
     const initialState: Record<string, boolean> = {};
     for (const user of initUsers) {
-      initialState[user.key.toString()] = user.isHod || false;
+      initialState[user.key.toString()] = user.is_hod || false;
     }
     return initialState;
   });
@@ -157,7 +157,7 @@ export default function DepartmentForm({
 
     const newHodStates: Record<string, boolean> = {};
     for (const user of initUsers) {
-      newHodStates[user.key.toString()] = user.isHod || false;
+      newHodStates[user.key.toString()] = user.is_hod || false;
     }
     setHodStates(newHodStates);
 
@@ -197,11 +197,11 @@ export default function DepartmentForm({
       users: {
         add: currentUsers.add.map((user) => ({
           ...user,
-          isHod: hodStates[user.id || ""] || false,
+          is_hod: hodStates[user.id || ""] || false,
         })),
         update: currentUsers.update.map((user) => ({
           ...user,
-          isHod: hodStates[user.id || ""] || false,
+          is_hod: hodStates[user.id || ""] || false,
         })),
         remove: currentUsers.remove,
       },
@@ -267,7 +267,7 @@ export default function DepartmentForm({
           </CardHeader>
           <Separator />
           <CardContent className="pt-4">
-            <UsersTab
+            <UsersCard
               form={form}
               isViewMode={false}
               availableUsers={availableUsers}

@@ -1,16 +1,14 @@
 import { Switch } from "@/components/ui/switch";
+import { TransferItem } from "@/dtos/transfer.dto";
 
-interface UserItemProps {
-  item: {
-    key: string | number;
-    title: string;
-  };
+interface Props {
+  item: TransferItem;
   hodStates: Record<string, boolean>;
   onHodChange: (key: string, checked: boolean) => void;
   isViewMode: boolean;
 }
 
-export default function UserItem({ item, hodStates, onHodChange, isViewMode }: UserItemProps) {
+export default function UserItem({ item, hodStates, onHodChange, isViewMode }: Props) {
   return (
     <div className="fxb-c w-full gap-4">
       <span>{item.title}</span>

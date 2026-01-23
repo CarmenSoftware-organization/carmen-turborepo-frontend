@@ -21,7 +21,7 @@ export default function DepartmentView({ initialData }: DepartmentViewProps) {
       key: user.user_id,
       title: user.firstname + " " + user.lastname,
       id: user.user_id,
-      isHod: user.is_hod,
+      is_hod: user.is_hod,
     })) || [];
 
   const usersCount = initUsers.length;

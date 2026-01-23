@@ -32,7 +32,7 @@ export const createDepartmentSchema = (messages: {
           .array(
             z.object({
               id: z.string().min(1),
-              isHod: z.boolean(),
+              is_hod: z.boolean(),
             })
           )
           .optional(),
@@ -40,7 +40,7 @@ export const createDepartmentSchema = (messages: {
           .array(
             z.object({
               id: z.string().min(1),
-              isHod: z.boolean(),
+              is_hod: z.boolean(),
             })
           )
           .optional(),

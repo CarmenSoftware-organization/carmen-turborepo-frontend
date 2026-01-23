@@ -6,6 +6,7 @@ interface Props {
 }
 
 export default function UsersDepartment({ initUsers }: Props) {
+  console.log("initUsers", initUsers);
   const tDepartment = useTranslations("Department");
   return (
     <div className="space-y-4">
@@ -21,7 +22,7 @@ export default function UsersDepartment({ initUsers }: Props) {
               className="flex items-center justify-between p-3 bg-muted/30 rounded-md border border-border"
             >
               <span className="text-sm font-medium">{user.title}</span>
-              {user.isHod && (
+              {user.is_hod && (
                 <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded-md font-medium">
                   HOD
                 </span>

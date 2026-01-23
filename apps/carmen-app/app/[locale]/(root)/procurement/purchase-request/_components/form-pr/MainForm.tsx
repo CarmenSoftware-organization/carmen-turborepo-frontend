@@ -46,9 +46,8 @@ interface CancelAction {
 
 export default function MainForm({ mode, initValues, bu_code }: Props) {
   const { user, departments } = useAuth();
-  const tPR = useTranslations("PurchaseRequest");
 
-  console.log("initValues", initValues);
+  const tPR = useTranslations("PurchaseRequest");
 
   const form = useForm<CreatePrDtoType>({
     resolver: zodResolver(CreatePrSchema),

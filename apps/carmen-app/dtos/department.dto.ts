@@ -1,6 +1,6 @@
 export interface DepartmentUser {
   id: string;
-  isHod: boolean;
+  is_hod: boolean;
 }
 export interface DepartmentUsersOperation {
   add?: DepartmentUser[];
