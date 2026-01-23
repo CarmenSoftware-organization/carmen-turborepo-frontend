@@ -270,20 +270,6 @@ export default function LocationForm({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="name"
-                required
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{tLocation("store_location_name")}</FormLabel>
-                    <FormControl>
-                      <InputValidate {...field} disabled={isViewMode} maxLength={100} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name="code"
                 required
                 render={({ field }) => (
@@ -291,6 +277,20 @@ export default function LocationForm({
                     <FormLabel>{tLocation("store_location_code")}</FormLabel>
                     <FormControl>
                       <InputValidate {...field} disabled={isViewMode} maxLength={10} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="name"
+                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{tLocation("store_location_name")}</FormLabel>
+                    <FormControl>
+                      <InputValidate {...field} disabled={isViewMode} maxLength={100} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -29,26 +29,6 @@ export default function OverviewTab({ form, isViewMode }: OverviewTabProps) {
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
         <FormField
           control={form.control}
-          name="name"
-          required
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{tCommon("name")}</FormLabel>
-              <FormControl>
-                <InputValidate
-                  {...field}
-                  disabled={isViewMode}
-                  placeholder={tDepartment("enter_name")}
-                  maxLength={100}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="code"
           required
           render={({ field }) => (
@@ -60,6 +40,26 @@ export default function OverviewTab({ form, isViewMode }: OverviewTabProps) {
                   disabled={isViewMode}
                   placeholder={tDepartment("enter_code")}
                   maxLength={10}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="name"
+          required
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{tCommon("name")}</FormLabel>
+              <FormControl>
+                <InputValidate
+                  {...field}
+                  disabled={isViewMode}
+                  placeholder={tDepartment("enter_name")}
+                  maxLength={100}
                 />
               </FormControl>
               <FormMessage />
