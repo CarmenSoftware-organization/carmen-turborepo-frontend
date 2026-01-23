@@ -4,11 +4,13 @@ import { UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { Transfer } from "@/components/ui-custom/Transfer";
 import { DepartmentFormData } from "../../_schemas/department-form.schema";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { UserDpDto } from "../../_types/users-department.type";
 import UsersDepartment from "./UsersDepartment";
 import UserItem from "./UserItem";
 import { TransferItem } from "@/dtos/transfer.dto";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Info, ArrowLeftRight } from "lucide-react";
 
 interface UserAddUpdateOperation {
   id: string;
@@ -212,24 +214,88 @@ export default function UsersCard({
     [hodStates, handleHodChange, isViewMode]
   );
 
+  const pendingChanges = useMemo(() => {
+    const users = form.getValues("users");
+    return {
+      add: users?.add?.length || 0,
+      update: users?.update?.length || 0,
+      remove: users?.remove?.length || 0,
+    };
+  }, [form, targetKeys, hodStates]);
+
+  const hasChanges =
+    pendingChanges.add > 0 || pendingChanges.update > 0 || pendingChanges.remove > 0;
+
   if (isViewMode) {
     return <UsersDepartment initUsers={initUsers} />;
   }
 
   return (
     <div className="space-y-4">
-      <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-        {tDepartment("users")}
-      </h2>
-      <Transfer
-        dataSource={availableUsers}
-        leftDataSource={initUsers}
-        targetKeys={targetKeys}
-        onChange={handleTransferChange}
-        titles={[tDepartment("available_users"), tDepartment("selected_users")]}
-        operations={["<", ">"]}
-        leftRender={renderUserItem}
-      />
+      {/* Instructions */}
+      <Alert className="bg-blue-50/50 border-blue-200/50 dark:bg-blue-950/10 dark:border-blue-800/30">
+        <AlertDescription className="text-xs text-blue-700 dark:text-blue-300">
+          {tDepartment("transfer_instructions")}
+        </AlertDescription>
+      </Alert>
+
+      {/* Transfer Component */}
+      <div className="relative">
+        <Transfer
+          dataSource={availableUsers}
+          leftDataSource={initUsers}
+          targetKeys={targetKeys}
+          onChange={handleTransferChange}
+          titles={[
+            <span key="selected" className="flex items-center gap-1.5">
+              {tDepartment("selected_users")}
+              <span className="inline-flex items-center justify-center h-5 min-w-5 px-1.5 text-xs font-medium rounded-full bg-primary/10 text-primary">
+                {targetKeys.length}
+              </span>
+            </span>,
+            <span key="available" className="flex items-center gap-1.5">
+              {tDepartment("available_users")}
+              <span className="inline-flex items-center justify-center h-5 min-w-5 px-1.5 text-xs font-medium rounded-full bg-muted text-muted-foreground">
+                {availableUsers.length}
+              </span>
+            </span>,
+          ]}
+          operations={["<", ">"]}
+          leftRender={renderUserItem}
+          showSearch
+        />
+      </div>
+
+      {/* Pending Changes Summary */}
+      {hasChanges && (
+        <div
+          className="flex items-center gap-3 p-3 rounded-lg bg-amber-50/50 border border-amber-200/50 dark:bg-amber-950/10 dark:border-amber-800/30"
+          role="status"
+          aria-live="polite"
+        >
+          <ArrowLeftRight className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-amber-700 dark:text-amber-300">
+            {pendingChanges.add > 0 && (
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-full bg-green-500" aria-hidden="true" />
+                {tDepartment("pending_add")}: {pendingChanges.add}
+              </span>
+            )}
+            {pendingChanges.update > 0 && (
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-full bg-blue-500" aria-hidden="true" />
+                {tDepartment("pending_update")}: {pendingChanges.update}
+              </span>
+            )}
+            {pendingChanges.remove > 0 && (
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-full bg-red-500" aria-hidden="true" />
+                {tDepartment("pending_remove")}: {pendingChanges.remove}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -237,7 +237,9 @@
     "update_error": "Failed to update",
     "reset": "Reset",
     "apply": "Apply",
-    "select_date": "Select Date"
+    "select_date": "Select Date",
+    "form_has_errors": "Please review your input",
+    "please_fix_errors": "Please fix the errors below before saving"
   },
   "TableHeader": {
     "all": "All",

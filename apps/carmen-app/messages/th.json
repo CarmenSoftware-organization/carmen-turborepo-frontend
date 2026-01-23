@@ -234,7 +234,9 @@
     "update_error": "อัพเดทไม่สำเร็จ",
     "reset": "รีเซ็ต",
     "apply": "ใช้งาน",
-    "select_date": "เลือกวันที่"
+    "select_date": "เลือกวันที่",
+    "form_has_errors": "กรุณาตรวจสอบข้อมูล",
+    "please_fix_errors": "กรุณาแก้ไขข้อผิดพลาดด้านล่างก่อนบันทึก"
   },
   "TableHeader": {
     "all": "ทั้งหมด",
