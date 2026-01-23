@@ -129,11 +129,11 @@ export interface ProductFormValues {
       product_ingredient_unit_id: string;
     }>;
   };
-  product_category: {
+  product_category?: {
     id: string;
     name: string;
   };
-  product_sub_category: {
+  product_sub_category?: {
     id: string;
     name: string;
   };

@@ -152,11 +152,11 @@ export const productFormSchema = z.object({
   product_category: z.object({
     id: z.string().uuid(),
     name: z.string(),
-  }),
+  }).optional(),
   product_sub_category: z.object({
     id: z.string().uuid(),
     name: z.string(),
-  }),
+  }).optional(),
   product_item_group: z.object({
     id: z.string().uuid(),
     name: z.string(),

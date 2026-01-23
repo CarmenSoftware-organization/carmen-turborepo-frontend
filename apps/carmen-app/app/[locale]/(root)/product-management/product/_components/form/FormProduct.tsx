@@ -173,6 +173,10 @@ export default function FormProduct({ mode, initialValues }: Props) {
         update: [],
         remove: [],
       },
+      product_item_group: {
+        id: initialValues.product_item_group?.id ?? "",
+        name: initialValues.product_item_group?.name ?? "",
+      },
     };
   }, [initialValues]);
 
@@ -289,10 +293,11 @@ export default function FormProduct({ mode, initialValues }: Props) {
 
   const isUseinRecipe = form.getValues("product_info.is_used_in_recipe");
 
-  // console.log("form errors", form.formState.errors);
+  console.log("watch form", form.watch());
+  console.log("form error", form.formState.errors);
 
   return (
-    <div className="max-w-6xl mx-auto pb-10">
+    <div className="m-4 pb-10">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-2">
           <BasicInfo
