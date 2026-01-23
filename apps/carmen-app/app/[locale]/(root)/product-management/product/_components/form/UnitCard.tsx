@@ -19,6 +19,7 @@ interface UnitCardProps {
   table: Table<UnitRow>;
   data: UnitRow[];
   rowClassName?: (row: UnitRow) => string;
+  isUseinRecipe?: boolean;
 }
 
 const UnitCard = ({
@@ -33,6 +34,7 @@ const UnitCard = ({
   table,
   data,
   rowClassName,
+  isUseinRecipe,
 }: UnitCardProps) => {
   return (
     <Card className="p-4 space-y-4">
@@ -46,7 +48,7 @@ const UnitCard = ({
                   type="button"
                   size="sm"
                   onClick={onAdd}
-                  disabled={disabled}
+                  disabled={disabled || isUseinRecipe === false}
                   className="w-6 h-6"
                 >
                   <Plus className="h-4 w-4" />

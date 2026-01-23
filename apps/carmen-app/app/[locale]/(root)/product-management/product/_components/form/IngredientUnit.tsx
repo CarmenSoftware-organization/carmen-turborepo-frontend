@@ -15,9 +15,10 @@ import UnitCard from "./UnitCard";
 interface IngredientUnitProps {
   readonly control: Control<ProductFormValues>;
   readonly currentMode: formType;
+  readonly isUseinRecipe?: boolean;
 }
 
-const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
+const IngredientUnit = ({ control, currentMode, isUseinRecipe }: IngredientUnitProps) => {
   const tProducts = useTranslations("Products");
   const tCommon = useTranslations("Common");
   const { token, buCode } = useAuth();
@@ -134,6 +135,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
       noDataMessage={tCommon("no_data")}
       table={table}
       data={allUnits}
+      isUseinRecipe={isUseinRecipe}
     />
   );
 };

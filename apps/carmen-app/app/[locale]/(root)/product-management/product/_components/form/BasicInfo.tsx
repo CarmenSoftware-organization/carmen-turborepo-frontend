@@ -218,8 +218,9 @@ export default function BasicInfo({
       <div className="pb-4 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Button variant={"outline"} size={"sm"} className="w-8 h-8" onClick={onBack}>
+            <Button variant={"outline"} size={"sm"} onClick={onBack}>
               <ChevronLeft className="h-4 w-4" />
+              {tCommon("back")}
             </Button>
 
             {currentMode === formType.VIEW ? (
@@ -244,58 +245,30 @@ export default function BasicInfo({
 
           <div className="flex items-center gap-1.5">
             {currentMode === formType.VIEW ? (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button type="button" size="sm" onClick={handleEditClick} className="h-8 w-8">
-                      <Edit />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{tCommon("edit")}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Button type="button" size="sm" onClick={handleEditClick}>
+                <Edit />
+                {tCommon("edit")}
+              </Button>
             ) : (
               <>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outlinePrimary"
-                        size="sm"
-                        onClick={handleCancelClick}
-                        className="h-8 w-8"
-                      >
-                        <X />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{tCommon("cancel")}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="sm"
-                        type="submit"
-                        disabled={!isFormValid}
-                        className={cn(
-                          !isFormValid && "bg-muted-foreground/60 cursor-not-allowed",
-                          "h-8 w-8"
-                        )}
-                      >
-                        <Save />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{tCommon("save")}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Button
+                  type="button"
+                  variant="outlinePrimary"
+                  size="sm"
+                  onClick={handleCancelClick}
+                >
+                  <X />
+                  {tCommon("cancel")}
+                </Button>
+                <Button
+                  size="sm"
+                  type="submit"
+                  disabled={!isFormValid}
+                  className={cn(!isFormValid && "bg-muted-foreground/60 cursor-not-allowed")}
+                >
+                  <Save />
+                  {tCommon("save")}
+                </Button>
               </>
             )}
           </div>
@@ -500,12 +473,7 @@ export default function BasicInfo({
               </Label>
               <div>
                 {defaultUnit ? (
-                  <Badge
-                    variant="outline"
-                    className="h-9 w-full bg-muted border-border text-muted-foreground rounded-md"
-                  >
-                    {defaultUnit.from_unit_name}
-                  </Badge>
+                  <Input value={defaultUnit.from_unit_name || ""} disabled className="bg-muted" />
                 ) : (
                   <p className="text-sm text-muted-foreground">{tProducts("no_order_unit_set")}</p>
                 )}

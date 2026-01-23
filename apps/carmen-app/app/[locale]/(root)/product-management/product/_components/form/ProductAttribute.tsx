@@ -7,93 +7,22 @@ import {
   FormMessage,
   FormLabel,
 } from "@/components/form-custom/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Percent, Plus, Trash2 } from "lucide-react";
+import { Percent, Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import NumberInput from "@/components/form-custom/NumberInput";
 import FormBoolean from "@/components/form-custom/form-boolean";
-import { memo, useMemo } from "react";
+import { useMemo } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ProductFormValues } from "@/dtos/product.dto";
 import { InputValidate } from "@/components/ui-custom/InputValidate";
+import AttributeItem, { AttributeItemType } from "./AttributeItem";
 
 interface ProductAttributeProps {
   readonly control: Control<ProductFormValues>;
   readonly currentMode: formType;
 }
-
-interface AttributeItem {
-  label: string;
-  value: string;
-  data_type: string;
-}
-
-const AttributeViewItem = memo(
-  ({ attribute, index }: { attribute: AttributeItem; index: number }) => (
-    <div key={`attribute-${attribute.label}-${index}`} className="space-y-1">
-      <p className="font-semibold text-sm">{attribute.label}</p>
-      <p className="text-xs text-muted-foreground">{attribute.value}</p>
-    </div>
-  )
-);
-
-AttributeViewItem.displayName = "AttributeViewItem";
-
-const AttributeFieldRow = memo(
-  ({
-    control,
-    index,
-    onRemove,
-    tProducts,
-  }: {
-    control: Control<ProductFormValues>;
-    index: number;
-    onRemove: () => void;
-    tProducts: (key: string) => string;
-  }) => (
-    <div className="flex items-center gap-2">
-      <FormField
-        control={control}
-        name={`product_info.info.${index}.label`}
-        render={({ field }) => (
-          <FormItem>
-            <FormControl>
-              <Input placeholder={tProducts("enter_label")} {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={control}
-        name={`product_info.info.${index}.value`}
-        render={({ field }) => (
-          <FormItem>
-            <FormControl>
-              <Input placeholder={tProducts("enter_value")} {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        onClick={onRemove}
-        className="hover:text-destructive hover:bg-transparent"
-      >
-        <Trash2 className="h-4 w-4" />
-      </Button>
-    </div>
-  )
-);
-
-AttributeFieldRow.displayName = "AttributeFieldRow";
 
 export default function ProductAttribute({ control, currentMode }: ProductAttributeProps) {
   const tProducts = useTranslations("Products");
@@ -263,9 +192,10 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
           {fields && fields.length > 0 ? (
             fields.map((field, index) => (
-              <AttributeViewItem
+              <AttributeItem
                 key={field.id}
-                attribute={field as unknown as AttributeItem}
+                mode="view"
+                attribute={field as unknown as AttributeItemType}
                 index={index}
               />
             ))
@@ -276,8 +206,9 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
       ) : (
         <>
           {fields.map((field, index) => (
-            <AttributeFieldRow
+            <AttributeItem
               key={field.id}
+              mode="edit"
               control={control}
               index={index}
               onRemove={() => remove(index)}

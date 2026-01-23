@@ -106,8 +106,7 @@ export default function FormProduct({ mode, initialValues }: Props) {
         id: initialValues.product_info?.id ?? "",
         is_ingredients: initialValues.product_info?.is_ingredients ?? false,
         price: initialValues.product_info?.price ?? initialValues.price ?? 0,
-        tax_type:
-          initialValues.product_info?.tax_type ?? initialValues.tax_type ?? "none",
+        tax_type: initialValues.product_info?.tax_type ?? initialValues.tax_type ?? "none",
         tax_profile_id:
           initialValues.product_info?.tax_profile_id ?? initialValues.tax_profile_id ?? "",
         tax_profile_name:
@@ -118,17 +117,11 @@ export default function FormProduct({ mode, initialValues }: Props) {
           initialValues.price_deviation_limit ??
           0,
         qty_deviation_limit:
-          initialValues.product_info?.qty_deviation_limit ??
-          initialValues.qty_deviation_limit ??
-          0,
+          initialValues.product_info?.qty_deviation_limit ?? initialValues.qty_deviation_limit ?? 0,
         is_used_in_recipe:
-          initialValues.product_info?.is_used_in_recipe ??
-          initialValues.is_used_in_recipe ??
-          false,
+          initialValues.product_info?.is_used_in_recipe ?? initialValues.is_used_in_recipe ?? false,
         is_sold_directly:
-          initialValues.product_info?.is_sold_directly ??
-          initialValues.is_sold_directly ??
-          false,
+          initialValues.product_info?.is_sold_directly ?? initialValues.is_sold_directly ?? false,
         barcode: initialValues.product_info?.barcode ?? initialValues.barcode ?? "",
         info: initialValues.product_info?.info ?? initialValues.info ?? [],
       },
@@ -180,18 +173,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
         update: [],
         remove: [],
       },
-      product_category: {
-        id: initialValues.product_category?.id ?? "",
-        name: initialValues.product_category?.name ?? "",
-      },
-      product_sub_category: {
-        id: initialValues.product_sub_category?.id ?? "",
-        name: initialValues.product_sub_category?.name ?? "",
-      },
-      product_item_group: {
-        id: initialValues.product_item_group?.id ?? "",
-        name: initialValues.product_item_group?.name ?? "",
-      },
     };
   }, [initialValues]);
 
@@ -219,18 +200,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
 
         const submitData = {
           ...restData,
-          product_category: {
-            id: product_category.id,
-            name: product_category.name,
-          },
-          product_sub_category: {
-            id: product_sub_category.id,
-            name: product_sub_category.name,
-          },
-          product_item_group: {
-            id: product_item_group.id,
-            name: product_item_group.name,
-          },
           locations: {
             add: locations.add,
             remove: locations.remove?.map((item) => ({
@@ -318,8 +287,12 @@ export default function FormProduct({ mode, initialValues }: Props) {
     toastError({ message: "กรุณากรอกข้อมูลให้ครบถ้วน" });
   }, []);
 
+  const isUseinRecipe = form.getValues("product_info.is_used_in_recipe");
+
+  // console.log("form errors", form.formState.errors);
+
   return (
-    <div className="max-w-4xl mx-auto pb-10">
+    <div className="max-w-6xl mx-auto pb-10">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-2">
           <BasicInfo
@@ -345,7 +318,11 @@ export default function FormProduct({ mode, initialValues }: Props) {
               <OrderUnit control={form.control} currentMode={currentMode} />
             </TabsContent>
             <TabsContent value="ingredientUnit">
-              <IngredientUnit control={form.control} currentMode={currentMode} />
+              <IngredientUnit
+                control={form.control}
+                currentMode={currentMode}
+                isUseinRecipe={isUseinRecipe}
+              />
             </TabsContent>
           </Tabs>
         </form>

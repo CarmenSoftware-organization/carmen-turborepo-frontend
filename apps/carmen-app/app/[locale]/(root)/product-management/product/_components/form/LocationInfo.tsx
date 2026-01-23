@@ -182,6 +182,16 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     return set;
   }, [existingLocations]);
 
+  const newLocationIds = useMemo(() => {
+    const set = new Set<string>();
+    for (const location of newLocations) {
+      if (location.location_id) {
+        set.add(location.location_id);
+      }
+    }
+    return set;
+  }, [newLocations]);
+
   const displayLocations = useMemo(
     () =>
       existingLocations.filter((location: LocationData) => !removedLocationIds.has(location.id)),
@@ -193,9 +203,10 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
   const filteredStoreLocations = useMemo(
     () =>
       filteredStoreLocationsByProduct.filter(
-        (location: StoreLocation) => !existingLocationIds.has(location.id)
+        (location: StoreLocation) =>
+          !existingLocationIds.has(location.id) && !newLocationIds.has(location.id)
       ),
-    [filteredStoreLocationsByProduct, existingLocationIds]
+    [filteredStoreLocationsByProduct, existingLocationIds, newLocationIds]
   );
 
   const getLocationType = useCallback(
@@ -259,30 +270,39 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 <FormField
                   control={control}
                   name={`locations.add.${location.fieldIndex!}.location_id`}
-                  render={({ field }) => (
-                    <FormItem className="flex-1 space-y-0">
-                      <FormControl>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select location" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {filteredStoreLocations.length === 0 ? (
-                              <div className="flex items-center justify-center py-2 text-sm text-gray-500">
-                                {tStoreLocation("no_locations_available")}
-                              </div>
-                            ) : (
-                              filteredStoreLocations.map((loc: StoreLocation) => (
-                                <SelectItem key={loc.id} value={loc.id?.toString() ?? ""}>
-                                  {loc.name}
-                                </SelectItem>
-                              ))
-                            )}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const currentLocation = field.value
+                      ? storeLocationsMap.get(field.value)
+                      : null;
+                    const availableLocations = currentLocation
+                      ? [currentLocation, ...filteredStoreLocations]
+                      : filteredStoreLocations;
+
+                    return (
+                      <FormItem className="flex-1 space-y-0">
+                        <FormControl>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select location" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableLocations.length === 0 ? (
+                                <div className="flex items-center justify-center py-2 text-sm text-gray-500">
+                                  {tStoreLocation("no_locations_available")}
+                                </div>
+                              ) : (
+                                availableLocations.map((loc: StoreLocation) => (
+                                  <SelectItem key={loc.id} value={loc.id?.toString() ?? ""}>
+                                    {loc.name}
+                                  </SelectItem>
+                                ))
+                              )}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                      </FormItem>
+                    );
+                  }}
                 />
               ) : (
                 <Link
