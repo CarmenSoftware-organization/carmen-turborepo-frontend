@@ -77,7 +77,25 @@
     "delete_success": "สินค้าถูกลบเรียบร้อยแล้ว",
     "delete_error": "ไม่สามารถลบสินค้าได้",
     "delete_product_title": "ลบสินค้า ",
-    "delete_product_description": "คุณแน่ใจหรือไม่ที่จะลบสินค้านี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้."
+    "delete_product_description": "คุณแน่ใจหรือไม่ที่จะลบสินค้านี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้.",
+    "product_label": {
+      "select_label": "เลือกป้ายกำกับ",
+      "allergens": "สารก่อภูมิแพ้",
+      "calories": "แคลอรี่",
+      "serving_size": "ขนาดเสิร์ฟ",
+      "storage": "การเก็บรักษา",
+      "shelf_life": "อายุการเก็บรักษา",
+      "brand": "ยี่ห้อ",
+      "color": "สี",
+      "size": "ขนาด",
+      "weight": "น้ำหนัก",
+      "dimensions": "ขนาดมิติ",
+      "material": "วัสดุ",
+      "country_of_origin": "ประเทศผู้ผลิต",
+      "voltage": "แรงดันไฟฟ้า",
+      "wattage": "กำลังไฟฟ้า",
+      "warranty": "การรับประกัน"
+    }
   },
   "Category": {
     "title": "หมวดสินค้า",

@@ -19,6 +19,25 @@ import { ProductFormValues } from "@/dtos/product.dto";
 import { InputValidate } from "@/components/ui-custom/InputValidate";
 import AttributeItem, { AttributeItemType } from "./AttributeItem";
 
+// Predefined product attribute labels
+export const PRODUCT_LABELS = [
+  "allergens",
+  "calories",
+  "serving_size",
+  "storage",
+  "shelf_life",
+  "brand",
+  "color",
+  "size",
+  "weight",
+  "dimensions",
+  "material",
+  "country_of_origin",
+  "voltage",
+  "wattage",
+  "warranty",
+] as const;
+
 interface ProductAttributeProps {
   readonly control: Control<ProductFormValues>;
   readonly currentMode: formType;
@@ -26,6 +45,7 @@ interface ProductAttributeProps {
 
 export default function ProductAttribute({ control, currentMode }: ProductAttributeProps) {
   const tProducts = useTranslations("Products");
+  const tProductLabels = useTranslations("Products.product_label");
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -213,6 +233,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
               index={index}
               onRemove={() => remove(index)}
               tProducts={tProducts}
+              tProductLabels={tProductLabels}
             />
           ))}
         </>

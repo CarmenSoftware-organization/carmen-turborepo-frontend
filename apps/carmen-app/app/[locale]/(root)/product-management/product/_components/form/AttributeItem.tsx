@@ -4,6 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { ProductFormValues } from "@/dtos/product.dto";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { PRODUCT_LABELS } from "./ProductAttribute";
 
 export interface AttributeItemType {
   label: string;
@@ -18,6 +26,7 @@ interface AttributeItemProps {
   control?: Control<ProductFormValues>;
   onRemove?: () => void;
   tProducts?: (key: string) => string;
+  tProductLabels?: (key: string) => string;
 }
 
 export default function AttributeItem({
@@ -27,6 +36,7 @@ export default function AttributeItem({
   control,
   onRemove,
   tProducts,
+  tProductLabels,
 }: AttributeItemProps) {
   if (mode === "view" && attribute) {
     return (
@@ -37,16 +47,27 @@ export default function AttributeItem({
     );
   }
 
-  if (mode === "edit" && control && onRemove && tProducts) {
+  if (mode === "edit" && control && onRemove && tProducts && tProductLabels) {
     return (
       <div className="flex items-center gap-2">
         <FormField
           control={control}
           name={`product_info.info.${index}.label`}
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex-1">
               <FormControl>
-                <Input placeholder={tProducts("enter_label")} {...field} />
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={tProductLabels("select_label")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PRODUCT_LABELS.map((label) => (
+                      <SelectItem key={label} value={label}>
+                        {tProductLabels(label)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -57,7 +78,7 @@ export default function AttributeItem({
           control={control}
           name={`product_info.info.${index}.value`}
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex-1">
               <FormControl>
                 <Input placeholder={tProducts("enter_value")} {...field} />
               </FormControl>
