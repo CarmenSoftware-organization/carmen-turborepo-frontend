@@ -1,7 +1,6 @@
 import { memo, useMemo } from "react";
 import { Control, useFormContext } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
-import { useAuth } from "@/context/AuthContext";
 import { useUnitQuery } from "@/hooks/use-unit";
 import { UnitRow, UnitData } from "@/dtos/unit.dto";
 import { useTranslations } from "next-intl";
@@ -13,15 +12,22 @@ import { useUnitColumns } from "../../_hooks/use-unit-columns";
 import UnitCard from "./UnitCard";
 
 interface IngredientUnitProps {
+  readonly token: string;
+  readonly buCode: string;
   readonly control: Control<ProductFormValues>;
   readonly currentMode: formType;
   readonly isUseinRecipe?: boolean;
 }
 
-const IngredientUnit = ({ control, currentMode, isUseinRecipe }: IngredientUnitProps) => {
+const IngredientUnit = ({
+  control,
+  currentMode,
+  isUseinRecipe,
+  token,
+  buCode,
+}: IngredientUnitProps) => {
   const tProducts = useTranslations("Products");
   const tCommon = useTranslations("Common");
-  const { token, buCode } = useAuth();
   const { units } = useUnitQuery({
     token,
     buCode,

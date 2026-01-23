@@ -378,13 +378,25 @@ export default function FormProduct({ mode, initialValues, token, buCode }: Prop
               <ProductAttribute control={form.control} currentMode={currentMode} />
             </TabsContent>
             <TabsContent value="location">
-              <LocationInfo control={form.control} currentMode={currentMode} />
+              <LocationInfo
+                token={token}
+                buCode={buCode}
+                control={form.control}
+                currentMode={currentMode}
+              />
             </TabsContent>
             <TabsContent value="orderUnit">
-              <OrderUnit control={form.control} currentMode={currentMode} />
+              <OrderUnit
+                token={token}
+                buCode={buCode}
+                control={form.control}
+                currentMode={currentMode}
+              />
             </TabsContent>
             <TabsContent value="ingredientUnit">
               <IngredientUnit
+                token={token}
+                buCode={buCode}
                 control={form.control}
                 currentMode={currentMode}
                 isUseinRecipe={isUseinRecipe}

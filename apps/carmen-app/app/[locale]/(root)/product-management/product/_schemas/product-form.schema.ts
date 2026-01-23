@@ -149,16 +149,81 @@ export const productFormSchema = z.object({
       )
       .optional(),
   }),
-  product_category: z.object({
-    id: z.string().uuid(),
-    name: z.string(),
-  }).optional(),
-  product_sub_category: z.object({
-    id: z.string().uuid(),
-    name: z.string(),
-  }).optional(),
+  product_category: z
+    .object({
+      id: z.string().uuid(),
+      name: z.string(),
+    })
+    .optional(),
+  product_sub_category: z
+    .object({
+      id: z.string().uuid(),
+      name: z.string(),
+    })
+    .optional(),
   product_item_group: z.object({
     id: z.string().uuid(),
     name: z.string(),
   }),
 });
+
+export interface LocationProducsDto {
+  id: string;
+  product_subcategory_id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  price_deviation_limit: number;
+  qty_deviation_limit: number;
+  is_used_in_recipe: boolean;
+  is_sold_directly: boolean;
+  is_active: boolean;
+  note: string | null;
+  info: string | null;
+  dimension: string | null;
+  created_at: string;
+  created_by_id: string;
+  updated_at: string;
+  updated_by_id: string | null;
+  deleted_at: string | null;
+  deleted_by_id: string | null;
+  sub_category: {
+    id: string;
+    code: string;
+    name: string;
+  };
+  category: {
+    id: string;
+    code: string;
+    name: string;
+  };
+}
+
+export interface LocationData {
+  id: string;
+  location_id: string;
+}
+
+export interface LocationDisplayData extends LocationData {
+  isNew: boolean;
+  fieldIndex?: number;
+}
+
+export interface LocationsFormData {
+  data: LocationData[];
+  add: { location_id: string }[];
+  remove: { id: string }[];
+}
+
+export interface StoreLocation {
+  id: string;
+  name: string;
+  location_type: string;
+  description: string;
+  is_active: boolean;
+  delivery_point: {
+    id: string;
+    name: string;
+    is_active: boolean;
+  };
+}

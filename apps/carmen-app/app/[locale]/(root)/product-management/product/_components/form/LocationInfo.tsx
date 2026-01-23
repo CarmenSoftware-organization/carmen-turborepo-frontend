@@ -13,18 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useLocationsQuery } from "@/hooks/use-locations";
-import { useAuth } from "@/context/AuthContext";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
 import { INVENTORY_TYPE } from "@/constants/enum";
@@ -38,81 +26,37 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { Link } from "@/lib/navigation";
 import { ProductFormValues } from "@/dtos/product.dto";
+import {
+  LocationData,
+  LocationDisplayData,
+  LocationProducsDto,
+  LocationsFormData,
+  StoreLocation,
+} from "../../_schemas/product-form.schema";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 interface LocationInfoProps {
+  readonly token: string;
+  readonly buCode: string;
   readonly control: Control<ProductFormValues>;
   readonly currentMode: formType;
-  readonly productData?: {
-    id: string;
-    product_subcategory_id: string;
-    code: string;
-    name: string;
-    description: string | null;
-    price_deviation_limit: number;
-    qty_deviation_limit: number;
-    is_used_in_recipe: boolean;
-    is_sold_directly: boolean;
-    is_active: boolean;
-    note: string | null;
-    info: string | null;
-    dimension: string | null;
-    created_at: string;
-    created_by_id: string;
-    updated_at: string;
-    updated_by_id: string | null;
-    deleted_at: string | null;
-    deleted_by_id: string | null;
-    sub_category: {
-      id: string;
-      code: string;
-      name: string;
-    };
-    category: {
-      id: string;
-      code: string;
-      name: string;
-    };
-  };
+  readonly productData?: LocationProducsDto | null;
 }
 
-interface LocationData {
-  id: string;
-  location_id: string;
-}
-
-interface LocationDisplayData extends LocationData {
-  isNew: boolean;
-  fieldIndex?: number;
-}
-
-interface LocationsFormData {
-  data: LocationData[];
-  add: { location_id: string }[];
-  remove: { id: string }[];
-}
-
-interface StoreLocation {
-  id: string;
-  name: string;
-  location_type: string;
-  description: string;
-  is_active: boolean;
-  delivery_point: {
-    id: string;
-    name: string;
-    is_active: boolean;
-  };
-}
-
-export default function LocationInfo({ control, currentMode, productData }: LocationInfoProps) {
+export default function LocationInfo({
+  control,
+  currentMode,
+  productData,
+  token,
+  buCode,
+}: LocationInfoProps) {
   const tProducts = useTranslations("Products");
   const tStoreLocation = useTranslations("StoreLocation");
   const tCommon = useTranslations("Common");
-  const { token, buCode } = useAuth();
   const { data: locationsData, isLoading } = useLocationsQuery({ token, buCode });
   const [searchQuery, setSearchQuery] = useState("");
+  const [deleteLocationId, setDeleteLocationId] = useState<string | null>(null);
 
-  // Use useWatch instead of watch() to prevent infinite re-renders
   const locations = useWatch({
     control,
     name: "locations",
@@ -120,7 +64,6 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
 
   const storeLocations = useMemo(() => locationsData?.data || [], [locationsData?.data]);
 
-  // Create lookup map for O(1) access instead of O(n) find operations
   const storeLocationsMap = useMemo(() => {
     const map = new Map<string, StoreLocation>();
     for (const loc of storeLocations) {
@@ -265,15 +208,13 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
           const storeLocation = storeLocationsMap.get(location.location_id);
 
           return (
-            <div className="font-medium">
+            <div>
               {location.isNew && currentMode !== formType.VIEW ? (
                 <FormField
                   control={control}
                   name={`locations.add.${location.fieldIndex!}.location_id`}
                   render={({ field }) => {
-                    const currentLocation = field.value
-                      ? storeLocationsMap.get(field.value)
-                      : null;
+                    const currentLocation = field.value ? storeLocationsMap.get(field.value) : null;
                     const availableLocations = currentLocation
                       ? [currentLocation, ...filteredStoreLocations]
                       : filteredStoreLocations;
@@ -334,24 +275,6 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
         enableSorting: false,
         size: 150,
       },
-      // {
-      //   id: "description",
-      //   header: ({ column }) => (
-      //     <DataGridColumnHeader column={column} title={tProducts("description")} />
-      //   ),
-      //   cell: ({ row }) => {
-      //     const location = row.original;
-      //     const storeLocation = storeLocationsMap.get(location.location_id);
-
-      //     return (
-      //       <span className="truncate max-w-[200px] inline-block text-xs">
-      //         {storeLocation?.description || "-"}
-      //       </span>
-      //     );
-      //   },
-      //   enableSorting: false,
-      //   size: 150,
-      // },
       {
         id: "delivery_point",
         header: ({ column }) => (
@@ -376,11 +299,9 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
           const storeLocation = storeLocationsMap.get(location.location_id);
 
           return (
-            <div className="flex justify-center">
-              <StatusCustom is_active={!!storeLocation?.is_active} dense={true}>
-                {storeLocation?.is_active ? tCommon("active") : tCommon("inactive")}
-              </StatusCustom>
-            </div>
+            <StatusCustom is_active={!!storeLocation?.is_active} dense={true}>
+              {storeLocation?.is_active ? tCommon("active") : tCommon("inactive")}
+            </StatusCustom>
           );
         },
         enableSorting: false,
@@ -412,35 +333,15 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     ) : (
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive hover:text-destructive/80 hover:bg-transparent h-7 w-7"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>{tStoreLocation("del_location")}</AlertDialogTitle>
-                            <AlertDialogDescription className="space-y-2">
-                              {tStoreLocation("del_location_description")}
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => appendLocationRemove({ id: location.id })}
-                              className="bg-destructive hover:bg-destructive/90"
-                            >
-                              {tCommon("delete")}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setDeleteLocationId(location.id)}
+                        className="text-destructive hover:text-destructive/80 hover:bg-transparent h-7 w-7"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     )}
                   </div>
                 );
@@ -457,14 +358,13 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     ],
     [
       tProducts,
-      tCommon,
+      tStoreLocation,
       storeLocationsMap,
       control,
       currentMode,
       filteredStoreLocations,
       getLocationType,
       removeLocation,
-      appendLocationRemove,
     ]
   );
 
@@ -540,6 +440,19 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
           </div>
         </DataGrid>
       )}
+
+      <DeleteConfirmDialog
+        open={deleteLocationId !== null}
+        onOpenChange={(open) => !open && setDeleteLocationId(null)}
+        onConfirm={() => {
+          if (deleteLocationId) {
+            appendLocationRemove({ id: deleteLocationId });
+            setDeleteLocationId(null);
+          }
+        }}
+        title={tStoreLocation("del_location")}
+        description={tStoreLocation("del_location_description")}
+      />
     </Card>
   );
 }

@@ -1,7 +1,6 @@
 import { memo, useEffect, useMemo, useRef } from "react";
 import { Control, useFormContext } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
-import { useAuth } from "@/context/AuthContext";
 import { useUnitQuery } from "@/hooks/use-unit";
 import { UnitRow, UnitFormData, UnitData } from "@/dtos/unit.dto";
 import { useTranslations } from "next-intl";
@@ -13,14 +12,15 @@ import { useUnitColumns } from "../../_hooks/use-unit-columns";
 import UnitCard from "./UnitCard";
 
 interface OrderUnitProps {
+  readonly token: string;
+  readonly buCode: string;
   readonly control: Control<ProductFormValues>;
   readonly currentMode: formType;
 }
 
-const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
+const OrderUnit = ({ control, currentMode, token, buCode }: OrderUnitProps) => {
   const tProducts = useTranslations("Products");
   const tCommon = useTranslations("Common");
-  const { token, buCode } = useAuth();
   const { units } = useUnitQuery({
     token,
     buCode,
@@ -153,9 +153,7 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
       showAddButton={currentMode !== formType.VIEW}
       hasUnits={hasOrderUnits}
       emptyMessage={
-        inventoryUnitId
-          ? tProducts("no_order_units_defined")
-          : tProducts("pls_select_order_unit")
+        inventoryUnitId ? tProducts("no_order_units_defined") : tProducts("pls_select_order_unit")
       }
       noDataMessage={tCommon("no_data")}
       table={table}
