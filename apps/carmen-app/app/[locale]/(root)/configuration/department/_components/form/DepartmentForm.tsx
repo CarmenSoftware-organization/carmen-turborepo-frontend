@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useAuth } from "@/context/AuthContext";
 import { Building2, Users, AlertCircle, Loader2 } from "lucide-react";
 import { Form } from "@/components/ui/form";
 import { formType } from "@/dtos/form.dto";
@@ -40,6 +39,8 @@ interface DepartmentFormProps {
   readonly mode: formType.ADD | formType.EDIT;
   readonly onViewMode: () => void;
   readonly onActionsReady?: (actions: FormActions) => void;
+  readonly token: string;
+  readonly buCode: string;
 }
 
 export default function DepartmentForm({
@@ -47,9 +48,10 @@ export default function DepartmentForm({
   mode,
   onViewMode,
   onActionsReady,
+  token,
+  buCode,
 }: DepartmentFormProps) {
   const router = useRouter();
-  const { token, buCode } = useAuth();
   const { userList, isLoading: isLoadingUsers } = useUserList(token, buCode);
   const queryClient = useQueryClient();
   const tDepartment = useTranslations("Department");

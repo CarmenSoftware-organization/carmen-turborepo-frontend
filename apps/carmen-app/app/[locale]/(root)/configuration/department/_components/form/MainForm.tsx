@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Save, SquarePen, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/context/AuthContext";
 
 interface MainFormProps {
   readonly defaultValues?: DepartmentGetByIdDto;
@@ -25,6 +26,7 @@ interface MainFormProps {
 }
 
 export default function MainForm({ defaultValues, mode: initialMode }: MainFormProps) {
+  const { token, buCode } = useAuth();
   const [currentMode, setCurrentMode] = useState<formType>(initialMode);
   const [formActions, setFormActions] = useState<FormActions | null>(null);
   const tDepartment = useTranslations("Department");
@@ -120,6 +122,8 @@ export default function MainForm({ defaultValues, mode: initialMode }: MainFormP
           mode={currentMode as formType.ADD | formType.EDIT}
           onViewMode={handleViewMode}
           onActionsReady={handleActionsReady}
+          token={token}
+          buCode={buCode}
         />
       )}
     </div>

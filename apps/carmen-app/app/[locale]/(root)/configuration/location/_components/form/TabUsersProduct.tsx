@@ -9,8 +9,6 @@ interface Props {
 }
 
 export default function TabUsersProduct({ products }: Props) {
-  console.log("products", products);
-
   const tCommon = useTranslations("Common");
   const [searchQuery, setSearchQuery] = useState("");
 

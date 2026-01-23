@@ -441,6 +441,8 @@ export default function LocationForm({
               <TabsContent value="products">
                 <div className={isViewMode ? "pointer-events-none opacity-50" : ""}>
                   <TreeProductLookup
+                    token={token}
+                    buCode={buCode}
                     onSelect={handleTreeProductSelect}
                     initialSelectedIds={initProductKeys.map((key) => key.toString())}
                     initialProducts={initProducts}

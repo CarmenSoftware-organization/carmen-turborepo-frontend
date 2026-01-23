@@ -4,7 +4,6 @@ import { useState, useCallback, useMemo, memo, useEffect, useRef } from "react";
 import { useTree } from "@headless-tree/react";
 import { syncDataLoaderFeature, hotkeysCoreFeature } from "@headless-tree/core";
 import { useProductQuery } from "@/hooks/use-product-query";
-import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { TreeNodeData, ProductData } from "./types";
@@ -15,16 +14,19 @@ import { AvailableProductsPanel } from "./_components/AvailableProductsPanel";
 import TreeProductLoading from "./TreeProductLoading";
 
 interface TreeProductLookupProps {
+  readonly token: string;
+  readonly buCode: string;
   readonly onSelect?: (productIds: { id: string }[]) => void;
   readonly initialSelectedIds?: string[];
   readonly initialProducts?: { key: string; title: string }[];
 }
 export default function TreeProductLookup({
+  token,
+  buCode,
   onSelect,
   initialSelectedIds = [],
   initialProducts = [],
 }: TreeProductLookupProps) {
-  const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const [searchTrigger, setSearchTrigger] = useState("");
   const [viewMode, setViewMode] = useState<"tree" | "list">("list");
