@@ -3,8 +3,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
-import { useAuth } from "@/context/AuthContext";
-import { useCreateProductMutation, useUpdateProductMutation } from "@/hooks/use-product";
+import {
+  useCreateProductMutation,
+  useUpdateProductMutation,
+  useDeleteProductMutation,
+} from "@/hooks/use-product";
 import { formType } from "@/dtos/form.dto";
 import BasicInfo from "./BasicInfo";
 import LocationInfo from "./LocationInfo";
@@ -20,22 +23,30 @@ import {
 } from "@/components/animate-ui/components/radix/tabs";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useTranslations } from "next-intl";
+import { useQueryClient } from "@tanstack/react-query";
 import { productFormSchema, ProductFormValues, ProductInitialValues } from "@/dtos/product.dto";
 import ProductAttribute from "./ProductAttribute";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 interface Props {
   readonly mode: formType;
   readonly initialValues?: ProductInitialValues;
+  readonly token: string;
+  readonly buCode: string;
 }
 
-export default function FormProduct({ mode, initialValues }: Props) {
-  const { token, buCode } = useAuth();
+export default function FormProduct({ mode, initialValues, token, buCode }: Props) {
   const tProducts = useTranslations("Products");
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteProductId, setDeleteProductId] = useState<string>("");
 
   const createProductMutation = useCreateProductMutation();
   const updateProductMutation = useUpdateProductMutation();
+  const deleteProductMutation = useDeleteProductMutation();
 
   const transformInitialValues = useMemo(() => {
     if (!initialValues)
@@ -190,102 +201,103 @@ export default function FormProduct({ mode, initialValues }: Props) {
   }, [transformInitialValues, form]);
 
   const onSubmit = useCallback(
-    async (data: ProductFormValues) => {
-      try {
-        const {
-          locations,
-          order_units,
-          ingredient_units,
-          product_category,
-          product_sub_category,
-          product_item_group,
-          ...restData
-        } = data;
+    (data: ProductFormValues) => {
+      const {
+        locations,
+        order_units,
+        ingredient_units,
+        product_category,
+        product_sub_category,
+        product_item_group,
+        ...restData
+      } = data;
 
-        // Check if order_units has any data
-        const hasOrderUnitsData =
-          (order_units.data && order_units.data.length > 0) ||
-          order_units.add.length > 0 ||
-          (order_units.update && order_units.update.length > 0);
+      // Check if order_units has any data
+      const hasOrderUnitsData =
+        (order_units.data && order_units.data.length > 0) ||
+        order_units.add.length > 0 ||
+        (order_units.update && order_units.update.length > 0);
 
-        // Auto-add default order unit if empty
-        const orderUnitsAdd = hasOrderUnitsData
-          ? order_units.add
-          : [
-              {
-                from_unit_id: restData.inventory_unit_id,
-                from_unit_qty: 1,
-                to_unit_id: restData.inventory_unit_id,
-                to_unit_qty: 1,
-                is_active: true,
-                is_default: false,
-              },
-            ];
+      // Auto-add default order unit if empty
+      const orderUnitsAdd = hasOrderUnitsData
+        ? order_units.add
+        : [
+            {
+              from_unit_id: restData.inventory_unit_id,
+              from_unit_qty: 1,
+              to_unit_id: restData.inventory_unit_id,
+              to_unit_qty: 1,
+              is_active: true,
+              is_default: false,
+            },
+          ];
 
-        const submitData = {
-          ...restData,
-          locations: {
-            add: locations.add,
-            remove: locations.remove?.map((item) => ({
-              product_location_id: item.id,
-            })),
-          },
-          order_units: {
-            add: orderUnitsAdd,
-            update: order_units.update,
-            remove: order_units.remove?.map((item) => ({
-              product_order_unit_id: item.product_order_unit_id,
-            })),
-          },
-          ingredient_units: {
-            add: ingredient_units.add,
-            update: ingredient_units.update,
-            remove: ingredient_units.remove?.map((item) => ({
-              product_ingredient_unit_id: item.product_ingredient_unit_id,
-            })),
-          },
-        };
+      const submitData = {
+        ...restData,
+        locations: {
+          add: locations.add,
+          remove: locations.remove?.map((item) => ({
+            product_location_id: item.id,
+          })),
+        },
+        order_units: {
+          add: orderUnitsAdd,
+          update: order_units.update,
+          remove: order_units.remove?.map((item) => ({
+            product_order_unit_id: item.product_order_unit_id,
+          })),
+        },
+        ingredient_units: {
+          add: ingredient_units.add,
+          update: ingredient_units.update,
+          remove: ingredient_units.remove?.map((item) => ({
+            product_ingredient_unit_id: item.product_ingredient_unit_id,
+          })),
+        },
+      };
 
-        if (mode === formType.ADD) {
-          const result = (await createProductMutation.mutateAsync({
-            token,
-            buCode,
-            product: submitData,
-          })) as { id?: string; data?: { id?: string } };
-
-          toastSuccess({ message: "Product created successfully" });
-          setCurrentMode(formType.VIEW);
-          const resultId = result?.id || result?.data?.id;
-          if (resultId) {
-            const newUrl = globalThis.location.pathname.replace("/new", `/${resultId}`);
-            router.replace(newUrl);
-          } else {
-            console.warn("No ID found in create product response, redirecting to list");
-            router.push("/product-management/product");
+      if (mode === formType.ADD) {
+        createProductMutation.mutate(
+          { token, buCode, product: submitData },
+          {
+            onSuccess: (result) => {
+              const response = result as { id?: string; data?: { id?: string } };
+              toastSuccess({ message: tProducts("add_success") });
+              setCurrentMode(formType.VIEW);
+              const resultId = response?.id || response?.data?.id;
+              if (resultId) {
+                const newUrl = globalThis.location.pathname.replace("/new", `/${resultId}`);
+                router.replace(newUrl);
+              } else {
+                router.push("/product-management/product");
+              }
+            },
+            onError: () => {
+              toastError({ message: tProducts("add_error") });
+            },
           }
-        } else {
-          if (!submitData.id) {
-            throw new Error("Product ID is required for update");
-          }
-
-          const result = (await updateProductMutation.mutateAsync({
-            token,
-            buCode,
-            id: submitData.id,
-            product: submitData,
-          })) as { id?: string; data?: { id?: string } };
-
-          if (result) {
-            toastSuccess({ message: "Product updated successfully" });
-            setCurrentMode(formType.VIEW);
-          }
+        );
+      } else {
+        if (!submitData.id) {
+          toastError({ message: "Product ID is required for update" });
+          return;
         }
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        toastError({ message: "Error submitting form" });
+
+        updateProductMutation.mutate(
+          { token, buCode, id: submitData.id, product: submitData },
+          {
+            onSuccess: () => {
+              toastSuccess({ message: tProducts("edit_success") });
+              setCurrentMode(formType.VIEW);
+            },
+            onError: () => {
+              toastError({ message: tProducts("edit_error") });
+            },
+          }
+        );
       }
     },
-    [mode, token, buCode, router, createProductMutation, updateProductMutation]
+    [mode, token, buCode, router, createProductMutation, updateProductMutation, tProducts]
   );
 
   const handleEditClick = useCallback((e: React.MouseEvent) => {
@@ -307,6 +319,35 @@ export default function FormProduct({ mode, initialValues }: Props) {
     [currentMode, router]
   );
 
+  const handleDeleteClick = useCallback((e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!id) return;
+
+    setDeleteProductId(id);
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const handleConfirmDelete = useCallback(() => {
+    if (!deleteProductId) return;
+
+    deleteProductMutation.mutate(
+      { token, buCode, id: deleteProductId },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["products", buCode] });
+          toastSuccess({ message: tProducts("delete_success") });
+          setDeleteDialogOpen(false);
+          router.push("/product-management/product");
+        },
+        onError: () => {
+          toastError({ message: tProducts("delete_error") });
+        },
+      }
+    );
+  }, [token, buCode, deleteProductId, deleteProductMutation, router, tProducts, queryClient]);
+
   const onInvalid = useCallback(() => {
     toastError({ message: "กรุณากรอกข้อมูลให้ครบถ้วน" });
   }, []);
@@ -319,9 +360,12 @@ export default function FormProduct({ mode, initialValues }: Props) {
         <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-2">
           <BasicInfo
             control={form.control}
+            token={token}
+            buCode={buCode}
             currentMode={currentMode}
             handleEditClick={handleEditClick}
             handleCancelClick={handleCancelClick}
+            handleDeleteClick={handleDeleteClick}
           />
           <Tabs defaultValue="general" className="pt-4">
             <TabsList>
@@ -349,6 +393,15 @@ export default function FormProduct({ mode, initialValues }: Props) {
           </Tabs>
         </form>
       </Form>
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleConfirmDelete}
+        title={tProducts("delete_product_title")}
+        description={tProducts("delete_product_description")}
+        isLoading={deleteProductMutation.isPending}
+      />
     </div>
   );
 }

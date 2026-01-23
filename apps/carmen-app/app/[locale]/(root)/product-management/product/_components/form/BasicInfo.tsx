@@ -1,13 +1,12 @@
 import { formType } from "@/dtos/form.dto";
 import { Control, useFormContext, useWatch } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/context/AuthContext";
 import { useEffect, useRef, useMemo } from "react";
 import { useCategoryByItemGroupQuery } from "@/hooks/use-product";
 import { itemGroupSelectDto } from "@/dtos/category.dto";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Save, X, Edit, Info } from "lucide-react";
+import { ChevronLeft, Save, X, Edit, Info, Trash2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import LookupItemGroup from "@/components/lookup/LookupItemGroup";
 import UnitLookup from "@/components/lookup/LookupUnit";
@@ -30,9 +29,12 @@ import { TextareaValidate } from "@/components/ui-custom/TextareaValidate";
 
 interface BasicInfoProps {
   readonly control: Control<ProductFormValues>;
+  readonly token: string;
+  readonly buCode: string;
   readonly currentMode: formType;
   readonly handleEditClick?: (e: React.MouseEvent) => void;
   readonly handleCancelClick?: (e: React.MouseEvent) => void;
+  readonly handleDeleteClick?: (e: React.MouseEvent, id: string) => void;
 }
 
 interface ActiveUnitItem {
@@ -52,10 +54,12 @@ interface ActiveUnitItem {
 export default function BasicInfo({
   control,
   currentMode,
+  token,
+  buCode,
   handleEditClick,
   handleCancelClick,
+  handleDeleteClick,
 }: BasicInfoProps) {
-  const { token, buCode } = useAuth();
   const router = useRouter();
   const tCommon = useTranslations("Common");
   const tProducts = useTranslations("Products");
@@ -269,6 +273,17 @@ export default function BasicInfo({
                   <Save />
                   {tCommon("save")}
                 </Button>
+                {currentMode === formType.EDIT && (
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    type="button"
+                    onClick={(e) => handleDeleteClick && handleDeleteClick(e, watch("id") || "")}
+                  >
+                    <Trash2 />
+                    {tCommon("delete")}
+                  </Button>
+                )}
               </>
             )}
           </div>

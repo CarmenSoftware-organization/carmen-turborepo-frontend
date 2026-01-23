@@ -69,7 +69,15 @@
     "pls_select_location": "Please select location",
     "loading": "Loading...",
     "search_product": "Search product...",
-    "tax_profile": "Tax Profile"
+    "tax_profile": "Tax Profile",
+    "add_success": "Product created successfully",
+    "add_error": "Failed to create product",
+    "edit_success": "Product updated successfully",
+    "edit_error": "Failed to update product",
+    "delete_success": "Product deleted successfully",
+    "delete_error": "Failed to delete product",
+    "delete_product_title": "Delete Product",
+    "delete_product_description": "Are you sure you want to delete this product? This action cannot be undone."
   },
   "Category": {
     "title": "Category",

@@ -1,11 +1,11 @@
+"use client";
+
 import { formType } from "@/dtos/form.dto";
 import FormProduct from "../_components/form/FormProduct";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-    title: "New Product",
-};
+import { useAuth } from "@/context/AuthContext";
 
 export default function ProductNew() {
-    return <FormProduct mode={formType.ADD} />
+  const { token, buCode } = useAuth();
+
+  return <FormProduct mode={formType.ADD} token={token} buCode={buCode} />;
 }

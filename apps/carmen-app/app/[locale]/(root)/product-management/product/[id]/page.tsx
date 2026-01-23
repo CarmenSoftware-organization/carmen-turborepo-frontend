@@ -26,7 +26,7 @@ export default function ProductIdPage() {
 
   return (
     <>
-      <FormProduct mode={formType.VIEW} initialValues={product} />
+      <FormProduct mode={formType.VIEW} initialValues={product} token={token} buCode={buCode} />
       <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
     </>
   );
