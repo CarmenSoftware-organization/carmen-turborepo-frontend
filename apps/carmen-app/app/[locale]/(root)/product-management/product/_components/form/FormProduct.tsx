@@ -202,6 +202,26 @@ export default function FormProduct({ mode, initialValues }: Props) {
           ...restData
         } = data;
 
+        // Check if order_units has any data
+        const hasOrderUnitsData =
+          (order_units.data && order_units.data.length > 0) ||
+          order_units.add.length > 0 ||
+          (order_units.update && order_units.update.length > 0);
+
+        // Auto-add default order unit if empty
+        const orderUnitsAdd = hasOrderUnitsData
+          ? order_units.add
+          : [
+              {
+                from_unit_id: restData.inventory_unit_id,
+                from_unit_qty: 1,
+                to_unit_id: restData.inventory_unit_id,
+                to_unit_qty: 1,
+                is_active: true,
+                is_default: false,
+              },
+            ];
+
         const submitData = {
           ...restData,
           locations: {
@@ -211,7 +231,7 @@ export default function FormProduct({ mode, initialValues }: Props) {
             })),
           },
           order_units: {
-            add: order_units.add,
+            add: orderUnitsAdd,
             update: order_units.update,
             remove: order_units.remove?.map((item) => ({
               product_order_unit_id: item.product_order_unit_id,
@@ -292,9 +312,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
   }, []);
 
   const isUseinRecipe = form.getValues("product_info.is_used_in_recipe");
-
-  console.log("watch form", form.watch());
-  console.log("form error", form.formState.errors);
 
   return (
     <div className="m-4 pb-10">
