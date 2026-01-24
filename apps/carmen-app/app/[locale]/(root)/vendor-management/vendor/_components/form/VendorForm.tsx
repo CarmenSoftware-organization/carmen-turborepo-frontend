@@ -6,8 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { ChevronLeft, Plus, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formType } from "@/dtos/form.dto";
 import { useAuth } from "@/context/AuthContext";
@@ -33,6 +31,8 @@ import { MultiSelectCustom } from "@/components/ui/multi-select-custom";
 import { BuTypeGetAllDto, BuTypeFormDto } from "@/dtos/bu-type.dto";
 import { useBuTypeQuery, useBuTypeMutation } from "@/hooks/use-bu-type";
 import { FormBusinessTypeDialog } from "@/components/shared/FormBusinessTypeDialog";
+import { InputValidate } from "@/components/ui-custom/InputValidate";
+import { TextareaValidate } from "@/components/ui-custom/TextareaValidate";
 
 const defaultValues: VendorFormValues = {
   id: "",
@@ -62,10 +62,8 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
   );
 
   const t = useTranslations("Vendor");
-  // const tCommon = useTranslations("Common"); // If we want to reuse common submit/cancel strings. But new keys were added to Vendor namespace as per execution.
-  // Using t("Vendor.save") etc.
 
-  const { buTypes } = useBuTypeQuery(token, buCode);
+  const { buTypes } = useBuTypeQuery(token, buCode, { perpage: -1 });
   const { mutate: createBuType } = useBuTypeMutation(token, buCode);
 
   const BUSINESS_TYPE_OPTIONS =
@@ -235,9 +233,9 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                       {t("code")}
                     </FormLabel>
                     <FormControl>
-                      <Input
+                      <InputValidate
                         {...field}
-                        maxLength={4}
+                        maxLength={10}
                         disabled={isViewMode}
                         className="h-10 text-sm font-medium"
                       />
@@ -257,10 +255,11 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                       {t("name")}
                     </FormLabel>
                     <FormControl>
-                      <Input
+                      <InputValidate
                         {...field}
                         disabled={isViewMode}
                         className="h-10 text-sm font-medium"
+                        maxLength={100}
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -322,11 +321,11 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                     {t("description")}
                   </FormLabel>
                   <FormControl>
-                    <Textarea
+                    <TextareaValidate
                       {...field}
                       value={field.value ?? ""}
-                      className="min-h-[80px] h-[80px] resize-none text-sm"
                       disabled={isViewMode}
+                      maxLength={256}
                     />
                   </FormControl>
                   <FormMessage className="text-xs" />
