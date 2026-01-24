@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useState, useCallback } from "react";
+import { useForm, useFieldArray, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { userFormSchema } from "./zod.form";
@@ -29,6 +29,11 @@ import {
 } from "@/components/ui/table";
 
 type UserFormData = z.infer<typeof userFormSchema>;
+
+const EMPTY_TEXT = {
+  name: "ยังไม่ได้กรอกชื่อ",
+  age: "ยังไม่ได้กรอกอายุ",
+} as const;
 
 export function UserForm() {
   const [submittedData, setSubmittedData] = useState<UserFormData | null>(null);
@@ -61,17 +66,13 @@ export function UserForm() {
     setSubmittedData(data);
   };
 
-  const handleAddPerson = (event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const handleAddPerson = useCallback(() => {
     const newIndex = addFields.length;
     appendAdd({ name: "", age: 0 });
     setEditingRows((prev) => new Set(prev).add(newIndex));
-  };
+  }, [addFields.length, appendAdd]);
 
-  const handleToggleEdit = (index: number, event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const handleToggleEdit = useCallback((index: number) => {
     setEditingRows((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(index)) {
@@ -81,51 +82,44 @@ export function UserForm() {
       }
       return newSet;
     });
-  };
+  }, []);
 
-  const handleRemovePerson = (index: number, event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-    removeAdd(index);
-    setEditingRows((prev) => {
-      const newSet = new Set(prev);
-      newSet.delete(index);
-      // Update indices for remaining items
-      const updatedSet = new Set<number>();
-      newSet.forEach((idx) => {
-        if (idx > index) {
-          updatedSet.add(idx - 1);
-        } else {
-          updatedSet.add(idx);
-        }
+  const handleRemovePerson = useCallback(
+    (index: number) => {
+      removeAdd(index);
+      setEditingRows((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(index);
+        const updatedSet = new Set<number>();
+        newSet.forEach((idx) => {
+          if (idx > index) {
+            updatedSet.add(idx - 1);
+          } else {
+            updatedSet.add(idx);
+          }
+        });
+        return updatedSet;
       });
-      return updatedSet;
-    });
-  };
+    },
+    [removeAdd]
+  );
 
-  const handleReset = (event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const handleReset = useCallback(() => {
     form.reset();
     setSubmittedData(null);
     setEditingRows(new Set());
-  };
+  }, [form]);
 
-  const handleNewForm = (event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const handleNewForm = useCallback(() => {
     setSubmittedData(null);
-  };
+  }, []);
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">User Form</h1>
 
       {submittedData ? (
-        <UserSummaryCard
-          data={submittedData}
-          onNewForm={(event) => handleNewForm(event)}
-        />
+        <UserSummaryCard data={submittedData} onNewForm={handleNewForm} />
       ) : (
         <Form {...form}>
           <form
@@ -137,7 +131,7 @@ export function UserForm() {
               <CardHeader>
                 <CardTitle>ข้อมูลพื้นฐาน</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 grid grid-cols-2 gap-4">
+              <CardContent className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="username"
@@ -200,7 +194,7 @@ export function UserForm() {
                   <CardTitle>จัดการบุคคล</CardTitle>
                   <Button
                     type="button"
-                    onClick={(event) => handleAddPerson(event)}
+                    onClick={handleAddPerson}
                     variant="outline"
                     size="sm"
                   >
@@ -209,8 +203,12 @@ export function UserForm() {
                 </div>
               </CardHeader>
               <CardContent>
-                {addFields.length > 0 && (
-                  <Table>
+                {addFields.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">
+                    ยังไม่มีรายการบุคคล กดปุ่ม "เพิ่มบุคคลใหม่" เพื่อเริ่มต้น
+                  </p>
+                ) : (
+                  <Table aria-label="รายการบุคคล">
                     <TableHeader>
                       <TableRow>
                         <TableHead>ชื่อ</TableHead>
@@ -220,87 +218,14 @@ export function UserForm() {
                     </TableHeader>
                     <TableBody>
                       {addFields.map((field, index) => (
-                        <TableRow key={field.id}>
-                          <TableCell>
-                            <FormField
-                              control={form.control}
-                              name={`details.add.${index}.name`}
-                              render={({ field: nameField }) => (
-                                <FormItem>
-                                  {editingRows.has(index) ? (
-                                    <FormControl>
-                                      <Input
-                                        placeholder="กรอกชื่อ"
-                                        {...nameField}
-                                        className="border-0 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0"
-                                      />
-                                    </FormControl>
-                                  ) : (
-                                    <div className="py-2 text-sm">
-                                      {nameField.value || "ยังไม่ได้กรอกชื่อ"}
-                                    </div>
-                                  )}
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <FormField
-                              control={form.control}
-                              name={`details.add.${index}.age`}
-                              render={({ field: ageField }) => (
-                                <FormItem>
-                                  {editingRows.has(index) ? (
-                                    <FormControl>
-                                      <Input
-                                        type="number"
-                                        placeholder="กรอกอายุ"
-                                        {...ageField}
-                                        onChange={(e) =>
-                                          ageField.onChange(
-                                            Number(e.target.value)
-                                          )
-                                        }
-                                        className="border-0 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0"
-                                      />
-                                    </FormControl>
-                                  ) : (
-                                    <div className="py-2 text-sm">
-                                      {ageField.value
-                                        ? `${ageField.value} ปี`
-                                        : "ยังไม่ได้กรอกอายุ"}
-                                    </div>
-                                  )}
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="mr-2"
-                                onClick={(event) =>
-                                  handleToggleEdit(index, event)
-                                }
-                              >
-                                {editingRows.has(index) ? "บันทึก" : "แก้ไข"}
-                              </Button>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={(event) =>
-                                  handleRemovePerson(index, event)
-                                }
-                              >
-                                ลบ
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
+                        <PersonRow
+                          key={field.id}
+                          index={index}
+                          form={form}
+                          isEditing={editingRows.has(index)}
+                          onToggleEdit={handleToggleEdit}
+                          onRemove={handleRemovePerson}
+                        />
                       ))}
                     </TableBody>
                   </Table>
@@ -315,7 +240,7 @@ export function UserForm() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={(event) => handleReset(event)}
+                onClick={handleReset}
                 className="flex-1"
               >
                 รีเซ็ต
@@ -328,10 +253,102 @@ export function UserForm() {
   );
 }
 
+// PersonRow Component
+interface PersonRowProps {
+  index: number;
+  form: UseFormReturn<UserFormData>;
+  isEditing: boolean;
+  onToggleEdit: (index: number) => void;
+  onRemove: (index: number) => void;
+}
+
+function PersonRow({
+  index,
+  form,
+  isEditing,
+  onToggleEdit,
+  onRemove,
+}: PersonRowProps) {
+  return (
+    <TableRow>
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`details.add.${index}.name`}
+          render={({ field: nameField }) => (
+            <FormItem>
+              {isEditing ? (
+                <FormControl>
+                  <Input
+                    placeholder="กรอกชื่อ"
+                    {...nameField}
+                    className="border-0 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0"
+                  />
+                </FormControl>
+              ) : (
+                <div className="py-2 text-sm">
+                  {nameField.value || EMPTY_TEXT.name}
+                </div>
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </TableCell>
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`details.add.${index}.age`}
+          render={({ field: ageField }) => (
+            <FormItem>
+              {isEditing ? (
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="กรอกอายุ"
+                    {...ageField}
+                    onChange={(e) => ageField.onChange(Number(e.target.value))}
+                    className="border-0 focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0"
+                  />
+                </FormControl>
+              ) : (
+                <div className="py-2 text-sm">
+                  {ageField.value ? `${ageField.value} ปี` : EMPTY_TEXT.age}
+                </div>
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </TableCell>
+      <TableCell>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => onToggleEdit(index)}
+          >
+            {isEditing ? "บันทึก" : "แก้ไข"}
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            size="sm"
+            onClick={() => onRemove(index)}
+          >
+            ลบ
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
+
 // Summary Card Component
 interface UserSummaryCardProps {
   data: UserFormData;
-  onNewForm: (event: React.MouseEvent) => void;
+  onNewForm: () => void;
 }
 
 function UserSummaryCard({ data, onNewForm }: UserSummaryCardProps) {
