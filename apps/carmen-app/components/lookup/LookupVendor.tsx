@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { VendorGetDto } from "@/dtos/vendor-management";
 import { useTranslations } from "next-intl";
+import { Badge } from "../ui/badge";
 
 interface LookupVendorProps extends PropsLookup {
   readonly onSelectObject?: (obj: VendorGetDto) => void;
@@ -109,7 +110,10 @@ export default function LookupVendor({
                         setOpen(false);
                       }}
                     >
-                      {vendor.code} - {vendor.name}
+                      <Badge variant={"product_badge"} className="text-xs">
+                        {vendor.code}
+                      </Badge>
+                      - {vendor.name}
                       <Check
                         className={cn(
                           "ml-auto h-4 w-4",

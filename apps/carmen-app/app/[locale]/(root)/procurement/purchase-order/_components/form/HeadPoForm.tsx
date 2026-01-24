@@ -1,7 +1,6 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -11,46 +10,56 @@ import { cn } from "@/lib/utils";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
 import { PoFormValues } from "../../_schema/po.schema";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/form-custom/form";
 import LookupVendor from "@/components/lookup/LookupVendor";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
 import LookupCreditTerm from "@/components/lookup/LookupCreditTerm";
 import LookupUserList from "@/components/lookup/LookupUserList";
-import { useAuth } from "@/context/AuthContext";
-import { format } from "date-fns";
+import { format, startOfDay } from "date-fns";
+import { TextareaValidate } from "@/components/ui-custom/TextareaValidate";
 
 interface Props {
   readonly form: UseFormReturn<PoFormValues>;
   readonly currentMode: formType;
   readonly buCode: string;
+  readonly dateFormat?: string;
+  readonly currencyBase?: string;
 }
 
-export default function HeadPoForm({ form, currentMode, buCode }: Props) {
+// Disable past dates (before today)
+const disablePastDates = (date: Date) => {
+  const today = startOfDay(new Date());
+  return date < today;
+};
+
+export default function HeadPoForm({ form, currentMode, buCode, dateFormat, currencyBase }: Props) {
   const tPurchaseOrder = useTranslations("PurchaseOrder");
-  const { dateFormat } = useAuth();
 
   const isViewMode = currentMode === formType.VIEW;
   const isEditMode = currentMode === formType.EDIT || currentMode === formType.ADD;
 
-  // Use useWatch for display values in view mode (better performance than form.watch)
   const vendorName = useWatch({ control: form.control, name: "vendor_name" });
   const buyerName = useWatch({ control: form.control, name: "buyer_name" });
   const currencyName = useWatch({ control: form.control, name: "currency_name" });
   const creditTermName = useWatch({ control: form.control, name: "credit_term_name" });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Row 1: Vendor & Order Info */}
         <FormField
           control={form.control}
+          icon={<Building2 className="h-4 w-4" />}
           name="vendor_id"
+          required
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
-                <Building2 className="h-4 w-4" />
-                {tPurchaseOrder("vendor")}
-              </FormLabel>
+              <FormLabel>{tPurchaseOrder("vendor")}</FormLabel>
               <FormControl>
                 {isEditMode ? (
                   <LookupVendor
@@ -63,11 +72,7 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                     classNames="h-9"
                   />
                 ) : (
-                  <Input
-                    value={vendorName ?? "-"}
-                    className="h-9 bg-muted"
-                    disabled
-                  />
+                  <Input value={vendorName ?? "-"} className="h-9 bg-muted" disabled />
                 )}
               </FormControl>
               <FormMessage />
@@ -78,12 +83,11 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
         <FormField
           control={form.control}
           name="order_date"
+          icon={<CalendarIcon className="h-4 w-4" />}
+          required
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
-                <CalendarIcon className="h-4 w-4" />
-                {tPurchaseOrder("order_date")}
-              </FormLabel>
+              <FormLabel>{tPurchaseOrder("order_date")}</FormLabel>
               <FormControl>
                 {isEditMode ? (
                   <Popover>
@@ -106,6 +110,7 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                         mode="single"
                         selected={field.value ? new Date(field.value) : undefined}
                         onSelect={(date) => field.onChange(date?.toISOString())}
+                        disabled={disablePastDates}
                         initialFocus
                       />
                     </PopoverContent>
@@ -128,12 +133,11 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
         <FormField
           control={form.control}
           name="delivery_date"
+          icon={<CalendarIcon className="h-4 w-4" />}
+          required
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
-                <CalendarIcon className="h-4 w-4" />
-                {tPurchaseOrder("delivery_date")}
-              </FormLabel>
+              <FormLabel>{tPurchaseOrder("delivery_date")}</FormLabel>
               <FormControl>
                 {isEditMode ? (
                   <Popover>
@@ -156,6 +160,7 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                         mode="single"
                         selected={field.value ? new Date(field.value) : undefined}
                         onSelect={(date) => field.onChange(date?.toISOString())}
+                        disabled={disablePastDates}
                         initialFocus
                       />
                     </PopoverContent>
@@ -178,12 +183,11 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
         <FormField
           control={form.control}
           name="buyer_id"
+          icon={<User className="h-4 w-4" />}
+          required
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
-                <User className="h-4 w-4" />
-                {tPurchaseOrder("buyer")}
-              </FormLabel>
+              <FormLabel>{tPurchaseOrder("buyer")}</FormLabel>
               <FormControl>
                 {isEditMode ? (
                   <LookupUserList
@@ -195,11 +199,7 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                     classNames="h-9"
                   />
                 ) : (
-                  <Input
-                    value={buyerName ?? "-"}
-                    className="h-9 bg-muted"
-                    disabled
-                  />
+                  <Input value={buyerName ?? "-"} className="h-9 bg-muted" disabled />
                 )}
               </FormControl>
               <FormMessage />
@@ -207,16 +207,14 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
           )}
         />
 
-        {/* Row 2: Currency & Credit Term */}
         <FormField
           control={form.control}
+          icon={<DollarSign className="h-4 w-4" />}
           name="currency_id"
+          required
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
-                <DollarSign className="h-4 w-4" />
-                {tPurchaseOrder("currency")}
-              </FormLabel>
+              <FormLabel>{tPurchaseOrder("currency")}</FormLabel>
               <FormControl>
                 {isEditMode ? (
                   <LookupCurrency
@@ -227,14 +225,10 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                       form.setValue("exchange_rate", currency.exchange_rate || 1);
                     }}
                     bu_code={buCode}
-                    classNames="h-9"
+                    defaultCode={currencyBase}
                   />
                 ) : (
-                  <Input
-                    value={currencyName ?? "-"}
-                    className="h-9 bg-muted"
-                    disabled
-                  />
+                  <Input value={currencyName ?? "-"} className="h-9 bg-muted text-right" disabled />
                 )}
               </FormControl>
               <FormMessage />
@@ -245,35 +239,36 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
         <FormField
           control={form.control}
           name="exchange_rate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
-                <DollarSign className="h-4 w-4" />
-                {tPurchaseOrder("exchange_rate")}
-              </FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="number"
-                  value={field.value ?? 1}
-                  className={cn("h-9", isViewMode && "bg-muted")}
-                  disabled={isViewMode}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          icon={<DollarSign className="h-4 w-4" />}
+          required
+          render={({ field }) => {
+            const rate = field.value ?? 1;
+            const convertedAmount = 1 / rate;
+            const displayValue = `${convertedAmount.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 4,
+            })} ${currencyBase}`;
+
+            return (
+              <FormItem>
+                <FormLabel>{tPurchaseOrder("exchange_rate")}</FormLabel>
+                <FormControl>
+                  <Input value={displayValue} className="text-right" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
 
         <FormField
           control={form.control}
           name="credit_term_id"
+          icon={<Clock className="h-4 w-4" />}
+          required
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
-                <Clock className="h-4 w-4" />
-                {tPurchaseOrder("credit_term")}
-              </FormLabel>
+              <FormLabel>{tPurchaseOrder("credit_term")}</FormLabel>
               <FormControl>
                 {isEditMode ? (
                   <LookupCreditTerm
@@ -285,11 +280,7 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
                     }}
                   />
                 ) : (
-                  <Input
-                    value={creditTermName ?? "-"}
-                    className="h-9 bg-muted"
-                    disabled
-                  />
+                  <Input value={creditTermName ?? "-"} className="h-9 bg-muted" disabled />
                 )}
               </FormControl>
               <FormMessage />
@@ -300,12 +291,11 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
         <FormField
           control={form.control}
           name="email"
+          icon={<Mail className="h-4 w-4" />}
+          required
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
-                <Mail className="h-4 w-4" />
-                {tPurchaseOrder("email")}
-              </FormLabel>
+              <FormLabel>{tPurchaseOrder("email")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -324,18 +314,17 @@ export default function HeadPoForm({ form, currentMode, buCode }: Props) {
       <FormField
         control={form.control}
         name="description"
+        icon={<FileText className="h-4 w-4" />}
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="flex items-center gap-1.5 text-muted-foreground">
-              <FileText className="h-4 w-4" />
-              {tPurchaseOrder("description")}
-            </FormLabel>
+            <FormLabel>{tPurchaseOrder("description")}</FormLabel>
             <FormControl>
-              <Textarea
+              <TextareaValidate
                 {...field}
                 value={field.value ?? ""}
                 className={cn(isViewMode && "bg-muted")}
                 disabled={isViewMode}
+                maxLength={256}
               />
             </FormControl>
             <FormMessage />

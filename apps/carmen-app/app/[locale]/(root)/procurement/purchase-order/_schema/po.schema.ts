@@ -71,7 +71,7 @@ const BasePoSchema = z.object({
   credit_term_value: z.coerce.number().optional(),
   buyer_id: z.string().optional(),
   buyer_name: z.string().optional(),
-  email: z.string().email().optional().or(z.literal("")),
+  email: z.string().email("Invalid email format").optional().or(z.literal("")),
   remarks: z.string().optional(),
   note: z.string().optional(),
 });

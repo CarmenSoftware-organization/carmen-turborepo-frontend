@@ -18,6 +18,7 @@ export type PoDetailItem = PoDetailItemDto & {
 interface ColumnConfig {
   currentMode: formType;
   buCode: string;
+  token: string;
   tTableHeader: (key: string) => string;
   updateItemField: (item: PoDetailItem, updates: Partial<PoDetailItemDto>) => void;
   onDelete: (item: PoDetailItem) => void;
@@ -38,7 +39,7 @@ const calculatePrices = (item: PoDetailItem, updates: Partial<PoDetailItemDto>) 
 };
 
 export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailItem>[] => {
-  const { currentMode, buCode, tTableHeader, updateItemField, onDelete } = config;
+  const { currentMode, buCode, token, tTableHeader, updateItemField, onDelete } = config;
 
   const isEditMode = currentMode !== formType.VIEW;
 
@@ -75,25 +76,32 @@ export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailIte
         isEditMode ? (
           <LookupProduct
             value={row.original.product_id || ""}
-            bu_code={buCode}
+            token={token}
+            buCode={buCode}
             onValueChange={(value, selectedProduct) => {
+              console.log("Selected product:", selectedProduct);
               updateItemField(row.original, {
                 product_id: value,
                 product_name: selectedProduct?.name || "",
                 product_local_name: selectedProduct?.local_name || null,
-                base_unit_id: selectedProduct?.inventory_unit?.id || "",
-                base_unit_name: selectedProduct?.inventory_unit?.name || "",
+                base_unit_id: selectedProduct?.inventory_unit_id || "",
+                base_unit_name: selectedProduct?.inventory_unit_name || "",
+                // ใช้ค่านี้ไปก่อน
+                order_unit_id: selectedProduct?.inventory_unit_id || "",
+                order_unit_name: selectedProduct?.inventory_unit_name || "",
+                tax_profile_id: "01f9b0b6-9fb5-4e13-9252-6a5d4178be58",
+                tax_profile_name: "None",
+                tax_rate: 0,
               });
             }}
             classNames="text-xs h-7 w-full"
             initialDisplayName={row.original.product_name}
           />
         ) : (
-          <div className="flex flex-col gap-1">
-            <p className="text-sm font-medium">{row.original.product_name}</p>
-            {row.original.product_local_name && (
-              <p className="text-xs text-muted-foreground">{row.original.product_local_name}</p>
-            )}
+          <div className="flex flex-col gap-0.5 max-w-[200px]">
+            <p className="text-sm font-medium line-clamp-2 break-words">
+              {row.original.product_name}
+            </p>
           </div>
         ),
       enableSorting: false,
@@ -101,7 +109,9 @@ export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailIte
     },
     {
       accessorKey: "order_qty",
-      header: ({ column }) => <DataGridColumnHeader column={column} title={tTableHeader("order")} />,
+      header: ({ column }) => (
+        <DataGridColumnHeader column={column} title={tTableHeader("order")} />
+      ),
       cell: ({ row }) =>
         isEditMode ? (
           <NumberInput

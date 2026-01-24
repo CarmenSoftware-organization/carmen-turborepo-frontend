@@ -27,14 +27,19 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { usePoMutation, usePoUpdateMutation, usePoDeleteMutation } from "@/hooks/use-po";
 import { useRouter } from "next/navigation";
+import { addDays } from "date-fns";
+import JsonViewer from "@/components/JsonViewer";
 
 interface PoFormProps {
   readonly poData?: PoDetailDto;
   readonly mode: formType;
 }
 
+// Helper function to get tomorrow's date
+const getTomorrow = () => addDays(new Date(), 1).toISOString();
+
 export default function PoForm({ poData, mode }: PoFormProps) {
-  const { buCode, token } = useAuth();
+  const { buCode, token, dateFormat, currencyBase } = useAuth();
   const router = useRouter();
   const tPurchaseOrder = useTranslations("PurchaseOrder");
   const [currentMode, setCurrentMode] = useState<formType>(mode);
@@ -50,12 +55,12 @@ export default function PoForm({ poData, mode }: PoFormProps) {
   const defaultValues: PoFormValues = {
     vendor_id: "",
     vendor_name: "",
-    delivery_date: new Date().toISOString(),
+    delivery_date: getTomorrow(),
     currency_id: "",
     currency_name: "",
     exchange_rate: 1,
     description: "",
-    order_date: new Date().toISOString(),
+    order_date: getTomorrow(),
     credit_term_id: "",
     credit_term_name: "",
     credit_term_value: 0,
@@ -191,11 +196,10 @@ export default function PoForm({ poData, mode }: PoFormProps) {
 
       createMutation.mutate(createPayload, {
         onSuccess: (response) => {
-          toastSuccess({ message: tPurchaseOrder("add_po_success") });
           const newId = response?.data?.id;
           if (newId) {
-            router.push(`/procurement/purchase-order/${newId}`);
-          } else {
+            router.replace(`/procurement/purchase-order/${newId}`);
+            toastSuccess({ message: tPurchaseOrder("add_po_success") });
             setCurrentMode(formType.VIEW);
           }
         },
@@ -232,7 +236,13 @@ export default function PoForm({ poData, mode }: PoFormProps) {
               canSubmit={canSubmit}
               onDelete={poData?.id ? handleOpenDeleteDialog : undefined}
             />
-            <HeadPoForm form={form} currentMode={currentMode} buCode={buCode} />
+            <HeadPoForm
+              form={form}
+              currentMode={currentMode}
+              buCode={buCode}
+              dateFormat={dateFormat ?? "yyyy-MM-dd"}
+              currencyBase={currencyBase ?? "THB"}
+            />
             <Tabs defaultValue="items">
               <TabsList className={"mt-4"}>
                 <TabsTrigger className="w-full h-6" value="items">
@@ -244,7 +254,7 @@ export default function PoForm({ poData, mode }: PoFormProps) {
               </TabsList>
               <div className="mt-2">
                 <TabsContent value="items" className="mt-0">
-                  <PoItems form={form} currentMode={currentMode} />
+                  <PoItems form={form} currentMode={currentMode} buCode={buCode} token={token} />
                 </TabsContent>
                 <TabsContent value="docs" className="mt-0">
                   <Docs docs={[]} />
@@ -253,6 +263,7 @@ export default function PoForm({ poData, mode }: PoFormProps) {
             </Tabs>
           </form>
         </Form>
+        <JsonViewer data={form.watch()} title="PO Form Data" />
       </Card>
       <DeleteConfirmDialog
         open={isDeleteDialogOpen}

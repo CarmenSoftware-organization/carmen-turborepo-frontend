@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useAuth } from "@/context/AuthContext";
 import { UseFormReturn, useFieldArray } from "react-hook-form";
 import { PoFormValues, PoDetailItemDto } from "../../_schema/po.schema";
 import { useMemo, useCallback } from "react";
@@ -11,11 +10,6 @@ import { DataGridTable } from "@/components/ui/data-grid-table";
 import { formType } from "@/dtos/form.dto";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { createPoItemColumns, PoDetailItem } from "./PoItemColumns";
-
-interface Props {
-  readonly form: UseFormReturn<PoFormValues>;
-  currentMode: formType;
-}
 
 const createEmptyItem = (sequence: number): PoDetailItemDto => ({
   sequence,
@@ -47,11 +41,17 @@ const createEmptyItem = (sequence: number): PoDetailItemDto => ({
   note: "",
 });
 
-export default function PoItems({ form, currentMode }: Props) {
+interface Props {
+  readonly form: UseFormReturn<PoFormValues>;
+  currentMode: formType;
+  buCode: string;
+  token: string;
+}
+
+export default function PoItems({ form, currentMode, buCode, token }: Props) {
   const tPurchaseOrder = useTranslations("PurchaseOrder");
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
-  const { buCode } = useAuth();
 
   const { fields, append, remove, update } = useFieldArray({
     control: form.control,
@@ -67,7 +67,6 @@ export default function PoItems({ form, currentMode }: Props) {
 
   const onAdd = useCallback(() => {
     const newItem = createEmptyItem(getNextSequence());
-    // prepend by inserting at index 0
     append(newItem);
   }, [append, getNextSequence]);
 
@@ -88,7 +87,6 @@ export default function PoItems({ form, currentMode }: Props) {
     [fields, update]
   );
 
-  // Add _index to items for table rendering
   const itemsWithIndex: PoDetailItem[] = useMemo(() => {
     return fields.map((item, index) => ({
       ...item,
@@ -102,6 +100,7 @@ export default function PoItems({ form, currentMode }: Props) {
       createPoItemColumns({
         currentMode,
         buCode,
+        token,
         tTableHeader,
         updateItemField,
         onDelete,

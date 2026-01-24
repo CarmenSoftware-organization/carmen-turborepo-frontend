@@ -22,6 +22,7 @@ import { useTranslations } from "next-intl";
 
 interface LookupCurrencyProps extends PropsLookup {
   readonly onSelectObject?: (obj: CurrencyGetDto) => void;
+  readonly defaultCode?: string;
 }
 
 export default function LookupCurrency({
@@ -31,6 +32,7 @@ export default function LookupCurrency({
   classNames = "",
   onSelectObject,
   bu_code,
+  defaultCode,
 }: Readonly<LookupCurrencyProps>) {
   const { token, buCode } = useAuth();
   const currentBuCode = bu_code ?? buCode;
@@ -131,6 +133,21 @@ export default function LookupCurrency({
       observer.disconnect();
     };
   }, [hasNextPage, isFetchingNextPage, fetchNextPage, open, debouncedSearchTerm]);
+
+  // Auto-select default currency by code when no value is set
+  useEffect(() => {
+    if (!value && defaultCode && currenciesData.length > 0) {
+      const defaultCurrency = currenciesData.find(
+        (currency) => currency.code === defaultCode
+      );
+      if (defaultCurrency) {
+        onValueChange(defaultCurrency.id);
+        if (onSelectObject) {
+          onSelectObject(defaultCurrency);
+        }
+      }
+    }
+  }, [value, defaultCode, currenciesData, onValueChange, onSelectObject]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

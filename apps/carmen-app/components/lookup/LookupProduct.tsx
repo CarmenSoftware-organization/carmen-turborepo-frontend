@@ -12,7 +12,7 @@ import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useProductQuery } from "@/hooks/use-product-query";
-import { useAuth } from "@/context/AuthContext";
+import { Badge } from "../ui/badge";
 
 interface LookupProductProps {
   readonly value?: string;
@@ -20,23 +20,26 @@ interface LookupProductProps {
   readonly placeholder?: string;
   readonly disabled?: boolean;
   readonly classNames?: string;
-  readonly bu_code?: string;
   readonly initialDisplayName?: string;
+  readonly token: string;
+  readonly buCode: string;
 }
 
 export default function LookupProduct({
   value,
   onValueChange,
-  placeholder = "Select Product",
   disabled = false,
   classNames,
   initialDisplayName,
+  token,
+  buCode,
 }: Readonly<LookupProductProps>) {
-  const { token, buCode } = useAuth();
   const { products, isLoading } = useProductQuery({
     token,
     buCode,
+    params: { perpage: -1 },
   });
+
   const [open, setOpen] = useState(false);
 
   const selectedProductName = useMemo(() => {
@@ -57,7 +60,9 @@ export default function LookupProduct({
           className={cn("w-full justify-between", classNames)}
           disabled={disabled}
         >
-          {value && selectedProductName ? selectedProductName : placeholder}
+          <span className="truncate">
+            {value && selectedProductName ? selectedProductName : "Select product"}
+          </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -91,11 +96,14 @@ export default function LookupProduct({
                           }
                           setOpen(false);
                         }}
+                        className="flex items-center justify-between"
                       >
-                        {product.code} - {product.name}
+                        <span className="truncate flex-1 mr-2">
+                          <Badge variant={"product_badge"}>{product.code}</Badge>- {product.name}
+                        </span>
                         <Check
                           className={cn(
-                            "ml-auto h-4 w-4",
+                            "h-4 w-4 shrink-0",
                             value === product.id ? "opacity-100" : "opacity-0"
                           )}
                         />
