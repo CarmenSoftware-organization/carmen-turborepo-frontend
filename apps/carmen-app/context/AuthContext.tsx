@@ -149,6 +149,7 @@ interface AuthContextType {
   buId: string;
   handleChangeBu: (buId: string) => void;
   departments: BusinessUnit["department"] | null;
+  defaultCurrencyId: string | null;
   currencyBase: NonNullable<BusinessUnit["config"]>["currency_base"] | null;
   dateFormat: NonNullable<BusinessUnit["config"]>["date_format"] | null;
   dateTimeFormat: NonNullable<BusinessUnit["config"]>["date_time_format"] | null;
@@ -177,6 +178,7 @@ export const AuthContext = createContext<AuthContextType>({
   buId: "",
   handleChangeBu: () => {},
   departments: null,
+  defaultCurrencyId: null,
   currencyBase: null,
   dateFormat: null,
   dateTimeFormat: null,
@@ -250,6 +252,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
   const {
     departments,
+    defaultCurrencyId,
     currencyBase,
     dateFormat,
     dateTimeFormat,
@@ -266,18 +269,28 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     const firstBu = user?.data.business_unit?.[0];
     const selectedBu = defaultBu || firstBu;
 
+    // Helper function to get config value by key (config is an array)
+    const getConfigValue = (key: string) => {
+      if (!selectedBu?.config || !Array.isArray(selectedBu.config)) return null;
+      const configItem = selectedBu.config.find((item: { key: string }) => item.key === key);
+      return configItem?.value ?? null;
+    };
+
+    const currencyBaseConfig = getConfigValue("currency_base");
+
     return {
       departments: defaultBu?.department || null,
-      currencyBase: selectedBu?.config?.currency_base?.code || "THB",
-      dateFormat: selectedBu?.config?.date_format || "yyyy-MM-dd",
-      dateTimeFormat: selectedBu?.config?.date_time_format || "yyyy-MM-dd HH:mm",
-      longTimeFormat: selectedBu?.config?.long_time_format || "HH:mm:ss",
-      shortTimeFormat: selectedBu?.config?.short_time_format || "HH:mm",
-      perpage: selectedBu?.config?.perpage || null,
-      timezone: selectedBu?.config?.timezone || null,
-      amount: selectedBu?.config?.amount || null,
-      quantity: selectedBu?.config?.quantity || null,
-      recipe: selectedBu?.config?.recipe || null,
+      currencyBase: currencyBaseConfig?.code || "THB",
+      defaultCurrencyId: currencyBaseConfig?.currency_id || null,
+      dateFormat: getConfigValue("date_format") || "yyyy-MM-dd",
+      dateTimeFormat: getConfigValue("date_time_format") || "yyyy-MM-dd HH:mm",
+      longTimeFormat: getConfigValue("long_time_format") || "HH:mm:ss",
+      shortTimeFormat: getConfigValue("short_time_format") || "HH:mm",
+      perpage: getConfigValue("perpage") || null,
+      timezone: getConfigValue("timezone") || null,
+      amount: getConfigValue("amount") || null,
+      quantity: getConfigValue("quantity") || null,
+      recipe: getConfigValue("recipe") || null,
     };
   }, [user]);
 
@@ -499,6 +512,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       buId,
       handleChangeBu,
       departments,
+      defaultCurrencyId,
       currencyBase,
       dateFormat,
       dateTimeFormat,
@@ -524,6 +538,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       buId,
       handleChangeBu,
       departments,
+      defaultCurrencyId,
       currencyBase,
       dateFormat,
       dateTimeFormat,

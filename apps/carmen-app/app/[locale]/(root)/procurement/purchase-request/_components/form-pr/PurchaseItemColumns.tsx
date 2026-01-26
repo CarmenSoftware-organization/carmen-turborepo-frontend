@@ -428,10 +428,14 @@ export const createPurchaseItemColumns = (
               onChange={(value) => onItemUpdate(item.id, "foc_qty", value)}
               classNames="w-16 h-7 text-xs bg-background"
             />
-            <UnitLookup
-              value={(getItemValue(item, "foc_unit_id") as string) || ""}
-              onValueChange={(value) => onItemUpdate(item.id, "foc_unit_id", value)}
-              classNames="h-7 text-xs w-24"
+            <UnitSelectCell
+              item={item}
+              productId={(getItemValue(item, "product_id") as string) || ""}
+              currentUnitId={getItemValue(item, "foc_unit_id") as string | undefined}
+              onItemUpdate={onItemUpdate}
+              token={token}
+              buCode={buCode}
+              fieldPrefix="foc"
             />
           </div>
         );

@@ -32,6 +32,7 @@ import { PurchaseRequestProvider } from "./PurchaseRequestContext";
 import { CreatePrDtoType, CreatePrSchema } from "../../_schemas/purchase-request-form.schema";
 import { PR_STATUS } from "../../_constants/pr-status";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import JsonViewer from "@/components/JsonViewer";
 
 interface Props {
   mode: formType;
@@ -45,7 +46,7 @@ interface CancelAction {
 }
 
 export default function MainForm({ mode, initValues, bu_code }: Props) {
-  const { user, departments } = useAuth();
+  const { user, departments, defaultCurrencyId } = useAuth();
 
   const tPR = useTranslations("PurchaseRequest");
 
@@ -73,6 +74,7 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
   const purchaseItemManager = usePurchaseItemManagement({
     form,
     initValues: initValues?.purchase_request_detail,
+    defaultCurrencyId,
   });
 
   const logic = useMainFormLogic({
@@ -126,7 +128,9 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
     handleReviewConfirm,
   } = logic;
 
-  const isShowActionButtons = prStatus !== PR_STATUS.VOIDED && prStatus !== PR_STATUS.APPROVED;
+  const isShowActionButtons =
+    currentMode !== formType.EDIT &&
+    (prStatus !== PR_STATUS.VOIDED && prStatus !== PR_STATUS.APPROVED);
 
   return (
     <>
@@ -178,6 +182,7 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
                   </Tabs>
                 </form>
               </Form>
+              {/* <JsonViewer data={form.watch()} title="PR" /> */}
             </Card>
 
             {isShowActionButtons && (

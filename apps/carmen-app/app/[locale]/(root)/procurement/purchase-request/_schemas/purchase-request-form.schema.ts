@@ -11,6 +11,7 @@ import {
   EmbeddedTaxSchema,
   RequestedQuantityAndUnitSchema,
   ApproveQuantityAndUnitSchema,
+  FocSchema,
   PriceSchema,
   InfoSchema,
   ValidateSchema,
@@ -52,6 +53,7 @@ export const CreatePurchaseRequestDetailSchema = z
       exchange_rate_date: z.string().datetime().nullable().optional(),
     })
   )
+  .merge(FocSchema.partial())
   .merge(InfoSchema);
 
 export const StageRoleSchema = z.nativeEnum(STAGE_ROLE);
@@ -113,7 +115,8 @@ export const UpdatePurchaseRequestDetailSchema = z.object({
   // จาก FocSchema (partial)
   foc_qty: ValidateSchema.shape.quantity.optional(),
   foc_unit_id: z.string().uuid().nullable().optional(),
-  foc_unit_conversion_rate: ValidateSchema.shape.price.optional(),
+  foc_unit_name: z.string().nullable().optional(),
+  foc_unit_conversion_factor: ValidateSchema.shape.price.optional(),
   // Add stages_status field
   stages_status: z
     .union([z.string(), z.array(z.any()), z.record(z.any())])

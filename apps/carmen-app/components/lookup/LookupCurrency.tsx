@@ -34,7 +34,7 @@ export default function LookupCurrency({
   bu_code,
   defaultCode,
 }: Readonly<LookupCurrencyProps>) {
-  const { token, buCode } = useAuth();
+  const { token, buCode, currencyBase } = useAuth();
   const currentBuCode = bu_code ?? buCode;
   const t = useTranslations("Currency");
   const [open, setOpen] = useState(false);
@@ -137,9 +137,7 @@ export default function LookupCurrency({
   // Auto-select default currency by code when no value is set
   useEffect(() => {
     if (!value && defaultCode && currenciesData.length > 0) {
-      const defaultCurrency = currenciesData.find(
-        (currency) => currency.code === defaultCode
-      );
+      const defaultCurrency = currenciesData.find((currency) => currency.code === defaultCode);
       if (defaultCurrency) {
         onValueChange(defaultCurrency.id);
         if (onSelectObject) {
@@ -158,7 +156,7 @@ export default function LookupCurrency({
           className={cn("w-full justify-between", classNames)}
           disabled={disabled}
         >
-          {value && selectedCurrencyName ? selectedCurrencyName : t("select_currency")}
+          {value && selectedCurrencyName ? selectedCurrencyName : currencyBase}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

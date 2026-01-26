@@ -24,6 +24,7 @@ interface UnitSelectCellProps {
   onItemUpdate: (itemId: string, fieldName: string, value: unknown) => void;
   token: string;
   buCode: string;
+  fieldPrefix?: "requested" | "approved" | "foc";
 }
 
 export const UnitSelectCell = ({
@@ -33,6 +34,7 @@ export const UnitSelectCell = ({
   onItemUpdate,
   token,
   buCode,
+  fieldPrefix,
 }: UnitSelectCellProps) => {
   const [open, setOpen] = useState(false);
   const t = useTranslations("Unit");
@@ -47,25 +49,34 @@ export const UnitSelectCell = ({
   useEffect(() => {
     if (orderUnits && orderUnits.length > 0 && !currentUnitId) {
       const firstUnit = orderUnits[0];
-      // Auto-set approved unit same as requested for new items
-      onItemUpdate(item.id, "requested_unit_id", firstUnit.id);
-      onItemUpdate(item.id, "requested_unit_name", firstUnit.name);
-      onItemUpdate(item.id, "requested_unit_conversion_factor", firstUnit.conversion);
 
-      onItemUpdate(item.id, "approved_unit_id", firstUnit.id);
-      onItemUpdate(item.id, "approved_unit_name", firstUnit.name);
-      onItemUpdate(item.id, "approved_unit_conversion_factor", firstUnit.conversion);
+      // If fieldPrefix is specified, only update that specific field
+      if (fieldPrefix) {
+        onItemUpdate(item.id, `${fieldPrefix}_unit_id`, firstUnit.id);
+        onItemUpdate(item.id, `${fieldPrefix}_unit_name`, firstUnit.name);
+        onItemUpdate(item.id, `${fieldPrefix}_unit_conversion_factor`, firstUnit.conversion);
+      } else {
+        // Auto-set all units for new items (default behavior)
+        onItemUpdate(item.id, "requested_unit_id", firstUnit.id);
+        onItemUpdate(item.id, "requested_unit_name", firstUnit.name);
+        onItemUpdate(item.id, "requested_unit_conversion_factor", firstUnit.conversion);
 
-      onItemUpdate(item.id, "foc_unit_id", firstUnit.id);
-      onItemUpdate(item.id, "foc_unit_name", firstUnit.name);
-      onItemUpdate(item.id, "foc_unit_conversion_factor", firstUnit.conversion);
-      // Calculate initial base quantities
-      const requestedQty = item.requested_qty || 0;
-      const approvedQty = item.approved_qty || 0;
-      onItemUpdate(item.id, "requested_base_qty", requestedQty * firstUnit.conversion);
-      onItemUpdate(item.id, "approved_base_qty", approvedQty * firstUnit.conversion);
+        onItemUpdate(item.id, "approved_unit_id", firstUnit.id);
+        onItemUpdate(item.id, "approved_unit_name", firstUnit.name);
+        onItemUpdate(item.id, "approved_unit_conversion_factor", firstUnit.conversion);
+
+        onItemUpdate(item.id, "foc_unit_id", firstUnit.id);
+        onItemUpdate(item.id, "foc_unit_name", firstUnit.name);
+        onItemUpdate(item.id, "foc_unit_conversion_factor", firstUnit.conversion);
+
+        // Calculate initial base quantities
+        const requestedQty = item.requested_qty || 0;
+        const approvedQty = item.approved_qty || 0;
+        onItemUpdate(item.id, "requested_base_qty", requestedQty * firstUnit.conversion);
+        onItemUpdate(item.id, "approved_base_qty", approvedQty * firstUnit.conversion);
+      }
     }
-  }, [orderUnits, currentUnitId, item.id, onItemUpdate]);
+  }, [orderUnits, currentUnitId, item.id, onItemUpdate, fieldPrefix]);
 
   const selectValue = currentUnitId || orderUnits?.[0]?.id || "";
 
@@ -83,26 +94,34 @@ export const UnitSelectCell = ({
       onValueChange={(value) => {
         const selectedUnit = orderUnits?.find((unit: UnitOderProduct) => unit.id === value);
         if (selectedUnit) {
-          // requested
-          onItemUpdate(item.id, "requested_unit_name", selectedUnit.name);
-          onItemUpdate(item.id, "requested_unit_id", selectedUnit.id);
-          onItemUpdate(item.id, "requested_unit_conversion_factor", selectedUnit.conversion);
+          // If fieldPrefix is specified, only update that specific field
+          if (fieldPrefix) {
+            onItemUpdate(item.id, `${fieldPrefix}_unit_id`, selectedUnit.id);
+            onItemUpdate(item.id, `${fieldPrefix}_unit_name`, selectedUnit.name);
+            onItemUpdate(item.id, `${fieldPrefix}_unit_conversion_factor`, selectedUnit.conversion);
+          } else {
+            // Update all units (default behavior)
+            // requested
+            onItemUpdate(item.id, "requested_unit_name", selectedUnit.name);
+            onItemUpdate(item.id, "requested_unit_id", selectedUnit.id);
+            onItemUpdate(item.id, "requested_unit_conversion_factor", selectedUnit.conversion);
 
-          // Recalculate base quantities with new conversion factor
-          const requestedQty = item.requested_qty || 0;
-          const approvedQty = item.approved_qty || 0;
-          onItemUpdate(item.id, "requested_base_qty", requestedQty * selectedUnit.conversion);
+            // Recalculate base quantities with new conversion factor
+            const requestedQty = item.requested_qty || 0;
+            const approvedQty = item.approved_qty || 0;
+            onItemUpdate(item.id, "requested_base_qty", requestedQty * selectedUnit.conversion);
 
-          // approved
-          onItemUpdate(item.id, "approved_unit_name", selectedUnit.name);
-          onItemUpdate(item.id, "approved_unit_id", selectedUnit.id);
-          onItemUpdate(item.id, "approved_unit_conversion_factor", selectedUnit.conversion);
-          onItemUpdate(item.id, "approved_base_qty", approvedQty * selectedUnit.conversion);
+            // approved
+            onItemUpdate(item.id, "approved_unit_name", selectedUnit.name);
+            onItemUpdate(item.id, "approved_unit_id", selectedUnit.id);
+            onItemUpdate(item.id, "approved_unit_conversion_factor", selectedUnit.conversion);
+            onItemUpdate(item.id, "approved_base_qty", approvedQty * selectedUnit.conversion);
 
-          // foc
-          onItemUpdate(item.id, "foc_unit_name", selectedUnit.name);
-          onItemUpdate(item.id, "foc_unit_id", selectedUnit.id);
-          onItemUpdate(item.id, "foc_unit_conversion_factor", selectedUnit.conversion);
+            // foc
+            onItemUpdate(item.id, "foc_unit_name", selectedUnit.name);
+            onItemUpdate(item.id, "foc_unit_id", selectedUnit.id);
+            onItemUpdate(item.id, "foc_unit_conversion_factor", selectedUnit.conversion);
+          }
         }
         setOpen(false);
       }}

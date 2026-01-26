@@ -11,6 +11,7 @@ interface PurchaseItemState {
 interface UsePurchaseItemManagementProps {
   form: UseFormReturn<any>;
   initValues?: PurchaseRequestDetail[];
+  defaultCurrencyId?: string | null;
 }
 
 interface UsePurchaseItemManagementReturn {
@@ -39,6 +40,7 @@ const EMPTY_ARRAY: PurchaseRequestDetail[] = [];
 export const usePurchaseItemManagement = ({
   form,
   initValues = EMPTY_ARRAY,
+  defaultCurrencyId,
 }: UsePurchaseItemManagementProps): UsePurchaseItemManagementReturn => {
   const [state, setState] = useState<PurchaseItemState>({
     updatedItems: {},
@@ -74,11 +76,16 @@ export const usePurchaseItemManagement = ({
       requested_qty: 0,
       requested_unit_id: undefined,
       delivery_date: undefined,
-      currency_id: undefined,
+      currency_id: defaultCurrencyId || undefined,
+      exchange_rate_date: new Date().toISOString(),
       // Auto-set approved same as requested for new items
       approved_qty: 0,
       approved_unit_id: undefined,
       approved_unit_name: undefined,
+
+      foc_qty: 0,
+      foc_unit_id: undefined,
+      foc_unit_name: undefined,
     };
     addPrepend(newItem);
 
@@ -86,7 +93,7 @@ export const usePurchaseItemManagement = ({
     queueMicrotask(() => {
       form.trigger().catch(console.error);
     });
-  }, [addPrepend, form]);
+  }, [addPrepend, form, defaultCurrencyId]);
 
   // Helper: Process quantity field values
   const processQuantityValue = useCallback((fieldName: string, value: any): any => {
