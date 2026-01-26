@@ -41,7 +41,7 @@ interface Props {
 }
 
 export default function FormStoreRequisition({ initData, mode }: Props) {
-  const { user, departments } = useAuth();
+  const { user, departments, token, buCode } = useAuth();
 
   const [openLog, setOpenLog] = useState<boolean>(false);
   const [currentMode, setCurrentMode] = useState<formType>(mode);
@@ -149,6 +149,7 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
                   control={form.control}
                   mode={currentMode}
                   initData={initData}
+                  buCode={buCode}
                 />
               </Card>
               <Tabs defaultValue="items" className="mt-2">
