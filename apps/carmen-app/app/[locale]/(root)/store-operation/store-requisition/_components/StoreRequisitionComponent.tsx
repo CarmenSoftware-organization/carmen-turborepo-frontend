@@ -9,21 +9,60 @@ import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import StoreRequisitionList from "./StoreRequisitionList";
-import { mockStoreRequisitions } from "@/mock-data/store-operation";
 import { Link } from "@/lib/navigation";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import { useAuth } from "@/context/AuthContext";
+import { useDeleteSr, useStoreRequisitionQuery } from "@/hooks/use-sr";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 export default function StoreRequisitionComponent() {
+  const { token, buCode, dateFormat } = useAuth();
+
   const tCommon = useTranslations("Common");
   const [search, setSearch] = useURL("search");
   const [status, setStatus] = useURL("status");
   const [statusOpen, setStatusOpen] = useState(false);
   const [sort, setSort] = useURL("sort");
 
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
   const sortFields = [
     { key: "name", label: "Name" },
     { key: "is_active", label: "Status" },
   ];
+
+  const { srData, paginate, isLoading, error } = useStoreRequisitionQuery({
+    token,
+    buCode,
+    params: {
+      search,
+      sort,
+    },
+  });
+  const deleteMutation = useDeleteSr(token, buCode);
+
+  const handleOpenDeleteDialog = (id: string) => {
+    setDeleteId(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deleteId) return;
+    deleteMutation.mutate(deleteId, {
+      onSuccess: () => {
+        setIsDeleteDialogOpen(false);
+        setDeleteId(null);
+        toastSuccess({ message: "Delete Store Requisition Success" });
+      },
+      onError: () => {
+        toastError({ message: "Delete Store Requisition Failed" });
+      },
+    });
+  };
+
+  console.log(srData);
 
   const title = "Store Requisition";
 
@@ -78,14 +117,30 @@ export default function StoreRequisitionComponent() {
     </div>
   );
 
-  const content = <StoreRequisitionList storeRequisitions={mockStoreRequisitions} />;
+  const content = (
+    <StoreRequisitionList
+      storeRequisitions={srData ?? []}
+      isLoading={isLoading}
+      dateFormat={dateFormat ?? "yyyy-MM-dd"}
+      onDelete={handleOpenDeleteDialog}
+    />
+  );
 
   return (
-    <DataDisplayTemplate
-      title={title}
-      actionButtons={actionButtons}
-      filters={filters}
-      content={content}
-    />
+    <>
+      <DataDisplayTemplate
+        title={title}
+        actionButtons={actionButtons}
+        filters={filters}
+        content={content}
+      />
+      <DeleteConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={handleConfirmDelete}
+        title="Delete Store Requisition"
+        description="Are you sure you want to delete this store requisition? This action cannot be undone."
+      />
+    </>
   );
 }

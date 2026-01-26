@@ -1,5 +1,5 @@
 import { formType } from "@/dtos/form.dto";
-import { StoreRequisitionDetailDto } from "@/dtos/store-operation.dto";
+import { SrByIdDto, SrCreate } from "@/dtos/sr.dto";
 import { Control } from "react-hook-form";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -14,45 +14,36 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea";
 
 interface StoreRequisitionFormHeaderProps {
-  readonly control: Control<StoreRequisitionDetailDto>;
+  readonly control: Control<SrCreate>;
   readonly mode: formType;
+  readonly initData?: SrByIdDto;
 }
 
 export default function StoreRequisitionFormHeader({
   control,
   mode,
+  initData,
 }: StoreRequisitionFormHeaderProps) {
   return (
     <div className="space-y-4 mt-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Ref Number */}
-        <FormField
-          control={control}
-          name="ref_no"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Reference Number</FormLabel>
-              {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">{field.value}</p>
-              ) : (
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* SR Number (read-only from initData) */}
+        <div>
+          <p className="text-sm font-medium">Reference Number</p>
+          <p className="text-xs text-muted-foreground">{initData?.sr_no || "-"}</p>
+        </div>
 
-        {/* Date */}
+        {/* SR Date */}
         <FormField
           control={control}
-          name="date"
+          name="details.sr_date"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Date</FormLabel>
               {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">{field.value}</p>
+                <p className="text-xs text-muted-foreground">
+                  {field.value ? format(new Date(field.value), "PPP") : "-"}
+                </p>
               ) : (
                 <Popover>
                   <PopoverTrigger asChild>
@@ -78,7 +69,7 @@ export default function StoreRequisitionFormHeader({
                       mode="single"
                       selected={field.value ? new Date(field.value) : undefined}
                       onSelect={(date) =>
-                        field.onChange(date ? date.toISOString().split("T")[0] : "")
+                        field.onChange(date ? date.toISOString() : "")
                       }
                       initialFocus
                     />
@@ -90,15 +81,17 @@ export default function StoreRequisitionFormHeader({
           )}
         />
 
-        {/* Expected Delivery Date */}
+        {/* Expected Date */}
         <FormField
           control={control}
-          name="expected_delivery_date"
+          name="details.expected_date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Expected Delivery Date</FormLabel>
+              <FormLabel>Expected Date</FormLabel>
               {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">{field.value}</p>
+                <p className="text-xs text-muted-foreground">
+                  {field.value ? format(new Date(field.value), "PPP") : "-"}
+                </p>
               ) : (
                 <Popover>
                   <PopoverTrigger asChild>
@@ -124,7 +117,7 @@ export default function StoreRequisitionFormHeader({
                       mode="single"
                       selected={field.value ? new Date(field.value) : undefined}
                       onSelect={(date) =>
-                        field.onChange(date ? date.toISOString().split("T")[0] : "")
+                        field.onChange(date ? date.toISOString() : "")
                       }
                       initialFocus
                     />
@@ -136,68 +129,41 @@ export default function StoreRequisitionFormHeader({
           )}
         />
 
-        {/* Job Code */}
-        <FormField
-          control={control}
-          name="job_code"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Job Code</FormLabel>
-              {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">{field.value}</p>
-              ) : (
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* Department (read-only from initData) */}
+        <div>
+          <p className="text-sm font-medium">Department</p>
+          <p className="text-xs text-muted-foreground">{initData?.department_name || "-"}</p>
+        </div>
 
-        {/* From Department */}
-        <FormField
-          control={control}
-          name="dp_req_from"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>From Department</FormLabel>
-              {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">{field.value}</p>
-              ) : (
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* From Location (read-only from initData) */}
+        <div>
+          <p className="text-sm font-medium">From Location</p>
+          <p className="text-xs text-muted-foreground">{initData?.from_location_name || "-"}</p>
+        </div>
 
-        {/* To Department */}
-        <FormField
-          control={control}
-          name="dp_req_to"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>To Department</FormLabel>
-              {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">{field.value}</p>
-              ) : (
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* To Location (read-only from initData) */}
+        <div>
+          <p className="text-sm font-medium">To Location</p>
+          <p className="text-xs text-muted-foreground">{initData?.to_location_name || "-"}</p>
+        </div>
+
+        {/* Requestor (read-only from initData) */}
+        <div>
+          <p className="text-sm font-medium">Requestor</p>
+          <p className="text-xs text-muted-foreground">{initData?.requestor_name || "-"}</p>
+        </div>
+
+        {/* Workflow (read-only from initData) */}
+        <div>
+          <p className="text-sm font-medium">Workflow</p>
+          <p className="text-xs text-muted-foreground">{initData?.workflow_name || "-"}</p>
+        </div>
       </div>
 
       {/* Description */}
       <FormField
         control={control}
-        name="description"
+        name="details.description"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Description</FormLabel>

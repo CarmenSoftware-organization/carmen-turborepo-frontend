@@ -1,220 +1,197 @@
 "use client";
 
-import { StoreRequisitionDto } from "@/dtos/store-operation.dto"
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Trash, Calendar, FileText, Building, DollarSign, Info } from "lucide-react";
+import { Calendar, FileText, Building, ArrowRight, Trash2 } from "lucide-react";
 import { Link } from "@/lib/navigation";
 import { useMemo } from "react";
-import {
-    ColumnDef,
-    getCoreRowModel,
-    useReactTable,
-} from "@tanstack/react-table";
+import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
-import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import {
+  DataGridTable,
+  DataGridTableRowSelect,
+  DataGridTableRowSelectAll,
+} from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useTranslations } from "next-intl";
-
+import { SrDto } from "@/dtos/sr.dto";
+import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import { formatDate } from "@/utils/format/date";
 interface Props {
-    readonly storeRequisitions: StoreRequisitionDto[]
-    readonly isLoading?: boolean;
+  readonly storeRequisitions: SrDto[];
+  readonly isLoading: boolean;
+  readonly dateFormat?: string;
+  onDelete: (id: string) => void;
 }
 
-export default function StoreRequisitionList({ storeRequisitions, isLoading = false }: Props) {
-    const tCommon = useTranslations("Common");
-    const tTableHeader = useTranslations("TableHeader");
+export default function StoreRequisitionList({
+  storeRequisitions,
+  isLoading,
+  dateFormat,
+  onDelete,
+}: Props) {
+  const tCommon = useTranslations("Common");
+  const tTableHeader = useTranslations("TableHeader");
 
-    // Action header component
-    const ActionHeader = () => <div className="text-right">{tTableHeader("action")}</div>;
+  const columns = useMemo<ColumnDef<SrDto>[]>(
+    () => [
+      {
+        id: "select",
+        header: () => <DataGridTableRowSelectAll />,
+        cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+        enableSorting: false,
+        enableHiding: false,
+        size: 30,
+      },
+      {
+        id: "no",
+        header: () => "#",
+        cell: ({ row }) => <span>{row.index + 1}</span>,
+        enableSorting: false,
+        size: 30,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
+      },
 
-    // Define columns
-    const columns = useMemo<ColumnDef<StoreRequisitionDto>[]>(
-        () => [
-            {
-                id: "select",
-                header: () => <DataGridTableRowSelectAll />,
-                cell: ({ row }) => <DataGridTableRowSelect row={row} />,
-                enableSorting: false,
-                enableHiding: false,
-                size: 30,
-            },
-            {
-                id: "no",
-                header: () => <div className="text-center">#</div>,
-                cell: ({ row }) => (
-                    <div className="text-center">
-                        {row.index + 1}
-                    </div>
-                ),
-                enableSorting: false,
-                size: 30,
-                meta: {
-                    cellClassName: "text-center",
-                    headerClassName: "text-center",
-                },
-            },
-            {
-                accessorKey: "date_created",
-                header: () => (
-                    <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        <span>Date</span>
-                    </div>
-                ),
-                cell: ({ row }) => <span>{row.original.date_created}</span>,
-                enableSorting: false,
-                size: 120,
-            },
-            {
-                accessorKey: "ref_no",
-                header: () => (
-                    <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4" />
-                        <span>Ref #</span>
-                    </div>
-                ),
-                cell: ({ row }) => <span>{row.original.ref_no}</span>,
-                enableSorting: false,
-                size: 150,
-            },
-            {
-                accessorKey: "request_to",
-                header: () => <span>Request To</span>,
-                cell: ({ row }) => <span>{row.original.request_to}</span>,
-                enableSorting: false,
-                size: 150,
-            },
-            {
-                accessorKey: "store_name",
-                header: () => (
-                    <div className="flex items-center gap-2">
-                        <Building className="h-4 w-4" />
-                        <span>Store Name</span>
-                    </div>
-                ),
-                cell: ({ row }) => <span>{row.original.store_name}</span>,
-                enableSorting: false,
-                size: 200,
-            },
-            {
-                accessorKey: "description",
-                header: () => (
-                    <div className="flex items-center gap-2">
-                        <Info className="h-4 w-4" />
-                        <span>Description</span>
-                    </div>
-                ),
-                cell: ({ row }) => (
-                    <span className="truncate max-w-[200px] inline-block">
-                        {row.original.description}
-                    </span>
-                ),
-                enableSorting: false,
-                size: 200,
-            },
-            {
-                accessorKey: "total_amount",
-                header: () => (
-                    <div className="flex items-center gap-2 justify-end">
-                        <DollarSign className="h-4 w-4" />
-                        <span>Total Amount</span>
-                    </div>
-                ),
-                cell: ({ row }) => (
-                    <div className="text-right">
-                        {row.original.total_amount}
-                    </div>
-                ),
-                enableSorting: false,
-                size: 150,
-                meta: {
-                    cellClassName: "text-right",
-                    headerClassName: "text-right",
-                },
-            },
-            {
-                accessorKey: "status",
-                header: () => <div className="text-center">Status</div>,
-                cell: ({ row }) => (
-                    <div className="flex justify-center">
-                        <Badge variant="outline" className="bg-secondary text-secondary-foreground">
-                            {row.original.status}
-                        </Badge>
-                    </div>
-                ),
-                enableSorting: false,
-                size: 120,
-                meta: {
-                    cellClassName: "text-center",
-                    headerClassName: "text-center",
-                },
-            },
-            {
-                id: "action",
-                header: ActionHeader,
-                cell: ({ row }) => {
-                    const sr = row.original;
-                    return (
-                        <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
-                                <Link href={`/store-operation/store-requisition/${sr.id}`}>
-                                    <Eye className="h-4 w-4" />
-                                    <span className="sr-only">View</span>
-                                </Link>
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80">
-                                <Trash className="h-4 w-4" />
-                                <span className="sr-only">Delete</span>
-                            </Button>
-                        </div>
-                    );
-                },
-                enableSorting: false,
-                size: 100,
-                meta: {
-                    cellClassName: "text-right",
-                    headerClassName: "text-right",
-                },
-            },
-        ],
-        [tTableHeader]
-    );
+      {
+        accessorKey: "sr_no",
 
-    // Initialize table
-    const table = useReactTable({
-        data: storeRequisitions,
-        columns,
-        getRowId: (row) => row.id ?? "",
-        state: {},
-        enableRowSelection: true,
-        getCoreRowModel: getCoreRowModel(),
-    });
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title="Ref"
+            icon={<FileText className="h-4 w-4" />}
+          />
+        ),
+        cell: ({ row }) => (
+          <Link
+            href={`/store-operation/store-requisition/${row.original.id}`}
+            className="link-primary"
+          >
+            {row.original.sr_no}
+          </Link>
+        ),
+        enableSorting: false,
+        size: 200,
+      },
+      {
+        accessorKey: "sr_date",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title="Date"
+            icon={<Calendar className="h-4 w-4" />}
+          />
+        ),
+        cell: ({ row }) => (
+          <span>{formatDate(row.original.sr_date, dateFormat || "yyyy-MM-dd")}</span>
+        ),
+        enableSorting: false,
+        size: 120,
+      },
+      {
+        id: "location",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title="Location"
+            icon={<Building className="h-4 w-4" />}
+          />
+        ),
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            <span>{row.original.from_location_name}</span>
+            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+            <span>{row.original.to_location_name}</span>
+          </div>
+        ),
+        enableSorting: false,
+        size: 280,
+      },
+      {
+        accessorKey: "requestor_name",
+        header: () => <span>Requestor</span>,
+        cell: ({ row }) => <span>{row.original.requestor_name}</span>,
+        enableSorting: false,
+        size: 150,
+      },
+      {
+        accessorKey: "doc_status",
+        header: () => <span>Status</span>,
+        cell: ({ row }) => (
+          <Badge variant={row.original.doc_status}>{row.original.doc_status}</Badge>
+        ),
+        enableSorting: false,
+        size: 120,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
+      },
+      {
+        id: "action",
+        header: () => <span>{tTableHeader("action")}</span>,
+        cell: ({ row }) => {
+          return (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => {
+                onDelete(row.original.id);
+              }}
+            >
+              <Trash2 />
+              <span className="sr-only">Delete</span>
+            </Button>
+          );
+        },
+        enableSorting: false,
+        size: 100,
+        meta: {
+          cellClassName: "text-right",
+          headerClassName: "text-right",
+        },
+      },
+    ],
+    [tTableHeader]
+  );
 
-    return (
-        <DataGrid
-            table={table}
-            recordCount={storeRequisitions.length}
-            isLoading={isLoading}
-            loadingMode="skeleton"
-            emptyMessage={tCommon("no_data")}
-            tableLayout={{
-                headerSticky: true,
-                dense: false,
-                rowBorder: true,
-                headerBackground: true,
-                headerBorder: true,
-                width: "fixed",
-            }}
-        >
-            <div className="w-full space-y-2.5">
-                <DataGridContainer>
-                    <ScrollArea className="max-h-[calc(100vh-250px)]">
-                        <DataGridTable />
-                        <ScrollBar orientation="horizontal" />
-                    </ScrollArea>
-                </DataGridContainer>
-            </div>
-        </DataGrid>
-    )
+  // Initialize table
+  const table = useReactTable({
+    data: storeRequisitions,
+    columns,
+    getRowId: (row) => row.id ?? "",
+    state: {},
+    enableRowSelection: true,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  return (
+    <DataGrid
+      table={table}
+      recordCount={storeRequisitions.length}
+      isLoading={isLoading}
+      loadingMode="skeleton"
+      emptyMessage={tCommon("no_data")}
+      tableLayout={{
+        headerSticky: true,
+        dense: false,
+        rowBorder: true,
+        headerBackground: true,
+        headerBorder: true,
+        width: "fixed",
+      }}
+    >
+      <div className="w-full space-y-2.5">
+        <DataGridContainer>
+          <ScrollArea className="max-h-[calc(100vh-250px)]">
+            <DataGridTable />
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </DataGridContainer>
+      </div>
+    </DataGrid>
+  );
 }

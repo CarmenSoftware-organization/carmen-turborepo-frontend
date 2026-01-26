@@ -94,10 +94,8 @@ export default function BusinessTypeList({
       },
       {
         id: "no",
-        header: () => <div className="text-center">#</div>,
-        cell: ({ row }) => (
-          <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
-        ),
+        header: () => "#",
+        cell: ({ row }) => <span>{(currentPage - 1) * perpage + row.index + 1}</span>,
         enableSorting: false,
         size: 30,
         meta: {

@@ -4,10 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formType } from "@/dtos/form.dto";
-import {
-  StoreRequisitionDetailDto,
-  storeRequisitionDetailSchema,
-} from "@/dtos/store-operation.dto";
+import { SrByIdDto, SrCreate, SrCreateSchema } from "@/dtos/sr.dto";
 import {
   ArrowLeftRightIcon,
   CheckCircleIcon,
@@ -31,38 +28,40 @@ import { Badge } from "@/components/ui/badge";
 import StoreRequisitionFormHeader from "./StoreRequisitionFormHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ItemStoreRequisition from "./ItemStoreRequisition";
-import {
-  mockJournalEntries,
-  mockStockMovement,
-  mockStoreRequisitionItems,
-} from "@/mock-data/store-operation";
+import { mockJournalEntries, mockStockMovement } from "@/mock-data/store-operation";
 import StockMovement from "./StockMovement";
 import SrJournalEntries from "./SrJournalEntries";
 import TransactionSummary from "../TransactionSummary";
+import JsonViewer from "@/components/JsonViewer";
+import { useAuth } from "@/context/AuthContext";
 
-interface FormStoreRequisitionProps {
-  readonly initData?: StoreRequisitionDetailDto;
+interface Props {
+  readonly initData?: SrByIdDto;
   readonly mode: formType;
 }
 
-export default function FormStoreRequisition({ initData, mode }: FormStoreRequisitionProps) {
+export default function FormStoreRequisition({ initData, mode }: Props) {
+  const { user, departments } = useAuth();
+
   const [openLog, setOpenLog] = useState<boolean>(false);
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const router = useRouter();
 
-  const form = useForm<StoreRequisitionDetailDto>({
-    resolver: zodResolver(storeRequisitionDetailSchema),
+  const form = useForm<SrCreate>({
+    resolver: zodResolver(SrCreateSchema),
     defaultValues: {
-      id: initData?.id,
-      ref_no: initData?.ref_no,
-      item_name: initData?.item_name,
-      status: initData?.status,
-      date: initData?.date,
-      expected_delivery_date: initData?.expected_delivery_date,
-      dp_req_from: initData?.dp_req_from,
-      job_code: initData?.job_code,
-      dp_req_to: initData?.dp_req_to,
-      description: initData?.description,
+      state_role: mode === formType.ADD ? "create" : "update",
+      details: {
+        sr_date: initData?.sr_date ?? "",
+        expected_date: initData?.expected_date ?? "",
+        description: initData?.description ?? "",
+        requestor_id: user?.data.id ?? "",
+        workflow_id: initData?.workflow_id ?? "",
+        department_id: departments?.id ?? "",
+        from_location_id: initData?.from_location_id ?? "",
+        to_location_id: initData?.to_location_id ?? "",
+        store_requisition_detail: {},
+      },
     },
   });
 
@@ -70,15 +69,15 @@ export default function FormStoreRequisition({ initData, mode }: FormStoreRequis
     setOpenLog(!openLog);
   };
 
-  const onSubmit = (data: StoreRequisitionDetailDto) => {
-    console.log(data);
+  const onSubmit = (data: SrCreate) => {
+    console.log("API Payload:", data);
+    // TODO: call useCreateSr or useUpdateSr mutation
     setCurrentMode(formType.VIEW);
   };
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Edit button clicked, current mode:", currentMode);
     setCurrentMode(formType.EDIT);
   };
 
@@ -92,25 +91,24 @@ export default function FormStoreRequisition({ initData, mode }: FormStoreRequis
     }
   };
 
-  console.log(initData);
   return (
     <div className="relative">
       <div className="flex gap-4 relative">
         <ScrollArea
           className={`${openLog ? "w-3/4" : "w-full"} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}
         >
-          <Card className="p-4">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <Card className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Link href="/store-operation/store-requisition">
                       <ChevronLeft className="h-4 w-4" />
                     </Link>
                     <p className="text-lg font-bold">
-                      {mode === formType.ADD ? "Store Requisition" : `${initData?.item_name}`}
+                      {mode === formType.ADD ? "Store Requisition" : `${initData?.sr_no}`}
                     </p>
-                    <Badge className="rounded-full">{initData?.status}</Badge>
+                    <Badge className="rounded-full">{initData?.doc_status}</Badge>
                   </div>
                   <div className="flex items-center gap-2">
                     {currentMode === formType.VIEW ? (
@@ -147,27 +145,36 @@ export default function FormStoreRequisition({ initData, mode }: FormStoreRequis
                     </Button>
                   </div>
                 </div>
-                <StoreRequisitionFormHeader control={form.control} mode={currentMode} />
-              </form>
-            </Form>
-          </Card>
-          <Tabs defaultValue="items" className="mt-2">
-            <TabsList>
-              <TabsTrigger value="items">Items</TabsTrigger>
-              <TabsTrigger value="stockMovement">Stock Movement</TabsTrigger>
-              <TabsTrigger value="journalEntries">Journal Entries</TabsTrigger>
-            </TabsList>
-            <TabsContent value="items">
-              <ItemStoreRequisition mode={currentMode} items={mockStoreRequisitionItems} />
-            </TabsContent>
-            <TabsContent value="stockMovement">
-              <StockMovement items={mockStockMovement} mode={currentMode} />
-            </TabsContent>
-            <TabsContent value="journalEntries">
-              <SrJournalEntries mode={currentMode} jeItems={mockJournalEntries} />
-            </TabsContent>
-          </Tabs>
-          <TransactionSummary />
+                <StoreRequisitionFormHeader
+                  control={form.control}
+                  mode={currentMode}
+                  initData={initData}
+                />
+              </Card>
+              <Tabs defaultValue="items" className="mt-2">
+                <TabsList>
+                  <TabsTrigger value="items">Items</TabsTrigger>
+                  <TabsTrigger value="stockMovement">Stock Movement</TabsTrigger>
+                  <TabsTrigger value="journalEntries">Journal Entries</TabsTrigger>
+                </TabsList>
+                <TabsContent value="items">
+                  <ItemStoreRequisition
+                    mode={currentMode}
+                    form={form}
+                    itemsSr={initData?.store_requisition_detail}
+                  />
+                </TabsContent>
+                <TabsContent value="stockMovement">
+                  <StockMovement items={mockStockMovement} mode={currentMode} />
+                </TabsContent>
+                <TabsContent value="journalEntries">
+                  <SrJournalEntries mode={currentMode} jeItems={mockJournalEntries} />
+                </TabsContent>
+              </Tabs>
+              <TransactionSummary />
+            </form>
+          </Form>
+          <JsonViewer data={form.watch()} title="Sr payload" />
           <div className="fixed bottom-6 right-6 flex gap-2 z-50">
             <Button size={"sm"}>
               <CheckCircleIcon className="w-5 h-5" />
