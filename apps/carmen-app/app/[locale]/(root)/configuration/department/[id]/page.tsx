@@ -2,10 +2,10 @@
 
 import { useParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import MainForm from "../_components/form/MainForm";
 import { formType } from "@/dtos/form.dto";
 import { useDepartmentByIdQuery } from "@/hooks/use-departments";
 import { DetailSkeleton } from "@/components/loading/DetailSkeleton";
+import FormDepartment from "../_components/dp-form/FormDepartment";
 
 export default function DepartmentIdPage() {
   const { token, buCode } = useAuth();
@@ -18,5 +18,5 @@ export default function DepartmentIdPage() {
     return <DetailSkeleton />;
   }
 
-  return <MainForm defaultValues={data?.data} mode={formType.VIEW} />;
+  return <FormDepartment defaultValues={data?.data} mode={formType.VIEW} />;
 }
