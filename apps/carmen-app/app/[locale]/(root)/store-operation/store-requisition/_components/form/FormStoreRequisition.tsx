@@ -65,6 +65,8 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
     },
   });
 
+  console.log("FormStoreRequisition render - currentMode:", departments);
+
   const handleOpenLog = () => {
     setOpenLog(!openLog);
   };
@@ -150,6 +152,7 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
                   mode={currentMode}
                   initData={initData}
                   buCode={buCode}
+                  departmentName={departments?.name}
                 />
               </Card>
               <Tabs defaultValue="items" className="mt-2">

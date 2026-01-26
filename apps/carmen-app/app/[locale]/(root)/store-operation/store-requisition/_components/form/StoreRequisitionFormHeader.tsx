@@ -3,7 +3,7 @@ import { SrByIdDto, SrCreate } from "@/dtos/sr.dto";
 import { Control } from "react-hook-form";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, GitBranch } from "lucide-react";
+import { Building2, CalendarIcon, GitBranch } from "lucide-react";
 
 // UI components
 import {
@@ -20,12 +20,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea";
 import LookupWorkflow from "@/components/lookup/LookupWorkflow";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
+import { Label } from "@/components/ui/label";
 
 interface StoreRequisitionFormHeaderProps {
   readonly control: Control<SrCreate>;
   readonly mode: formType;
   readonly initData?: SrByIdDto;
   readonly buCode: string;
+  readonly departmentName?: string;
 }
 
 export default function StoreRequisitionFormHeader({
@@ -33,6 +35,7 @@ export default function StoreRequisitionFormHeader({
   mode,
   initData,
   buCode,
+  departmentName,
 }: StoreRequisitionFormHeaderProps) {
   return (
     <div className="space-y-4 mt-4">
@@ -151,10 +154,14 @@ export default function StoreRequisitionFormHeader({
           )}
         />
 
-        {/* Department (read-only from initData) */}
-        <div>
-          <p className="text-sm font-medium">Department</p>
-          <p className="text-xs text-muted-foreground">{initData?.department_name || "-"}</p>
+        <div className="space-y-2">
+          <Label>
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <Building2 className="h-4 w-4" />
+              <span>Department</span>
+            </div>
+          </Label>
+          <Input placeholder="SR-XXXX" disabled className="bg-muted" value={departmentName} />
         </div>
 
         {/* From Location (read-only from initData) */}
