@@ -13,11 +13,13 @@ import {
   Pencil,
   Printer,
   Save,
+  Trash2,
   X,
   XCircle,
   XCircleIcon,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import CommentStoreRequisition from "../CommentStoreRequisition";
 import ActivityLogStoreRequisition from "../ActivityLogStoreRequisition";
 import { Form } from "@/components/ui/form";
@@ -34,6 +36,10 @@ import SrJournalEntries from "./SrJournalEntries";
 import TransactionSummary from "../TransactionSummary";
 import JsonViewer from "@/components/JsonViewer";
 import { useAuth } from "@/context/AuthContext";
+import { useCreateSr, useUpdateSr, useDeleteSr, srKey, srDetailKey } from "@/hooks/use-sr";
+import { useQueryClient } from "@tanstack/react-query";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 interface Props {
   readonly initData?: SrByIdDto;
@@ -42,18 +48,27 @@ interface Props {
 
 export default function FormStoreRequisition({ initData, mode }: Props) {
   const { user, departments, token, buCode } = useAuth();
+  const t = useTranslations("StoreRequisition");
 
   const [openLog, setOpenLog] = useState<boolean>(false);
   const [currentMode, setCurrentMode] = useState<formType>(mode);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const router = useRouter();
+
+  const getNextDay = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString();
+  };
 
   const form = useForm<SrCreate>({
     resolver: zodResolver(SrCreateSchema),
     defaultValues: {
-      state_role: mode === formType.ADD ? "create" : "update",
+      state_role: "create",
       details: {
-        sr_date: initData?.sr_date ?? "",
-        expected_date: initData?.expected_date ?? "",
+        doc_version: initData?.doc_version ?? 1,
+        sr_date: initData?.sr_date ?? (mode === formType.ADD ? getNextDay() : ""),
+        expected_date: initData?.expected_date ?? (mode === formType.ADD ? getNextDay() : ""),
         description: initData?.description ?? "",
         requestor_id: user?.data.id ?? "",
         workflow_id: initData?.workflow_id ?? "",
@@ -65,16 +80,53 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
     },
   });
 
-  console.log("FormStoreRequisition render - currentMode:", departments);
+  const requestorName = user?.data.user_info.firstname + " " + user?.data.user_info.lastname;
+  const queryClient = useQueryClient();
+
+  const createSrMutation = useCreateSr(token, buCode);
+  const updateSrMutation = useUpdateSr(token, buCode, initData?.id ?? "");
+  const deleteSrMutation = useDeleteSr(token, buCode);
 
   const handleOpenLog = () => {
     setOpenLog(!openLog);
   };
 
   const onSubmit = (data: SrCreate) => {
-    console.log("API Payload:", data);
-    // TODO: call useCreateSr or useUpdateSr mutation
-    setCurrentMode(formType.VIEW);
+    if (currentMode === formType.ADD) {
+      createSrMutation.mutate(data, {
+        onSuccess: (response) => {
+          toastSuccess({ message: t("toast.createSuccess") });
+          queryClient.invalidateQueries({ queryKey: [srKey, buCode] });
+          const res = response as { data?: { id?: string } };
+          const newId = res?.data?.id;
+          if (newId) {
+            router.replace(`/store-operation/store-requisition/${newId}`);
+            setCurrentMode(formType.VIEW);
+          }
+        },
+        onError: (error) => {
+          toastError({
+            message: error instanceof Error ? error.message : t("toast.createError"),
+          });
+        },
+      });
+    } else if (currentMode === formType.EDIT) {
+      updateSrMutation.mutate(data, {
+        onSuccess: () => {
+          toastSuccess({ message: t("toast.updateSuccess") });
+          queryClient.invalidateQueries({ queryKey: [srKey, buCode] });
+          queryClient.invalidateQueries({ queryKey: [srDetailKey, buCode, initData?.id] });
+          // Clear new items after successful save to prevent duplicate display
+          form.setValue("details.store_requisition_detail.add", []);
+          setCurrentMode(formType.VIEW);
+        },
+        onError: (error) => {
+          toastError({
+            message: error instanceof Error ? error.message : t("toast.updateError"),
+          });
+        },
+      });
+    }
   };
 
   const handleEditClick = (e: React.MouseEvent) => {
@@ -93,6 +145,30 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
     }
   };
 
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpenDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!initData?.id) return;
+
+    deleteSrMutation.mutate(initData.id, {
+      onSuccess: () => {
+        toastSuccess({ message: t("toast.deleteSuccess") });
+        queryClient.invalidateQueries({ queryKey: [srKey, buCode] });
+        setOpenDeleteDialog(false);
+        router.push("/store-operation/store-requisition");
+      },
+      onError: (error) => {
+        toastError({
+          message: error instanceof Error ? error.message : t("toast.deleteError"),
+        });
+      },
+    });
+  };
+
   return (
     <div className="relative">
       <div className="flex gap-4 relative">
@@ -108,7 +184,7 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
                       <ChevronLeft className="h-4 w-4" />
                     </Link>
                     <p className="text-lg font-bold">
-                      {mode === formType.ADD ? "Store Requisition" : `${initData?.sr_no}`}
+                      {mode === formType.ADD ? t("title") : `${initData?.sr_no}`}
                     </p>
                     <Badge className="rounded-full">{initData?.doc_status}</Badge>
                   </div>
@@ -116,25 +192,38 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
                     {currentMode === formType.VIEW ? (
                       <>
                         <Button variant="outline" size={"sm"} onClick={handleCancelClick}>
-                          <ChevronLeft className="h-4 w-4" /> Back
+                          <ChevronLeft className="h-4 w-4" /> {t("buttons.back")}
                         </Button>
                         <Button variant="default" size={"sm"} onClick={handleEditClick}>
-                          <Pencil className="h-4 w-4" /> Edit
+                          <Pencil className="h-4 w-4" /> {t("buttons.edit")}
                         </Button>
                       </>
                     ) : (
                       <>
-                        <Button variant="outline" size={"sm"} onClick={handleCancelClick}>
-                          <X className="h-4 w-4" /> Cancel
+                        <Button
+                          variant="outline"
+                          size={"sm"}
+                          onClick={handleCancelClick}
+                          disabled={createSrMutation.isPending || updateSrMutation.isPending}
+                        >
+                          <X className="h-4 w-4" /> {t("buttons.cancel")}
                         </Button>
-                        <Button variant="default" size={"sm"} type="submit">
-                          <Save className="h-4 w-4" /> Save
+                        <Button
+                          variant="default"
+                          size={"sm"}
+                          type="submit"
+                          disabled={createSrMutation.isPending || updateSrMutation.isPending}
+                        >
+                          <Save className="h-4 w-4" />
+                          {createSrMutation.isPending || updateSrMutation.isPending
+                            ? t("buttons.saving")
+                            : t("buttons.save")}
                         </Button>
                       </>
                     )}
                     <Button type="button" variant="outline" size="sm">
                       <Printer className="h-4 w-4" />
-                      Print
+                      {t("buttons.print")}
                     </Button>
                     <Button
                       type="button"
@@ -143,19 +232,36 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
                       className="text-destructive hover:text-destructive/80"
                     >
                       <XCircle className="h-4 w-4" />
-                      Void
+                      {t("buttons.void")}
                     </Button>
+                    {currentMode === formType.EDIT && (
+                      <Button
+                        type="button"
+                        variant={"destructive"}
+                        size={"sm"}
+                        onClick={handleDeleteClick}
+                        disabled={deleteSrMutation.isPending}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        {deleteSrMutation.isPending ? t("buttons.deleting") : t("buttons.delete")}
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <StoreRequisitionFormHeader
                   control={form.control}
                   mode={currentMode}
-                  initData={initData}
                   buCode={buCode}
                   departmentName={departments?.name}
+                  requestorName={requestorName}
                 />
               </Card>
-              <Tabs defaultValue="items" className="mt-2">
+              <ItemStoreRequisition
+                mode={currentMode}
+                form={form}
+                itemsSr={initData?.store_requisition_detail}
+              />
+              {/* <Tabs defaultValue="items" className="mt-2">
                 <TabsList>
                   <TabsTrigger value="items">Items</TabsTrigger>
                   <TabsTrigger value="stockMovement">Stock Movement</TabsTrigger>
@@ -174,23 +280,23 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
                 <TabsContent value="journalEntries">
                   <SrJournalEntries mode={currentMode} jeItems={mockJournalEntries} />
                 </TabsContent>
-              </Tabs>
-              <TransactionSummary />
+              </Tabs> */}
+              {/* <TransactionSummary /> */}
             </form>
           </Form>
-          <JsonViewer data={form.watch()} title="Sr payload" />
+          {/* <JsonViewer data={form.watch()} title="Sr payload" /> */}
           <div className="fixed bottom-6 right-6 flex gap-2 z-50">
             <Button size={"sm"}>
               <CheckCircleIcon className="w-5 h-5" />
-              Approve
+              {t("buttons.approve")}
             </Button>
             <Button variant={"destructive"} size={"sm"}>
               <XCircleIcon className="w-5 h-5" />
-              Reject
+              {t("buttons.reject")}
             </Button>
             <Button variant={"outline"} size={"sm"}>
               <ArrowLeftRightIcon className="w-5 h-5" />
-              Send Back
+              {t("buttons.sendBack")}
             </Button>
           </div>
         </ScrollArea>
@@ -217,6 +323,15 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
           <ChevronLeft className="h-6 w-6 animate-pulse" />
         )}
       </Button>
+
+      <DeleteConfirmDialog
+        open={openDeleteDialog}
+        onOpenChange={setOpenDeleteDialog}
+        onConfirm={handleConfirmDelete}
+        title={t("dialog.deleteTitle")}
+        description={t("dialog.deleteDescription", { srNo: initData?.sr_no ?? t("title") })}
+        isLoading={deleteSrMutation.isPending}
+      />
     </div>
   );
 }

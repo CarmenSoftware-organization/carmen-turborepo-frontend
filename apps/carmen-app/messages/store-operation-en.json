@@ -1,0 +1,58 @@
+{
+  "StoreRequisition": {
+    "title": "Store Requisition",
+    "form": {
+      "workflow": "Workflow",
+      "orderDate": "Order Date",
+      "expectedDate": "Expected Date",
+      "fromLocation": "From Location",
+      "toLocation": "To Location",
+      "requestor": "Requestor",
+      "department": "Department",
+      "description": "Description"
+    },
+    "buttons": {
+      "back": "Back",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "print": "Print",
+      "void": "Void",
+      "delete": "Delete",
+      "deleting": "Deleting...",
+      "addItem": "Add Item",
+      "approve": "Approve",
+      "reject": "Reject",
+      "sendBack": "Send Back"
+    },
+    "tabs": {
+      "items": "Items",
+      "stockMovement": "Stock Movement",
+      "journalEntries": "Journal Entries"
+    },
+    "items": {
+      "title": "Items",
+      "product": "Product",
+      "description": "Description",
+      "requestedQty": "Requested Qty",
+      "status": "Status",
+      "action": "Action",
+      "noItems": "No items"
+    },
+    "dialog": {
+      "deleteItemTitle": "Delete Item",
+      "deleteItemDescription": "Are you sure you want to delete this item? This action will be saved when you save the form.",
+      "deleteTitle": "Delete Store Requisition",
+      "deleteDescription": "Are you sure you want to delete {srNo}? This action cannot be undone."
+    },
+    "toast": {
+      "createSuccess": "Store requisition created successfully",
+      "createError": "Failed to create store requisition",
+      "updateSuccess": "Store requisition updated successfully",
+      "updateError": "Failed to update store requisition",
+      "deleteSuccess": "Store requisition deleted successfully",
+      "deleteError": "Failed to delete store requisition"
+    }
+  }
+}

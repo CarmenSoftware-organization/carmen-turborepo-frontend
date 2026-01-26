@@ -23,6 +23,7 @@ interface LookupProductProps {
   readonly initialDisplayName?: string;
   readonly token: string;
   readonly buCode: string;
+  readonly excludeIds?: string[];
 }
 
 export default function LookupProduct({
@@ -33,12 +34,22 @@ export default function LookupProduct({
   initialDisplayName,
   token,
   buCode,
+  excludeIds = [],
 }: Readonly<LookupProductProps>) {
   const { products, isLoading } = useProductQuery({
     token,
     buCode,
     params: { perpage: -1 },
   });
+
+  const filteredProducts = useMemo(() => {
+    if (!products?.data || !Array.isArray(products.data)) return [];
+    const excludeSet = new Set(excludeIds);
+    // Keep current value in list even if it's in excludeIds
+    return products.data.filter(
+      (product: any) => product.id === value || !excludeSet.has(product.id)
+    );
+  }, [products, excludeIds, value]);
 
   const [open, setOpen] = useState(false);
 
@@ -85,8 +96,8 @@ export default function LookupProduct({
               <>
                 <CommandEmpty>No products found.</CommandEmpty>
                 <CommandGroup>
-                  {products?.data && products.data.length > 0 ? (
-                    products.data.map((product: any) => (
+                  {filteredProducts.length > 0 ? (
+                    filteredProducts.map((product: any) => (
                       <CommandItem
                         key={product.id}
                         value={product.id}

@@ -96,6 +96,7 @@ export const SrDetailItemCreateSchema = z.object({
   current_stage_status: z.string(),
   product_id: z.string(),
   requested_qty: z.number(),
+  doc_version: z.number(),
 });
 
 // Detail item for update (includes id)
@@ -119,6 +120,7 @@ export const SrDetailCrudSchema = z.object({
 export const SrCreateSchema = z.object({
   state_role: z.string(),
   details: z.object({
+    doc_version: z.number(),
     sr_date: z.string(),
     expected_date: z.string(),
     description: z.string(),

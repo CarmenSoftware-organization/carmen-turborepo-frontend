@@ -111,7 +111,7 @@ export const useUpdateSr = (token: string, buCode: string, id: string) => {
         throw new Error("Unauthorized: Missing required parameters");
       }
 
-      return await updateApiRequest(API_ID, token, data, "Error updating store requisition", "PATCH");
+      return await updateApiRequest(API_ID, token, data, "Error updating store requisition", "PUT");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [srKey, buCode] });

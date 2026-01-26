@@ -1,0 +1,58 @@
+{
+  "StoreRequisition": {
+    "title": "ใบขอเบิกสินค้า",
+    "form": {
+      "workflow": "เวิร์กโฟลว์",
+      "orderDate": "วันที่สั่ง",
+      "expectedDate": "วันที่คาดว่าจะได้รับ",
+      "fromLocation": "จากสถานที่",
+      "toLocation": "ไปยังสถานที่",
+      "requestor": "ผู้ขอเบิก",
+      "department": "แผนก",
+      "description": "รายละเอียด"
+    },
+    "buttons": {
+      "back": "ย้อนกลับ",
+      "edit": "แก้ไข",
+      "cancel": "ยกเลิก",
+      "save": "บันทึก",
+      "saving": "กำลังบันทึก...",
+      "print": "พิมพ์",
+      "void": "ยกเลิกเอกสาร",
+      "delete": "ลบ",
+      "deleting": "กำลังลบ...",
+      "addItem": "เพิ่มรายการ",
+      "approve": "อนุมัติ",
+      "reject": "ปฏิเสธ",
+      "sendBack": "ส่งกลับ"
+    },
+    "tabs": {
+      "items": "รายการสินค้า",
+      "stockMovement": "ความเคลื่อนไหวสต็อก",
+      "journalEntries": "รายการบัญชี"
+    },
+    "items": {
+      "title": "รายการสินค้า",
+      "product": "สินค้า",
+      "description": "รายละเอียด",
+      "requestedQty": "จำนวนที่ขอ",
+      "status": "สถานะ",
+      "action": "การดำเนินการ",
+      "noItems": "ไม่มีรายการ"
+    },
+    "dialog": {
+      "deleteItemTitle": "ลบรายการ",
+      "deleteItemDescription": "คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้? การดำเนินการนี้จะถูกบันทึกเมื่อคุณบันทึกแบบฟอร์ม",
+      "deleteTitle": "ลบใบขอเบิกสินค้า",
+      "deleteDescription": "คุณแน่ใจหรือไม่ว่าต้องการลบ {srNo}? การดำเนินการนี้ไม่สามารถยกเลิกได้"
+    },
+    "toast": {
+      "createSuccess": "สร้างใบขอเบิกสินค้าสำเร็จ",
+      "createError": "ไม่สามารถสร้างใบขอเบิกสินค้าได้",
+      "updateSuccess": "อัปเดตใบขอเบิกสินค้าสำเร็จ",
+      "updateError": "ไม่สามารถอัปเดตใบขอเบิกสินค้าได้",
+      "deleteSuccess": "ลบใบขอเบิกสินค้าสำเร็จ",
+      "deleteError": "ไม่สามารถลบใบขอเบิกสินค้าได้"
+    }
+  }
+}

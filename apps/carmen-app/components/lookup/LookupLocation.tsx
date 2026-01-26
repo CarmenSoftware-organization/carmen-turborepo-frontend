@@ -19,6 +19,7 @@ import { useTranslations } from "next-intl";
 
 interface LocationLookupProps extends Omit<PropsLookup, "onValueChange"> {
   onValueChange: (value: string, selectedLocation?: StoreLocationDto) => void;
+  excludeIds?: string[];
 }
 
 export default function LookupLocation({
@@ -27,6 +28,7 @@ export default function LookupLocation({
   disabled = false,
   classNames = "",
   bu_code,
+  excludeIds = [],
 }: Readonly<LocationLookupProps>) {
   const [open, setOpen] = useState(false);
   const { token, buCode } = useAuth();
@@ -35,6 +37,12 @@ export default function LookupLocation({
   const { data, isLoading } = useLocationQuery(token, currentBuCode, { perpage: -1 });
 
   const storeLocations = data?.data;
+
+  const filteredLocations = useMemo(() => {
+    if (!storeLocations || !Array.isArray(storeLocations)) return [];
+    if (excludeIds.length === 0) return storeLocations;
+    return storeLocations.filter((location) => !excludeIds.includes(location.id));
+  }, [storeLocations, excludeIds]);
 
   const selectedLocationName = useMemo(() => {
     if (!value || !storeLocations || !Array.isArray(storeLocations)) return null;
@@ -76,8 +84,8 @@ export default function LookupLocation({
               <>
                 <CommandEmpty>{t("location_not_found")}</CommandEmpty>
                 <CommandGroup>
-                  {storeLocations && storeLocations.length > 0 ? (
-                    storeLocations.map((storeLocation: StoreLocationDto) => (
+                  {filteredLocations && filteredLocations.length > 0 ? (
+                    filteredLocations.map((storeLocation: StoreLocationDto) => (
                       <CommandItem
                         key={storeLocation.id}
                         value={`${storeLocation.code || ""} ${storeLocation.name}`}
