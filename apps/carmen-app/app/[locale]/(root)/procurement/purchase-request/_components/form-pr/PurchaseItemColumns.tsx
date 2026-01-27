@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
-import { PurchaseRequestDetail, StageStatus, ItemStatus } from "@/dtos/purchase-request.dto";
+import { PurchaseRequestDetail, ItemStatus } from "@/dtos/purchase-request.dto";
 import { formType } from "@/dtos/form.dto";
 import { formatDate } from "@/utils/format/date";
 import { formatPrice } from "@/utils/format/currency";
@@ -28,7 +28,7 @@ interface ColumnConfig {
   addFields: unknown[];
   prStatus?: string;
   getItemValue: (item: PurchaseRequestDetail, fieldName: string) => unknown;
-  getCurrentStatus: (stagesStatusValue: string | StageStatus[] | undefined) => string;
+  getCurrentStatus: (stageStatus: string | undefined) => string;
   onItemUpdate: (
     itemId: string,
     fieldName: string,
@@ -300,12 +300,10 @@ export const createPurchaseItemColumns = (
           return <p className="text-center text-xs">-</p>;
         }
 
-        const stagesStatusValue = (getItemValue(item, "stages_status") || item.stages_status) as
-          | string
-          | StageStatus[]
-          | undefined;
+        const currentStageStatus =
+          (getItemValue(item, "current_stage_status") as string) || item.current_stage_status;
 
-        const status = getCurrentStatus(stagesStatusValue);
+        const status = getCurrentStatus(currentStageStatus);
 
         return <Badge variant={getBadgeVariant(status)}>{getPrItemName(status, tAction)}</Badge>;
       },

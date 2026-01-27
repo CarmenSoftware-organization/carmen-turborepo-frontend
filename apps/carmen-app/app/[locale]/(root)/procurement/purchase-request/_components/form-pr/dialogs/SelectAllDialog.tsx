@@ -9,10 +9,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { PurchaseRequestDetail, StageStatus } from "@/dtos/purchase-request.dto";
+import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 import { Table } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
-import { StagesStatusValue } from "../../../_schemas/purchase-request-form.schema";
 
 interface SelectAllDialogProps {
   open: boolean;
@@ -22,7 +21,7 @@ interface SelectAllDialogProps {
   items: PurchaseRequestDetail[];
   table: Table<PurchaseRequestDetail>;
   getItemValue: (item: PurchaseRequestDetail, fieldName: string) => unknown;
-  getCurrentStatus: (stagesStatusValue: StagesStatusValue) => string;
+  getCurrentStatus: (stageStatus: string | undefined) => string;
 }
 
 export default function SelectAllDialog({
@@ -39,11 +38,9 @@ export default function SelectAllDialog({
   const tCommon = useTranslations("Common");
 
   const pendingItemsCount = items.filter((item) => {
-    const stagesStatusValue = (getItemValue(item, "stages_status") || item.stages_status) as
-      | string
-      | StageStatus[]
-      | undefined;
-    return getCurrentStatus(stagesStatusValue) === "pending";
+    const currentStageStatus =
+      (getItemValue(item, "current_stage_status") as string) || item.current_stage_status;
+    return getCurrentStatus(currentStageStatus) === "pending";
   }).length;
 
   const handleConfirm = () => {
@@ -53,11 +50,9 @@ export default function SelectAllDialog({
       // Select only pending items
       for (const row of table.getRowModel().rows) {
         const item = row.original;
-        const stagesStatusValue = (getItemValue(item, "stages_status") || item.stages_status) as
-          | string
-          | StageStatus[]
-          | undefined;
-        const currentStatus = getCurrentStatus(stagesStatusValue);
+        const currentStageStatus =
+          (getItemValue(item, "current_stage_status") as string) || item.current_stage_status;
+        const currentStatus = getCurrentStatus(currentStageStatus);
 
         if (currentStatus === "pending") {
           row.toggleSelected(true);

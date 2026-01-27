@@ -155,7 +155,9 @@ export interface DetailCommonInfo {
   description: string;
   comment: string | null;
   history?: any;
-  stages_status?: string | StageStatus[];
+  stage_status?: string;
+  stage_message?: string | null;
+  current_stage_status?: string;
   info?: any;
   dimension?: any;
 }
@@ -211,6 +213,7 @@ export interface PurchaseRequestByIdDto
   note: string;
   info?: any;
   dimension?: any;
+  role: STAGE_ROLE;
   purchase_request_detail: PurchaseRequestDetail[];
 }
 

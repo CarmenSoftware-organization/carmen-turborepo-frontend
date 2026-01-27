@@ -20,9 +20,10 @@ import { usePurchaseRequestContext } from "./PurchaseRequestContext";
 
 interface HeadFormProps {
   bu_code: string;
+  requestorName?: string;
 }
 
-export default function HeadForm({ bu_code }: HeadFormProps) {
+export default function HeadForm({ bu_code, requestorName }: HeadFormProps) {
   const { control } = useFormContext();
   const {
     currentMode: mode,
@@ -31,6 +32,9 @@ export default function HeadForm({ bu_code }: HeadFormProps) {
     departmentName: department_name,
     workflowStages,
   } = usePurchaseRequestContext();
+
+  const displayRequestorName = requestorName ?? requestor_name;
+
   const tPr = useTranslations("PurchaseRequest");
   const lastThreeSteps =
     workflowStages && workflowStages.length > 0 ? workflowStages.slice(-3) : [];
@@ -79,7 +83,7 @@ export default function HeadForm({ bu_code }: HeadFormProps) {
             {tPr("requestor")}
           </div>
         </Label>
-        <Input placeholder="Requestor" disabled className="bg-muted" value={requestor_name} />
+        <Input placeholder="Requestor" disabled className="bg-muted" value={displayRequestorName} />
       </div>
       <div className="space-y-2">
         <Label>

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { formType } from "@/dtos/form.dto";
-import { PurchaseRequestDetail, StageStatus } from "@/dtos/purchase-request.dto";
+import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 import { PurchaseRequestTemplateDetailDto } from "@/dtos/pr-template.dto";
 import { useMemo, useEffect } from "react";
 import { Plus } from "lucide-react";
@@ -19,6 +19,7 @@ import { usePurchaseItemTable, PR_ITEM_BULK_ACTION } from "../../_hooks/use-purc
 import BulkActionDialog from "./dialogs/BulkActionDialog";
 import SelectAllDialog from "./dialogs/SelectAllDialog";
 import { useCurrenciesQuery } from "@/hooks/use-currency";
+import { usePriceCompareBulk, PriceCompareParams } from "@/hooks/use-bidding";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 type InitValuesType = PurchaseRequestDetail[] | PurchaseRequestTemplateDetailDto[];
@@ -37,7 +38,7 @@ interface Props {
   onItemRemove: (itemId: string, isNewItem?: boolean, itemIndex?: number) => void;
   onAddItem: () => void;
   getItemValue: (item: PurchaseRequestDetail, fieldName: string) => unknown;
-  getCurrentStatus: (stagesStatusValue: string | StageStatus[] | undefined) => string;
+  getCurrentStatus: (stageStatus: string | undefined) => string;
   workflow_id?: string;
   prStatus?: string;
   bu_code?: string;
@@ -64,6 +65,10 @@ export default function PurchaseItemDataGrid({
   const tCommon = useTranslations("Common");
   const tAction = useTranslations("Action");
   const { getCurrencyCode } = useCurrenciesQuery(token || "", currentBuCode || "");
+  const { mutate: fetchPriceCompare, isPending: isPriceCompareLoading } = usePriceCompareBulk(
+    token || "",
+    currentBuCode || ""
+  );
 
   const {
     deleteDialogOpen,
@@ -178,35 +183,9 @@ export default function PurchaseItemDataGrid({
     const selectedRows = table.getFilteredSelectedRowModel().rows;
     for (const row of selectedRows) {
       const item = row.original;
-      const currentStagesStatus = (getItemValue(item, "stages_status") || item.stages_status) as
-        | string
-        | StageStatus[]
-        | undefined;
-
-      let newStagesStatus: StageStatus[];
-
-      if (Array.isArray(currentStagesStatus)) {
-        newStagesStatus = [
-          ...currentStagesStatus,
-          {
-            seq: currentStagesStatus.length + 1,
-            name: null,
-            status: status,
-            message: message,
-          },
-        ];
-      } else {
-        newStagesStatus = [
-          {
-            seq: 1,
-            name: null,
-            status: status,
-            message: message,
-          },
-        ];
-      }
-
-      onItemUpdate(item.id, "stages_status", newStagesStatus);
+      onItemUpdate(item.id, "stage_status", status);
+      onItemUpdate(item.id, "stage_message", message || null);
+      onItemUpdate(item.id, "current_stage_status", status);
     }
     table.resetRowSelection();
   };
@@ -225,6 +204,35 @@ export default function PurchaseItemDataGrid({
       setBulkActionType(null);
       setBulkActionMessage("");
     }
+  };
+
+  const onAllocateVendor = () => {
+    const params: PriceCompareParams[] = items
+      .filter((item) => {
+        const productId = (getItemValue(item, "product_id") || item.product_id) as string;
+        const unitId = (getItemValue(item, "requested_unit_id") || item.requested_unit_id) as string;
+        const currencyId = (getItemValue(item, "currency_id") || item.currency_id) as string;
+        return productId && unitId && currencyId;
+      })
+      .map((item) => ({
+        product_id: (getItemValue(item, "product_id") || item.product_id) as string,
+        unit_id: (getItemValue(item, "requested_unit_id") || item.requested_unit_id) as string,
+        currency_id: (getItemValue(item, "currency_id") || item.currency_id) as string,
+      }));
+
+    if (params.length === 0) {
+      console.warn("No valid items to fetch price compare");
+      return;
+    }
+
+    fetchPriceCompare(params, {
+      onSuccess: (results) => {
+        console.log("Price Compare Results:", results);
+      },
+      onError: (error) => {
+        console.error("Failed to fetch price compare:", error);
+      },
+    });
   };
 
   return (
@@ -255,6 +263,9 @@ export default function PurchaseItemDataGrid({
               </Tooltip>
             </TooltipProvider>
           )}
+          <Button onClick={onAllocateVendor} size={"sm"} disabled={isPriceCompareLoading}>
+            {isPriceCompareLoading ? "Loading..." : "Allocate Vendor"}
+          </Button>
         </div>
       </div>
       {selectedRowsCount > 0 && currentMode !== formType.VIEW && (

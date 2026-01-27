@@ -35,7 +35,8 @@ export const PR_FIELD_NAMES = {
   DELIVERY_DATE: "delivery_date",
   DELIVERY_POINT_ID: "delivery_point_id",
   VENDOR_ID: "vendor_id",
-  STAGES_STATUS: "stages_status",
+  STAGE_STATUS: "stage_status",
+  STAGE_MESSAGE: "stage_message",
 } as const;
 
 export type PrFieldName = (typeof PR_FIELD_NAMES)[keyof typeof PR_FIELD_NAMES];

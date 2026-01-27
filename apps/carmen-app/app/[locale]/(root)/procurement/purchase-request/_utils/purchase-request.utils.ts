@@ -89,7 +89,7 @@ export const preparePurchaseApproveData = (
       base_discount_amount: Number(item.base_discount_amount || 0),
       currency_id: item.currency_id,
       exchange_rate: Number(item.exchange_rate || 0),
-      exchange_rate_date: item.exchange_rate_date,
+      exchange_rate_date: item.exchange_rate_date || new Date().toISOString(),
       vendor_id: item.vendor_id,
       total_price: Number(item.total_price || 0),
       sub_total_price: Number(item.sub_total_price || 0),

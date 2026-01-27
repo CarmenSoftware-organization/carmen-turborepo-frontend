@@ -33,6 +33,7 @@ import { CreatePrDtoType, CreatePrSchema } from "../../_schemas/purchase-request
 import { PR_STATUS } from "../../_constants/pr-status";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import JsonViewer from "@/components/JsonViewer";
+import { useState } from "react";
 
 interface Props {
   mode: formType;
@@ -47,6 +48,7 @@ interface CancelAction {
 
 export default function MainForm({ mode, initValues, bu_code }: Props) {
   const { user, departments, defaultCurrencyId } = useAuth();
+  // const [role, setRole] = useState(initValues?.role ? initValues.role : "");
 
   const tPR = useTranslations("PurchaseRequest");
 
@@ -128,9 +130,7 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
     handleReviewConfirm,
   } = logic;
 
-  const isShowActionButtons =
-    currentMode !== formType.EDIT &&
-    (prStatus !== PR_STATUS.VOIDED && prStatus !== PR_STATUS.APPROVED);
+  const isViewOnly = initValues?.role === STAGE_ROLE.VIEW_ONLY;
 
   return (
     <>
@@ -149,8 +149,8 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
                     });
                   })}
                 >
-                  <ActionFields />
-                  <HeadForm bu_code={bu_code} />
+                  <ActionFields isViewOnly={isViewOnly} />
+                  <HeadForm bu_code={bu_code} requestorName={initValues?.requestor_name} />
                   <Tabs defaultValue="items">
                     <TabsList className={"mt-4"}>
                       <TabsTrigger className={"w-full h-6"} value="items">
@@ -182,32 +182,29 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
                   </Tabs>
                 </form>
               </Form>
-              {/* <JsonViewer data={form.watch()} title="PR" /> */}
+              <JsonViewer data={form.watch()} title="PR" />
             </Card>
-
-            {isShowActionButtons && (
-              <ActionButtons
-                prStatus={prStatus || ""}
-                isNewPr={currentMode === formType.ADD}
-                isDraft={initValues?.pr_status === "draft"}
-                isPending={isPending}
-                isDisabled={isDisabled}
-                isSubmitDisabled={!workflowId}
-                isApproveDisabled={isApproveDisabled}
-                itemsStatusSummary={itemsStatusSummary}
-                onReject={onReject}
-                onSendBack={onSendBack}
-                onReview={onReview}
-                onApprove={onApprove}
-                onPurchaseApprove={onPurchaseApprove}
-                onSubmitPr={onSubmitPr}
-                onSave={form.handleSubmit(handleSubmit, (errors) => {
-                  toastError({
-                    message: tPR("pls_complete_required_fields"),
-                  });
-                })}
-              />
-            )}
+            <ActionButtons
+              prStatus={prStatus || ""}
+              isNewPr={currentMode === formType.ADD}
+              isDraft={initValues?.pr_status === "draft"}
+              isPending={isPending}
+              isDisabled={isDisabled}
+              isSubmitDisabled={!workflowId}
+              isApproveDisabled={isApproveDisabled}
+              itemsStatusSummary={itemsStatusSummary}
+              onReject={onReject}
+              onSendBack={onSendBack}
+              onReview={onReview}
+              onApprove={onApprove}
+              onPurchaseApprove={onPurchaseApprove}
+              onSubmitPr={onSubmitPr}
+              onSave={form.handleSubmit(handleSubmit, (errors) => {
+                toastError({
+                  message: tPR("pls_complete_required_fields"),
+                });
+              })}
+            />
           </div>
         </PurchaseRequestProvider>
       </DetailsAndComments>

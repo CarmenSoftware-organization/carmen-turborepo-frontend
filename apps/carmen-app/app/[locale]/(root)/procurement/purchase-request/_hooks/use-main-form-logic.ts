@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestByIdDto, STAGE_ROLE, ItemStatus } from "@/dtos/purchase-request.dto";
-import { CreatePrDtoType, StagesStatusValue } from "../_schemas/purchase-request-form.schema";
+import { CreatePrDtoType } from "../_schemas/purchase-request-form.schema";
 import { useCreatePr } from "@/hooks/use-purchase-request";
 import { usePrActions } from "./use-pr-actions";
 import { usePrevWorkflow } from "./use-prev-workflow";
@@ -83,26 +83,14 @@ export const useMainFormLogic = ({
   const isApproveDisabled = useMemo(() => {
     if (purchaseItemManager.currentItems.length === 0) return true;
 
-    // Validate required fields for approval
     const hasInvalidItems = purchaseItemManager.currentItems.some((item) => {
       const getValue = (fieldName: string) =>
         purchaseItemManager.getItemValue(item, fieldName) ?? item[fieldName as keyof typeof item];
 
       const vendorId = getValue("vendor_id");
-      const taxProfileId = getValue("tax_profile_id");
-      const taxProfileName = getValue("tax_profile_name");
-      const taxRate = getValue("tax_rate");
-      const taxAmount = getValue("tax_amount");
-      const focUnitId = getValue("foc_unit_id");
+      const pricelistPrice = getValue("pricelist_price");
 
-      // Check if any required field is missing
-      const isMissingVendor = !vendorId;
-      const isMissingTaxProfile = !taxProfileId || !taxProfileName;
-      const isMissingTaxValues =
-        taxRate === undefined || taxRate === null || taxAmount === undefined || taxAmount === null;
-      const isMissingFocUnit = !focUnitId;
-
-      return isMissingVendor || isMissingTaxProfile || isMissingTaxValues || isMissingFocUnit;
+      return !vendorId || !pricelistPrice;
     });
 
     return hasInvalidItems;
@@ -120,16 +108,9 @@ export const useMainFormLogic = ({
     enabled: reviewDialogOpen,
   });
 
-  const getCurrentStatus = useCallback((stagesStatusValue: StagesStatusValue): string => {
-    if (!stagesStatusValue) return ItemStatus.PENDING;
-    if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
-      const lastStage = stagesStatusValue[stagesStatusValue.length - 1];
-      return lastStage?.status || ItemStatus.PENDING;
-    }
-    if (typeof stagesStatusValue === "string") {
-      return stagesStatusValue;
-    }
-    return ItemStatus.PENDING;
+  const getCurrentStatus = useCallback((stageStatus: string | undefined): string => {
+    if (!stageStatus) return ItemStatus.PENDING;
+    return stageStatus;
   }, []);
 
   const itemsStatusSummary = useMemo(() => {
@@ -150,10 +131,10 @@ export const useMainFormLogic = ({
       if (isNewItem) {
         summary.newItems++;
       } else {
-        const stagesStatusValue: StagesStatusValue =
-          purchaseItemManager.getItemValue(item, "stages_status") || item.stages_status;
+        const stageStatus =
+          (purchaseItemManager.getItemValue(item, "stage_status") as string) || item.stage_status;
 
-        const currentStatus = getCurrentStatus(stagesStatusValue);
+        const currentStatus = getCurrentStatus(stageStatus);
 
         if (currentStatus === ItemStatus.APPROVED || currentStatus === "approve") {
           summary.approved++;

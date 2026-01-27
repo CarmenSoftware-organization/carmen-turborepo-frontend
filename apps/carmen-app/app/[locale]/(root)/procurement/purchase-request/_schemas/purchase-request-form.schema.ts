@@ -16,7 +16,7 @@ import {
   InfoSchema,
   ValidateSchema,
 } from "@/dtos/embedded.dto";
-import { StageStatus, STAGE_ROLE } from "@/dtos/purchase-request.dto";
+import { STAGE_ROLE, ItemStatus } from "@/dtos/purchase-request.dto";
 
 export const CreatePurchaseRequestDetailSchema = z
   .object({
@@ -117,11 +117,9 @@ export const UpdatePurchaseRequestDetailSchema = z.object({
   foc_unit_id: z.string().uuid().nullable().optional(),
   foc_unit_name: z.string().nullable().optional(),
   foc_unit_conversion_factor: ValidateSchema.shape.price.optional(),
-  // Add stages_status field
-  stages_status: z
-    .union([z.string(), z.array(z.any()), z.record(z.any())])
-    .nullable()
-    .optional(),
+  // Add stage_status and stage_message fields
+  stage_status: z.nativeEnum(ItemStatus).nullable().optional(),
+  stage_message: z.string().nullable().optional(),
 });
 
 export const CreatePrSchema = z
@@ -191,7 +189,6 @@ export const CreatePrSchema = z
 
 export type CreatePrDtoType = z.infer<typeof CreatePrSchema>;
 
-export type StagesStatusValue = string | StageStatus[] | undefined;
 
 export const CreatePurchaseRequestSchema = z
   .object({

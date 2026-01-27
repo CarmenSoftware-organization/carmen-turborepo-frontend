@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { SortingState, OnChangeFn } from "@tanstack/react-table";
-import { PurchaseRequestDetail, StageStatus } from "@/dtos/purchase-request.dto";
+import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 
 export enum PR_ITEM_BULK_ACTION {
   APPROVED = "approved",

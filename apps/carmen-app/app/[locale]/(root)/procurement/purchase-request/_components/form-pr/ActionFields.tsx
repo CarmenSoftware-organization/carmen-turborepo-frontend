@@ -9,7 +9,11 @@ import { useSearchParams } from "next/navigation";
 import { convertStatus } from "@/utils/status";
 import { usePurchaseRequestContext } from "./PurchaseRequestContext";
 
-export default function ActionFields() {
+interface ActionFieldsProps {
+  isViewOnly?: boolean;
+}
+
+export default function ActionFields({ isViewOnly }: ActionFieldsProps) {
   const {
     currentMode,
     initValues,
@@ -81,7 +85,7 @@ export default function ActionFields() {
             )}
           </div>
         </div>
-        {prStatus !== "voided" && (
+        {!isViewOnly && prStatus !== "voided" && (
           <div className="flex items-center gap-2">
             {currentMode === formType.VIEW ? (
               <Tooltip>
