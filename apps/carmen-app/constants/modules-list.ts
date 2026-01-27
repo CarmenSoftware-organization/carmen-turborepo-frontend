@@ -427,6 +427,11 @@ export const moduleItems: ModuleItem[] = [
         href: "/configuration/unit",
         icon: Ruler,
       },
+      {
+        labelKey: "Modules.Configuration.adjustment_type",
+        href: "/configuration/adjustment-type",
+        icon: Ruler,
+      },
     ],
   },
   {

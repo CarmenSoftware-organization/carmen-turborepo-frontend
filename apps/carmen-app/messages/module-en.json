@@ -109,7 +109,8 @@
       "department": "Department",
       "tax_profile": "Tax Profile",
       "extra_cost": "Extra Cost",
-      "business_type": "Business Type"
+      "business_type": "Business Type",
+      "adjustment_type": "Adjustment Type"
     },
     "SystemAdministration": {
       "systemAdministration": "System Administration",
