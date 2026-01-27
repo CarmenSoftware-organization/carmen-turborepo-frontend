@@ -113,7 +113,11 @@ export const useOrderUnitByProduct = ({
     enabled: !!token && !!buCode && !!productId && enabled,
   });
 
-  const orderUnits = data?.data;
+  // filter ตอน ที่มี id ซ้ํา เพราะ inventory unit และ order unit มีค่าเดียวกัน
+  const orderUnits = data?.data?.filter(
+    (unit: { id: string }, index: number, self: { id: string }[]) =>
+      index === self.findIndex((u) => u.id === unit.id)
+  );
 
   return { orderUnits, isLoading, error };
 };

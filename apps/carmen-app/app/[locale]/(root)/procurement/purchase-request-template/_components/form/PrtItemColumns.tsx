@@ -305,27 +305,31 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
       enableSorting: false,
       size: isEditMode ? 200 : 130,
     },
-    {
-      id: "action",
-      header: () => tTableHeader("action"),
-      cell: ({ row }) =>
-        isEditMode ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size={"sm"}
-            onClick={() => onDelete(row.original)}
-            className="text-destructive hover:text-destructive"
-          >
-            <Trash2 className="h-3 w-3" />
-          </Button>
-        ) : null,
-      enableSorting: false,
-      size: 60,
-      meta: {
-        cellClassName: "text-center",
-        headerClassName: "text-center",
-      },
-    },
+    ...(isEditMode
+      ? [
+          {
+            id: "action",
+            header: () => tTableHeader("action"),
+            cell: ({ row }: { row: { original: PrtDetailItem } }) => (
+              <Button
+                type="button"
+                variant="ghost"
+                size={"sm"}
+                onClick={() => onDelete(row.original)}
+                className="text-destructive hover:text-destructive"
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            ),
+            enableSorting: false,
+            size: 60,
+            meta: {
+              cellClassName: "text-center",
+              headerClassName: "text-center",
+            },
+          },
+        ]
+      : [])
+
   ];
 };
