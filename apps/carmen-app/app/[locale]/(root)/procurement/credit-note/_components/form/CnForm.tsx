@@ -9,7 +9,7 @@ import { Link, useRouter } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import HeadCnForm from "./HeadCnForm";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { useAuth } from "@/context/AuthContext";
@@ -101,12 +101,6 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
     defaultValues,
     mode: "onChange",
   });
-
-  const creditNoteDetail = form.watch("credit_note_detail");
-
-  useEffect(() => {
-    console.log("creditNoteDetail changed:", creditNoteDetail);
-  }, [creditNoteDetail]);
 
   const getStatusLabel = (status?: string) => {
     if (!status) return "Draft";

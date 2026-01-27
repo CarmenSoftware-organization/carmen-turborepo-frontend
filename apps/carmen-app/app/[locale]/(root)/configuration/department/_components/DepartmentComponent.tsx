@@ -18,11 +18,11 @@ import DepartmentGrid from "./DepartmentGrid";
 import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
-import { DepartmentGetListDto } from "@/dtos/department.dto";
 import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 
 import { VIEW } from "@/constants/enum";
+import { DepartmentListItemDto } from "@/dtos/department.dto";
 
 export default function DepartmentComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -37,7 +37,7 @@ export default function DepartmentComponent() {
   const router = useRouter();
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [departmentToDelete, setDepartmentToDelete] = useState<DepartmentGetListDto | undefined>(
+  const [departmentToDelete, setDepartmentToDelete] = useState<DepartmentListItemDto | undefined>(
     undefined
   );
   const [statusOpen, setStatusOpen] = useState(false);
@@ -83,7 +83,7 @@ export default function DepartmentComponent() {
     setPerpage(newPerpage.toString());
   };
 
-  const handleDelete = (department: DepartmentGetListDto) => {
+  const handleDelete = (department: DepartmentListItemDto) => {
     setDepartmentToDelete(department);
     setDeleteDialogOpen(true);
   };

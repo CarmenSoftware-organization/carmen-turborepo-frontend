@@ -1,6 +1,5 @@
 "use client";
 
-import { DepartmentGetListDto } from "@/dtos/department.dto";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Activity, Info, List, MoreHorizontal, Trash2 } from "lucide-react";
@@ -29,9 +28,10 @@ import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Link } from "@/lib/navigation";
+import { DepartmentListItemDto } from "@/dtos/department.dto";
 
 interface DepartmentListProps {
-  readonly departments: DepartmentGetListDto[];
+  readonly departments: DepartmentListItemDto[];
   readonly isLoading: boolean;
   readonly currentPage: number;
   readonly totalPages: number;
@@ -41,7 +41,7 @@ interface DepartmentListProps {
   readonly sort?: { field: string; direction: "asc" | "desc" };
   readonly onSort?: (sortString: string) => void;
   readonly setPerpage: (perpage: number) => void;
-  readonly onDelete?: (department: DepartmentGetListDto) => void;
+  readonly onDelete?: (department: DepartmentListItemDto) => void;
   readonly canUpdate?: boolean;
   readonly canDelete?: boolean;
 }
@@ -77,7 +77,7 @@ export default function DepartmentList({
     [currentPage, perpage]
   );
 
-  const columns = useMemo<ColumnDef<DepartmentGetListDto>[]>(
+  const columns = useMemo<ColumnDef<DepartmentListItemDto>[]>(
     () => [
       {
         id: "select",

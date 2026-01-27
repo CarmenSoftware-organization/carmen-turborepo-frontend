@@ -2,7 +2,7 @@
 
 import { formType } from "@/dtos/form.dto";
 import { useEffect, useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
@@ -89,7 +89,7 @@ export default function CurrencyDialog({
     defaultValues: mode === formType.EDIT && currency ? { ...currency } : defaultCurrencyValues,
   });
 
-  const watchedCode = form.watch("code");
+  const watchedCode = useWatch({ control: form.control, name: "code" });
 
   useEffect(() => {
     if (mode === formType.EDIT && currency) {

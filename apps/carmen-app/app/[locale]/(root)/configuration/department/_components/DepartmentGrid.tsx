@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
 import { Building2, MoreHorizontal, Trash2, Users } from "lucide-react";
-import { DepartmentGetListDto } from "@/dtos/department.dto";
+import { DepartmentListItemDto } from "@/dtos/department.dto";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,9 +18,9 @@ import CardLoading from "@/components/loading/CardLoading";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface DepartmentGridProps {
-  readonly departments: DepartmentGetListDto[];
+  readonly departments: DepartmentListItemDto[];
   readonly isLoading: boolean;
-  readonly onDelete?: (department: DepartmentGetListDto) => void;
+  readonly onDelete?: (department: DepartmentListItemDto) => void;
   readonly canUpdate?: boolean;
   readonly canDelete?: boolean;
 }
