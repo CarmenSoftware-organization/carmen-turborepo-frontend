@@ -19,6 +19,7 @@ import LookupProduct from "@/components/lookup/LookupProduct";
 import UnitLookup from "@/components/lookup/LookupUnit";
 import LookupTaxType from "@/components/lookup/LookupTaxType";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/context/AuthContext";
 interface CnItemDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
@@ -60,6 +61,7 @@ export default function CnItemDialog({
   initItem,
   itemIndex,
 }: CnItemDialogProps) {
+  const { token, buCode } = useAuth();
   const [formData, setFormData] = useState<CreditNoteDetailFormItemDto | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
@@ -196,6 +198,8 @@ export default function CnItemDialog({
                           });
                         }}
                         placeholder="Select Product"
+                        token={token || ""}
+                        buCode={buCode || ""}
                       />
                     </div>
                   </div>

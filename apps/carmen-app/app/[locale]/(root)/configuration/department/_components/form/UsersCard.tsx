@@ -167,22 +167,22 @@ export default function UsersCard({
       };
 
       const isExistingUser = initUsers.some((user) => user.key.toString() === key);
-      const isNewUser = currentUsers.add.some((user) => user.id === key);
+      const isNewUser = currentUsers.add.some((user: UserAddUpdateOperation) => user.id === key);
 
       if (isExistingUser && !isNewUser) {
         // Handle existing user HOD change
         const currentUpdateArray = currentUsers.update;
-        const existingUpdateIndex = currentUpdateArray.findIndex((user) => user.id === key);
+        const existingUpdateIndex = currentUpdateArray.findIndex((user: UserAddUpdateOperation) => user.id === key);
         const originalUser = initUsers.find((user) => user.key.toString() === key);
         const originalIsHod = originalUser?.is_hod || false;
 
         let updatedUpdateArray;
         if (checked === originalIsHod) {
           // HOD value same as original, remove from update array
-          updatedUpdateArray = currentUpdateArray.filter((user) => user.id !== key);
+          updatedUpdateArray = currentUpdateArray.filter((user: UserAddUpdateOperation) => user.id !== key);
         } else if (existingUpdateIndex >= 0) {
           // Update existing entry in update array
-          updatedUpdateArray = currentUpdateArray.map((user, index) =>
+          updatedUpdateArray = currentUpdateArray.map((user: UserAddUpdateOperation, index: number) =>
             index === existingUpdateIndex ? { ...user, is_hod: checked } : user
           );
         } else {
@@ -193,7 +193,7 @@ export default function UsersCard({
       } else if (isNewUser) {
         // Handle new user HOD change - update in add array
         const currentAddArray = currentUsers.add;
-        const updatedAddArray = currentAddArray.map((user) =>
+        const updatedAddArray = currentAddArray.map((user: UserAddUpdateOperation) =>
           user.id === key ? { ...user, is_hod: checked } : user
         );
         form.setValue("users.add", updatedAddArray);

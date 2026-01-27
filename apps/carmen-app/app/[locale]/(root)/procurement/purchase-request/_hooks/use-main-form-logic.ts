@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { PR_ERROR_MESSAGES } from "../_constants/error-messages";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, useWatch } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestByIdDto, STAGE_ROLE, ItemStatus } from "@/dtos/purchase-request.dto";
 import { CreatePrDtoType, StagesStatusValue } from "../_schemas/purchase-request-form.schema";
@@ -14,10 +14,7 @@ import { usePrActions } from "./use-pr-actions";
 import { usePrevWorkflow } from "./use-prev-workflow";
 import { useSendNotification } from "@/hooks/useNoti";
 import { EnumNotiType } from "@/dtos/notification.dto";
-import {
-  prepareSubmitData,
-  preparePurchaseApproveData,
-} from "../_utils/purchase-request.utils";
+import { prepareSubmitData, preparePurchaseApproveData } from "../_utils/purchase-request.utils";
 import { prepareStageDetails } from "../_utils/stage.utils";
 import { createPurchaseRequest } from "../_handlers/purchase-request-create.handlers";
 import { updatePurchaseRequest } from "../_handlers/purchase-request-update.handlers";
@@ -79,7 +76,8 @@ export const useMainFormLogic = ({
   const currentStage = workflowStages[workflowStages.length - 1]?.title;
   const isNewPr = currentMode === formType.ADD;
   const prStatus = initValues?.pr_status;
-  const workflowId = form.watch("details.workflow_id");
+  // const workflowId = form.watch("details.workflow_id");
+  const workflowId = useWatch({ control: form.control, name: "details.workflow_id" });
   const hasFormErrors = Object.keys(form.formState.errors).length > 0;
   const { isDirty } = form.formState;
 
@@ -101,7 +99,8 @@ export const useMainFormLogic = ({
       // Check if any required field is missing
       const isMissingVendor = !vendorId;
       const isMissingTaxProfile = !taxProfileId || !taxProfileName;
-      const isMissingTaxValues = taxRate === undefined || taxRate === null || taxAmount === undefined || taxAmount === null;
+      const isMissingTaxValues =
+        taxRate === undefined || taxRate === null || taxAmount === undefined || taxAmount === null;
       const isMissingFocUnit = !focUnitId;
 
       return isMissingVendor || isMissingTaxProfile || isMissingTaxValues || isMissingFocUnit;
