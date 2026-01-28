@@ -181,7 +181,7 @@ export default function ExpandedContent({
                     classNames="h-7 text-xs"
                     disabled={currentMode !== formType.EDIT}
                   />
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-1">
                     <div className="space-y-0.5 text-right">
                       <Label className="text-muted-foreground text-xs font-medium">
                         {tPr("unit_price")}
@@ -195,7 +195,7 @@ export default function ExpandedContent({
                         disabled={currentMode !== formType.EDIT}
                       />
                     </div>
-                    <div className="space-y-0.5 text-right">
+                    <div className="space-y-0.5 text-right mt-1">
                       <div className="flex items-center justify-end gap-2">
                         <Label className="text-muted-foreground text-xs font-medium">
                           {tPr("discount")}
@@ -253,7 +253,7 @@ export default function ExpandedContent({
                         )}
                       </p>
                     </div>
-                    <div className="space-y-0.5 text-right">
+                    <div className="space-y-0.5 text-right mt-1">
                       <div className="flex items-center justify-end gap-2">
                         <Label className="text-muted-foreground text-xs font-medium">
                           {tPr("tax")}
