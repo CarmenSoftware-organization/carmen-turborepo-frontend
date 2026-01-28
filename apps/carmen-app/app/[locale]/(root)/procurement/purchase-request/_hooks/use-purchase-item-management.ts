@@ -75,7 +75,7 @@ export const usePurchaseItemManagement = ({
       description: undefined,
       requested_qty: 0,
       requested_unit_id: undefined,
-      delivery_date: undefined,
+      delivery_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       currency_id: defaultCurrencyId || undefined,
       exchange_rate_date: new Date().toISOString(),
       // Auto-set approved same as requested for new items

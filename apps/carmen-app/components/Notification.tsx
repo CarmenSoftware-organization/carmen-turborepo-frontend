@@ -85,7 +85,9 @@ const NotificationItem = ({ notification, onMarkAsRead, tNoti }: NotificationIte
             {formatMessage(notification.message)}
           </p>
           <div className="flex justify-between items-center pointer-events-auto">
-            <span className="text-[10px] xl:text-xs font-medium capitalize">{notification.type}</span>
+            <span className="text-[10px] xl:text-xs font-medium capitalize">
+              {notification.type}
+            </span>
             <div className="flex gap-1 xl:gap-2">
               {notification.link && (
                 <a
@@ -233,7 +235,7 @@ export default function Notification() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 xl:w-80 max-h-[200px] xl:max-h-[250px] overflow-y-auto p-0 shadow-lg">
+      <PopoverContent className="w-96 xl:w-80 max-h-[200px] xl:max-h-[250px] overflow-y-auto p-0 shadow-lg mx-4">
         <div className="p-2 xl:p-4 border-b border-border bg-muted/50">
           <div className="flex justify-between items-center">
             <h4 className="font-medium text-xs xl:text-sm">{tNoti("notification")}</h4>
@@ -260,7 +262,12 @@ export default function Notification() {
 
         {notificationCount > 0 && (
           <div className="p-2 xl:p-3 border-t bg-muted/30 flex justify-between">
-            <Button variant="ghost" className="text-[10px] xl:text-xs h-7 xl:h-8" size="sm" onClick={markAllAsRead}>
+            <Button
+              variant="ghost"
+              className="text-[10px] xl:text-xs h-7 xl:h-8"
+              size="sm"
+              onClick={markAllAsRead}
+            >
               {tNoti("mark_all_read")}
             </Button>
             <Button variant="outline" className="text-[10px] xl:text-xs h-7 xl:h-8" size="sm">

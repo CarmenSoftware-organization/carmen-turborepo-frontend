@@ -2,14 +2,14 @@ import { z } from "zod";
 
 export enum enum_workflow_type {
   purchase_request = "purchase_request_workflow",
-  //purchase_order = "purchase_order_workflow",
+  purchase_order = "purchase_order_workflow",
   store_requisition = "store_requisition_workflow",
-  //goods_received_note = "goods_received_note_workflow",
 }
 
 export const workflowTypeField = [
   { label: "Purchase Request", value: enum_workflow_type.purchase_request },
   { label: "Store Requisition", value: enum_workflow_type.store_requisition },
+  { label: "Purchase Order", value: enum_workflow_type.purchase_order },
 ];
 
 export enum enum_available_actions {

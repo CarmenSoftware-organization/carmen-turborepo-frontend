@@ -144,6 +144,8 @@ export default function ProductsSection({ form, isViewMode }: ProductsSectionPro
                           value={field.product_id}
                           onValueChange={(val) => handleProductChange(index, val)}
                           placeholder="Select Product"
+                          buCode={buCode}
+                          token={token}
                         />
                       )}
                     </TableCell>
