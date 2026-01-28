@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import { PR_ERROR_MESSAGES } from "../_constants/error-messages";
 import { useQueryClient } from "@tanstack/react-query";
-import { UseFormReturn, useWatch } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestByIdDto, STAGE_ROLE, ItemStatus } from "@/dtos/purchase-request.dto";
 import { CreatePrDtoType } from "../_schemas/purchase-request-form.schema";
@@ -75,8 +75,8 @@ export const useMainFormLogic = ({
   const currentStage = workflowStages[workflowStages.length - 1]?.title;
   const isNewPr = currentMode === formType.ADD;
   const prStatus = initValues?.pr_status;
-  // const workflowId = form.watch("details.workflow_id");
-  const workflowId = useWatch({ control: form.control, name: "details.workflow_id" });
+  const formValues = form.watch();
+  const workflowId = formValues?.details?.workflow_id;
   const hasFormErrors = Object.keys(form.formState.errors).length > 0;
   const { isDirty } = form.formState;
 

@@ -1,60 +1,64 @@
 import { z } from "zod";
-import {
-  EmbeddedDepartmentSchema,
-  EmbeddedLocationSchema,
-  EmbeddedProductSchema,
-  EmbeddedInventoryUnitSchema,
-  EmbeddedWorkflowSchema,
-  EmbeddedVendorSchema,
-  EmbeddedCurrencySchema,
-  EmbeddedDiscountSchema,
-  EmbeddedTaxSchema,
-  RequestedQuantityAndUnitSchema,
-  ApproveQuantityAndUnitSchema,
-  FocSchema,
-  PriceSchema,
-  InfoSchema,
-  ValidateSchema,
-} from "@/dtos/embedded.dto";
+import { ValidateSchema } from "@/dtos/embedded.dto";
 import { STAGE_ROLE, ItemStatus } from "@/dtos/purchase-request.dto";
 
-export const CreatePurchaseRequestDetailSchema = z
-  .object({
-    id: z.string().optional(),
-    description: z.string().optional().nullable(),
-    comment: z.string().optional().nullable(),
-    sequence_no: z.number().optional(),
-  })
-  .merge(EmbeddedProductSchema)
-  .merge(EmbeddedInventoryUnitSchema)
-  .merge(
-    EmbeddedLocationSchema.extend({
-      delivery_point_id: ValidateSchema.shape.uuid,
-      delivery_date: z.string().datetime(),
-    })
-  )
-  .merge(
-    EmbeddedVendorSchema.extend({
-      vendor_id: z.string().uuid().nullable().optional(),
-    })
-  )
-  .merge(RequestedQuantityAndUnitSchema)
-  .merge(PriceSchema)
-  .merge(
-    EmbeddedTaxSchema.partial().extend({
-      tax_profile_id: z.string().uuid().nullable().optional(),
-      tax_profile_name: z.string().nullable().optional(),
-    })
-  )
-  .merge(EmbeddedDiscountSchema)
-  .merge(
-    EmbeddedCurrencySchema.extend({
-      currency_id: z.string().uuid().nullable().optional(),
-      exchange_rate_date: z.string().datetime().nullable().optional(),
-    })
-  )
-  .merge(FocSchema.partial())
-  .merge(InfoSchema);
+// Flattened schema to avoid TypeScript depth issues from chained .merge() calls
+export const CreatePurchaseRequestDetailSchema = z.object({
+  // Base fields
+  id: z.string().optional(),
+  description: z.string().optional().nullable(),
+  comment: z.string().optional().nullable(),
+  sequence_no: z.number().optional(),
+  // EmbeddedProductSchema
+  product_id: ValidateSchema.shape.uuid.optional(),
+  // EmbeddedInventoryUnitSchema
+  inventory_unit_id: ValidateSchema.shape.uuid.optional(),
+  // EmbeddedLocationSchema + delivery
+  location_id: ValidateSchema.shape.uuid.optional(),
+  delivery_point_id: ValidateSchema.shape.uuid,
+  delivery_date: z.string().datetime(),
+  // EmbeddedVendorSchema
+  vendor_id: z.string().uuid().nullable().optional(),
+  // RequestedQuantityAndUnitSchema
+  requested_qty: ValidateSchema.shape.quantity.optional(),
+  requested_unit_id: ValidateSchema.shape.uuid.optional(),
+  requested_unit_conversion_factor: ValidateSchema.shape.price.optional(),
+  // PriceSchema
+  total_price: ValidateSchema.shape.price.optional(),
+  sub_total_price: ValidateSchema.shape.price.optional(),
+  net_amount: ValidateSchema.shape.price.optional(),
+  price: ValidateSchema.shape.price.optional(),
+  base_sub_total_price: ValidateSchema.shape.price.optional(),
+  base_total_price: ValidateSchema.shape.price.optional(),
+  base_net_amount: ValidateSchema.shape.price.optional(),
+  base_price: ValidateSchema.shape.price.optional(),
+  // EmbeddedTaxSchema (partial)
+  tax_profile_id: z.string().uuid().nullable().optional(),
+  tax_profile_name: z.string().nullable().optional(),
+  tax_rate: ValidateSchema.shape.price.optional(),
+  tax_amount: ValidateSchema.shape.price.optional(),
+  is_tax_adjustment: z.boolean().optional(),
+  base_tax_amount: ValidateSchema.shape.price.optional(),
+  total_amount: ValidateSchema.shape.price.optional(),
+  // EmbeddedDiscountSchema
+  discount_rate: ValidateSchema.shape.price.optional(),
+  discount_amount: ValidateSchema.shape.price.optional(),
+  is_discount_adjustment: z.boolean().optional(),
+  base_discount_amount: ValidateSchema.shape.price.optional(),
+  // EmbeddedCurrencySchema
+  currency_id: z.string().uuid().nullable().optional(),
+  exchange_rate: z.number().optional(),
+  exchange_rate_date: z.string().datetime().nullable().optional(),
+  // FocSchema (partial)
+  foc_qty: ValidateSchema.shape.quantity.optional(),
+  foc_unit_id: z.string().uuid().optional(),
+  foc_unit_name: z.string().optional(),
+  foc_unit_conversion_factor: ValidateSchema.shape.price.optional(),
+  // InfoSchema
+  note: z.string().optional().nullable(),
+  info: z.any().optional().nullable(),
+  dimension: z.any().optional().nullable(),
+});
 
 export const StageRoleSchema = z.nativeEnum(STAGE_ROLE);
 
@@ -190,22 +194,26 @@ export const CreatePrSchema = z
 export type CreatePrDtoType = z.infer<typeof CreatePrSchema>;
 
 
-export const CreatePurchaseRequestSchema = z
-  .object({
-    description: z.string().optional().nullable(),
-    requestor_id: z.string().uuid().optional(),
-    pr_date: z.string(),
-  })
-  .merge(EmbeddedWorkflowSchema)
-  .merge(EmbeddedDepartmentSchema)
-  .merge(InfoSchema)
-  .extend({
-    purchase_request_detail: z
-      .object({
-        add: z.array(CreatePurchaseRequestDetailSchema).optional(),
-      })
-      .optional(),
-  });
+// Flattened schema to avoid TypeScript depth issues
+export const CreatePurchaseRequestSchema = z.object({
+  description: z.string().optional().nullable(),
+  requestor_id: z.string().uuid().optional(),
+  pr_date: z.string(),
+  // EmbeddedWorkflowSchema
+  workflow_id: ValidateSchema.shape.uuid.optional(),
+  // EmbeddedDepartmentSchema
+  department_id: ValidateSchema.shape.uuid.optional(),
+  // InfoSchema
+  note: z.string().optional().nullable(),
+  info: z.any().optional().nullable(),
+  dimension: z.any().optional().nullable(),
+  // purchase_request_detail
+  purchase_request_detail: z
+    .object({
+      add: z.array(CreatePurchaseRequestDetailSchema).optional(),
+    })
+    .optional(),
+});
 
 export const UpdatePurchaseRequestSchema = CreatePurchaseRequestSchema.extend({
   doc_version: z.number().optional().readonly(),
