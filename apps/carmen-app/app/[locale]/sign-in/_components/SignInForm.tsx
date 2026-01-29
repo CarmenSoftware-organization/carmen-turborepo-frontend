@@ -92,6 +92,7 @@ export default function SignInForm() {
                     <FormItem>
                       <FormControl>
                         <InputCustom
+                          data-id="sign-in-email"
                           label={t("email")}
                           labelPlacement="inside"
                           placeholder="This shows when input has value"
@@ -113,6 +114,7 @@ export default function SignInForm() {
                     <FormItem>
                       <FormControl>
                         <InputCustom
+                          data-id="sign-in-password"
                           label={t("password")}
                           labelPlacement="inside"
                           required
