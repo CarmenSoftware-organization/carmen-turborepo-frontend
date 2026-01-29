@@ -73,62 +73,6 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
   );
 
   const productsCount = form.watch("pricelist_detail")?.length || 0;
-  const formData = form.watch();
-
-  // Transform form data to API payload format for preview
-  const payloadPreview = useMemo(() => {
-    const items = formData.pricelist_detail || [];
-
-    const formatDateToISO = (dateStr: string) => {
-      if (!dateStr) return "";
-      const date = new Date(dateStr);
-      return date.toISOString();
-    };
-
-    const addItems = items
-      .filter((item) => item._action === "add")
-      .map((item, index) => ({
-        sequence_no: item.sequence_no ?? index + 1,
-        product_id: item.product_id,
-        unit_id: item.unit_id,
-        tax_profile_id: item.tax_profile_id,
-        tax_rate: item.tax_rate || 0,
-        moq_qty: Number(item.moq_qty) || 0,
-      }));
-
-    const updateItems = items
-      .filter((item) => item._action === "update" && item.dbId)
-      .map((item) => ({
-        id: item.dbId,
-        sequence_no: item.sequence_no,
-        product_id: item.product_id,
-        unit_id: item.unit_id,
-        tax_profile_id: item.tax_profile_id,
-        tax_rate: item.tax_rate || 0,
-        moq_qty: Number(item.moq_qty) || 0,
-      }));
-
-    const removeItems = items
-      .filter((item) => item._action === "remove" && item.dbId)
-      .map((item) => ({ id: item.dbId! }));
-
-    const pricelistDetail: Record<string, any> = {};
-    if (addItems.length > 0) pricelistDetail.add = addItems;
-    if (updateItems.length > 0) pricelistDetail.update = updateItems;
-    if (removeItems.length > 0) pricelistDetail.remove = removeItems;
-
-    return {
-      vendor_id: formData.vendorId,
-      name: formData.name,
-      description: formData.description,
-      status: formData.status,
-      currency_id: formData.currencyId,
-      effective_from_date: formatDateToISO(formData.effectivePeriod?.from || ""),
-      effective_to_date: formatDateToISO(formData.effectivePeriod?.to || ""),
-      note: formData.note,
-      pricelist_detail: Object.keys(pricelistDetail).length > 0 ? pricelistDetail : undefined,
-    };
-  }, [formData]);
 
   useEffect(() => {
     if (initialData) {
