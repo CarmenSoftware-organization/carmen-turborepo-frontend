@@ -34,7 +34,6 @@ import { mockJournalEntries, mockStockMovement } from "@/mock-data/store-operati
 import StockMovement from "./StockMovement";
 import SrJournalEntries from "./SrJournalEntries";
 import TransactionSummary from "../TransactionSummary";
-import JsonViewer from "@/components/JsonViewer";
 import { useAuth } from "@/context/AuthContext";
 import { useCreateSr, useUpdateSr, useDeleteSr, srKey, srDetailKey } from "@/hooks/use-sr";
 import { useQueryClient } from "@tanstack/react-query";
@@ -288,7 +287,6 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
               {/* <TransactionSummary /> */}
             </form>
           </Form>
-          {/* <JsonViewer data={form.watch()} title="Sr payload" /> */}
           <div className="fixed bottom-6 right-6 flex gap-2 z-50">
             <Button size={"sm"}>
               <CheckCircleIcon className="w-5 h-5" />

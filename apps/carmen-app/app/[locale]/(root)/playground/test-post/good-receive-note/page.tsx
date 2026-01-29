@@ -4,7 +4,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getStatusColorTestPost } from "../payload";
-import JsonViewer from "@/components/JsonViewer";
 import { postGoodReceiveNote } from "../payload";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
@@ -37,20 +36,12 @@ export default function GoodReceiveNotePage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <Button
-              onClick={handleCreateGoodReceiveNote}
-              className="w-full sm:w-auto"
-              size="lg"
-            >
+            <Button onClick={handleCreateGoodReceiveNote} className="w-full sm:w-auto" size="lg">
               สร้าง Good Receive Note
             </Button>
 
             <div className="flex-1">
-              <div
-                className={`p-3 rounded-lg border ${getStatusColorTestPost(
-                  statusSent
-                )}`}
-              >
+              <div className={`p-3 rounded-lg border ${getStatusColorTestPost(statusSent)}`}>
                 <div className="flex items-center gap-2">
                   <Badge
                     variant={
@@ -70,16 +61,6 @@ export default function GoodReceiveNotePage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Data Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">ข้อมูล Good Receive Note</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <JsonViewer data={postGoodReceiveNote} />
-        </CardContent>
-      </Card>
     </div>
-  )
+  );
 }

@@ -28,7 +28,6 @@ import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { usePoMutation, usePoUpdateMutation, usePoDeleteMutation } from "@/hooks/use-po";
 import { useRouter } from "next/navigation";
 import { addDays } from "date-fns";
-import JsonViewer from "@/components/JsonViewer";
 
 interface PoFormProps {
   readonly poData?: PoDetailDto;
@@ -263,7 +262,6 @@ export default function PoForm({ poData, mode }: PoFormProps) {
             </Tabs>
           </form>
         </Form>
-        <JsonViewer data={form.watch()} title="PO Form Data" />
       </Card>
       <DeleteConfirmDialog
         open={isDeleteDialogOpen}

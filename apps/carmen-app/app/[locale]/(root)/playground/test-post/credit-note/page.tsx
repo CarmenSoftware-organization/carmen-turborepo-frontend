@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
-import JsonViewer from "@/components/JsonViewer";
 import { getStatusColorTestPost, postCreditNote } from "../payload";
 
 export default function CreditNotePage() {
@@ -27,15 +26,11 @@ export default function CreditNotePage() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onError: (error: any) => {
         const errorMessage =
-          error?.message ||
-          error?.toString() ||
-          "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ";
+          error?.message || error?.toString() || "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ";
         setStatusSent(`Error: ${errorMessage}`);
       },
     });
   };
-
-
 
   return (
     <div className="container mx-auto p-6 max-w-4xl space-y-6">
@@ -52,20 +47,12 @@ export default function CreditNotePage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <Button
-              onClick={handleCreateCreditNote}
-              className="w-full sm:w-auto"
-              size="lg"
-            >
+            <Button onClick={handleCreateCreditNote} className="w-full sm:w-auto" size="lg">
               สร้าง Credit Note
             </Button>
 
             <div className="flex-1">
-              <div
-                className={`p-3 rounded-lg border ${getStatusColorTestPost(
-                  statusSent
-                )}`}
-              >
+              <div className={`p-3 rounded-lg border ${getStatusColorTestPost(statusSent)}`}>
                 <div className="flex items-center gap-2">
                   <Badge
                     variant={
@@ -83,16 +70,6 @@ export default function CreditNotePage() {
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Data Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">ข้อมูล Credit Note</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <JsonViewer data={postCreditNote} />
         </CardContent>
       </Card>
     </div>

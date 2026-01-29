@@ -28,7 +28,6 @@ import { useRouter } from "@/lib/navigation";
 import { useTranslations } from "next-intl";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { Badge } from "@/components/ui/badge";
-import JsonViewer from "@/components/JsonViewer";
 
 interface Props {
   readonly templateData?: PriceListTemplateDetailsDto;

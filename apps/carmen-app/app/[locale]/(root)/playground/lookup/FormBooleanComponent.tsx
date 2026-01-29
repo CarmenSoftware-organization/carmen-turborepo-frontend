@@ -17,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import NumberInput from "@/components/form-custom/NumberInput";
-import JsonViewer from "@/components/JsonViewer";
 import { useTranslations } from "next-intl";
 
 const formSchema = z.object({
@@ -60,8 +59,6 @@ export default function FormBooleanComponent() {
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     console.log(data);
   };
-
-  const watchForm = form.watch();
 
   return (
     <div className="max-w-lg mx-auto p-6 space-y-6">
@@ -186,7 +183,6 @@ export default function FormBooleanComponent() {
           <Button type="submit">Submit</Button>
         </form>
       </Form>
-      <JsonViewer data={watchForm} />
     </div>
   );
 }
