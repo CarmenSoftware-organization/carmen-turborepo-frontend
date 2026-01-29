@@ -19,7 +19,6 @@ import { usePurchaseItemTable, PR_ITEM_BULK_ACTION } from "../../_hooks/use-purc
 import BulkActionDialog from "./dialogs/BulkActionDialog";
 import SelectAllDialog from "./dialogs/SelectAllDialog";
 import { useCurrenciesQuery } from "@/hooks/use-currency";
-import { usePriceCompareBulk, PriceCompareParams } from "@/hooks/use-bidding";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 type InitValuesType = PurchaseRequestDetail[] | PurchaseRequestTemplateDetailDto[];
@@ -65,10 +64,6 @@ export default function PurchaseItemDataGrid({
   const tCommon = useTranslations("Common");
   const tAction = useTranslations("Action");
   const { getCurrencyCode } = useCurrenciesQuery(token || "", currentBuCode || "");
-  const { mutate: fetchPriceCompare, isPending: isPriceCompareLoading } = usePriceCompareBulk(
-    token || "",
-    currentBuCode || ""
-  );
 
   const {
     deleteDialogOpen,
@@ -206,35 +201,6 @@ export default function PurchaseItemDataGrid({
     }
   };
 
-  const onAllocateVendor = () => {
-    const params: PriceCompareParams[] = items
-      .filter((item) => {
-        const productId = (getItemValue(item, "product_id") || item.product_id) as string;
-        const unitId = (getItemValue(item, "requested_unit_id") || item.requested_unit_id) as string;
-        const currencyId = (getItemValue(item, "currency_id") || item.currency_id) as string;
-        return productId && unitId && currencyId;
-      })
-      .map((item) => ({
-        product_id: (getItemValue(item, "product_id") || item.product_id) as string,
-        unit_id: (getItemValue(item, "requested_unit_id") || item.requested_unit_id) as string,
-        currency_id: (getItemValue(item, "currency_id") || item.currency_id) as string,
-      }));
-
-    if (params.length === 0) {
-      console.warn("No valid items to fetch price compare");
-      return;
-    }
-
-    fetchPriceCompare(params, {
-      onSuccess: (results) => {
-        console.log("Price Compare Results:", results);
-      },
-      onError: (error) => {
-        console.error("Failed to fetch price compare:", error);
-      },
-    });
-  };
-
   return (
     <div className="mt-4 space-y-4">
       <div className="flex items-center justify-between">
@@ -263,9 +229,6 @@ export default function PurchaseItemDataGrid({
               </Tooltip>
             </TooltipProvider>
           )}
-          <Button onClick={onAllocateVendor} size={"sm"} disabled={isPriceCompareLoading}>
-            {isPriceCompareLoading ? "Loading..." : "Allocate Vendor"}
-          </Button>
         </div>
       </div>
       {selectedRowsCount > 0 && currentMode !== formType.VIEW && (

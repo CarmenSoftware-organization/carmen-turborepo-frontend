@@ -161,9 +161,12 @@ export default function ExpandedContent({
                   apv_unit={item.approved_unit_name ?? "-"}
                   productId={item.product_id}
                   productName={item.product_name}
+                  unitId={item.requested_unit_id}
+                  currencyId={item.currency_id}
                   itemId={item.id}
                   bu_code={buCode}
                   onItemUpdate={onItemUpdate}
+                  token={token}
                 />
               )}
             </div>

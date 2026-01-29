@@ -122,7 +122,7 @@ export default function ActionButtons({
                     e.stopPropagation();
                     onApprove();
                   }}
-                  disabled={isPending || isApproveDisabled}
+                  disabled={isPending}
                 >
                   <CheckCircleIcon className="w-4 h-4" />
                   {tAction("approve")}
@@ -201,7 +201,7 @@ export default function ActionButtons({
                       e.stopPropagation();
                       onApprove();
                     }}
-                    disabled={isPending || isApproveDisabled}
+                    disabled={isPending}
                   >
                     <CheckCircleIcon className="w-4 h-4" />
                     {tAction("approve")}

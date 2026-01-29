@@ -151,8 +151,6 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
 
   const isViewOnly = initValues?.role === STAGE_ROLE.VIEW_ONLY;
 
-  console.log("form error ", form.formState.errors);
-
   return (
     <>
       <DetailsAndComments
@@ -203,7 +201,6 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
                   </Tabs>
                 </form>
               </Form>
-              <JsonViewer data={form.watch()} title="PR" />
             </Card>
             <ActionButtons
               prStatus={prStatus || ""}

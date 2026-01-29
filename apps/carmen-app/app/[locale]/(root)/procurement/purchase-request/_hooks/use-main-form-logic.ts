@@ -252,7 +252,8 @@ export const useMainFormLogic = ({
   const onApprove = () => {
     const approveData = preparePurchaseApproveData(
       purchaseItemManager.currentItems,
-      initValues?.id || ""
+      initValues?.id || "",
+      initValues?.role || "purchase"
     );
     approve(approveData, {
       onSuccess: () => {
@@ -362,7 +363,8 @@ export const useMainFormLogic = ({
   const onPurchaseApprove = () => {
     const purchaseData = preparePurchaseApproveData(
       purchaseItemManager.currentItems,
-      initValues?.id || ""
+      initValues?.id || "",
+      initValues?.role || "purchase"
     );
 
     purchase(purchaseData, {

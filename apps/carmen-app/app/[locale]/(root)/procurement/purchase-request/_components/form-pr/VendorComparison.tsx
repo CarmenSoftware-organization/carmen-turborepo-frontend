@@ -20,6 +20,7 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { formatDate } from "@/utils/format";
 import { useTranslations } from "next-intl";
+import { usePriceCompareQuery } from "@/hooks/use-bidding";
 
 // Format effectivePeriod string (e.g., "Wed Dec 10 2025... - Sat Dec 20 2025...") to "dd/MM/yyyy - dd/MM/yyyy"
 const formatEffectivePeriod = (period: string | null | undefined): string => {
@@ -40,7 +41,10 @@ interface Props {
   itemId: string;
   productId?: string;
   productName?: string;
+  unitId?: string;
+  currencyId?: string;
   bu_code?: string;
+  token: string;
   onItemUpdate: (
     itemId: string,
     fieldName: string,
@@ -105,14 +109,34 @@ export default function VendorComparison({
   itemId,
   productId,
   productName,
+  unitId,
+  currencyId,
   bu_code,
   onItemUpdate,
+  token,
 }: Props) {
-  const { token, buCode } = useAuth();
+  const { buCode } = useAuth();
   const currentBuCode = bu_code ?? buCode;
   const { data: priceLists, isLoading, error } = usePriceList(token, currentBuCode);
   const tPr = useTranslations("PurchaseRequest");
   const [isOpen, setIsOpen] = useState(false);
+
+  // Fetch price compare when dialog opens
+  const {
+    data: priceCompareData,
+    isLoading: isPriceCompareLoading,
+  } = usePriceCompareQuery(
+    token || "",
+    currentBuCode || "",
+    {
+      product_id: productId || "",
+      unit_id: unitId || "",
+      currency_id: currencyId || "",
+    },
+    isOpen && !!productId && !!unitId && !!currencyId
+  );
+
+  console.log("priceCompareData", priceCompareData);
 
   const rawData = (priceLists?.data || []) as PriceListData[];
 

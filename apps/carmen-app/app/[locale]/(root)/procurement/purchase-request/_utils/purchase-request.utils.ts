@@ -63,10 +63,11 @@ export const prepareSubmitData = (data: CreatePrDto): CreatePrDto => {
 export const preparePurchaseApproveData = (
   items: PurchaseRequestDetail[],
   prId: string,
+  stateRole: string = "purchase",
   defaultMessage: string = "Approved by purchasing department"
 ) => {
   return {
-    state_role: "purchase",
+    state_role: stateRole,
     details: items.map((item) => ({
       id: item.id,
       purchase_request_id: prId,
