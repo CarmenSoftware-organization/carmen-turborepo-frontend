@@ -1,4 +1,8 @@
 {
+  "DocumentManagement": {
+    "title": "Document Management",
+    "document_type": "Document Type"
+  },
   "Currency": {
     "title": "Currency",
     "currency_code": "Code",

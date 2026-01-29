@@ -110,7 +110,8 @@
       "tax_profile": "ระบบภาษี",
       "extra_cost": "ค่าใช้จ่ายเพิ่มเติม",
       "business_type": "ประเภทธุรกิจ",
-      "adjustment_type": "ประเภทการปรับปรุง"
+      "adjustment_type": "ประเภทการปรับปรุง",
+      "doc_management": "การจัดการเอกสาร"
     },
     "SystemAdministration": {
       "systemAdministration": "การจัดการระบบ",

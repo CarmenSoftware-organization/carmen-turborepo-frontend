@@ -1,4 +1,8 @@
 {
+  "DocumentManagement": {
+    "title": "การจัดการเอกสาร",
+    "document_type": "ประเภทเอกสาร"
+  },
   "Currency": {
     "title": "สกุลเงิน",
     "currency_code": "รหัสสกุลเงิน",
