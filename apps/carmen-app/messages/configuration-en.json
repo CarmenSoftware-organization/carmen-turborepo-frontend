@@ -3,6 +3,11 @@
     "title": "Document Management",
     "document_type": "Document Type"
   },
+  "AdjustmentType": {
+    "title": "Adjustment Type",
+    "stock_in": "Stock In",
+    "stock_out": "Stock Out"
+  },
   "Currency": {
     "title": "Currency",
     "currency_code": "Code",

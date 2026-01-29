@@ -3,6 +3,11 @@
     "title": "การจัดการเอกสาร",
     "document_type": "ประเภทเอกสาร"
   },
+  "AdjustmentType": {
+    "title": "ประเภทการปรับปรุง",
+    "stock_in": "รับสินค้า",
+    "stock_out": "ส่งสินค้า"
+  },
   "Currency": {
     "title": "สกุลเงิน",
     "currency_code": "รหัสสกุลเงิน",

@@ -1,7 +1,13 @@
 import { z } from "zod";
 
-// Enum
+// Enum สำหรับ GET response (ใช้ hyphen)
 export enum ADJUSTMENT_TYPE {
+  STOCK_IN = "stock-in",
+  STOCK_OUT = "stock-out",
+}
+
+// Enum สำหรับ POST/PUT payload (ใช้ underscore)
+export enum ADJUSTMENT_TYPE_PAYLOAD {
   STOCK_IN = "stock_in",
   STOCK_OUT = "stock_out",
 }
@@ -29,29 +35,43 @@ const baseAdjustmentSchema = z.object({
   description: z.string().optional(),
   doc_status: z.string(),
   note: z.string().optional(),
+  type: z.nativeEnum(ADJUSTMENT_TYPE),
+  document_no: z.string(),
   stock_in_detail: z.array(stockDetailsSchema),
 });
 
-export const adjustmentTypeListSchema = baseAdjustmentSchema.extend({
+// Schema สำหรับ get all list (ไม่มี stock_in_detail)
+export const adjustmentTypeListSchema = z.object({
   id: z.string(),
-  adjustment_type: z.nativeEnum(ADJUSTMENT_TYPE),
+  so_no: z.string().optional(), // มีเฉพาะ stock-out
+  si_no: z.string().optional(), // มีเฉพาะ stock-in
+  description: z.string().optional(),
+  doc_status: z.string(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  type: z.nativeEnum(ADJUSTMENT_TYPE),
+  document_no: z.string(),
 });
 
 export const adjustmentStockInSchema = baseAdjustmentSchema.extend({
   id: z.string(),
-  adjustment_type: z.literal(ADJUSTMENT_TYPE.STOCK_IN),
+  si_no: z.string(),
+  created_at: z.string(),
+  updated_at: z.string(),
 });
 
 export const adjustmentStockOutSchema = baseAdjustmentSchema.extend({
   id: z.string(),
-  adjustment_type: z.literal(ADJUSTMENT_TYPE.STOCK_OUT),
+  so_no: z.string(),
+  created_at: z.string(),
+  updated_at: z.string(),
 });
 
 export const adjustmentTypePayloadSchema = z.object({
   description: z.string().optional(),
   doc_status: z.string(),
   note: z.string().optional(),
-  adjustment_type: z.nativeEnum(ADJUSTMENT_TYPE),
+  adjustment_type: z.nativeEnum(ADJUSTMENT_TYPE_PAYLOAD),
   stock_in_detail: z.object({
     add: z.array(baseStockDetailsSchema),
     update: z.array(stockDetailsSchema),
@@ -62,7 +82,7 @@ export const adjustmentTypePayloadSchema = z.object({
 // Inferred Types
 export type BaseStockDetailsDto = z.infer<typeof baseStockDetailsSchema>;
 export type StockDetailsDto = z.infer<typeof stockDetailsSchema>;
-export type AdjustmentTypeList = z.infer<typeof adjustmentTypeListSchema>;
+export type AdjustmentTypeListDto = z.infer<typeof adjustmentTypeListSchema>;
 export type AdjustmentStockInDto = z.infer<typeof adjustmentStockInSchema>;
 export type AdjustmentStockOutDto = z.infer<typeof adjustmentStockOutSchema>;
 export type AdjustmentTypePayloadDto = z.infer<typeof adjustmentTypePayloadSchema>;

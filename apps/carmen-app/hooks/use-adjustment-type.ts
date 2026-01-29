@@ -33,9 +33,10 @@ export const useAdjustmentTypeQuery = (token: string, buCode: string, params?: P
 
   const isUnauthorized = error instanceof Error && error.message.includes("Unauthorized");
   const paginate = data?.paginate;
+  const adjDatas = data?.data ?? [];
 
   return {
-    data,
+    adjDatas,
     paginate,
     isLoading: isLoading || (!isEnabled && !data),
     isFetching,
