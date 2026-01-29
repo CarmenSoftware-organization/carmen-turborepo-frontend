@@ -6,7 +6,7 @@ import { formType } from "@/dtos/form.dto";
 import { SrCreate, SrDetailItemDto, SrDetailItemCreate } from "@/dtos/sr.dto";
 import { Plus } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { UseFormReturn, useFieldArray, useWatch } from "react-hook-form";
+import { UseFormReturn, useFieldArray } from "react-hook-form";
 import { useAuth } from "@/context/AuthContext";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
@@ -22,26 +22,29 @@ interface ItemStoreRequisitionProps {
   readonly itemsSr?: SrDetailItemDto[];
 }
 
+// Constant to prevent infinite re-renders (from form-pattern)
+const EMPTY_ARRAY: SrDetailItemDto[] = [];
+
 export default function ItemStoreRequisition({
   mode,
   form,
-  itemsSr = [],
+  itemsSr = EMPTY_ARRAY,
 }: ItemStoreRequisitionProps) {
   const { token, buCode } = useAuth();
-  const t = useTranslations("StoreRequisition");
+  const tStoreRequisition = useTranslations("StoreRequisition");
+
+  // Local state for UI tracking (instead of useWatch)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [removedIds, setRemovedIds] = useState<Set<string>>(new Set());
+  const [updatedNewItems, setUpdatedNewItems] = useState<Record<string, Partial<SrDetailItemCreate>>>({});
 
   const { fields, prepend, remove } = useFieldArray({
     control: form.control,
     name: "details.store_requisition_detail.add",
   });
 
-  const watchedFields = useWatch({
-    control: form.control,
-    name: "details.store_requisition_detail.add",
-  });
-
+  // Add new item
   const handleAdd = useCallback(() => {
     prepend({
       description: "",
@@ -52,18 +55,32 @@ export default function ItemStoreRequisition({
     });
   }, [prepend]);
 
-  // Use form.setValue instead of update to avoid re-creating columns on every change
+  // Update item field - updates form and local state for immediate UI
   const handleItemUpdate = useCallback(
     (index: number, fieldName: keyof SrDetailItemCreate, value: unknown) => {
+      // Update form value
       form.setValue(
         `details.store_requisition_detail.add.${index}.${fieldName}` as `details.store_requisition_detail.add.${number}.${keyof SrDetailItemCreate}`,
         value as never,
         { shouldDirty: true }
       );
+
+      // Update local state for immediate UI reflection
+      const fieldId = fields[index]?.id;
+      if (fieldId) {
+        setUpdatedNewItems((prev) => ({
+          ...prev,
+          [fieldId]: {
+            ...prev[fieldId],
+            [fieldName]: value,
+          },
+        }));
+      }
     },
-    [form]
+    [form, fields]
   );
 
+  // Remove new item
   const handleRemoveNewItem = useCallback(
     (index: number) => {
       remove(index);
@@ -71,42 +88,42 @@ export default function ItemStoreRequisition({
     [remove]
   );
 
+  // Remove original item (soft delete)
   const handleRemoveOriginalItem = useCallback((id: string) => {
     setItemToDelete(id);
     setDeleteDialogOpen(true);
   }, []);
 
+  // Confirm delete original item
   const handleConfirmDelete = useCallback(() => {
     if (!itemToDelete) return;
 
-    // Add item to delete array in form
+    // Add to form's remove array
     const currentDeleteItems = form.getValues("details.store_requisition_detail.delete") || [];
     form.setValue("details.store_requisition_detail.delete", [
       ...currentDeleteItems,
       { id: itemToDelete },
     ]);
 
+    // Update local state for UI
+    setRemovedIds((prev) => new Set([...prev, itemToDelete]));
     setDeleteDialogOpen(false);
     setItemToDelete(null);
   }, [itemToDelete, form]);
 
-  // Get items marked for deletion to filter them from display
-  const deleteItems = useWatch({
-    control: form.control,
-    name: "details.store_requisition_detail.delete",
-  });
+  // Helper to get item value (from local state or original)
+  const getNewItemValue = useCallback(
+    (fieldId: string, fieldName: keyof SrDetailItemCreate, defaultValue: unknown) => {
+      return updatedNewItems[fieldId]?.[fieldName] ?? defaultValue;
+    },
+    [updatedNewItems]
+  );
 
-  const deletedIds = useMemo(() => {
-    return new Set((deleteItems || []).map((item) => item.id));
-  }, [deleteItems]);
-
-  // Transform data for the table
-  // itemsSr = existing items from API (read-only display)
-  // fields = new items being added (editable)
+  // Transform to table data - memoized
   const tableData: SrItemRow[] = useMemo(() => {
-    // Only show itemsSr (from API) - filter out deleted items
+    // Original items (from API) - filter out deleted items
     const originalItems: SrItemRow[] = itemsSr
-      .filter((item) => !deletedIds.has(item.id))
+      .filter((item) => !removedIds.has(item.id))
       .map((item, index) => ({
         id: item.id,
         isNewItem: false,
@@ -118,41 +135,43 @@ export default function ItemStoreRequisition({
         current_stage_status: item.current_stage_status,
       }));
 
-    // Only show fields (new items) - these are editable
-    const newItems: SrItemRow[] = fields.map((field, index) => {
-      const currentValues = watchedFields?.[index];
-      return {
-        id: field.id,
-        isNewItem: true,
-        newItemIndex: index,
-        product_id: currentValues?.product_id ?? field.product_id,
-        product_name: undefined,
-        description: currentValues?.description ?? field.description,
-        requested_qty: currentValues?.requested_qty ?? field.requested_qty,
-        current_stage_status: currentValues?.current_stage_status ?? field.current_stage_status,
-      };
-    });
+    // New items (from useFieldArray) - use local state for current values
+    const newItems: SrItemRow[] = fields.map((field, index) => ({
+      id: field.id,
+      isNewItem: true,
+      newItemIndex: index,
+      product_id: getNewItemValue(field.id, "product_id", field.product_id) as string,
+      product_name: undefined,
+      description: getNewItemValue(field.id, "description", field.description) as string,
+      requested_qty: getNewItemValue(field.id, "requested_qty", field.requested_qty) as number,
+      current_stage_status: getNewItemValue(field.id, "current_stage_status", field.current_stage_status) as string,
+    }));
 
     // New items first, then original items
     return [...newItems, ...originalItems];
-  }, [itemsSr, fields, watchedFields, deletedIds]);
+  }, [itemsSr, fields, removedIds, getNewItemValue]);
 
-  // Collect all used product IDs (from both original and new items)
+  // Collect used product IDs for exclusion in lookup
   const usedProductIds = useMemo(() => {
     const ids: string[] = [];
-    // From original items (not deleted)
+
+    // From original items (not removed)
     itemsSr
-      .filter((item) => !deletedIds.has(item.id))
+      .filter((item) => !removedIds.has(item.id))
       .forEach((item) => {
         if (item.product_id) ids.push(item.product_id);
       });
-    // From new items
-    watchedFields?.forEach((field) => {
-      if (field?.product_id) ids.push(field.product_id);
-    });
-    return ids;
-  }, [itemsSr, watchedFields, deletedIds]);
 
+    // From new items
+    fields.forEach((field) => {
+      const productId = getNewItemValue(field.id, "product_id", field.product_id) as string;
+      if (productId) ids.push(productId);
+    });
+
+    return ids;
+  }, [itemsSr, fields, removedIds, getNewItemValue]);
+
+  // Stable columns - only recreate when necessary
   const columns = useMemo(
     () =>
       createSrItemColumns({
@@ -162,17 +181,19 @@ export default function ItemStoreRequisition({
         onItemUpdate: handleItemUpdate,
         onRemoveNewItem: handleRemoveNewItem,
         onRemoveOriginalItem: handleRemoveOriginalItem,
-        tHeader: (key: string) => t(`items.${key}`),
         usedProductIds,
       }),
-    [mode, token, buCode, handleItemUpdate, handleRemoveNewItem, handleRemoveOriginalItem, t, usedProductIds]
+    [mode, token, buCode, handleItemUpdate, handleRemoveNewItem, handleRemoveOriginalItem, usedProductIds]
   );
+
+  // Memoize getCoreRowModel
+  const coreRowModel = useMemo(() => getCoreRowModel<SrItemRow>(), []);
 
   const table = useReactTable({
     data: tableData,
     columns,
     getRowId: (row) => row.id,
-    getCoreRowModel: getCoreRowModel(),
+    getCoreRowModel: coreRowModel,
   });
 
   const isViewMode = mode === formType.VIEW;
@@ -180,7 +201,7 @@ export default function ItemStoreRequisition({
   return (
     <Card className="p-2 space-y-2">
       <div className="flex justify-between items-center p-2">
-        <p className="text-base font-medium">{t("items.title")}</p>
+        <p className="text-base font-medium">{tStoreRequisition("items.title")}</p>
         <div className="flex items-center gap-2">
           <Button
             type="button"
@@ -190,7 +211,7 @@ export default function ItemStoreRequisition({
             onClick={handleAdd}
           >
             <Plus className="h-4 w-4" />
-            {t("buttons.addItem")}
+            {tStoreRequisition("buttons.addItem")}
           </Button>
         </div>
       </div>
@@ -200,7 +221,7 @@ export default function ItemStoreRequisition({
         recordCount={tableData.length}
         isLoading={false}
         loadingMode="skeleton"
-        emptyMessage={t("items.noItems")}
+        emptyMessage={tStoreRequisition("items.noItems")}
         tableLayout={{
           headerSticky: true,
           dense: true,
@@ -224,8 +245,8 @@ export default function ItemStoreRequisition({
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
-        title={t("dialog.deleteItemTitle")}
-        description={t("dialog.deleteItemDescription")}
+        title={tStoreRequisition("dialog.deleteItemTitle")}
+        description={tStoreRequisition("dialog.deleteItemDescription")}
       />
     </Card>
   );

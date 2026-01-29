@@ -75,7 +75,11 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
         department_id: departments?.id ?? "",
         from_location_id: initData?.from_location_id ?? "",
         to_location_id: initData?.to_location_id ?? "",
-        store_requisition_detail: {},
+        store_requisition_detail: {
+          add: [],
+          update: [],
+          delete: [],
+        },
       },
     },
   });
@@ -94,7 +98,7 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
   const onSubmit = (data: SrCreate) => {
     if (currentMode === formType.ADD) {
       createSrMutation.mutate(data, {
-        onSuccess: (response) => {
+        onSuccess: (response: any) => {
           toastSuccess({ message: t("toast.createSuccess") });
           queryClient.invalidateQueries({ queryKey: [srKey, buCode] });
           const res = response as { data?: { id?: string } };
@@ -104,9 +108,9 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
             setCurrentMode(formType.VIEW);
           }
         },
-        onError: (error) => {
+        onError: () => {
           toastError({
-            message: error instanceof Error ? error.message : t("toast.createError"),
+            message: t("toast.createError"),
           });
         },
       });
