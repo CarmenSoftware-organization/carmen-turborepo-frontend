@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { formType } from "@/dtos/form.dto";
 import { useDepartmentByIdQuery } from "@/hooks/use-departments";
@@ -12,7 +12,11 @@ export default function DepartmentIdPage() {
   const params = useParams();
   const id = params.id as string;
 
-  const { data, isLoading } = useDepartmentByIdQuery(token, buCode, id);
+  const { data, isLoading, error } = useDepartmentByIdQuery(token, buCode, id);
+
+  if (error) {
+    notFound();
+  }
 
   if (isLoading) {
     return <DetailSkeleton />;

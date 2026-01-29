@@ -7,10 +7,10 @@ import { useRouter } from "next/navigation";
 import { Cat404 } from "./illustrations";
 
 interface Props {
-  readonly backUrl: string;
+  readonly backUrl?: string;
 }
 
-export default function PageNotFound({ backUrl }: Props) {
+export default function PageNotFound({ backUrl = "/" }: Props) {
   const tNotFound = useTranslations("NotFound");
   const router = useRouter();
 

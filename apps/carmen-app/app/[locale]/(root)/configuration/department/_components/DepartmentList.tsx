@@ -29,6 +29,7 @@ import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Link } from "@/lib/navigation";
 import { DepartmentListItemDto } from "@/dtos/department.dto";
+import { Badge } from "@/components/ui/badge";
 
 interface DepartmentListProps {
   readonly departments: DepartmentListItemDto[];
@@ -103,7 +104,7 @@ export default function DepartmentList({
         header: ({ column }) => <DataGridColumnHeader column={column} title={t("code")} />,
         cell: ({ row }) => {
           const department = row.original;
-          return <span>{department.code}</span>;
+          return <Badge variant={"product_badge"}>{department.code}</Badge>;
         },
         enableSorting: true,
         size: 100,
@@ -123,6 +124,7 @@ export default function DepartmentList({
         ),
         cell: ({ row }) => {
           const department = row.original;
+
           if (canUpdate) {
             return (
               <Link
