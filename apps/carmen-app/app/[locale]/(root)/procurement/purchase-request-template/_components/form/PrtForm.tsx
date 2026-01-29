@@ -3,7 +3,7 @@
 import DetailsAndComments from "@/components/DetailsAndComments";
 import { formType } from "@/dtos/form.dto";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import ActivityLog from "../ActivityLog";
 import CommentPrt from "../CommentPrt";
@@ -26,7 +26,7 @@ interface PrtFormProps {
   readonly mode: formType;
 }
 export default function PrtForm({ prtData, mode }: PrtFormProps) {
-  const { buCode, departments, token } = useAuth();
+  const { buCode, departments, token, defaultCurrencyId } = useAuth();
   const tPurchaseRequest = useTranslations("PurchaseRequest");
   const router = useRouter();
   const [currentMode, setCurrentMode] = useState<formType>(mode);
@@ -42,28 +42,8 @@ export default function PrtForm({ prtData, mode }: PrtFormProps) {
 
   const isPending = isCreating || isUpdating || isDeleting;
 
-  const defaultValues: PrtFormValues = {
-    name: "",
-    description: "",
-    workflow_id: "",
-    department_id: departments?.id,
-    is_active: true,
-    note: "",
-  };
-
-  const form = useForm<PrtFormValues>({
-    defaultValues,
-  });
-
-  const watchName = form.watch("name");
-  const watchWorkflowId = form.watch("workflow_id");
-  const canSubmit = Boolean(watchName && watchWorkflowId);
-
-  useEffect(() => {
-    if (prtData) {
-      // Only reset header fields, not the details
-      // Details are managed separately and only added to form when user performs actions
-      form.reset({
+  const defaultValues: PrtFormValues = prtData
+    ? {
         id: prtData.id,
         name: prtData.name,
         description: prtData.description,
@@ -73,9 +53,37 @@ export default function PrtForm({ prtData, mode }: PrtFormProps) {
         department_name: prtData.department_name,
         is_active: prtData.is_active,
         note: prtData.note,
-      });
-    }
-  }, [prtData, form]);
+      }
+    : {
+        name: "",
+        description: "",
+        workflow_id: "",
+        department_id: departments?.id,
+        is_active: true,
+        note: "",
+      };
+
+  const form = useForm<PrtFormValues>({
+    defaultValues,
+    values: prtData
+      ? {
+          id: prtData.id,
+          name: prtData.name,
+          description: prtData.description,
+          workflow_id: prtData.workflow_id,
+          workflow_name: prtData.workflow_name,
+          department_id: prtData.department_id,
+          department_name: prtData.department_name,
+          is_active: prtData.is_active,
+          note: prtData.note,
+        }
+      : undefined,
+  });
+
+  const watchName = form.watch("name");
+  const watchWorkflowId = form.watch("workflow_id");
+  const canSubmit = Boolean(watchName && watchWorkflowId);
+
 
   const handleOpenDeleteDialog = () => {
     setIsDeleteDialogOpen(true);
@@ -155,6 +163,9 @@ export default function PrtForm({ prtData, mode }: PrtFormProps) {
                   form={form}
                   currentMode={currentMode}
                   originalItems={prtData?.purchase_request_template_detail || []}
+                  buCode={buCode}
+                  token={token}
+                  defaultCurrencyId={defaultCurrencyId ?? ""}
                 />
               </TabsContent>
               <TabsContent value="budget">

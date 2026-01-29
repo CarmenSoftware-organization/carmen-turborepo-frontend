@@ -98,8 +98,8 @@ export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailIte
             initialDisplayName={row.original.product_name}
           />
         ) : (
-          <div className="flex flex-col gap-0.5 max-w-[200px]">
-            <p className="text-sm font-medium line-clamp-2 break-words">
+          <div className="max-w-[200px]">
+            <p className="text-xs font-medium line-clamp-2 break-words">
               {row.original.product_name}
             </p>
           </div>
@@ -131,9 +131,9 @@ export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailIte
             disabled={!row.original.product_id}
           />
         ) : (
-          <div className="flex items-center justify-end gap-1">
+          <div className="text-xs flex items-center justify-end gap-1">
             <span>{row.original.order_qty}</span>
-            <span className="text-muted-foreground text-xs">{row.original.order_unit_name}</span>
+            <span className="text-muted-foreground">{row.original.order_unit_name}</span>
           </div>
         ),
       enableSorting: false,
@@ -160,7 +160,7 @@ export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailIte
             disabled={!row.original.product_id}
           />
         ) : (
-          <span>
+          <span className="text-xs">
             {row.original.price?.toLocaleString("en-US", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -189,7 +189,7 @@ export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailIte
             disabled={!row.original.product_id}
           />
         ) : (
-          <span>
+          <span className="text-xs">
             {row.original.discount_amount?.toLocaleString("en-US", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -218,7 +218,7 @@ export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailIte
             disabled={!row.original.product_id}
           />
         ) : (
-          <span>
+          <span className="text-xs">
             {row.original.tax_amount?.toLocaleString("en-US", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -236,7 +236,7 @@ export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailIte
       accessorKey: "net_amount",
       header: () => tTableHeader("net"),
       cell: ({ row }) => (
-        <span>
+        <span className="text-xs">
           {row.original.net_amount?.toLocaleString("en-US", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
@@ -254,7 +254,7 @@ export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailIte
       accessorKey: "total_price",
       header: () => tTableHeader("amount"),
       cell: ({ row }) => (
-        <span className="font-medium">
+        <span className="text-xs">
           {row.original.total_price?.toLocaleString("en-US", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
@@ -283,7 +283,7 @@ export const createPoItemColumns = (config: ColumnConfig): ColumnDef<PoDetailIte
             disabled={!row.original.product_id}
           />
         ) : (
-          <span>{row.original.is_foc ? "Yes" : "No"}</span>
+          <span className="text-xs">{row.original.is_foc ? "Yes" : "No"}</span>
         ),
       enableSorting: false,
       size: 60,

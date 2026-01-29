@@ -235,7 +235,7 @@ export default function Notification() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-96 xl:w-80 max-h-[200px] xl:max-h-[250px] overflow-y-auto p-0 shadow-lg mx-4">
+      <PopoverContent className="w-[30rem] max-h-[30rem] overflow-y-auto p-0 shadow-lg mx-4">
         <div className="p-2 xl:p-4 border-b border-border bg-muted/50">
           <div className="flex justify-between items-center">
             <h4 className="font-medium text-xs xl:text-sm">{tNoti("notification")}</h4>

@@ -115,7 +115,7 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
           />
         ) : (
           <div className="flex flex-col gap-1">
-            <p className="text-sm font-medium">{row.original.product_name}</p>
+            <p className="text-xs font-medium">{row.original.product_name}</p>
             <p className="text-xs text-muted-foreground">{row.original.description}</p>
           </div>
         ),
@@ -329,7 +329,6 @@ export const createPrtItemColumns = (config: ColumnConfig): ColumnDef<PrtDetailI
             },
           },
         ]
-      : [])
-
+      : []),
   ];
 };

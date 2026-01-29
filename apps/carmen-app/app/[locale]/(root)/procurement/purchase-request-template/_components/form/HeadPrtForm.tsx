@@ -19,32 +19,19 @@ interface Props {
   workflowName?: string;
 }
 
-export default function HeadPrtForm({ form, currentMode, buCode, departName, workflowName }: Props) {
+export default function HeadPrtForm({
+  form,
+  currentMode,
+  buCode,
+  departName,
+  workflowName,
+}: Props) {
   const tPurchaseRequest = useTranslations("PurchaseRequest");
   const isViewMode = currentMode === formType.VIEW;
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-        <FormField
-          control={form.control}
-          name="name"
-          required
-          icon={<Hash className="h-4 w-4 text-muted-foreground" />}
-          render={({ field }) => (
-            <FormItem className="col-span-1">
-              <FormLabel className="text-xs font-medium">{tPurchaseRequest("pr_name")}</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  className={cn("mt-2 text-xs", isViewMode && "bg-muted")}
-                  disabled={isViewMode}
-                  placeholder={tPurchaseRequest("pr_name")}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
         <FormField
           control={form.control}
           name="workflow_id"
@@ -66,6 +53,27 @@ export default function HeadPrtForm({ form, currentMode, buCode, departName, wor
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="name"
+          required
+          icon={<Hash className="h-4 w-4 text-muted-foreground" />}
+          render={({ field }) => (
+            <FormItem className="col-span-1">
+              <FormLabel className="text-xs font-medium">{tPurchaseRequest("pr_name")}</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  className={cn("mt-2 text-xs", isViewMode && "bg-muted")}
+                  disabled={isViewMode}
+                  placeholder={tPurchaseRequest("pr_name")}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
         <div className="space-y-2">
           <Label>
             <div className="flex items-center gap-1.5 text-muted-foreground text-xs">

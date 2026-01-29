@@ -18,6 +18,9 @@ interface Props {
   readonly form: UseFormReturn<PrtFormValues>;
   currentMode: formType;
   originalItems: PurchaseRequestTemplateDetailDto[];
+  readonly buCode: string;
+  readonly token: string;
+  readonly defaultCurrencyId: string;
 }
 
 interface DetailState {
@@ -26,11 +29,17 @@ interface DetailState {
   delete: { id: string }[];
 }
 
-export default function PrtItems({ form, currentMode, originalItems }: Props) {
+export default function PrtItems({
+  form,
+  currentMode,
+  originalItems,
+  buCode,
+  token,
+  defaultCurrencyId,
+}: Props) {
   const tPurchaseRequest = useTranslations("PurchaseRequest");
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
-  const { token, buCode } = useAuth();
   const { getCurrencyCode } = useCurrenciesQuery(token, buCode);
 
   // Use local state instead of form.watch to avoid re-render loops
@@ -104,7 +113,7 @@ export default function PrtItems({ form, currentMode, originalItems }: Props) {
       requested_unit_conversion_factor: 1,
       foc_qty: 0,
       foc_unit_name: "",
-      currency_id: "",
+      currency_id: defaultCurrencyId,
       tax_amount: 0,
       discount_amount: 0,
       is_active: true,

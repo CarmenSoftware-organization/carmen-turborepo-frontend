@@ -136,7 +136,7 @@ export default function PurchaseOrderList({
         ),
         cell: ({ row }) => <span>{row.original.vendor_name ?? "-"}</span>,
         enableSorting: true,
-        size: 200,
+        size: 350,
       },
       {
         accessorKey: "description",
@@ -200,7 +200,7 @@ export default function PurchaseOrderList({
           />
         ),
         cell: ({ row }) => (
-         <span>
+          <span>
             {formatPrice(
               row.original.total_amount,
               currencyBase ?? "THB",

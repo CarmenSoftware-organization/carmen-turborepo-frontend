@@ -253,7 +253,7 @@ export default function HeadPoForm({ form, currentMode, buCode, dateFormat, curr
               <FormItem>
                 <FormLabel>{tPurchaseOrder("exchange_rate")}</FormLabel>
                 <FormControl>
-                  <Input value={displayValue} className="text-right" />
+                  <Input value={displayValue} className="text-right bg-muted" readOnly />
                 </FormControl>
                 <FormMessage />
               </FormItem>
