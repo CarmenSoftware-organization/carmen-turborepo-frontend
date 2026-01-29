@@ -86,6 +86,7 @@
     "confirm_delete_message": "Are you sure you want to delete",
     "cancel": "Cancel",
     "deleting": "Deleting...",
+    "errorLoadingData": "We're having trouble loading your data right now. Please wait a moment and try again. If the problem continues, please contact support.",
     "errors": {
       "validation": {
         "required_fields": "Please fill in all required fields",

@@ -26,6 +26,7 @@ import SelectWorkflowStage from "./form-pr/SelectWorkflowStage";
 import SelectPrStatus from "./SelectPrStatus";
 import { FETCH_TYPE } from "../_constants/pr-status";
 import DataGridLoading from "@/components/loading/DataGridLoading";
+import InternalServerError from "@/components/error-ui/InternalServerError";
 
 export default function PurchaseRequestComponent() {
   const { token, buCode } = useAuth();
@@ -91,7 +92,11 @@ export default function PurchaseRequestComponent() {
     };
   };
 
-  const { prs, isLoading } = usePurchaseRequest(
+  const {
+    prs,
+    isLoading,
+    error: prError,
+  } = usePurchaseRequest(
     token,
     buCode,
     {
@@ -322,15 +327,46 @@ export default function PurchaseRequestComponent() {
 
   const currentPageNumber = Number(page || "1");
 
-  const content = (
-    <ErrorBoundary>
-      {isLoading ? (
-        <DataGridLoading />
-      ) : (
-        <div className="space-y-4">
-          {prs?.data?.map((bu: any) => (
-            <div key={bu.bu_code}>
-              <div className="block lg:hidden">
+  const renderContentBody = () => {
+    if (isLoading) {
+      return <DataGridLoading />;
+    }
+
+    if (prError) {
+      return <InternalServerError />;
+    }
+
+    return (
+      <div className="space-y-4">
+        {prs?.data?.map((bu: any) => (
+          <div key={bu.bu_code}>
+            <div className="block lg:hidden">
+              <PurchaseRequestGrid
+                purchaseRequests={bu.data}
+                currentPage={bu.paginate?.page ?? currentPageNumber}
+                totalPages={bu.paginate?.pages ?? 1}
+                onPageChange={handlePageChange}
+                isLoading={isLoading}
+                convertStatus={getStatusLabel}
+              />
+            </div>
+
+            <div className="hidden lg:block">
+              {view === VIEW.LIST ? (
+                <PurchaseRequestList
+                  purchaseRequests={bu.data || []}
+                  currentPage={bu.paginate?.page ?? currentPageNumber}
+                  totalPages={bu.paginate?.pages ?? 1}
+                  totalItems={bu.paginate?.total ?? 0}
+                  perpage={bu.paginate?.perpage ?? 10}
+                  onPageChange={handlePageChange}
+                  sort={parseSortString(sort)}
+                  onSort={setSort}
+                  setPerpage={handleSetPerpage}
+                  convertStatus={getStatusLabel}
+                  buCode={bu.bu_code}
+                />
+              ) : (
                 <PurchaseRequestGrid
                   purchaseRequests={bu.data}
                   currentPage={bu.paginate?.page ?? currentPageNumber}
@@ -339,40 +375,15 @@ export default function PurchaseRequestComponent() {
                   isLoading={isLoading}
                   convertStatus={getStatusLabel}
                 />
-              </div>
-
-              <div className="hidden lg:block">
-                {view === VIEW.LIST ? (
-                  <PurchaseRequestList
-                    purchaseRequests={bu.data || []}
-                    currentPage={bu.paginate?.page ?? currentPageNumber}
-                    totalPages={bu.paginate?.pages ?? 1}
-                    totalItems={bu.paginate?.total ?? 0}
-                    perpage={bu.paginate?.perpage ?? 10}
-                    onPageChange={handlePageChange}
-                    sort={parseSortString(sort)}
-                    onSort={setSort}
-                    setPerpage={handleSetPerpage}
-                    convertStatus={getStatusLabel}
-                    buCode={bu.bu_code}
-                  />
-                ) : (
-                  <PurchaseRequestGrid
-                    purchaseRequests={bu.data}
-                    currentPage={bu.paginate?.page ?? currentPageNumber}
-                    totalPages={bu.paginate?.pages ?? 1}
-                    onPageChange={handlePageChange}
-                    isLoading={isLoading}
-                    convertStatus={getStatusLabel}
-                  />
-                )}
-              </div>
+              )}
             </div>
-          ))}
-        </div>
-      )}
-    </ErrorBoundary>
-  );
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const content = <ErrorBoundary>{renderContentBody()}</ErrorBoundary>;
 
   return (
     <>

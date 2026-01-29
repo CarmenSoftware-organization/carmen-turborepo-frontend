@@ -239,7 +239,9 @@
     "apply": "Apply",
     "select_date": "Select Date",
     "form_has_errors": "Please review your input",
-    "please_fix_errors": "Please fix the errors below before saving"
+    "please_fix_errors": "Please fix the errors below before saving",
+    "error": "Something Went Wrong",
+    "errorLoadingData": "We're having trouble loading your data right now. Please wait a moment and try again. If the problem continues, please contact support."
   },
   "TableHeader": {
     "all": "All",
@@ -473,5 +475,28 @@
     "try_different_search": "Try a different search term",
     "search_permissions": "Search permissions...",
     "resource": "Resource"
+  },
+  "ErrorPages": {
+    "goBack": "Go Back",
+    "goHome": "Go Home",
+    "tryAgain": "Try Again",
+    "unauthorized": {
+      "title": "Authentication Required",
+      "description": "You need to sign in to access this page. Please log in with your account to continue.",
+      "signIn": "Sign In"
+    },
+    "forbidden": {
+      "title": "Access Denied",
+      "description": "Sorry, you don't have permission to access this page. If you believe this is a mistake, please contact your administrator."
+    },
+    "serviceUnavailable": {
+      "title": "Under Maintenance",
+      "description": "We're currently performing scheduled maintenance to improve your experience. Please check back shortly."
+    },
+    "sessionExpired": {
+      "title": "Session Expired",
+      "description": "Your session has timed out due to inactivity. Please sign in again to continue where you left off.",
+      "signIn": "Sign In Again"
+    }
   }
 }

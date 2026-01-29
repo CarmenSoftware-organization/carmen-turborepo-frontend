@@ -54,6 +54,10 @@ const itemsPlayground = [
     title: "AI",
     href: "/playground/ai",
   },
+  {
+    title: "Error UI",
+    href: "/playground/error-ui",
+  },
 ];
 
 export default function Playground() {
