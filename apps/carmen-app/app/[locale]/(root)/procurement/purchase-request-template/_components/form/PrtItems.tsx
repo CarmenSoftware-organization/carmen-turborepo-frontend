@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useAuth } from "@/context/AuthContext";
 import { useCurrenciesQuery } from "@/hooks/use-currency";
 import { UseFormReturn } from "react-hook-form";
 import { PrtFormValues, CreatePrtDetailDto, UpdatePrtDetailDto } from "../../_schema/prt.schema";
@@ -103,6 +102,7 @@ export default function PrtItems({
     const newItem: CreatePrtDetailDto = {
       location_id: "",
       location_name: "",
+      delivery_point_id: "",
       product_id: "",
       product_name: "",
       inventory_unit_id: "",

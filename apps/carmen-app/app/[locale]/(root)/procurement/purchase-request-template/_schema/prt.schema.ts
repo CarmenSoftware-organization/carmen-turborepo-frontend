@@ -2,11 +2,11 @@ import { z } from "zod";
 import { InfoSchema } from "@/dtos/embedded.dto";
 
 export const CreatePrtDetailSchema = z.object({
-  location_id: z.string().optional(),
+  location_id: z.string(),
   location_name: z.string().optional(),
-  delivery_point_id: z.string().optional(),
+  delivery_point_id: z.string(),
   delivery_point_name: z.string().optional(),
-  product_id: z.string().optional(),
+  product_id: z.string(),
   product_name: z.string().optional(),
   inventory_unit_id: z.string().optional(),
   inventory_unit_name: z.string().nullable().optional(),

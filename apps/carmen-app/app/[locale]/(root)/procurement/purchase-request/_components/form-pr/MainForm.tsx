@@ -1,7 +1,11 @@
 "use client";
 
 import { formType } from "@/dtos/form.dto";
-import { PurchaseRequestByIdDto, STAGE_ROLE } from "@/dtos/purchase-request.dto";
+import {
+  PurchaseRequestByIdDto,
+  PurchaseRequestDetail,
+  STAGE_ROLE,
+} from "@/dtos/purchase-request.dto";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { usePurchaseItemManagement } from "../../_hooks/use-purchase-item-management";
@@ -30,10 +34,20 @@ import { useTranslations } from "next-intl";
 import { useMainFormLogic } from "../../_hooks/use-main-form-logic";
 import { PurchaseRequestProvider } from "./PurchaseRequestContext";
 import { CreatePrDtoType, CreatePrSchema } from "../../_schemas/purchase-request-form.schema";
-import { PR_STATUS } from "../../_constants/pr-status";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import JsonViewer from "@/components/JsonViewer";
-import { useState } from "react";
+import { useMemo } from "react";
+
+// Convert null values to undefined for form schema compatibility
+function sanitizeItemsForForm(items: PurchaseRequestDetail[]) {
+  return items.map((item) => {
+    const sanitized: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(item)) {
+      sanitized[key] = value === null ? undefined : value;
+    }
+    return sanitized;
+  });
+}
 
 interface Props {
   mode: formType;
@@ -41,16 +55,20 @@ interface Props {
   bu_code: string;
 }
 
-interface CancelAction {
-  type: "back" | "cancel";
-  event: React.MouseEvent<HTMLButtonElement> | null;
-}
-
 export default function MainForm({ mode, initValues, bu_code }: Props) {
   const { user, departments, defaultCurrencyId } = useAuth();
-  // const [role, setRole] = useState(initValues?.role ? initValues.role : "");
-
   const tPR = useTranslations("PurchaseRequest");
+
+  // For new PR from template, init items go to "add" array
+  const isNewWithTemplate = mode === formType.ADD && initValues?.purchase_request_detail;
+
+  // Sanitize items to convert null to undefined for form schema compatibility
+  const sanitizedItems = useMemo(() => {
+    if (isNewWithTemplate && initValues?.purchase_request_detail) {
+      return sanitizeItemsForForm(initValues.purchase_request_detail);
+    }
+    return [];
+  }, [isNewWithTemplate, initValues?.purchase_request_detail]);
 
   const form = useForm<CreatePrDtoType>({
     resolver: zodResolver(CreatePrSchema),
@@ -64,7 +82,7 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
         description: initValues?.description || "",
         note: initValues?.note || "",
         purchase_request_detail: {
-          add: [],
+          add: sanitizedItems,
           update: [],
           remove: [],
         },
@@ -75,7 +93,8 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
 
   const purchaseItemManager = usePurchaseItemManagement({
     form,
-    initValues: initValues?.purchase_request_detail,
+    // For new PR from template, items are already in form "add" array, so don't pass as initValues
+    initValues: isNewWithTemplate ? undefined : initValues?.purchase_request_detail,
     defaultCurrencyId,
   });
 
@@ -131,6 +150,8 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
   } = logic;
 
   const isViewOnly = initValues?.role === STAGE_ROLE.VIEW_ONLY;
+
+  console.log("form error ", form.formState.errors);
 
   return (
     <>

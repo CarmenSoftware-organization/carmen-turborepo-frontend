@@ -10,11 +10,13 @@ import { PurchaseRequestTemplateDto } from "@/dtos/pr-template.dto";
 import { PurchaseRequestByIdDto, PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 import MainForm from "../_components/form-pr/MainForm";
 import ErrorBoundary from "../_components/ErrorBoundary";
+import { DetailLoading } from "@/components/loading/DetailLoading";
 
 function mapTemplateToPrInitValues(
   templateData: PurchaseRequestTemplateDto
 ): Partial<PurchaseRequestByIdDto> {
-  const purchaseRequestDetail: PurchaseRequestDetail[] =
+  // Use Partial because some fields are undefined for new items (vendor, pricelist, etc.)
+  const purchaseRequestDetail: Partial<PurchaseRequestDetail>[] =
     templateData.purchase_request_template_detail.map((detail, index) => ({
       id: nanoid(),
       purchase_request_id: "",
@@ -32,14 +34,14 @@ function mapTemplateToPrInitValues(
       // Unit info
       inventory_unit_id: detail.inventory_unit_id,
       inventory_unit_name: detail.inventory_unit_name || "",
-      // Vendor info
-      vendor_id: "",
-      vendor_name: "",
+      // Vendor info - use undefined instead of "" for uuid validation
+      vendor_id: undefined,
+      vendor_name: undefined,
       // Pricelist info
-      pricelist_detail_id: null,
-      pricelist_no: null,
-      pricelist_unit: "",
-      pricelist_price: "",
+      pricelist_detail_id: undefined,
+      pricelist_no: undefined,
+      pricelist_unit: undefined,
+      pricelist_price: undefined,
       // Currency info
       currency_id: detail.currency_id,
       currency_name: detail.currency_name || "",
@@ -75,12 +77,12 @@ function mapTemplateToPrInitValues(
       discount_amount: detail.discount_amount,
       base_discount_amount: detail.base_discount_amount,
       is_discount_adjustment: detail.is_discount_adjustment,
-      // Price calculation
-      sub_total_price: null,
+      // Price calculation - use undefined instead of null for schema validation
+      sub_total_price: undefined,
       net_amount: 0,
       total_price: 0,
-      base_price: null,
-      base_sub_total_price: null,
+      base_price: undefined,
+      base_sub_total_price: undefined,
       base_net_amount: 0,
       base_total_price: 0,
       // On hand/order
@@ -105,7 +107,7 @@ function mapTemplateToPrInitValues(
     department_name: templateData.department_name,
     description: templateData.description,
     note: templateData.note,
-    purchase_request_detail: purchaseRequestDetail,
+    purchase_request_detail: purchaseRequestDetail as PurchaseRequestDetail[],
   };
 }
 
@@ -132,7 +134,7 @@ export default function PurchaseRequestNewPage() {
   }, [isTemplate, prTemplate]);
 
   if (isTemplate && isLoading) {
-    return <div>Loading template...</div>;
+    return <DetailLoading />;
   }
 
   return (
