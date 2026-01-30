@@ -20,10 +20,22 @@ export default function UserAvatar() {
   const { logout, user } = useAuth();
   const t = useTranslations("Common");
 
+  const userInfo = user?.data?.user_info;
+
   const getInitials = () => {
-    if (!user?.data.user_info) return "U";
-    const { firstname, lastname } = user.data.user_info;
-    return `${firstname?.[0].toUpperCase() || ""}${lastname?.[0].toUpperCase() || ""}`;
+    const info = user?.data?.user_info;
+    if (!info) return "U";
+
+    const cleanName = (name: string) => {
+      // const leadingVowels = /^[เแโใไເແໂໃໄេែៃោៅေ]/;
+      const leadingVowels = /^[เแโใไ]/;
+      return name?.trim().replace(leadingVowels, "") || "";
+    };
+
+    const first = cleanName(info.firstname)[0] || "";
+    const last = cleanName(info.lastname)[0] || "";
+
+    return (first + last).toUpperCase() || "U";
   };
 
   const getMiddleName = () => {
@@ -31,8 +43,8 @@ export default function UserAvatar() {
     return `${user.data.user_info.middlename} `;
   };
 
-  const fullName = user?.data.user_info
-    ? `${user.data.user_info.firstname || ""} ${getMiddleName()}${user.data.user_info.lastname || ""}`
+  const fullName = userInfo
+    ? [userInfo.firstname, getMiddleName(), userInfo.lastname].filter(Boolean).join(" ")
     : "User";
 
   const email = user?.data.email ?? "";
@@ -40,9 +52,15 @@ export default function UserAvatar() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-7 w-7 xl:h-8 xl:w-8 rounded-full" aria-label="User menu">
+        <Button
+          variant="ghost"
+          className="h-7 w-7 xl:h-8 xl:w-8 rounded-full"
+          aria-label="User menu"
+        >
           <Avatar className="h-7 w-7 xl:h-8 xl:w-8">
-            <AvatarFallback className="font-medium text-[10px] xl:text-xs">{getInitials()}</AvatarFallback>
+            <AvatarFallback className="font-medium text-[10px] xl:text-xs">
+              {getInitials()}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -60,7 +78,10 @@ export default function UserAvatar() {
             <span>{t("profile")}</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer text-xs xl:text-sm py-1.5 xl:py-2" onClick={logout}>
+        <DropdownMenuItem
+          className="cursor-pointer text-xs xl:text-sm py-1.5 xl:py-2"
+          onClick={logout}
+        >
           <LogOut className="h-3.5 w-3.5 xl:h-4 xl:w-4" />
           <span>{t("signOut")}</span>
         </DropdownMenuItem>

@@ -42,6 +42,7 @@ export const formatCurrencyWithSymbol = (value: number, currency: string): strin
   return `${formattedNumber} ${symbol}`;
 };
 
+const PRICE_REGEX = /([^0-9.,]+)?\s?([\d,.]+)/;
 export const formatCurrency = (value: number, currency: string): string => {
   const locale = getCurrencyLocale(currency);
   const formatted = new Intl.NumberFormat(locale, {
@@ -50,7 +51,7 @@ export const formatCurrency = (value: number, currency: string): string => {
     currencyDisplay: "symbol",
   }).format(value);
 
-  const parts = formatted.match(/([^0-9.,]+)?\s?([\d,\.]+)/);
+  const parts = PRICE_REGEX.exec(formatted);
 
   if (!parts) return formatted;
 
@@ -65,9 +66,11 @@ export const formatPrice = (
   locale: string = DEFAULT_LOCALE,
   minimumFractionDigits: number = DEFAULT_DECIMAL_PLACES
 ): string => {
+  const safeValue = Number.isFinite(value) ? value : 0;
+
   return new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
     minimumFractionDigits,
-  }).format(value);
+  }).format(safeValue);
 };

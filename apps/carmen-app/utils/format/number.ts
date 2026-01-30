@@ -29,3 +29,10 @@ export const roundToDecimals = (value: number, decimals: number = 2): number => 
   const multiplier = Math.pow(10, decimals);
   return Math.round(value * multiplier) / multiplier;
 };
+
+export const formatAmountNaN = (val: string | number | null | undefined): string => {
+  if (val === null || val === undefined) return "-";
+  const numVal = typeof val === "string" ? Number(val) : val;
+  if (Number.isNaN(numVal)) return "-";
+  return String(val);
+};
