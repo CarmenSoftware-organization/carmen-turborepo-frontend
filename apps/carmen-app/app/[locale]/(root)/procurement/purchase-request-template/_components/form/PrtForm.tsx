@@ -5,8 +5,6 @@ import { formType } from "@/dtos/form.dto";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import ActivityLog from "../ActivityLog";
-import CommentPrt from "../CommentPrt";
 import { Card } from "@/components/ui/card";
 import ActionFields from "./ActionFields";
 import HeadPrtForm from "./HeadPrtForm";
@@ -84,7 +82,6 @@ export default function PrtForm({ prtData, mode }: PrtFormProps) {
   const watchWorkflowId = form.watch("workflow_id");
   const canSubmit = Boolean(watchName && watchWorkflowId);
 
-
   const handleOpenDeleteDialog = () => {
     setIsDeleteDialogOpen(true);
   };
@@ -129,7 +126,7 @@ export default function PrtForm({ prtData, mode }: PrtFormProps) {
   };
 
   return (
-    <DetailsAndComments activityComponent={<ActivityLog />} commentComponent={<CommentPrt />}>
+    <DetailsAndComments>
       <Card className="p-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>

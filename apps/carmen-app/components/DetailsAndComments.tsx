@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { MessageSquare, Activity, X } from "lucide-react";
 import { MotionDiv, AnimatePresence } from "./framer-motion/MotionWrapper";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface Props {
   readonly children: React.ReactNode;
@@ -20,6 +21,8 @@ export default function DetailsAndComments({
   activityComponent,
   commentComponent,
 }: Props) {
+  const t = useTranslations("CommentAttachments");
+
   const [openLog, setOpenLog] = useState(false);
   const [activeTab, setActiveTab] = useState<"activity" | "comment">("activity");
 
@@ -159,16 +162,16 @@ export default function DetailsAndComments({
                 transition={{ duration: 0.3, delay: 0.2 }}
               >
                 <div className="flex items-center justify-between p-2 bg-muted/50">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <h3 className="text-base font-semibold flex items-center gap-2">
                     {activeTab === "activity" ? (
                       <>
                         <Activity className="w-4 h-4" />
-                        Activity Log
+                        {t("activity_log")}
                       </>
                     ) : (
                       <>
                         <MessageSquare className="w-4 h-4" />
-                        Comments
+                        {t("comment_attachments")}
                       </>
                     )}
                   </h3>
@@ -193,13 +196,13 @@ export default function DetailsAndComments({
                       initial="hidden"
                       animate="visible"
                       exit="exit"
-                      className="p-4"
+                      className="p-2"
                     >
                       {activeTab === "activity" ? (
                         <div className="space-y-4">
                           {activityComponent || (
                             <p className="text-sm text-muted-foreground text-center py-8">
-                              No activity yet
+                              {t("no_activity_log")}
                             </p>
                           )}
                         </div>
@@ -207,7 +210,7 @@ export default function DetailsAndComments({
                         <div className="space-y-4">
                           {commentComponent || (
                             <p className="text-sm text-muted-foreground text-center py-8">
-                              No comments yet
+                              {t("no_comments")}
                             </p>
                           )}
                         </div>

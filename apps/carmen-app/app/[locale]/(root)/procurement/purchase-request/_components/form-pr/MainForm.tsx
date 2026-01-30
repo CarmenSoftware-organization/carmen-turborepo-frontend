@@ -24,8 +24,7 @@ import { Card } from "@/components/ui/card";
 import ActionFields from "./ActionFields";
 import HeadForm from "./HeadForm";
 import DetailsAndComments from "@/components/DetailsAndComments";
-import { toastError } from "@/components/ui-custom/Toast";
-import ActivityLogComponent from "@/components/comment-activity/ActivityLogComponent";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import CommentComponent from "@/components/comment-activity/CommentComponent";
 import WorkflowHistory from "./WorkflowHistory";
 import ActionButtons from "./ActionButtons";
@@ -42,7 +41,6 @@ import {
   useUpdatePrCommentAttachmentFiles,
   useDeletePrCommentAttachment,
 } from "@/hooks/use-comment-attachments";
-import { toastSuccess } from "@/components/ui-custom/Toast";
 import { AttachmentDto } from "@/dtos/comment-attachments.dto";
 
 // Convert null values to undefined for form schema compatibility
@@ -244,6 +242,7 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
         commentComponent={
           <CommentComponent
             comments={comments}
+            currentUserId={user?.data.id}
             isLoading={isLoading}
             isSending={createCommentMutation.isPending}
             isUpdating={updateCommentMutation.isPending}

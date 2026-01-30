@@ -11,12 +11,13 @@ import {
   FileSpreadsheet,
   Pencil,
   Trash2,
-  Check,
+  Save,
 } from "lucide-react";
 import { useState, useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AttachmentDto, GetPrCommentAttachmentDto } from "@/dtos/comment-attachments.dto";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import { useTranslations } from "next-intl";
 
 // Helper function to generate unique file name
 function getUniqueFileName(fileName: string, existingNames: string[]): string {
@@ -41,6 +42,7 @@ function getUniqueFileName(fileName: string, existingNames: string[]): string {
 
 type CommentComponentProps = {
   readonly comments: GetPrCommentAttachmentDto[];
+  readonly currentUserId?: string;
   readonly isLoading?: boolean;
   readonly isSending?: boolean;
   readonly isUpdating?: boolean;
@@ -59,6 +61,7 @@ type CommentComponentProps = {
 
 export default function CommentComponent({
   comments = [],
+  currentUserId,
   isLoading = false,
   isSending = false,
   isUpdating = false,
@@ -70,6 +73,8 @@ export default function CommentComponent({
   onFileUpload,
   getUserName = (userId) => userId,
 }: CommentComponentProps) {
+  const t = useTranslations("CommentAttachments");
+
   const [message, setMessage] = useState<string>("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadedAttachments, setUploadedAttachments] = useState<AttachmentDto[]>([]);
@@ -268,11 +273,10 @@ export default function CommentComponent({
       </div>
     );
   }
-
   const getButtonText = () => {
-    if (isSending) return "Sending...";
-    if (selectedFiles.length > 0) return "Send with Attachment";
-    return "Send";
+    if (isSending) return t("sending");
+    if (selectedFiles.length > 0) return t("send_with_attachments");
+    return t("send");
   };
 
   return (
@@ -280,14 +284,17 @@ export default function CommentComponent({
       <ScrollArea className="h-[calc(75vh-120px)]">
         <div className="space-y-2">
           {comments.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">No comments yet</p>
+            <p className="text-sm text-muted-foreground text-center py-8">{t("no_comments")}</p>
           ) : (
             comments.map((comment) => {
               const userName = getUserName(comment.user_id);
               const isEditing = editingCommentId === comment.id;
 
               return (
-                <Card key={comment.id} className="p-2 hover:bg-muted/30 transition-colors group">
+                <Card
+                  key={comment.id}
+                  className="p-2 hover:bg-muted/30 transition-colors group mr-4"
+                >
                   <div className="flex items-start gap-2">
                     <div className="h-6 w-6 bg-primary/10 text-primary rounded-full flex items-center justify-center text-[10px] font-medium shrink-0">
                       {userName.charAt(0).toUpperCase()}
@@ -347,7 +354,7 @@ export default function CommentComponent({
                             multiple
                           />
 
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center justify-end gap-2">
                             <Button
                               size="sm"
                               variant="outline"
@@ -356,11 +363,10 @@ export default function CommentComponent({
                               disabled={isUploadingEditFile}
                             >
                               {isUploadingEditFile ? (
-                                <Loader2 className="h-3 w-3 animate-spin" />
+                                <Loader2 className="h-2.5 w-2.5 animate-spin" />
                               ) : (
-                                <Paperclip className="h-3 w-3" />
+                                <Paperclip className="h-2.5 w-2.5" />
                               )}
-                              <span className="ml-1">Attach</span>
                             </Button>
                             <Button
                               size="sm"
@@ -370,20 +376,18 @@ export default function CommentComponent({
                               disabled={!editMessage.trim() || isUpdating || isUpdatingAttachments}
                             >
                               {isUpdating || isUpdatingAttachments ? (
-                                <Loader2 className="h-3 w-3 animate-spin" />
+                                <Loader2 className="h-2.5 w-2.5 animate-spin" />
                               ) : (
-                                <Check className="h-3 w-3" />
+                                <Save className="h-2.5 w-2.5" />
                               )}
-                              <span className="ml-1">Save</span>
                             </Button>
                             <Button
                               size="sm"
-                              variant="ghost"
+                              variant="outline"
                               className="h-6 px-2 text-[10px]"
                               onClick={handleCancelEdit}
                             >
-                              <X className="h-3 w-3" />
-                              <span className="ml-1">Cancel</span>
+                              <X className="h-2.5 w-2.5" />
                             </Button>
                           </div>
                         </div>
@@ -393,55 +397,57 @@ export default function CommentComponent({
                         </p>
                       )}
 
-                      {!isEditing &&
-                        comment.attachments &&
-                        comment.attachments.length > 0 && (
-                          <div className="mt-1.5 space-y-1">
-                            {comment.attachments.map((attachment, index) => (
-                              <button
-                                key={`${comment.id}-attachment-${index}`}
-                                className="flex items-center gap-1.5 text-[10px] bg-muted/50 hover:bg-muted px-1.5 py-1 rounded transition-colors w-full text-left"
-                                aria-label={`Download ${attachment.fileName}`}
-                                onClick={() => onFileDownload(attachment)}
-                                tabIndex={0}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter" || e.key === " ") {
-                                    onFileDownload(attachment);
-                                  }
-                                }}
-                              >
-                                {getFileIcon(attachment.contentType)}
-                                <span className="truncate flex-1 text-foreground">
-                                  {attachment.fileName}
-                                </span>
-                                <span className="text-muted-foreground shrink-0">
-                                  {formatFileSize(attachment.size)}
-                                </span>
-                              </button>
-                            ))}
-                          </div>
-                        )}
-
-                      {/* Action buttons - show on hover (hide when editing) */}
-                      {!isEditing && (
-                        <div className="flex items-center gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {onCommentEdit && (
+                      {!isEditing && comment.attachments && comment.attachments.length > 0 && (
+                        <div className="mt-1.5 space-y-1">
+                          {comment.attachments.map((attachment, index) => (
                             <button
-                              onClick={() => handleStartEdit(comment)}
-                              className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                              aria-label="Edit comment"
+                              key={`${comment.id}-attachment-${index}`}
+                              className="flex items-center gap-1.5 text-[10px] bg-muted/50 hover:bg-muted px-1.5 py-1 rounded transition-colors w-full text-left"
+                              aria-label={`Download ${attachment.fileName}`}
+                              onClick={() => onFileDownload(attachment)}
+                              tabIndex={0}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                  onFileDownload(attachment);
+                                }
+                              }}
                             >
-                              <Pencil className="h-3 w-3" />
+                              {getFileIcon(attachment.contentType)}
+                              <span className="truncate flex-1 text-foreground">
+                                {attachment.fileName}
+                              </span>
+                              <span className="text-muted-foreground shrink-0">
+                                {formatFileSize(attachment.size)}
+                              </span>
                             </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Action buttons - show on hover only for comment owner */}
+                      {!isEditing && currentUserId === comment.user_id && (
+                        <div className="flex items-center justify-end gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {onCommentEdit && (
+                            <Button
+                              onClick={() => handleStartEdit(comment)}
+                              aria-label="Edit comment"
+                              size={"sm"}
+                              variant={"ghost"}
+                              className="h-6 px-2"
+                            >
+                              <Pencil className="h-2.5 w-2.5" />
+                            </Button>
                           )}
                           {onCommentDelete && (
-                            <button
+                            <Button
                               onClick={() => handleDeleteClick(comment.id)}
-                              className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
                               aria-label="Delete comment"
+                              size={"sm"}
+                              variant={"destructive"}
+                              className="h-6 px-2"
                             >
-                              <Trash2 className="h-3 w-3" />
-                            </button>
+                              <Trash2 />
+                            </Button>
                           )}
                         </div>
                       )}
@@ -475,10 +481,12 @@ export default function CommentComponent({
                 className="flex items-center justify-between bg-muted p-2 rounded-md"
               >
                 <div className="flex items-center gap-2 text-xs">
-                  <Paperclip className="h-3 w-3" />
+                  <Paperclip className="h-2.5 w-2.5" />
                   <span className="truncate max-w-[200px]">{file.name}</span>
                   <span className="text-muted-foreground">({formatFileSize(file.size)})</span>
-                  {isUploadingFiles && <Loader2 className="h-3 w-3 animate-spin text-primary" />}
+                  {isUploadingFiles && (
+                    <Loader2 className="h-2.5 w-2.5 animate-spin text-primary" />
+                  )}
                 </div>
                 <Button
                   variant="ghost"
@@ -486,7 +494,7 @@ export default function CommentComponent({
                   className="h-6 w-6 p-0"
                   onClick={() => handleRemoveFile(index)}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-2.5 w-2.5" />
                 </Button>
               </div>
             ))}
@@ -502,11 +510,11 @@ export default function CommentComponent({
             disabled={isUploadingFiles}
           >
             {isUploadingFiles ? (
-              <Loader2 className="h-3 w-3 animate-spin" />
+              <Loader2 className="h-2.5 w-2.5 animate-spin" />
             ) : (
-              <Paperclip className="h-3 w-3" />
+              <Paperclip className="h-2.5 w-2.5" />
             )}
-            Attach File
+            {t("attachments")}
           </Button>
           <Button
             variant="default"
@@ -529,8 +537,8 @@ export default function CommentComponent({
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
-        title="Delete Comment"
-        description="Are you sure you want to delete this comment? This action cannot be undone."
+        title={t("del_title")}
+        description={t("del_desc")}
       />
     </div>
   );

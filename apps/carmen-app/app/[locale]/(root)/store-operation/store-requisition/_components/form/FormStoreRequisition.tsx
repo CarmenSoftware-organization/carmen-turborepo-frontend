@@ -20,8 +20,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import CommentStoreRequisition from "../CommentStoreRequisition";
-import ActivityLogStoreRequisition from "../ActivityLogStoreRequisition";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -304,10 +302,7 @@ export default function FormStoreRequisition({ initData, mode }: Props) {
         </ScrollArea>
         {openLog && (
           <div className="w-1/4 transition-all duration-300 ease-in-out transform translate-x-0">
-            <div className="flex flex-col gap-4">
-              <CommentStoreRequisition />
-              <ActivityLogStoreRequisition />
-            </div>
+            <div className="flex flex-col gap-4">aaaaa ssss</div>
           </div>
         )}
       </div>

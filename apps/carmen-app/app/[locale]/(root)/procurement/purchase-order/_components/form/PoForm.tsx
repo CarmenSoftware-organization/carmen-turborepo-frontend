@@ -17,8 +17,6 @@ import {
 } from "@/components/animate-ui/components/radix/tabs";
 import PoItems from "./PoItems";
 import Docs from "./Docs";
-import ActivityLog from "../ActivityLog";
-import CommentPo from "../CommentPo";
 import { Form } from "@/components/form-custom/form";
 import { PoDetailDto } from "@/dtos/po.dto";
 import { PoFormSchema, PoFormValues } from "../../_schema/po.schema";
@@ -223,7 +221,7 @@ export default function PoForm({ poData, mode }: PoFormProps) {
   };
 
   return (
-    <DetailsAndComments activityComponent={<ActivityLog />} commentComponent={<CommentPo />}>
+    <DetailsAndComments>
       <Card className="p-4 space-y-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>

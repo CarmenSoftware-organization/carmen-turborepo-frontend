@@ -1,7 +1,5 @@
 "use client";
 
-import ActivityLog from "@/components/comment-activity/ActivityLog";
-import CommentGrn from "@/components/comment-activity/CommentGrn";
 import DetailsAndComments from "@/components/DetailsAndComments";
 import { Card } from "@/components/ui/card";
 import { DOC_TYPE } from "@/constants/enum";
@@ -92,7 +90,7 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
   };
 
   return (
-    <DetailsAndComments activityComponent={<ActivityLog />} commentComponent={<CommentGrn />}>
+    <DetailsAndComments>
       <div className="space-y-4">
         <Card className="p-4">
           <Form {...form}>

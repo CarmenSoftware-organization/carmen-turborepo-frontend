@@ -498,5 +498,24 @@
       "description": "Your session has timed out due to inactivity. Please sign in again to continue where you left off.",
       "signIn": "Sign In Again"
     }
+  },
+  "CommentAttachments": {
+    "comment_attachments": "Comment and Attachments",
+    "no_comments": "No comments found",
+    "no_activity_log": "No activity log found",
+    "activity_log": "Activity Log",
+    "comment": "Comment",
+    "send": "Send",
+    "sending": "Sending...",
+    "send_with_attachments": "Send with Attachments",
+    "attachments": "Attachments",
+    "del_title": "Delete Comment",
+    "del_desc": "Are you sure you want to delete this comment? This action cannot be undone.",
+    "del_success": "Comment deleted successfully",
+    "del_error": "Failed to delete comment",
+    "add_sucess": "Comment added successfully",
+    "add_error": "Failed to add comment",
+    "update_success": "Comment updated successfully",
+    "update_error": "Failed to update comment"
   }
 }
