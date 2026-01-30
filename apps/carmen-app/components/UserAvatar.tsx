@@ -22,12 +22,10 @@ export default function UserAvatar() {
 
   const userInfo = user?.data?.user_info;
 
-  const getInitials = () => {
+  const initName = () => {
     const info = user?.data?.user_info;
     if (!info) return "U";
-
     const cleanName = (name: string) => {
-      // const leadingVowels = /^[เแโใไເແໂໃໄេែៃោៅေ]/;
       const leadingVowels = /^[เแโใไ]/;
       return name?.trim().replace(leadingVowels, "") || "";
     };
@@ -59,7 +57,7 @@ export default function UserAvatar() {
         >
           <Avatar className="h-7 w-7 xl:h-8 xl:w-8">
             <AvatarFallback className="font-medium text-[10px] xl:text-xs">
-              {getInitials()}
+              {initName()}
             </AvatarFallback>
           </Avatar>
         </Button>

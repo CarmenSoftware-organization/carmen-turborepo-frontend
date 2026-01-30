@@ -24,6 +24,9 @@ export interface BaseCommentAttachmentDto {
   updated_by_id?: string | null;
   deleted_at?: string | null;
   deleted_by_id?: string | null;
+  firstname?: string;
+  middlename?: string;
+  lastname?: string;
 }
 
 // PR

@@ -63,7 +63,7 @@ interface Props {
 export default function MainForm({ mode, initValues, bu_code }: Props) {
   const { user, departments, defaultCurrencyId } = useAuth();
   const tPR = useTranslations("PurchaseRequest");
-
+  const tComment = useTranslations("CommentAttachments");
   // For new PR from template, init items go to "add" array
   const isNewWithTemplate = mode === formType.ADD && initValues?.purchase_request_detail;
 
@@ -174,11 +174,11 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
       },
       {
         onSuccess: () => {
-          toastSuccess({ message: "Comment added" });
+          toastSuccess({ message: tComment("add_success") });
           refetch();
         },
         onError: () => {
-          toastError({ message: "Failed to add comment" });
+          toastError({ message: tComment("add_error") });
         },
       }
     );
@@ -195,11 +195,11 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
       },
       {
         onSuccess: () => {
-          toastSuccess({ message: "Comment updated" });
+          toastSuccess({ message: tComment("update_success") });
           refetch();
         },
         onError: () => {
-          toastError({ message: "Failed to update comment" });
+          toastError({ message: tComment("update_error") });
         },
       }
     );
@@ -208,19 +208,16 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
   const handleDeleteComment = (commentId: string) => {
     deleteCommentMutation.mutate(commentId, {
       onSuccess: () => {
-        toastSuccess({ message: "Comment deleted" });
+        toastSuccess({ message: tComment("del_sucess") });
         refetch();
       },
       onError: () => {
-        toastError({ message: "Failed to delete comment" });
+        toastError({ message: tComment("del_error") });
       },
     });
   };
 
-  // TODO: Replace with actual file upload API
   const handleFileUpload = async (file: File): Promise<AttachmentDto | null> => {
-    // Create a temporary AttachmentDto from the File
-    // This should be replaced with actual upload logic that returns real fileUrl and fileToken
     const tempAttachment: AttachmentDto = {
       size: file.size,
       fileName: file.name,

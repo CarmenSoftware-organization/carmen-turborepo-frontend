@@ -19,8 +19,7 @@ import { AttachmentDto, GetPrCommentAttachmentDto } from "@/dtos/comment-attachm
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { useTranslations } from "next-intl";
 
-// Helper function to generate unique file name
-function getUniqueFileName(fileName: string, existingNames: string[]): string {
+const getUniqueFileName = (fileName: string, existingNames: string[]): string => {
   if (!existingNames.includes(fileName)) {
     return fileName;
   }
@@ -38,7 +37,7 @@ function getUniqueFileName(fileName: string, existingNames: string[]): string {
   }
 
   return newName;
-}
+};
 
 type CommentComponentProps = {
   readonly comments: GetPrCommentAttachmentDto[];
@@ -56,7 +55,6 @@ type CommentComponentProps = {
   readonly onCommentDelete?: (commentId: string) => void;
   readonly onFileDownload?: (attachment: AttachmentDto) => void;
   readonly onFileUpload?: (file: File) => Promise<AttachmentDto | null>;
-  readonly getUserName?: (userId: string) => string;
 };
 
 export default function CommentComponent({
@@ -71,7 +69,6 @@ export default function CommentComponent({
   onCommentDelete,
   onFileDownload = (attachment) => window.open(attachment.fileUrl, "_blank"),
   onFileUpload,
-  getUserName = (userId) => userId,
 }: CommentComponentProps) {
   const t = useTranslations("CommentAttachments");
 
@@ -123,8 +120,8 @@ export default function CommentComponent({
     setEditAttachments([]);
   };
 
-  const handleRemoveEditAttachment = (index: number) => {
-    setEditAttachments((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveEditAttachment = (fileToken: string) => {
+    setEditAttachments((prev) => prev.filter((att) => att.fileToken !== fileToken));
   };
 
   const handleEditFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -217,9 +214,15 @@ export default function CommentComponent({
     fileInputRef.current?.click();
   };
 
-  const handleRemoveFile = (index: number) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
-    setUploadedAttachments((prev) => prev.filter((_, i) => i !== index));
+  const getFileKey = (file: File) => `${file.name}-${file.size}-${file.lastModified}`;
+
+  const handleRemoveFile = (fileKey: string) => {
+    setSelectedFiles((prev) => prev.filter((f) => getFileKey(f) !== fileKey));
+    // Find index of the file to remove from uploadedAttachments
+    const fileIndex = selectedFiles.findIndex((f) => getFileKey(f) === fileKey);
+    if (fileIndex !== -1) {
+      setUploadedAttachments((prev) => prev.filter((_, i) => i !== fileIndex));
+    }
   };
 
   const handleSend = () => {
@@ -287,22 +290,17 @@ export default function CommentComponent({
             <p className="text-sm text-muted-foreground text-center py-8">{t("no_comments")}</p>
           ) : (
             comments.map((comment) => {
-              const userName = getUserName(comment.user_id);
               const isEditing = editingCommentId === comment.id;
-
+              const fullName = `${comment.firstname} ${comment.lastname}`;
               return (
                 <Card
                   key={comment.id}
                   className="p-2 hover:bg-muted/30 transition-colors group mr-4"
                 >
                   <div className="flex items-start gap-2">
-                    <div className="h-6 w-6 bg-primary/10 text-primary rounded-full flex items-center justify-center text-[10px] font-medium shrink-0">
-                      {userName.charAt(0).toUpperCase()}
-                    </div>
-
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <p className="font-medium text-[11px] truncate">{userName}</p>
+                        <p className="font-medium text-[11px] truncate">{fullName}</p>
                         <span className="text-[10px] text-muted-foreground">
                           {formatDate(comment.created_at)}
                         </span>
@@ -321,9 +319,9 @@ export default function CommentComponent({
                           {/* Edit attachments */}
                           {editAttachments.length > 0 && (
                             <div className="space-y-1">
-                              {editAttachments.map((attachment, index) => (
+                              {editAttachments.map((attachment) => (
                                 <div
-                                  key={`edit-attachment-${index}`}
+                                  key={attachment.fileToken}
                                   className="flex items-center gap-1.5 text-[10px] bg-muted/50 px-1.5 py-1 rounded"
                                 >
                                   {getFileIcon(attachment.contentType)}
@@ -334,7 +332,7 @@ export default function CommentComponent({
                                     {formatFileSize(attachment.size)}
                                   </span>
                                   <button
-                                    onClick={() => handleRemoveEditAttachment(index)}
+                                    onClick={() => handleRemoveEditAttachment(attachment.fileToken)}
                                     className="p-0.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
                                     aria-label="Remove attachment"
                                   >
@@ -399,9 +397,9 @@ export default function CommentComponent({
 
                       {!isEditing && comment.attachments && comment.attachments.length > 0 && (
                         <div className="mt-1.5 space-y-1">
-                          {comment.attachments.map((attachment, index) => (
+                          {comment.attachments.map((attachment) => (
                             <button
-                              key={`${comment.id}-attachment-${index}`}
+                              key={`${comment.id}-${attachment.fileToken}`}
                               className="flex items-center gap-1.5 text-[10px] bg-muted/50 hover:bg-muted px-1.5 py-1 rounded transition-colors w-full text-left"
                               aria-label={`Download ${attachment.fileName}`}
                               onClick={() => onFileDownload(attachment)}
@@ -475,9 +473,9 @@ export default function CommentComponent({
         {/* Show selected files */}
         {selectedFiles.length > 0 && (
           <div className="space-y-1">
-            {selectedFiles.map((file, index) => (
+            {selectedFiles.map((file) => (
               <div
-                key={`selected-file-${index}`}
+                key={getFileKey(file)}
                 className="flex items-center justify-between bg-muted p-2 rounded-md"
               >
                 <div className="flex items-center gap-2 text-xs">
@@ -492,7 +490,7 @@ export default function CommentComponent({
                   variant="ghost"
                   size="sm"
                   className="h-6 w-6 p-0"
-                  onClick={() => handleRemoveFile(index)}
+                  onClick={() => handleRemoveFile(getFileKey(file))}
                 >
                   <X className="h-2.5 w-2.5" />
                 </Button>
