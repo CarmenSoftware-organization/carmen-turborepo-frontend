@@ -63,7 +63,12 @@ export default function BulkActionDialog({
           >
             {tCommon("cancel")}
           </Button>
-          <Button onClick={onConfirm}>{tCommon("confirm")}</Button>
+          <Button
+            onClick={onConfirm}
+            variant={bulkActionType === PR_ITEM_BULK_ACTION.REJECTED ? "destructive" : "default"}
+          >
+            {tCommon("confirm")}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

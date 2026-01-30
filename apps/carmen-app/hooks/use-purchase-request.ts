@@ -1,6 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ParamsGetDto } from "@/dtos/param.dto";
-import { ActionPr, CreatePrDto, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
+import {
+  ActionPr,
+  CreatePrDto,
+  PurchaseRequestUpdateFormDto,
+  SplitPrPayload,
+} from "@/dtos/purchase-request.dto";
 import { backendApi } from "@/lib/backend-api";
 import {
   getAllApiRequest,
@@ -107,6 +112,15 @@ export const useUpdateUPr = (token: string, buCode: string, id: string, action?:
         API_URL_ID += `/${action}`;
       }
       return await updateApiRequest(API_URL_ID, token, data, "Error updating PR", "PATCH");
+    },
+  });
+};
+
+export const useSplitPr = (token: string, buCode: string, prId: string) => {
+  const API_URL = `${backendApi}/api/${buCode}/purchase-request/${prId}/split`;
+  return useMutation({
+    mutationFn: async (payload: SplitPrPayload) => {
+      return await postApiRequest(API_URL, token, payload, "Error Split PR");
     },
   });
 };

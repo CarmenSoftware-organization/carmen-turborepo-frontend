@@ -19,7 +19,11 @@ import { usePurchaseItemTable, PR_ITEM_BULK_ACTION } from "../../_hooks/use-purc
 import BulkActionDialog from "./dialogs/BulkActionDialog";
 import SelectAllDialog from "./dialogs/SelectAllDialog";
 import { useCurrenciesQuery } from "@/hooks/use-currency";
+import { useSplitPr } from "@/hooks/use-purchase-request";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
+import { toast } from "sonner";
+import Link from "next/link";
 
 type InitValuesType = PurchaseRequestDetail[] | PurchaseRequestTemplateDetailDto[];
 
@@ -41,6 +45,7 @@ interface Props {
   workflow_id?: string;
   prStatus?: string;
   bu_code?: string;
+  prId: string;
 }
 
 export default function PurchaseItemDataGrid({
@@ -56,6 +61,7 @@ export default function PurchaseItemDataGrid({
   workflow_id,
   prStatus,
   bu_code,
+  prId,
 }: Props) {
   const { dateFormat, currencyBase, token, buCode } = useAuth();
   const currentBuCode = bu_code ?? buCode;
@@ -64,6 +70,7 @@ export default function PurchaseItemDataGrid({
   const tCommon = useTranslations("Common");
   const tAction = useTranslations("Action");
   const { getCurrencyCode } = useCurrenciesQuery(token || "", currentBuCode || "");
+  const splitPrMutation = useSplitPr(token, currentBuCode, prId);
 
   const {
     deleteDialogOpen,
@@ -89,7 +96,6 @@ export default function PurchaseItemDataGrid({
     getItemValue,
   });
 
-  // Memoize product IDs map for each item to avoid recalculating in column cells
   const usedProductIdsMap = useMemo(() => {
     const map = new Map<string, string[]>();
     for (const item of items) {
@@ -189,6 +195,36 @@ export default function PurchaseItemDataGrid({
     if (bulkActionType === PR_ITEM_BULK_ACTION.APPROVED) {
       performBulkStatusUpdate(bulkActionType, "");
       setBulkActionType(null);
+    } else if (bulkActionType === PR_ITEM_BULK_ACTION.SPLIT) {
+      // Collect selected item IDs and call split API
+      const selectedRows = table.getFilteredSelectedRowModel().rows;
+      const detailIds = selectedRows.map((row) => row.original.id);
+
+      if (detailIds.length > 0 && prId) {
+        splitPrMutation.mutate(
+          { detail_ids: detailIds },
+          {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onSuccess: (data: any) => {
+              performBulkStatusUpdate(PR_ITEM_BULK_ACTION.REJECTED, "");
+              toast.success(tPr("split_success"), {
+                description: (
+                  <Link
+                    href={`/procurement/purchase-request/${currentBuCode}/${data?.data?.new_pr_id}`}
+                    className="underline hover:text-white/80 font-bold"
+                  >
+                    {data?.data?.new_pr_no}
+                  </Link>
+                ),
+              });
+            },
+            onError: () => {
+              toastError({ message: tPr("split_failed") });
+            },
+          }
+        );
+      }
+      setBulkActionType(null);
     }
   }, [bulkActionType]);
 
@@ -255,6 +291,14 @@ export default function PurchaseItemDataGrid({
             variant={"destructive"}
           >
             {tAction("reject")}
+          </Button>
+          <Button
+            size={"sm"}
+            className="h-7"
+            variant={"outline"}
+            onClick={handleBulkActionClick(PR_ITEM_BULK_ACTION.SPLIT)}
+          >
+            {tAction("split")}
           </Button>
         </div>
       )}

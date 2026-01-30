@@ -124,7 +124,8 @@
     "purchase_approve": "Purchase Approve",
     "submit": "Submit",
     "select_date": "Select Date",
-    "pending": "Pending"
+    "pending": "Pending",
+    "split": "Split"
   },
   "UserManagement": {
     "title": "User Management"

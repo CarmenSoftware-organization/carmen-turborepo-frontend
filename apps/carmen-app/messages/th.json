@@ -106,7 +106,8 @@
     "purchase_approve": "อนุมัติซื้อ",
     "submit": "ส่งอนุมัติ",
     "select_date": "เลือกวัน",
-    "pending": "รอการอนุมัติ"
+    "pending": "รอการอนุมัติ",
+    "split": "แยก"
   },
   "Error": {
     "notFoundTitle": "ไม่พบหน้า",

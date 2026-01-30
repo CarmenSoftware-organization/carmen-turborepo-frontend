@@ -6,6 +6,7 @@ export enum PR_ITEM_BULK_ACTION {
   APPROVED = "approved",
   REVIEW = "review",
   REJECTED = "rejected",
+  SPLIT = "split",
 }
 
 interface UsePurchaseItemTableProps {
@@ -97,9 +98,9 @@ export const usePurchaseItemTable = ({
 
       setBulkActionType(action);
 
-      // For approved action, no message needed - handled in component
+      // For approved and split actions, no message needed - handled in component
       // For review and reject, show dialog for message input
-      if (action !== PR_ITEM_BULK_ACTION.APPROVED) {
+      if (action !== PR_ITEM_BULK_ACTION.APPROVED && action !== PR_ITEM_BULK_ACTION.SPLIT) {
         setBulkActionDialogOpen(true);
       }
     },

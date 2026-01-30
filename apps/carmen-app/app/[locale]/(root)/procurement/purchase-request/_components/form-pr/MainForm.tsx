@@ -43,8 +43,7 @@ import {
 } from "@/hooks/use-comment-attachments";
 import { AttachmentDto } from "@/dtos/comment-attachments.dto";
 
-// Convert null values to undefined for form schema compatibility
-function sanitizeItemsForForm(items: PurchaseRequestDetail[]) {
+const sanitizeItemsForForm = (items: PurchaseRequestDetail[]) => {
   return items.map((item) => {
     const sanitized: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(item)) {
@@ -52,7 +51,7 @@ function sanitizeItemsForForm(items: PurchaseRequestDetail[]) {
     }
     return sanitized;
   });
-}
+};
 
 interface Props {
   mode: formType;
@@ -287,6 +286,7 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
                         workflow_id={workflowId}
                         prStatus={prStatus ?? ""}
                         bu_code={bu_code}
+                        prId={initValues?.id ?? ""}
                       />
                     </TabsContent>
                     <TabsContent value="workflow" className="mt-2">

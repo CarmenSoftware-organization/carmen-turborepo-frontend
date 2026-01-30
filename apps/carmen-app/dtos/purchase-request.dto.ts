@@ -327,3 +327,7 @@ export type ActionPr =
   | "submit"
   | "purchase"
   | "send_back";
+
+export interface SplitPrPayload {
+  detail_ids: string[];
+}
