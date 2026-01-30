@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils";
 interface Props {
   readonly children: React.ReactNode;
   readonly className?: string;
-  readonly activityComponent: React.ReactNode;
-  readonly commentComponent: React.ReactNode;
+  readonly activityComponent?: React.ReactNode;
+  readonly commentComponent?: React.ReactNode;
 }
 
 export default function DetailsAndComments({
@@ -196,9 +196,21 @@ export default function DetailsAndComments({
                       className="p-4"
                     >
                       {activeTab === "activity" ? (
-                        <div className="space-y-4">{activityComponent}</div>
+                        <div className="space-y-4">
+                          {activityComponent || (
+                            <p className="text-sm text-muted-foreground text-center py-8">
+                              No activity yet
+                            </p>
+                          )}
+                        </div>
                       ) : (
-                        <div className="space-y-4">{commentComponent}</div>
+                        <div className="space-y-4">
+                          {commentComponent || (
+                            <p className="text-sm text-muted-foreground text-center py-8">
+                              No comments yet
+                            </p>
+                          )}
+                        </div>
                       )}
                     </MotionDiv>
                   </AnimatePresence>

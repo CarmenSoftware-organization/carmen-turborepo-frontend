@@ -25,7 +25,6 @@ import ActionFields from "./ActionFields";
 import HeadForm from "./HeadForm";
 import DetailsAndComments from "@/components/DetailsAndComments";
 import { toastError } from "@/components/ui-custom/Toast";
-import { mockActivityPr, mockCommentsPr } from "./mock-budget";
 import ActivityLogComponent from "@/components/comment-activity/ActivityLogComponent";
 import CommentComponent from "@/components/comment-activity/CommentComponent";
 import WorkflowHistory from "./WorkflowHistory";
@@ -36,6 +35,15 @@ import { PurchaseRequestProvider } from "./PurchaseRequestContext";
 import { CreatePrDtoType, CreatePrSchema } from "../../_schemas/purchase-request-form.schema";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { useMemo } from "react";
+import {
+  usePrCommentAttachmentsQuery,
+  usePrCommentAttachmentsMutate,
+  useUpdatePrCommentAttachment,
+  useUpdatePrCommentAttachmentFiles,
+  useDeletePrCommentAttachment,
+} from "@/hooks/use-comment-attachments";
+import { toastSuccess } from "@/components/ui-custom/Toast";
+import { AttachmentDto } from "@/dtos/comment-attachments.dto";
 
 // Convert null values to undefined for form schema compatibility
 function sanitizeItemsForForm(items: PurchaseRequestDetail[]) {
@@ -105,13 +113,12 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
   });
 
   const {
+    token,
+
     // State
     currentMode,
-    setCurrentMode,
     deleteDialogOpen,
     setDeleteDialogOpen,
-    itemToDelete,
-    setItemToDelete,
     cancelDialogOpen,
     setCancelDialogOpen,
     reviewDialogOpen,
@@ -123,21 +130,16 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
     isDisabled,
     isApproveDisabled,
     itemsStatusSummary,
-    isCreatingPr,
     isPending,
     prStatus,
-    workflowStages,
-    requestorName,
     workflowId,
     prevWorkflowData,
     isPrevWorkflowLoading,
-    isDirty,
 
     // Handlers
     getCurrentStatus,
     handleSubmit,
     handleConfirmDelete,
-    handleCancel,
     handleConfirmCancel,
     onSubmitPr,
     onApprove,
@@ -148,13 +150,110 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
     handleReviewConfirm,
   } = logic;
 
+  const { comments, isLoading, refetch } = usePrCommentAttachmentsQuery(
+    token,
+    bu_code,
+    initValues?.id || ""
+  );
+
+  const createCommentMutation = usePrCommentAttachmentsMutate(token, bu_code);
+  const updateCommentMutation = useUpdatePrCommentAttachment(token, bu_code);
+  const updateAttachmentsMutation = useUpdatePrCommentAttachmentFiles(token, bu_code);
+  const deleteCommentMutation = useDeletePrCommentAttachment(token, bu_code);
+
+  const handleAddComment = (message: string, attachments: AttachmentDto[]) => {
+    if (!initValues?.id || !user?.data.id) return;
+
+    createCommentMutation.mutate(
+      {
+        purchase_request_id: initValues.id,
+        type: "user",
+        user_id: user.data.id,
+        message,
+        attachments: attachments.length > 0 ? attachments : undefined,
+        created_at: new Date().toISOString(),
+        created_by_id: user.data.id,
+      },
+      {
+        onSuccess: () => {
+          toastSuccess({ message: "Comment added" });
+          refetch();
+        },
+        onError: () => {
+          toastError({ message: "Failed to add comment" });
+        },
+      }
+    );
+  };
+
+  const handleEditComment = (commentId: string, message: string, attachments?: AttachmentDto[]) => {
+    if (!user?.data.id) return;
+
+    // Update message and attachments together
+    updateCommentMutation.mutate(
+      {
+        id: commentId,
+        data: { message, attachments },
+      },
+      {
+        onSuccess: () => {
+          toastSuccess({ message: "Comment updated" });
+          refetch();
+        },
+        onError: () => {
+          toastError({ message: "Failed to update comment" });
+        },
+      }
+    );
+  };
+
+  const handleDeleteComment = (commentId: string) => {
+    deleteCommentMutation.mutate(commentId, {
+      onSuccess: () => {
+        toastSuccess({ message: "Comment deleted" });
+        refetch();
+      },
+      onError: () => {
+        toastError({ message: "Failed to delete comment" });
+      },
+    });
+  };
+
+  // TODO: Replace with actual file upload API
+  const handleFileUpload = async (file: File): Promise<AttachmentDto | null> => {
+    // Create a temporary AttachmentDto from the File
+    // This should be replaced with actual upload logic that returns real fileUrl and fileToken
+    const tempAttachment: AttachmentDto = {
+      size: file.size,
+      fileName: file.name,
+      fileUrl: URL.createObjectURL(file),
+      fileToken: `temp-${Date.now()}`,
+      contentType: file.type as AttachmentDto["contentType"],
+    };
+    return tempAttachment;
+  };
+
   const isViewOnly = initValues?.role === STAGE_ROLE.VIEW_ONLY;
 
   return (
     <>
       <DetailsAndComments
-        activityComponent={<ActivityLogComponent initialActivities={mockActivityPr} />}
-        commentComponent={<CommentComponent initialComments={mockCommentsPr} />}
+        // activityComponent={
+        //   <ActivityLogComponent initialActivities={initValues?.workflow_history} />
+        // }
+        commentComponent={
+          <CommentComponent
+            comments={comments}
+            isLoading={isLoading}
+            isSending={createCommentMutation.isPending}
+            isUpdating={updateCommentMutation.isPending}
+            isUpdatingAttachments={updateAttachmentsMutation.isPending}
+            onCommentAdd={handleAddComment}
+            onCommentEdit={handleEditComment}
+            onCommentDelete={handleDeleteComment}
+            onFileUpload={handleFileUpload}
+          />
+        }
       >
         <PurchaseRequestProvider value={logic}>
           <div className="space-y-4">

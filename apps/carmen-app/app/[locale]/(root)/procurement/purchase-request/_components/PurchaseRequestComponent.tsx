@@ -101,7 +101,7 @@ export default function PurchaseRequestComponent() {
     buCode,
     {
       page: page,
-      sort,
+      sort: sort || "pr_date:desc",
       search,
       perpage: perpage,
       filter:

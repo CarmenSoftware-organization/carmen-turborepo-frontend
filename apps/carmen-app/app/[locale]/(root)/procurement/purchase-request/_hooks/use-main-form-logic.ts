@@ -42,7 +42,7 @@ export const useMainFormLogic = ({
   bu_code,
 }: UseMainFormLogicProps) => {
   const router = useRouter();
-  const { token, buCode, user, departments } = useAuth();
+  const { token, buCode, user, departments, defaultCurrencyId } = useAuth();
   const currentBuCode = bu_code ?? buCode;
   const tPR = useTranslations("PurchaseRequest");
   const queryClient = useQueryClient();
@@ -424,6 +424,12 @@ export const useMainFormLogic = ({
   };
 
   return {
+    token,
+    buCode,
+    user,
+    departments,
+    defaultCurrencyId,
+
     // State
     currentMode,
     setCurrentMode,
