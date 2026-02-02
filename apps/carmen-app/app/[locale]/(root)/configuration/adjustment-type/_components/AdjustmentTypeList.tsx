@@ -1,13 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Activity, Info, List, MoreHorizontal, Trash2, FileType } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Activity, Info, List, Trash2, FileType } from "lucide-react";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useMemo } from "react";
 import {
@@ -199,21 +193,14 @@ export default function AdjustmentTypeList({
           const item = row.original;
 
           return (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {onDelete && (
-                  <DropdownMenuItem className="cursor-pointer" onClick={() => onDelete(item)}>
-                    <Trash2 className="h-4 w-4" />
-                    {tAdj("delete")}
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button
+              onClick={() => onDelete?.(item)}
+              size="sm"
+              variant={"ghost"}
+              className="hover:bg-transparent"
+            >
+              <Trash2 className="h-4 w-4 text-destructive hover:text-destructive/80" />
+            </Button>
           );
         },
         enableSorting: false,

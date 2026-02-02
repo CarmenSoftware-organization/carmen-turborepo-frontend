@@ -11,7 +11,7 @@ import { useMemo, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { Save, X, Pencil, Trash2 } from "lucide-react";
+import { Save, X, Pencil, Trash2, Loader2 } from "lucide-react";
 import {
   FormControl,
   FormField,
@@ -214,11 +214,8 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                 </h1>
                 {!isAddMode && (
                   <Badge
-                    variant={defaultValues?.is_active ? "default" : "secondary"}
-                    className={cn(
-                      "h-5 px-1.5 text-[10px] uppercase",
-                      defaultValues?.is_active ? "bg-green-600 hover:bg-green-700" : "bg-gray-500"
-                    )}
+                    variant={defaultValues?.is_active ? "active" : "destructive"}
+                    className={cn("h-5 px-1.5 text-[10px] uppercase")}
                   >
                     {defaultValues?.is_active ? tAdj("active") : tAdj("inactive")}
                   </Badge>
@@ -236,7 +233,7 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                   className="h-8 text-xs"
                   onClick={handleEditMode}
                 >
-                  <Pencil className="w-3.5 h-3.5 mr-1.5" />
+                  <Pencil className="w-3.5 h-3.5" />
                   {tAdj("edit")}
                 </Button>
                 {!isAddMode && (
@@ -246,15 +243,15 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                     className="h-8 text-xs"
                     onClick={handleDeleteClick}
                   >
-                    <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                    <Trash2 className="w-3.5 h-3.5" />
                     {tAdj("delete")}
                   </Button>
                 )}
               </>
             ) : (
               <>
-                <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={onCancel}>
-                  <X className="w-3.5 h-3.5 mr-1.5" />
+                <Button variant="outline" size="sm" className="h-8 text-xs" onClick={onCancel}>
+                  <X className="w-3.5 h-3.5" />
                   {tAdj("cancel")}
                 </Button>
                 <Button
@@ -263,8 +260,14 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                   onClick={form.handleSubmit(handleSubmit)}
                   disabled={isPending}
                 >
-                  <Save className="w-3.5 h-3.5 mr-1.5" />
-                  {tAdj("save")}
+                  {isPending ? (
+                    <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
+                  ) : (
+                    <>
+                      <Save className="w-3.5 h-3.5" />
+                      {tAdj("save")}
+                    </>
+                  )}
                 </Button>
               </>
             )}
