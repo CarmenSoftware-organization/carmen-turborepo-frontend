@@ -12,6 +12,8 @@ import {
   AdjustmentStockOutDto,
   stockDetailsSchema,
   StockDetailsDto,
+  adjustmentTypePayloadSchema,
+  AdjustmentTypePayloadDto,
 } from "@/dtos/adjustment-type.dto";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
@@ -23,7 +25,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/form-custom/form";
-import { InputValidate } from "@/components/ui-custom/InputValidate";
 import { TextareaValidate } from "@/components/ui-custom/TextareaValidate";
 import {
   Breadcrumb,
@@ -55,156 +56,12 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-
-// Form Schema - ใช้ stockDetailsSchema จาก DTO
-const formSchema = z.object({
-  description: z.string().optional(),
-  doc_status: z.string().default("draft"),
-  note: z.string().optional(),
-  stock_in_detail: z.array(stockDetailsSchema),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import StockItem from "./StockItem";
 
 interface Props {
   mode: formType;
   form_type: ADJUSTMENT_TYPE;
   initValues?: AdjustmentStockInDto | AdjustmentStockOutDto;
-}
-
-// Stock Detail Row Component
-interface StockDetailRowProps {
-  index: number;
-  form: UseFormReturn<FormValues>;
-  isEditing: boolean;
-  isViewMode: boolean;
-  onToggleEdit: (index: number) => void;
-  onRemove: (index: number) => void;
-}
-
-function StockDetailRow({
-  index,
-  form,
-  isEditing,
-  isViewMode,
-  onToggleEdit,
-  onRemove,
-}: StockDetailRowProps) {
-  const watchedValues = form.watch(`stock_in_detail.${index}`);
-
-  return (
-    <TableRow className={cn(isEditing && "bg-muted/50")}>
-      <TableCell className="text-center font-medium">{index + 1}</TableCell>
-      <TableCell>
-        <FormField
-          control={form.control}
-          name={`stock_in_detail.${index}.product_name`}
-          render={({ field }) => (
-            <FormItem>
-              {isEditing && !isViewMode ? (
-                <FormControl>
-                  <InputValidate {...field} placeholder="Product Name" />
-                </FormControl>
-              ) : (
-                <span>{field.value || "-"}</span>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </TableCell>
-      <TableCell>
-        <FormField
-          control={form.control}
-          name={`stock_in_detail.${index}.location_name`}
-          render={({ field }) => (
-            <FormItem>
-              {isEditing && !isViewMode ? (
-                <FormControl>
-                  <InputValidate {...field} placeholder="Location Name" />
-                </FormControl>
-              ) : (
-                <span>{field.value || "-"}</span>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </TableCell>
-      <TableCell className="text-right">
-        <FormField
-          control={form.control}
-          name={`stock_in_detail.${index}.qty`}
-          render={({ field }) => (
-            <FormItem>
-              {isEditing && !isViewMode ? (
-                <FormControl>
-                  <InputValidate
-                    {...field}
-                    type="number"
-                    className="text-right"
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-              ) : (
-                <span>{field.value?.toLocaleString() || 0}</span>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </TableCell>
-      <TableCell className="text-right">
-        <FormField
-          control={form.control}
-          name={`stock_in_detail.${index}.cost_per_unit`}
-          render={({ field }) => (
-            <FormItem>
-              {isEditing && !isViewMode ? (
-                <FormControl>
-                  <InputValidate
-                    {...field}
-                    type="number"
-                    className="text-right"
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-              ) : (
-                <span>{field.value?.toLocaleString() || 0}</span>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </TableCell>
-      <TableCell className="text-right">
-        {((watchedValues?.qty || 0) * (watchedValues?.cost_per_unit || 0)).toLocaleString()}
-      </TableCell>
-      {!isViewMode && (
-        <TableCell className="text-center">
-          <div className="flex items-center justify-center gap-1">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => onToggleEdit(index)}
-            >
-              {isEditing ? <Save className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="text-destructive"
-              onClick={() => onRemove(index)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </TableCell>
-      )}
-    </TableRow>
-  );
 }
 
 export default function FormAdjustment({ mode, form_type, initValues }: Props) {
@@ -233,8 +90,8 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
     return (initValues as AdjustmentStockOutDto).so_no;
   }, [initValues, form_type]);
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<AdjustmentTypePayloadDto>({
+    resolver: zodResolver(adjustmentTypePayloadSchema),
     defaultValues: {
       description: initValues?.description || "",
       doc_status: initValues?.doc_status || "draft",
@@ -405,9 +262,7 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
       case "approved":
         return <Badge variant="default">Approved</Badge>;
       case "completed":
-        return (
-          <Badge className="bg-green-500 hover:bg-green-600 text-white">Completed</Badge>
-        );
+        return <Badge className="bg-green-500 hover:bg-green-600 text-white">Completed</Badge>;
       case "cancelled":
         return <Badge variant="destructive">Cancelled</Badge>;
       default:
@@ -512,7 +367,9 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
                       </div>
                       <div>
                         <span className="text-sm text-muted-foreground">Status</span>
-                        <p className="font-medium">{getStatusBadge(initValues?.doc_status || "")}</p>
+                        <p className="font-medium">
+                          {getStatusBadge(initValues?.doc_status || "")}
+                        </p>
                       </div>
                       <div>
                         <span className="text-sm text-muted-foreground">Created At</span>
@@ -623,7 +480,7 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
                         </TableHeader>
                         <TableBody>
                           {fields.map((field, index) => (
-                            <StockDetailRow
+                            <StockItem
                               key={field.id}
                               index={index}
                               form={form}
@@ -639,7 +496,9 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
                             <TableCell colSpan={3} className="text-right">
                               Total
                             </TableCell>
-                            <TableCell className="text-right">{totalQty.toLocaleString()}</TableCell>
+                            <TableCell className="text-right">
+                              {totalQty.toLocaleString()}
+                            </TableCell>
                             <TableCell className="text-right">-</TableCell>
                             <TableCell className="text-right text-primary">
                               {grandTotal.toLocaleString()}
