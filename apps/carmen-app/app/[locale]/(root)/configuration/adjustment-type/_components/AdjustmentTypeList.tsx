@@ -45,6 +45,8 @@ interface AdjustmentTypeListProps {
   readonly onDelete?: (adjustmentType: AdjustmentTypeDto) => void;
 }
 
+import { useTranslations } from "next-intl";
+
 export default function AdjustmentTypeList({
   adjustmentTypes,
   isLoading,
@@ -58,6 +60,8 @@ export default function AdjustmentTypeList({
   setPerpage,
   onDelete,
 }: AdjustmentTypeListProps) {
+  const tAdj = useTranslations("AdjustmentType");
+
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
@@ -94,7 +98,7 @@ export default function AdjustmentTypeList({
       },
       {
         accessorKey: "code",
-        header: ({ column }) => <DataGridColumnHeader column={column} title="Code" />,
+        header: ({ column }) => <DataGridColumnHeader column={column} title={tAdj("code")} />,
         cell: ({ row }) => {
           const item = row.original;
           return <Badge variant={"product_badge"}>{item.code}</Badge>;
@@ -109,7 +113,11 @@ export default function AdjustmentTypeList({
       {
         accessorKey: "name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Name" icon={<List className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tAdj("name")}
+            icon={<List className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => {
           const item = row.original;
@@ -130,7 +138,7 @@ export default function AdjustmentTypeList({
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
-            title="Type"
+            title={tAdj("type")}
             icon={<FileType className="h-4 w-4" />}
           />
         ),
@@ -139,7 +147,7 @@ export default function AdjustmentTypeList({
           const isStockIn = type === STOCK_IN_OUT_TYPE_PAYLOAD.STOCK_IN;
           return (
             <Badge variant="outline" className={isStockIn ? "text-green-600" : "text-orange-600"}>
-              {isStockIn ? "Stock In" : "Stock Out"}
+              {isStockIn ? tAdj("stock_in") : tAdj("stock_out")}
             </Badge>
           );
         },
@@ -155,7 +163,7 @@ export default function AdjustmentTypeList({
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
-            title="Description"
+            title={tAdj("description")}
             icon={<Info className="h-4 w-4" />}
           />
         ),
@@ -168,13 +176,13 @@ export default function AdjustmentTypeList({
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
-            title="Status"
+            title={tAdj("status")}
             icon={<Activity className="h-4 w-4" />}
           />
         ),
         cell: ({ row }) => (
           <StatusCustom is_active={row.original.is_active}>
-            {row.original.is_active ? "Active" : "Inactive"}
+            {row.original.is_active ? tAdj("active") : tAdj("inactive")}
           </StatusCustom>
         ),
         enableSorting: true,
@@ -201,7 +209,7 @@ export default function AdjustmentTypeList({
                 {onDelete && (
                   <DropdownMenuItem className="cursor-pointer" onClick={() => onDelete(item)}>
                     <Trash2 className="h-4 w-4" />
-                    Delete
+                    {tAdj("delete")}
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -216,7 +224,7 @@ export default function AdjustmentTypeList({
         },
       },
     ],
-    [currentPage, perpage, onDelete]
+    [currentPage, perpage, onDelete, tAdj]
   );
 
   // Initialize table

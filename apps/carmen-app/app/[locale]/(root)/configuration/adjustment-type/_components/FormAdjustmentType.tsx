@@ -50,6 +50,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/utils";
+import { useTranslations } from "next-intl";
 
 interface Props {
   readonly defaultValues?: AdjustmentTypeDto;
@@ -61,6 +62,7 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
   const { token, buCode } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const tAdj = useTranslations("AdjustmentType");
 
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -77,12 +79,12 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
   const adjustmentTypeSchema = useMemo(
     () =>
       createAdjustmentTypeFormSchema({
-        codeRequired: "Code is required",
-        codeMaxLength: "Code max length is 5",
-        nameRequired: "Name is required",
-        typeRequired: "Type is required",
+        codeRequired: tAdj("errors.code_required"),
+        codeMaxLength: tAdj("errors.code_max_length"),
+        nameRequired: tAdj("errors.name_required"),
+        typeRequired: tAdj("errors.type_required"),
       }),
-    []
+    [tAdj]
   );
 
   const form = useForm<AdjustmentTypeFormValues>({
@@ -120,7 +122,7 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
         { id: defaultValues.id, data },
         {
           onSuccess: () => {
-            toastSuccess({ message: "Edit success" });
+            toastSuccess({ message: tAdj("edit_success") });
             queryClient.invalidateQueries({
               queryKey: [adjustmentTypeQueryKey, buCode, defaultValues.id],
             });
@@ -128,7 +130,7 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
             handleViewMode();
           },
           onError: () => {
-            toastError({ message: "Edit error" });
+            toastError({ message: tAdj("edit_error") });
           },
         }
       );
@@ -139,19 +141,19 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
           // Assuming standard structure if using config.api wrappers typically returing data
           const res = response as { data?: { id?: string } };
           if (res?.data?.id) {
-            toastSuccess({ message: "Add success" });
+            toastSuccess({ message: tAdj("add_success") });
             router.push(`/configuration/adjustment-type/${res.data.id}`);
             queryClient.invalidateQueries({ queryKey: [adjustmentTypeQueryKey, buCode] });
             handleViewMode();
           } else {
             // Fallback if ID is not directly in data.id structure
-            toastSuccess({ message: "Add success" });
+            toastSuccess({ message: tAdj("add_success") });
             router.push(`/configuration/adjustment-type`); // Go back to list
             queryClient.invalidateQueries({ queryKey: [adjustmentTypeQueryKey, buCode] });
           }
         },
         onError: () => {
-          toastError({ message: "Add error" });
+          toastError({ message: tAdj("add_error") });
         },
       });
     }
@@ -165,13 +167,13 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
     if (defaultValues?.id) {
       deleteMutation.mutate(defaultValues.id, {
         onSuccess: () => {
-          toastSuccess({ message: "Delete success" });
+          toastSuccess({ message: tAdj("delete_success") });
           queryClient.invalidateQueries({ queryKey: [adjustmentTypeQueryKey, buCode] });
           setDeleteDialogOpen(false);
           router.push("/configuration/adjustment-type");
         },
         onError: () => {
-          toastError({ message: "Delete error" });
+          toastError({ message: tAdj("delete_error") });
           setDeleteDialogOpen(false);
         },
       });
@@ -193,14 +195,14 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                         className="text-xs hover:text-foreground transition-colors"
                         href="/configuration/adjustment-type"
                       >
-                        Adjustment Type
+                        {tAdj("title")}
                       </Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     <BreadcrumbPage className="text-xs font-semibold">
-                      {isAddMode ? "New Reference" : defaultValues?.code}
+                      {isAddMode ? tAdj("new_reference") : defaultValues?.code}
                     </BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
@@ -208,7 +210,7 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
 
               <div className="flex items-center gap-2 mt-2">
                 <h1 className="text-lg font-bold tracking-tight leading-none truncate max-w-[300px] md:max-w-[500px]">
-                  {isAddMode ? "New Adjustment Type" : defaultValues?.name}
+                  {isAddMode ? tAdj("new_adjustment_type") : defaultValues?.name}
                 </h1>
                 {!isAddMode && (
                   <Badge
@@ -218,7 +220,7 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                       defaultValues?.is_active ? "bg-green-600 hover:bg-green-700" : "bg-gray-500"
                     )}
                   >
-                    {defaultValues?.is_active ? "Active" : "Inactive"}
+                    {defaultValues?.is_active ? tAdj("active") : tAdj("inactive")}
                   </Badge>
                 )}
               </div>
@@ -235,7 +237,7 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                   onClick={handleEditMode}
                 >
                   <Pencil className="w-3.5 h-3.5 mr-1.5" />
-                  Edit
+                  {tAdj("edit")}
                 </Button>
                 {!isAddMode && (
                   <Button
@@ -245,7 +247,7 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                     onClick={handleDeleteClick}
                   >
                     <Trash2 className="w-3.5 h-3.5 mr-1.5" />
-                    Delete
+                    {tAdj("delete")}
                   </Button>
                 )}
               </>
@@ -253,7 +255,7 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
               <>
                 <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={onCancel}>
                   <X className="w-3.5 h-3.5 mr-1.5" />
-                  Cancel
+                  {tAdj("cancel")}
                 </Button>
                 <Button
                   size="sm"
@@ -262,7 +264,7 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                   disabled={isPending}
                 >
                   <Save className="w-3.5 h-3.5 mr-1.5" />
-                  Save
+                  {tAdj("save")}
                 </Button>
               </>
             )}
@@ -280,13 +282,13 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                 required
                 render={({ field }) => (
                   <FormItem className="space-y-1">
-                    <FormLabel className="text-xs font-semibold">Code</FormLabel>
+                    <FormLabel className="text-xs font-semibold">{tAdj("code")}</FormLabel>
                     <FormControl>
                       <InputValidate
                         {...field}
                         disabled={isViewMode}
                         maxLength={5}
-                        placeholder="Enter code"
+                        placeholder={tAdj("enter_code")}
                         className="h-8 text-xs"
                       />
                     </FormControl>
@@ -302,13 +304,13 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                 required
                 render={({ field }) => (
                   <FormItem className="space-y-1">
-                    <FormLabel className="text-xs font-semibold">Name</FormLabel>
+                    <FormLabel className="text-xs font-semibold">{tAdj("name")}</FormLabel>
                     <FormControl>
                       <InputValidate
                         {...field}
                         disabled={isViewMode}
                         maxLength={100}
-                        placeholder="Enter name"
+                        placeholder={tAdj("enter_name")}
                         className="h-8 text-xs"
                       />
                     </FormControl>
@@ -323,7 +325,7 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                 required
                 render={({ field }) => (
                   <FormItem className="space-y-1">
-                    <FormLabel className="text-xs font-semibold">Type</FormLabel>
+                    <FormLabel className="text-xs font-semibold">{tAdj("type")}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -331,13 +333,15 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                     >
                       <FormControl>
                         <SelectTrigger className="h-8 text-xs">
-                          <SelectValue placeholder="Select type" />
+                          <SelectValue placeholder={tAdj("select_type")} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={STOCK_IN_OUT_TYPE_PAYLOAD.STOCK_IN}>Stock In</SelectItem>
+                        <SelectItem value={STOCK_IN_OUT_TYPE_PAYLOAD.STOCK_IN}>
+                          {tAdj("stock_in")}
+                        </SelectItem>
                         <SelectItem value={STOCK_IN_OUT_TYPE_PAYLOAD.STOCK_OUT}>
-                          Stock Out
+                          {tAdj("stock_out")}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -355,7 +359,7 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                       <FormBoolean
                         value={field.value}
                         onChange={field.onChange}
-                        label="Active Status"
+                        label={tAdj("active_status")}
                         type="checkbox"
                         disabled={isViewMode}
                       />
@@ -370,13 +374,13 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
                 name="description"
                 render={({ field }) => (
                   <FormItem className="col-span-1 md:col-span-3 space-y-1">
-                    <FormLabel className="text-xs font-semibold">Description</FormLabel>
+                    <FormLabel className="text-xs font-semibold">{tAdj("description")}</FormLabel>
                     <FormControl>
                       <TextareaValidate
                         {...field}
                         disabled={isViewMode}
                         maxLength={500}
-                        placeholder={isViewMode ? "-" : "Enter description"}
+                        placeholder={isViewMode ? "-" : tAdj("enter_description")}
                         className="min-h-[80px] resize-none text-sm"
                         rows={3}
                       />
@@ -394,8 +398,8 @@ export default function FormAdjustmentType({ defaultValues, mode, onViewMode }: 
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
-        title="Delete Adjustment Type"
-        description={`Are you sure you want to delete "${defaultValues?.name}"?`}
+        title={tAdj("delete_adjustment_type")}
+        description={tAdj("confirm_delete_description", { name: defaultValues?.name || "" })}
         isLoading={isDeleting}
       />
     </>

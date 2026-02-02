@@ -22,10 +22,12 @@ import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown"
 import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import { AdjustmentTypeDto } from "@/dtos/adjustment-type.dto";
+import { useTranslations } from "next-intl";
 
 export default function AdjustmentTypeComponent() {
   const { token, buCode } = useAuth();
-
+  const tAdj = useTranslations("AdjustmentType");
+  const tCommon = useTranslations("Common");
   const queryClient = useQueryClient();
 
   const router = useRouter();
@@ -87,13 +89,13 @@ export default function AdjustmentTypeComponent() {
     if (itemToDelete?.id) {
       deleteAdjustmentType(itemToDelete.id, {
         onSuccess: () => {
-          toastSuccess({ message: "Delete success" });
+          toastSuccess({ message: tAdj("delete_success") });
           queryClient.invalidateQueries({ queryKey: [adjustmentTypeQueryKey, buCode] });
           setDeleteDialogOpen(false);
           setItemToDelete(undefined);
         },
         onError: (error: Error) => {
-          toastError({ message: "Delete error" });
+          toastError({ message: tAdj("delete_error") });
           console.error("Failed to delete adjustment type:", error);
           setDeleteDialogOpen(false);
           setItemToDelete(undefined);
@@ -110,19 +112,19 @@ export default function AdjustmentTypeComponent() {
   const sortFields = [
     {
       key: "name",
-      label: "Name",
+      label: tAdj("name"),
     },
     {
       key: "code",
-      label: "Code",
+      label: tAdj("code"),
     },
     {
       key: "type",
-      label: "Type",
+      label: tAdj("type"),
     },
     {
       key: "is_active",
-      label: "Status",
+      label: tAdj("status"),
     },
   ];
 
@@ -130,17 +132,17 @@ export default function AdjustmentTypeComponent() {
     <div className="action-btn-container">
       <Button size="sm" onClick={handleAdd}>
         <Plus className="h-4 w-4" />
-        Add
+        {tAdj("add")}
       </Button>
 
-      <Button variant="outlinePrimary" className="group" size="sm">
+      <Button variant="outlinePrimary" size="sm">
         <FileDown className="h-4 w-4" />
-        <p>Export</p>
+        {tCommon("export")}
       </Button>
 
       <Button variant="outlinePrimary" size="sm">
         <Printer className="h-4 w-4" />
-        <p>Print</p>
+        {tCommon("print")}
       </Button>
     </div>
   );
@@ -179,7 +181,7 @@ export default function AdjustmentTypeComponent() {
   return (
     <>
       <DataDisplayTemplate
-        title="Adjustment Type"
+        title={tAdj("title")}
         actionButtons={actionButtons}
         filters={filters}
         content={content}
@@ -188,8 +190,8 @@ export default function AdjustmentTypeComponent() {
         open={deleteDialogOpen}
         onOpenChange={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        title="Confirm Delete"
-        description={`Are you sure you want to delete "${itemToDelete?.name}"? This action cannot be undone.`}
+        title={tAdj("delete_adjustment_type")}
+        description={tAdj("confirm_delete_description", { name: itemToDelete?.name || "" })}
         isLoading={isDeleting}
       />
       <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
