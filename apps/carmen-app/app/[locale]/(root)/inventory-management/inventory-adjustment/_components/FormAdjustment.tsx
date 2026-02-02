@@ -1,23 +1,14 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { useForm, useFieldArray, FormProvider, UseFormReturn } from "react-hook-form";
+import { useForm, useFieldArray, FormProvider, UseFormReturn, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/context/AuthContext";
-import {
-  ADJUSTMENT_TYPE,
-  ADJUSTMENT_TYPE_PAYLOAD,
-  AdjustmentStockInDto,
-  AdjustmentStockOutDto,
-  stockDetailsSchema,
-  StockDetailsDto,
-  adjustmentTypePayloadSchema,
-  AdjustmentTypePayloadDto,
-} from "@/dtos/adjustment-type.dto";
+
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
-import { Save, X, Pencil, Trash2, Plus, Package, Loader2 } from "lucide-react";
+import { Save, X, Pencil, Trash2, Plus, Package, Loader2, Send } from "lucide-react";
 import {
   FormControl,
   FormField,
@@ -35,12 +26,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Link, useRouter } from "@/lib/navigation";
-import {
-  useAdjustmentTypeMutation,
-  useUpdateAdjustmentTypeMutation,
-  useDeleteAdjustmentTypeMutation,
-  queryKeyAdjustmentType,
-} from "@/hooks/use-adjustment-type";
+
 import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
@@ -57,15 +43,32 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import StockItem from "./StockItem";
+import { formatDate } from "@/utils/format/date";
+import {
+  DOC_STATUS,
+  INVENTORY_ADJUSTMENT_TYPE,
+  INVENTORY_ADJUSTMENT_TYPE_PAYLOAD,
+  inventoryAdjustmentFormSchema,
+  InventoryAdjustmentFormValues,
+  InventoryAdjustmentStockInDto,
+  InventoryAdjustmentStockOutDto,
+  StockDetailsDto,
+} from "@/dtos/inventory-adjustment.dto";
+import {
+  queryKeyInventoryAdjustment,
+  useDeleteInventoryAdjustmentMutation,
+  useInventoryAdjustmentMutation,
+  useUpdateInventoryAdjustmentMutation,
+} from "@/hooks/use-inventory-adjustment";
 
 interface Props {
   mode: formType;
-  form_type: ADJUSTMENT_TYPE;
-  initValues?: AdjustmentStockInDto | AdjustmentStockOutDto;
+  form_type: INVENTORY_ADJUSTMENT_TYPE;
+  initValues?: InventoryAdjustmentStockInDto | InventoryAdjustmentStockOutDto;
 }
 
 export default function FormAdjustment({ mode, form_type, initValues }: Props) {
-  const { token, buCode } = useAuth();
+  const { token, buCode, dateFormat } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -73,9 +76,9 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editingRows, setEditingRows] = useState<Set<number>>(new Set());
 
-  const createMutation = useAdjustmentTypeMutation(token, buCode, form_type);
-  const updateMutation = useUpdateAdjustmentTypeMutation(token, buCode, form_type);
-  const deleteMutation = useDeleteAdjustmentTypeMutation(token, buCode, form_type);
+  const createMutation = useInventoryAdjustmentMutation(token, buCode, form_type);
+  const updateMutation = useUpdateInventoryAdjustmentMutation(token, buCode, form_type);
+  const deleteMutation = useDeleteInventoryAdjustmentMutation(token, buCode, form_type);
 
   const isPending = createMutation.isPending || updateMutation.isPending;
   const isDeleting = deleteMutation.isPending;
@@ -84,25 +87,25 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
 
   const documentNo = useMemo(() => {
     if (!initValues) return "";
-    if (form_type === ADJUSTMENT_TYPE.STOCK_IN) {
-      return (initValues as AdjustmentStockInDto).si_no;
+    if (form_type === INVENTORY_ADJUSTMENT_TYPE.STOCK_IN) {
+      return (initValues as InventoryAdjustmentStockInDto).si_no;
     }
-    return (initValues as AdjustmentStockOutDto).so_no;
+    return (initValues as InventoryAdjustmentStockOutDto).so_no;
   }, [initValues, form_type]);
 
-  const form = useForm<AdjustmentTypePayloadDto>({
-    resolver: zodResolver(adjustmentTypePayloadSchema),
+  const form = useForm<InventoryAdjustmentFormValues>({
+    resolver: zodResolver(inventoryAdjustmentFormSchema),
     defaultValues: {
       description: initValues?.description || "",
-      doc_status: initValues?.doc_status || "draft",
+      doc_status: initValues?.doc_status || DOC_STATUS.IN_PROGRESS,
       note: initValues?.note || "",
-      stock_in_detail: initValues?.stock_in_detail || [],
+      details: initValues?.details || [],
     },
   });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "stock_in_detail",
+    name: "details",
   });
 
   // Handlers
@@ -175,18 +178,18 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
     }
   };
 
-  const handleSubmit = (data: FormValues) => {
+  const handleSubmit = (data: InventoryAdjustmentFormValues, statusOverride?: string) => {
     const payload = {
       description: data.description,
-      doc_status: data.doc_status,
+      doc_status: statusOverride || data.doc_status,
       note: data.note,
-      adjustment_type:
-        form_type === ADJUSTMENT_TYPE.STOCK_IN
-          ? ADJUSTMENT_TYPE_PAYLOAD.STOCK_IN
-          : ADJUSTMENT_TYPE_PAYLOAD.STOCK_OUT,
-      stock_in_detail: {
-        add: data.stock_in_detail.filter((item) => !item.id),
-        update: data.stock_in_detail.filter((item) => item.id),
+      inventory_adjustment_type:
+        form_type === INVENTORY_ADJUSTMENT_TYPE.STOCK_IN
+          ? INVENTORY_ADJUSTMENT_TYPE_PAYLOAD.STOCK_IN
+          : INVENTORY_ADJUSTMENT_TYPE_PAYLOAD.STOCK_OUT,
+      details: {
+        add: data.details.filter((item) => !item.id),
+        update: data.details.filter((item) => item.id),
         remove: [],
       },
     };
@@ -198,9 +201,9 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
           onSuccess: () => {
             toastSuccess({ message: "Edit success" });
             queryClient.invalidateQueries({
-              queryKey: [queryKeyAdjustmentType, buCode, initValues.id],
+              queryKey: [queryKeyInventoryAdjustment, buCode, initValues.id],
             });
-            queryClient.invalidateQueries({ queryKey: [queryKeyAdjustmentType, buCode] });
+            queryClient.invalidateQueries({ queryKey: [queryKeyInventoryAdjustment, buCode] });
             handleViewMode();
           },
           onError: () => {
@@ -215,7 +218,7 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
           if (res?.data?.id) {
             toastSuccess({ message: "Add success" });
             router.push(`/configuration/adjustment-type/${form_type}/${res.data.id}`);
-            queryClient.invalidateQueries({ queryKey: [queryKeyAdjustmentType, buCode] });
+            queryClient.invalidateQueries({ queryKey: [queryKeyInventoryAdjustment, buCode] });
           }
         },
         onError: () => {
@@ -234,9 +237,9 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
       deleteMutation.mutate(initValues.id, {
         onSuccess: () => {
           toastSuccess({ message: "Delete success" });
-          queryClient.invalidateQueries({ queryKey: [queryKeyAdjustmentType, buCode] });
+          queryClient.invalidateQueries({ queryKey: [queryKeyInventoryAdjustment, buCode] });
           setDeleteDialogOpen(false);
-          router.push("/configuration/adjustment-type");
+          router.push("/inventory-management/inventory-adjustment");
         },
         onError: () => {
           toastError({ message: "Delete error" });
@@ -246,29 +249,19 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
     }
   };
 
-  const typeLabel = form_type === ADJUSTMENT_TYPE.STOCK_IN ? "Stock In" : "Stock Out";
+  const typeLabel = form_type === INVENTORY_ADJUSTMENT_TYPE.STOCK_IN ? "Stock In" : "Stock Out";
 
   // Calculate totals
-  const watchedItems = form.watch("stock_in_detail");
+  const watchedItems = form.watch("details");
   const totalQty = watchedItems?.reduce((sum, item) => sum + (item?.qty || 0), 0) || 0;
   const grandTotal =
     watchedItems?.reduce((sum, item) => sum + (item?.qty || 0) * (item?.cost_per_unit || 0), 0) ||
     0;
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "draft":
-        return <Badge variant="secondary">Draft</Badge>;
-      case "approved":
-        return <Badge variant="default">Approved</Badge>;
-      case "completed":
-        return <Badge className="bg-green-500 hover:bg-green-600 text-white">Completed</Badge>;
-      case "cancelled":
-        return <Badge variant="destructive">Cancelled</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
+  const isSubmited = useWatch({
+    control: form.control,
+    name: "doc_status",
+  });
 
   return (
     <>
@@ -301,37 +294,60 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
                 )}
               </BreadcrumbList>
             </Breadcrumb>
-            <div className="flex items-center justify-end gap-2">
-              {isViewMode ? (
-                <>
-                  <Button size="sm" onClick={handleEditMode}>
-                    <Pencil className="w-4 h-4" />
-                    Edit
-                  </Button>
-                  {!isAddMode && (
-                    <Button variant="destructive" size="sm" onClick={handleDeleteClick}>
-                      <Trash2 className="w-4 h-4" />
-                      Delete
+            {isSubmited && (
+              <div className="flex items-center justify-end gap-2">
+                {isViewMode ? (
+                  <>
+                    <Button size="sm" onClick={handleEditMode}>
+                      <Pencil className="w-4 h-4" />
+                      Edit
                     </Button>
-                  )}
-                </>
-              ) : (
-                <>
-                  <Button variant="outline" size="sm" onClick={onCancel} disabled={isPending}>
-                    <X className="w-4 h-4" />
-                    Cancel
-                  </Button>
-                  <Button size="sm" onClick={form.handleSubmit(handleSubmit)} disabled={isPending}>
-                    {isPending ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Save className="w-4 h-4" />
+                    {!isAddMode && (
+                      <Button variant="destructive" size="sm" onClick={handleDeleteClick}>
+                        <Trash2 className="w-4 h-4" />
+                        Delete
+                      </Button>
                     )}
-                    {isPending ? "Saving..." : "Save"}
-                  </Button>
-                </>
-              )}
-            </div>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" size="sm" onClick={onCancel} disabled={isPending}>
+                      <X className="w-4 h-4" />
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={form.handleSubmit((data) =>
+                        handleSubmit(data, DOC_STATUS.IN_PROGRESS)
+                      )}
+                      disabled={isPending}
+                    >
+                      {isPending ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Save className="w-4 h-4" />
+                      )}
+                      {isPending ? "Saving..." : "Save"}
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={form.handleSubmit((data) =>
+                        handleSubmit(data, DOC_STATUS.COMPLETED)
+                      )}
+                      disabled={isPending}
+                    >
+                      {isPending ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Send className="w-4 h-4" />
+                      )}
+                      {isPending ? "Submitting..." : "Submit"}
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -352,37 +368,31 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
                       </div>
                       <div>
                         <span className="text-sm text-muted-foreground">Type</span>
-                        <p className="font-medium">
+                        <div className="font-medium">
                           <Badge
                             variant="outline"
                             className={cn(
-                              form_type === ADJUSTMENT_TYPE.STOCK_IN
+                              form_type === INVENTORY_ADJUSTMENT_TYPE.STOCK_IN
                                 ? "border-green-500 text-green-600"
                                 : "border-orange-500 text-orange-600"
                             )}
                           >
                             {typeLabel}
                           </Badge>
-                        </p>
+                        </div>
                       </div>
                       <div>
                         <span className="text-sm text-muted-foreground">Status</span>
-                        <p className="font-medium">
-                          {getStatusBadge(initValues?.doc_status || "")}
-                        </p>
+                        <div className="font-medium">
+                          <Badge variant={initValues?.doc_status} className="font-bold">
+                            {initValues?.doc_status?.toUpperCase()}
+                          </Badge>
+                        </div>
                       </div>
                       <div>
                         <span className="text-sm text-muted-foreground">Created At</span>
                         <p className="font-medium text-sm">
-                          {initValues?.created_at
-                            ? new Date(initValues.created_at).toLocaleDateString("th-TH", {
-                                day: "2-digit",
-                                month: "2-digit",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })
-                            : "-"}
+                          {formatDate(initValues?.created_at, dateFormat || "yyyy-MM-dd")}
                         </p>
                       </div>
                     </div>

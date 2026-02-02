@@ -3,23 +3,23 @@
 import { DetailSkeleton } from "@/components/loading/DetailSkeleton";
 import { InternalServerError } from "@/components/error-ui";
 import { useAuth } from "@/context/AuthContext";
-import { ADJUSTMENT_TYPE } from "@/dtos/adjustment-type.dto";
-import { useAdjustmentTypeByIdQuery } from "@/hooks/use-adjustment-type";
 import { notFound, useParams } from "next/navigation";
-import FormAdjustment from "../../components/FormAdjustment";
+import FormAdjustment from "../../_components/FormAdjustment";
 import { formType } from "@/dtos/form.dto";
 import axios from "axios";
+import { useInventoryAdjustmentByIdQuery } from "@/hooks/use-inventory-adjustment";
+import { INVENTORY_ADJUSTMENT_TYPE } from "@/dtos/inventory-adjustment.dto";
 
-export default function StockOutIdPage() {
+export default function StockInIdPage() {
   const { token, buCode } = useAuth();
   const params = useParams();
   const id = params.id as string;
 
-  const { data, isLoading, error } = useAdjustmentTypeByIdQuery(
+  const { data, isLoading, error } = useInventoryAdjustmentByIdQuery(
     token,
     buCode,
     id,
-    ADJUSTMENT_TYPE.STOCK_OUT
+    INVENTORY_ADJUSTMENT_TYPE.STOCK_IN
   );
 
   if (isLoading) {
@@ -40,7 +40,7 @@ export default function StockOutIdPage() {
   return (
     <FormAdjustment
       mode={formType.EDIT}
-      form_type={ADJUSTMENT_TYPE.STOCK_OUT}
+      form_type={INVENTORY_ADJUSTMENT_TYPE.STOCK_IN}
       initValues={data?.data}
     />
   );

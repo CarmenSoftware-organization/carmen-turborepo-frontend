@@ -1,27 +1,15 @@
-import { StockDetailsDto } from "@/dtos/adjustment-type.dto";
+import { StockDetailsDto, InventoryAdjustmentFormValues } from "@/dtos/adjustment-type.dto";
 import { UseFormReturn } from "react-hook-form";
 import { TableCell, TableRow } from "@/components/ui/table";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/form-custom/form";
+import { FormControl, FormField, FormItem, FormMessage } from "@/components/form-custom/form";
 import { InputValidate } from "@/components/ui-custom/InputValidate";
 import { Button } from "@/components/ui/button";
 import { Save, Pencil, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface StockItemFormValues {
-  description?: string;
-  doc_status: string;
-  note?: string;
-  stock_in_detail: StockDetailsDto[];
-}
-
 interface Props {
   index: number;
-  form: UseFormReturn<StockItemFormValues>;
+  form: UseFormReturn<InventoryAdjustmentFormValues>;
   isEditing: boolean;
   isViewMode: boolean;
   onToggleEdit: (index: number) => void;
@@ -36,7 +24,7 @@ export default function StockItem({
   onToggleEdit,
   onRemove,
 }: Props) {
-  const watchedValues = form.watch(`stock_in_detail.${index}`);
+  const watchedValues = form.watch(`details.${index}`);
 
   return (
     <TableRow className={cn(isEditing && "bg-muted/50")}>
@@ -44,7 +32,7 @@ export default function StockItem({
       <TableCell>
         <FormField
           control={form.control}
-          name={`stock_in_detail.${index}.product_name`}
+          name={`details.${index}.product_name`}
           render={({ field }) => (
             <FormItem>
               {isEditing && !isViewMode ? (
@@ -62,7 +50,7 @@ export default function StockItem({
       <TableCell>
         <FormField
           control={form.control}
-          name={`stock_in_detail.${index}.location_name`}
+          name={`details.${index}.location_name`}
           render={({ field }) => (
             <FormItem>
               {isEditing && !isViewMode ? (
@@ -80,7 +68,7 @@ export default function StockItem({
       <TableCell className="text-right">
         <FormField
           control={form.control}
-          name={`stock_in_detail.${index}.qty`}
+          name={`details.${index}.qty`}
           render={({ field }) => (
             <FormItem>
               {isEditing && !isViewMode ? (
@@ -103,7 +91,7 @@ export default function StockItem({
       <TableCell className="text-right">
         <FormField
           control={form.control}
-          name={`stock_in_detail.${index}.cost_per_unit`}
+          name={`details.${index}.cost_per_unit`}
           render={({ field }) => (
             <FormItem>
               {isEditing && !isViewMode ? (
