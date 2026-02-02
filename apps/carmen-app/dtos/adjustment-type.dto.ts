@@ -26,7 +26,7 @@ export const createAdjustmentTypeFormSchema = (messages: {
       required_error: messages.typeRequired,
       invalid_type_error: messages.typeRequired,
     }),
-    description: z.string().trim(),
+    description: z.string().optional(),
     is_active: z.boolean(),
   });
 

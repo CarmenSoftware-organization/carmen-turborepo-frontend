@@ -43,8 +43,6 @@ interface AdjustmentTypeListProps {
   readonly onSort?: (sortString: string) => void;
   readonly setPerpage: (perpage: number) => void;
   readonly onDelete?: (adjustmentType: AdjustmentTypeDto) => void;
-  readonly canUpdate?: boolean;
-  readonly canDelete?: boolean;
 }
 
 export default function AdjustmentTypeList({
@@ -59,8 +57,6 @@ export default function AdjustmentTypeList({
   onSort,
   setPerpage,
   onDelete,
-  canUpdate = true,
-  canDelete = true,
 }: AdjustmentTypeListProps) {
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
@@ -117,21 +113,17 @@ export default function AdjustmentTypeList({
         ),
         cell: ({ row }) => {
           const item = row.original;
-
-          if (canUpdate) {
-            return (
-              <Link
-                href={`/configuration/adjustment-type/${item.id}`}
-                className="hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
-              >
-                {item.name}
-              </Link>
-            );
-          }
-          return <span className="max-w-[200px] break-words">{item.name}</span>;
+          return (
+            <Link
+              href={`/configuration/adjustment-type/${item.id}`}
+              className="hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
+            >
+              {item.name}
+            </Link>
+          );
         },
         enableSorting: true,
-        size: 280,
+        size: 200,
       },
       {
         accessorKey: "type",
@@ -146,12 +138,7 @@ export default function AdjustmentTypeList({
           const type = row.original.type;
           const isStockIn = type === STOCK_IN_OUT_TYPE_PAYLOAD.STOCK_IN;
           return (
-            <Badge
-              variant="outline"
-              className={
-                isStockIn ? "border-green-500 text-green-600" : "border-orange-500 text-orange-600"
-              }
-            >
+            <Badge variant="outline" className={isStockIn ? "text-green-600" : "text-orange-600"}>
               {isStockIn ? "Stock In" : "Stock Out"}
             </Badge>
           );
@@ -201,8 +188,6 @@ export default function AdjustmentTypeList({
         id: "action",
         header: () => null,
         cell: ({ row }) => {
-          if (!canDelete) return null;
-
           const item = row.original;
 
           return (
@@ -213,7 +198,7 @@ export default function AdjustmentTypeList({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                {canDelete && onDelete && (
+                {onDelete && (
                   <DropdownMenuItem className="cursor-pointer" onClick={() => onDelete(item)}>
                     <Trash2 className="h-4 w-4" />
                     Delete
@@ -231,7 +216,7 @@ export default function AdjustmentTypeList({
         },
       },
     ],
-    [currentPage, perpage, canUpdate, canDelete, onDelete]
+    [currentPage, perpage, onDelete]
   );
 
   // Initialize table

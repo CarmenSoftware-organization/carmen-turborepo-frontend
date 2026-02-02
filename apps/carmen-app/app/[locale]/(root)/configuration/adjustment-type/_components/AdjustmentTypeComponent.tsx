@@ -19,22 +19,12 @@ import { useEffect, useState } from "react";
 import AdjustmentTypeList from "./AdjustmentTypeList";
 import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
-import { configurationPermission } from "@/lib/permission";
 import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import { AdjustmentTypeDto } from "@/dtos/adjustment-type.dto";
 
 export default function AdjustmentTypeComponent() {
-  const { token, buCode, permissions } = useAuth();
-
-  // Get permissions for adjustment-type resource (assuming resource name 'adjustment-type' or reusing department for now? User said "follow department ux/ui", let's assume 'adjustment-type' resource exists or we check generic config)
-  // Since I don't know the exact permission resource name, I will assume it is 'adjustment_type' or similar.
-  // If not sure, I might default to true for now or check 'department' just to be safe if it falls under general config.
-  // Actually, let's use a safe default or 'inventory_adjustment' might be related?
-  // Let's assume 'configuration' usage. For now, I'll pass defaults or check a likely key.
-  const hasCreate = true; // Placeholder
-  const hasUpdate = true; // Placeholder
-  const hasDelete = true; // Placeholder
+  const { token, buCode } = useAuth();
 
   const queryClient = useQueryClient();
 
@@ -138,7 +128,7 @@ export default function AdjustmentTypeComponent() {
 
   const actionButtons = (
     <div className="action-btn-container">
-      <Button size="sm" onClick={handleAdd} disabled={!hasCreate}>
+      <Button size="sm" onClick={handleAdd}>
         <Plus className="h-4 w-4" />
         Add
       </Button>
@@ -183,8 +173,6 @@ export default function AdjustmentTypeComponent() {
       onSort={setSort}
       setPerpage={handleSetPerpage}
       onDelete={handleDelete}
-      canUpdate={hasUpdate}
-      canDelete={hasDelete}
     />
   );
 

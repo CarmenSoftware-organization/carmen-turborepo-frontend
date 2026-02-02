@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { formType } from "@/dtos/form.dto";
 import { useAdjustmentTypeByIdQuery } from "@/hooks/use-adjustment-type";
 import { DetailSkeleton } from "@/components/loading/DetailSkeleton";
-import FormAdjustmentType from "../_components/form-adjustment-type/FormAdjustmentType";
+import FormAdjustmentType from "../_components/FormAdjustmentType";
 
 export default function AdjustmentTypeIdPage() {
   const { token, buCode } = useAuth();
