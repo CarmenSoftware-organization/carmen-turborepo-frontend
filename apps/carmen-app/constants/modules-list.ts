@@ -383,11 +383,6 @@ export const moduleItems: ModuleItem[] = [
     icon: Settings,
     children: [
       {
-        labelKey: "Modules.Configuration.doc_management",
-        href: "/configuration/ducument-management",
-        icon: FileCheck,
-      },
-      {
         labelKey: "Modules.Configuration.currency",
         href: "/configuration/currency",
         icon: DollarSign,
@@ -498,6 +493,11 @@ export const moduleItems: ModuleItem[] = [
         labelKey: "Modules.SystemAdministration.user",
         href: "/system-administration/user",
         icon: UserCheck,
+      },
+      {
+        labelKey: "Modules.SystemAdministration.documentManagement",
+        href: "/system-administration/document-management",
+        icon: FileCheck,
       },
     ],
   },

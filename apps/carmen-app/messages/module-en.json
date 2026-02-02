@@ -110,8 +110,7 @@
       "tax_profile": "Tax Profile",
       "extra_cost": "Extra Cost",
       "business_type": "Business Type",
-      "adjustment_type": "Adjustment Type",
-      "doc_management": "Document Management"
+      "adjustment_type": "Adjustment Type"
     },
     "SystemAdministration": {
       "systemAdministration": "System Administration",
@@ -129,7 +128,8 @@
       },
       "cluster": "Cluster",
       "businessUnit": "Business Unit",
-      "user": "User"
+      "user": "User",
+      "documentManagement": "Document Management"
     },
     "helpAndSupport": "Help and Support",
     "HelpAndSupport": {

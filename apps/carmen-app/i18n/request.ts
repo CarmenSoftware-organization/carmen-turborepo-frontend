@@ -21,6 +21,10 @@ export default getRequestConfig(async ({ locale }) => {
   const inventoryManagement = (await import(`../messages/inventory-management-${validLocale}.json`))
     .default;
 
+  const systemAdministration = (
+    await import(`../messages/system-administration-${validLocale}.json`)
+  ).default;
+
   try {
     const messages = {
       ...mainMessages,
@@ -33,6 +37,7 @@ export default getRequestConfig(async ({ locale }) => {
       ...moduleMessage,
       ...storeOperation,
       ...inventoryManagement,
+      ...systemAdministration,
     };
 
     return {
