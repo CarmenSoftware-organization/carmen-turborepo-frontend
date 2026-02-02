@@ -8,10 +8,8 @@ import {
   updateApiRequest,
 } from "@/lib/config.api";
 import { backendApi } from "@/lib/backend-api";
-import {
-  INVENTORY_ADJUSTMENT_TYPE,
-  InventoryAdjustmentPayloadDto,
-} from "@/dtos/inventory-adjustment.dto";
+import { InventoryAdjustmentPayloadDto } from "@/dtos/inventory-adjustment.dto";
+import { STOCK_IN_OUT_TYPE } from "@/dtos/stock-in-out.dto";
 
 export const queryKeyInventoryAdjustment = "inventory-adjustment";
 export const queryKeyStockIn = "stock-in";
@@ -56,10 +54,10 @@ export const useInventoryAdjustmentByIdQuery = (
   token: string,
   buCode: string,
   id: string,
-  type: INVENTORY_ADJUSTMENT_TYPE
+  type: STOCK_IN_OUT_TYPE
 ) => {
   const isEnabled = Boolean(token) && Boolean(buCode) && Boolean(id);
-  const API_URL = `${backendApi}/api/${buCode}/${type === INVENTORY_ADJUSTMENT_TYPE.STOCK_IN ? "stock-in" : "stock-out"}/${id}`;
+  const API_URL = `${backendApi}/api/${buCode}/${type === STOCK_IN_OUT_TYPE.STOCK_IN ? "stock-in" : "stock-out"}/${id}`;
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: [queryKeyInventoryAdjustment, buCode, id],
     queryFn: async () => {
@@ -85,10 +83,10 @@ export const useInventoryAdjustmentByIdQuery = (
 export const useInventoryAdjustmentMutation = (
   token: string,
   buCode: string,
-  type: INVENTORY_ADJUSTMENT_TYPE
+  type: STOCK_IN_OUT_TYPE
 ) => {
   const queryClient = useQueryClient();
-  const idTouse = type === INVENTORY_ADJUSTMENT_TYPE.STOCK_IN ? "stock-in" : "stock-out";
+  const idTouse = type === STOCK_IN_OUT_TYPE.STOCK_IN ? "stock-in" : "stock-out";
   const baseUrl = `${backendApi}/api/${buCode}`; // Defined baseUrl for consistency
 
   return useMutation({
@@ -109,10 +107,10 @@ export const useInventoryAdjustmentMutation = (
 export const useUpdateInventoryAdjustmentMutation = (
   token: string,
   buCode: string,
-  type: INVENTORY_ADJUSTMENT_TYPE
+  type: STOCK_IN_OUT_TYPE
 ) => {
   const queryClient = useQueryClient();
-  const idTouse = type === INVENTORY_ADJUSTMENT_TYPE.STOCK_IN ? "stock-in" : "stock-out";
+  const idTouse = type === STOCK_IN_OUT_TYPE.STOCK_IN ? "stock-in" : "stock-out";
   const baseUrl = `${backendApi}/api/${buCode}`; // Defined baseUrl for consistency
 
   return useMutation({
@@ -132,10 +130,10 @@ export const useUpdateInventoryAdjustmentMutation = (
 export const useDeleteInventoryAdjustmentMutation = (
   token: string,
   buCode: string,
-  type: INVENTORY_ADJUSTMENT_TYPE
+  type: STOCK_IN_OUT_TYPE
 ) => {
   const queryClient = useQueryClient();
-  const idTouse = type === INVENTORY_ADJUSTMENT_TYPE.STOCK_IN ? "stock-in" : "stock-out";
+  const idTouse = type === STOCK_IN_OUT_TYPE.STOCK_IN ? "stock-in" : "stock-out";
   const baseUrl = `${backendApi}/api/${buCode}`; // Defined baseUrl for consistency
 
   return useMutation({

@@ -18,6 +18,8 @@ export default getRequestConfig(async ({ locale }) => {
 
   const moduleMessage = (await import(`../messages/module-${validLocale}.json`)).default;
   const storeOperation = (await import(`../messages/store-operation-${validLocale}.json`)).default;
+  const inventoryManagement = (await import(`../messages/inventory-management-${validLocale}.json`))
+    .default;
 
   try {
     const messages = {
@@ -30,6 +32,7 @@ export default getRequestConfig(async ({ locale }) => {
       ...productMessage,
       ...moduleMessage,
       ...storeOperation,
+      ...inventoryManagement,
     };
 
     return {

@@ -1,7 +1,7 @@
 import { formType } from "@/dtos/form.dto";
 import FormAdjustment from "../../_components/FormAdjustment";
-import { INVENTORY_ADJUSTMENT_TYPE } from "@/dtos/inventory-adjustment.dto";
+import { STOCK_IN_OUT_TYPE } from "@/dtos/stock-in-out.dto";
 
 export default function StockInNewPage() {
-  return <FormAdjustment mode={formType.ADD} form_type={INVENTORY_ADJUSTMENT_TYPE.STOCK_IN} />;
+  return <FormAdjustment mode={formType.ADD} form_type={STOCK_IN_OUT_TYPE.STOCK_IN} />;
 }

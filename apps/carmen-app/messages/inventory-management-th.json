@@ -1,0 +1,7 @@
+{
+  "InventoryAdjustment": {
+    "title": "การปรับปรุงสต็อก",
+    "stock_in": "รับสินค้า",
+    "stock_out": "ส่งสินค้า"
+  }
+}

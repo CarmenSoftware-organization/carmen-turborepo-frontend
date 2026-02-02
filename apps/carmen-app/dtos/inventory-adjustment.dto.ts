@@ -1,16 +1,5 @@
 import { z } from "zod";
-
-// Enum สำหรับ GET response (ใช้ hyphen)
-export enum INVENTORY_ADJUSTMENT_TYPE {
-  STOCK_IN = "stock-in",
-  STOCK_OUT = "stock-out",
-}
-
-// Enum สำหรับ POST/PUT payload (ใช้ underscore)
-export enum INVENTORY_ADJUSTMENT_TYPE_PAYLOAD {
-  STOCK_IN = "stock_in",
-  STOCK_OUT = "stock_out",
-}
+import { STOCK_IN_OUT_TYPE_PAYLOAD } from "./stock-in-out.dto";
 
 export enum DOC_STATUS {
   IN_PROGRESS = "in_progress",
@@ -40,7 +29,7 @@ const baseInventoryAdjustmentSchema = z.object({
   description: z.string().optional(),
   doc_status: z.nativeEnum(DOC_STATUS),
   note: z.string().optional(),
-  type: z.nativeEnum(INVENTORY_ADJUSTMENT_TYPE),
+  type: z.nativeEnum(STOCK_IN_OUT_TYPE_PAYLOAD),
   document_no: z.string(),
   details: z.array(stockDetailsSchema),
 });
@@ -54,7 +43,7 @@ export const inventoryAdjustmentListSchema = z.object({
   doc_status: z.string(),
   created_at: z.string(),
   updated_at: z.string(),
-  type: z.nativeEnum(INVENTORY_ADJUSTMENT_TYPE),
+  type: z.nativeEnum(STOCK_IN_OUT_TYPE_PAYLOAD),
   document_no: z.string(),
 });
 
@@ -76,7 +65,7 @@ export const inventoryAdjustmentPayloadSchema = z.object({
   description: z.string().optional(),
   doc_status: z.string(),
   note: z.string().optional(),
-  inventory_adjustment_type: z.nativeEnum(INVENTORY_ADJUSTMENT_TYPE_PAYLOAD),
+  inventory_adjustment_type: z.nativeEnum(STOCK_IN_OUT_TYPE_PAYLOAD),
   details: z.object({
     add: z.array(baseStockDetailsSchema),
     update: z.array(stockDetailsSchema),

@@ -46,8 +46,6 @@ import StockItem from "./StockItem";
 import { formatDate } from "@/utils/format/date";
 import {
   DOC_STATUS,
-  INVENTORY_ADJUSTMENT_TYPE,
-  INVENTORY_ADJUSTMENT_TYPE_PAYLOAD,
   inventoryAdjustmentFormSchema,
   InventoryAdjustmentFormValues,
   InventoryAdjustmentStockInDto,
@@ -60,10 +58,11 @@ import {
   useInventoryAdjustmentMutation,
   useUpdateInventoryAdjustmentMutation,
 } from "@/hooks/use-inventory-adjustment";
+import { STOCK_IN_OUT_TYPE, STOCK_IN_OUT_TYPE_PAYLOAD } from "@/dtos/stock-in-out.dto";
 
 interface Props {
   mode: formType;
-  form_type: INVENTORY_ADJUSTMENT_TYPE;
+  form_type: STOCK_IN_OUT_TYPE;
   initValues?: InventoryAdjustmentStockInDto | InventoryAdjustmentStockOutDto;
 }
 
@@ -87,7 +86,7 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
 
   const documentNo = useMemo(() => {
     if (!initValues) return "";
-    if (form_type === INVENTORY_ADJUSTMENT_TYPE.STOCK_IN) {
+    if (form_type === STOCK_IN_OUT_TYPE.STOCK_IN) {
       return (initValues as InventoryAdjustmentStockInDto).si_no;
     }
     return (initValues as InventoryAdjustmentStockOutDto).so_no;
@@ -184,9 +183,9 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
       doc_status: statusOverride || data.doc_status,
       note: data.note,
       inventory_adjustment_type:
-        form_type === INVENTORY_ADJUSTMENT_TYPE.STOCK_IN
-          ? INVENTORY_ADJUSTMENT_TYPE_PAYLOAD.STOCK_IN
-          : INVENTORY_ADJUSTMENT_TYPE_PAYLOAD.STOCK_OUT,
+        form_type === STOCK_IN_OUT_TYPE.STOCK_IN
+          ? STOCK_IN_OUT_TYPE_PAYLOAD.STOCK_IN
+          : STOCK_IN_OUT_TYPE_PAYLOAD.STOCK_OUT,
       details: {
         add: data.details.filter((item) => !item.id),
         update: data.details.filter((item) => item.id),
@@ -249,7 +248,7 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
     }
   };
 
-  const typeLabel = form_type === INVENTORY_ADJUSTMENT_TYPE.STOCK_IN ? "Stock In" : "Stock Out";
+  const typeLabel = form_type === STOCK_IN_OUT_TYPE.STOCK_IN ? "Stock In" : "Stock Out";
 
   // Calculate totals
   const watchedItems = form.watch("details");
@@ -372,7 +371,7 @@ export default function FormAdjustment({ mode, form_type, initValues }: Props) {
                           <Badge
                             variant="outline"
                             className={cn(
-                              form_type === INVENTORY_ADJUSTMENT_TYPE.STOCK_IN
+                              form_type === STOCK_IN_OUT_TYPE.STOCK_IN
                                 ? "border-green-500 text-green-600"
                                 : "border-orange-500 text-orange-600"
                             )}

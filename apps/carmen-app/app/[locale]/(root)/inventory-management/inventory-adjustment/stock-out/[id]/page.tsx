@@ -8,7 +8,7 @@ import FormAdjustment from "../../_components/FormAdjustment";
 import { formType } from "@/dtos/form.dto";
 import axios from "axios";
 import { useInventoryAdjustmentByIdQuery } from "@/hooks/use-inventory-adjustment";
-import { INVENTORY_ADJUSTMENT_TYPE } from "@/dtos/inventory-adjustment.dto";
+import { STOCK_IN_OUT_TYPE } from "@/dtos/stock-in-out.dto";
 
 export default function StockOutIdPage() {
   const { token, buCode } = useAuth();
@@ -19,7 +19,7 @@ export default function StockOutIdPage() {
     token,
     buCode,
     id,
-    INVENTORY_ADJUSTMENT_TYPE.STOCK_OUT
+    STOCK_IN_OUT_TYPE.STOCK_OUT
   );
 
   if (isLoading) {
@@ -40,7 +40,7 @@ export default function StockOutIdPage() {
   return (
     <FormAdjustment
       mode={formType.EDIT}
-      form_type={INVENTORY_ADJUSTMENT_TYPE.STOCK_OUT}
+      form_type={STOCK_IN_OUT_TYPE.STOCK_OUT}
       initValues={data?.data}
     />
   );

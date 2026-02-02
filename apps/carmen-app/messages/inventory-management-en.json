@@ -1,0 +1,7 @@
+{
+  "InventoryAdjustment": {
+    "title": "Inventory Adjustment",
+    "stock_in": "Stock In",
+    "stock_out": "Stock Out"
+  }
+}

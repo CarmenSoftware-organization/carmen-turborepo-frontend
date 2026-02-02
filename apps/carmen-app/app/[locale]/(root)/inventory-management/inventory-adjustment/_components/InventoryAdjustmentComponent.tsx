@@ -11,8 +11,8 @@ import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown"
 import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { Link } from "@/lib/navigation";
-import AdjustmentTypeList from "./InventoryAdjustmentList";
 import { useInventoryAdjustmentQuery } from "@/hooks/use-inventory-adjustment";
+import InventoryAdjustmentList from "./InventoryAdjustmentList";
 
 export default function InventoryAdjustmentComponent() {
   const { token, buCode, dateFormat } = useAuth();
@@ -21,7 +21,7 @@ export default function InventoryAdjustmentComponent() {
   const [search, setSearch] = useURL("search");
   const [sort, setSort] = useURL("sort");
   const [filter, setFilter] = useURL("filter");
-  const tAdj = useTranslations("AdjustmentType");
+  const tAdj = useTranslations("InventoryAdjustment");
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const [statusOpen, setStatusOpen] = useState(false);
@@ -121,7 +121,7 @@ export default function InventoryAdjustmentComponent() {
     : undefined;
 
   const content = (
-    <AdjustmentTypeList
+    <InventoryAdjustmentList
       adjDatas={adjDatas}
       isLoading={isLoading}
       currentPage={paginate?.current_page ?? 1}

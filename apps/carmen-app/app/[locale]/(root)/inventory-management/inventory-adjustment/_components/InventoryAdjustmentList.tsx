@@ -2,15 +2,7 @@
 
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  FileText,
-  MoreHorizontal,
-  Trash2,
-  Package,
-  FileType,
-  Activity,
-  Calendar,
-} from "lucide-react";
+import { FileText, Trash2, Package, FileType, Activity, Calendar } from "lucide-react";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -30,10 +22,8 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Link } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/utils/format/date";
-import {
-  INVENTORY_ADJUSTMENT_TYPE,
-  InventoryAdjustmentListDto,
-} from "@/dtos/inventory-adjustment.dto";
+import { InventoryAdjustmentListDto } from "@/dtos/inventory-adjustment.dto";
+import { STOCK_IN_OUT_TYPE, STOCK_IN_OUT_TYPE_PAYLOAD } from "@/dtos/stock-in-out.dto";
 
 interface Props {
   readonly adjDatas: InventoryAdjustmentListDto[];
@@ -64,8 +54,8 @@ export default function InventoryAdjustmentList({
   onDelete,
   dateFormat,
 }: Props) {
-  const getTypeLabel = (type: INVENTORY_ADJUSTMENT_TYPE) => {
-    return type === INVENTORY_ADJUSTMENT_TYPE.STOCK_IN ? "Stock In" : "Stock Out";
+  const getTypeLabel = (type: STOCK_IN_OUT_TYPE_PAYLOAD) => {
+    return type === STOCK_IN_OUT_TYPE_PAYLOAD.STOCK_IN ? "Stock In" : "Stock Out";
   };
 
   const sorting: SortingState = useMemo(() => {
@@ -113,9 +103,13 @@ export default function InventoryAdjustmentList({
         ),
         cell: ({ row }) => {
           const item = row.original;
+          const routeType =
+            item.type === STOCK_IN_OUT_TYPE_PAYLOAD.STOCK_IN
+              ? STOCK_IN_OUT_TYPE.STOCK_IN
+              : STOCK_IN_OUT_TYPE.STOCK_OUT;
           return (
             <Link
-              href={`/inventory-management/inventory-adjustment/${item.type}/${item.id}`}
+              href={`/inventory-management/inventory-adjustment/${routeType}/${item.id}`}
               className="hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
             >
               {item.document_no}
@@ -139,7 +133,7 @@ export default function InventoryAdjustmentList({
           return (
             <span
               className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
-                item.type === INVENTORY_ADJUSTMENT_TYPE.STOCK_IN
+                item.type === STOCK_IN_OUT_TYPE_PAYLOAD.STOCK_IN
                   ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                   : "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
               }`}
