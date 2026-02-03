@@ -4,16 +4,11 @@ import { ParamsGetDto } from "@/dtos/param.dto";
 import { backendApi } from "@/lib/backend-api";
 import {
   getAllApiRequest,
-  //   getByIdApiRequest,
   postApiRequest,
   updateApiRequest,
   requestHeaders,
 } from "@/lib/config.api";
-import {
-  BuTypeEditDto,
-  BuTypeFormDto,
-  BuTypeGetAllDto,
-} from "@/dtos/bu-type.dto";
+import { BuTypeEditDto, BuTypeFormDto, BuTypeGetAllDto } from "@/dtos/bu-type.dto";
 import axios from "axios";
 
 const buTypeApiUrl = (buCode: string, id?: string) => {
@@ -21,11 +16,7 @@ const buTypeApiUrl = (buCode: string, id?: string) => {
   return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
 };
 
-export const useBuTypeQuery = (
-  token: string,
-  buCode: string,
-  params?: ParamsGetDto
-) => {
+export const useBuTypeQuery = (token: string, buCode: string, params?: ParamsGetDto) => {
   const API_URL = buTypeApiUrl(buCode);
   const { data, isLoading, error } = useQuery({
     queryKey: ["bu-type", buCode, params],
@@ -33,19 +24,13 @@ export const useBuTypeQuery = (
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
-      return await getAllApiRequest(
-        API_URL,
-        token,
-        "Error fetching bu type",
-        params ?? {}
-      );
+      return await getAllApiRequest(API_URL, token, "Error fetching bu type", params ?? {});
     },
     enabled: !!token && !!buCode,
   });
 
   const buTypes = data;
-  const isUnauthorized =
-    error instanceof Error && error.message.includes("Unauthorized");
+  const isUnauthorized = error instanceof Error && error.message.includes("Unauthorized");
 
   const getBuTypeName = useCallback(
     (buTypeId: string) => {
@@ -68,39 +53,21 @@ export const useBuTypeMutation = (token: string, buCode: string) => {
   const API_URL = buTypeApiUrl(buCode);
   return useMutation({
     mutationFn: async (data: BuTypeFormDto) => {
-      return await postApiRequest(
-        API_URL,
-        token,
-        data,
-        "Error creating bu type"
-      );
+      return await postApiRequest(API_URL, token, data, "Error creating bu type");
     },
   });
 };
 
-export const useUpdateBuType = (
-  token: string,
-  buCode: string,
-  id: string
-) => {
+export const useUpdateBuType = (token: string, buCode: string, id: string) => {
   const API_ID = buTypeApiUrl(buCode, id);
   return useMutation({
     mutationFn: async (data: BuTypeEditDto) => {
-      return await updateApiRequest(
-        API_ID,
-        token,
-        data,
-        "Error updating bu type",
-        "PATCH"
-      );
+      return await updateApiRequest(API_ID, token, data, "Error updating bu type", "PATCH");
     },
   });
 };
 
-export const useDeleteBuType = (
-  token: string,
-  buCode: string
-) => {
+export const useDeleteBuType = (token: string, buCode: string) => {
   return useMutation({
     mutationFn: async (id: string) => {
       if (!token || !buCode || !id) {
