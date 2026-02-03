@@ -13,6 +13,7 @@ export const priceListDetailItemSchema = z.object({
   product_id: z.string().min(1, "Product is required"),
   product_name: z.string().optional(), // สำหรับ display
   product_code: z.string().optional(), // สำหรับ display
+  price: z.number(),
   unit_id: z.string().optional(),
   unit_name: z.string().optional(), // สำหรับ display
   tax_profile_id: z.string().optional(),

@@ -12,22 +12,19 @@ import {
   useUpdatePriceListTemplate,
 } from "@/hooks/use-price-list-template";
 import { useAuth } from "@/context/AuthContext";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/animate-ui/components/radix/tabs";
 import OverviewTab from "./OverviewTab";
 import ProductsTab from "./ProductsTab";
 import RFPTabs from "./RFPTabs";
 import { FormValues, FormSchema } from "../../_schema/price-list-template.schema";
 import { useProductSelection } from "../../_hooks/useProductSelection";
-import { ChevronLeft, Loader2, PenBoxIcon, Save, SaveIcon, X } from "lucide-react";
+import { ChevronLeft, FileText, Loader2, PenBoxIcon, Save, X } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
 import { useTranslations } from "next-intl";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 interface Props {
   readonly templateData?: PriceListTemplateDetailsDto;
@@ -106,92 +103,105 @@ export default function MainForm({ templateData, mode }: Props) {
 
   const isViewMode = currentMode === formType.VIEW;
 
+  // Determine status color
+  const getStatusColor = (status?: string) => {
+    switch (status) {
+      case "active":
+        return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+      case "draft":
+        return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400";
+      case "inactive":
+        return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
+      default:
+        return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400";
+    }
+  };
+
   return (
-    <div className="flex flex-col p-4 max-w-4xl mx-auto">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={() => router.push("/vendor-management/price-list-template")}
-            variant={"outlinePrimary"}
-            size={"icon"}
-            className="h-8 w-8 hover:bg-muted"
-          >
-            <ChevronLeft className="h-5 w-5 text-muted-foreground" />
-          </Button>
-          <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              {currentMode === formType.ADD && tPlt("new_template")}
-              {(currentMode === formType.VIEW || currentMode === formType.EDIT) &&
-                templateData?.name}
-            </h1>
-            {templateData && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Badge variant={templateData.status} className="px-2 py-0.5 font-medium">
-                  {templateData.status}
-                </Badge>
-                <span>•</span>
-                <span>
-                  {tPlt("last_update")}: {new Date(templateData.updated_at).toLocaleDateString()}
-                </span>
+    <div className="flex flex-col min-h-screen bg-background/50">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur-md pb-4 pt-4">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 -ml-2 text-muted-foreground hover:text-foreground"
+                onClick={() => router.push("/vendor-management/price-list-template")}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-3">
+                  <h1 className="text-lg font-bold tracking-tight text-foreground">
+                    {currentMode === formType.ADD && tPlt("new_template")}
+                    {(currentMode === formType.VIEW || currentMode === formType.EDIT) &&
+                      (templateData?.name || "Price List Template")}
+                  </h1>
+                  {templateData && (
+                    <Badge
+                      variant="secondary"
+                      className={cn("ml-2", getStatusColor(templateData.status))}
+                    >
+                      {templateData.status}
+                    </Badge>
+                  )}
+                </div>
               </div>
-            )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              {currentMode === formType.VIEW ? (
+                <Button
+                  size="sm"
+                  onClick={() => setCurrentMode(formType.EDIT)}
+                  className="h-8 gap-2"
+                >
+                  <PenBoxIcon className="h-4 w-4" />
+                  {tCommon("edit")}
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      if (currentMode === formType.ADD) {
+                        router.push("/vendor-management/price-list-template");
+                      } else {
+                        form.reset();
+                        setCurrentMode(formType.VIEW);
+                      }
+                    }}
+                    disabled={form.formState.isSubmitting}
+                    className="h-8"
+                  >
+                    {tCommon("cancel")}
+                  </Button>
+                  <Button
+                    type="submit"
+                    form="price-list-template-form"
+                    size="sm"
+                    disabled={form.formState.isSubmitting}
+                    className="h-8 gap-2 px-4 shadow-sm"
+                  >
+                    {form.formState.isSubmitting ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Save className="h-3.5 w-3.5" />
+                    )}
+                    {tCommon("save")}
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {currentMode === formType.VIEW && (
-            <Button size="sm" onClick={() => setCurrentMode(formType.EDIT)}>
-              <PenBoxIcon className="h-4 w-4" />
-              {tCommon("edit")}
-            </Button>
-          )}
-          {currentMode === formType.EDIT && (
-            <>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  form.reset();
-                  setCurrentMode(formType.VIEW);
-                }}
-                disabled={form.formState.isSubmitting}
-              >
-                <X className="h-4 w-4" />
-                {tCommon("cancel")}
-              </Button>
-              <Button
-                type="submit"
-                form="price-list-template-form"
-                size="sm"
-                disabled={form.formState.isSubmitting}
-              >
-                {form.formState.isSubmitting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="h-4 w-4" />
-                )}
-                {tCommon("save")}
-              </Button>
-            </>
-          )}
-          {currentMode === formType.ADD && (
-            <Button
-              type="submit"
-              form="price-list-template-form"
-              size={"sm"}
-              disabled={form.formState.isSubmitting}
-            >
-              {form.formState.isSubmitting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <SaveIcon className="h-4 w-4" />
-              )}
-              {tCommon("save")}
-            </Button>
-          )}
-        </div>
       </div>
-      <div className="flex-1 overflow-hidden mt-4">
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
         <Form {...form}>
           <form
             id="price-list-template-form"
@@ -199,31 +209,72 @@ export default function MainForm({ templateData, mode }: Props) {
               e.stopPropagation();
               form.handleSubmit(onSubmit)(e);
             }}
+            className="space-y-6"
           >
-            <Tabs defaultValue="overview" className="flex flex-col">
-              <TabsList>
-                <TabsTrigger value="overview">{tPlt("overview")}</TabsTrigger>
-                <TabsTrigger value="products">{tPlt("product")}</TabsTrigger>
-                {templateData && <TabsTrigger value="rfps">{tPlt("rfp")}</TabsTrigger>}
-              </TabsList>
-              <div className="flex-1 overflow-y-auto min-h-[500px]">
-                <TabsContent value="overview" className="mt-0">
-                  <OverviewTab form={form} isViewMode={isViewMode} templateData={templateData} />
-                </TabsContent>
-                <TabsContent value="products" className="mt-0">
-                  <ProductsTab
-                    onProductSelect={handleTreeProductSelect}
-                    initialProducts={initProducts}
-                    isViewMode={isViewMode}
-                  />
-                </TabsContent>
-                {templateData && (
-                  <TabsContent value="rfps" className="mt-0">
-                    <RFPTabs rfps={templateData.rfps || []} />
-                  </TabsContent>
-                )}
-              </div>
-            </Tabs>
+            {/* Overview Section */}
+            <Card className="overflow-hidden">
+              <CardHeader className="bg-muted/30 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <FileText className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold leading-none tracking-tight">
+                      {tPlt("overview")}
+                    </h2>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <OverviewTab form={form} isViewMode={isViewMode} templateData={templateData} />
+              </CardContent>
+            </Card>
+
+            {/* Products Section */}
+            <Card className="overflow-hidden">
+              <CardHeader className="bg-muted/30 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <FileText className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold leading-none tracking-tight">
+                      {tPlt("product")}
+                    </h2>
+                  </div>
+                </div>
+              </CardHeader>
+              <Separator />
+              <CardContent className="pt-6">
+                <ProductsTab
+                  onProductSelect={handleTreeProductSelect}
+                  initialProducts={initProducts}
+                  isViewMode={isViewMode}
+                />
+              </CardContent>
+            </Card>
+
+            {/* RFPs Section */}
+            {templateData && templateData.rfps && templateData.rfps.length > 0 && (
+              <Card className="overflow-hidden">
+                <CardHeader className="bg-muted/30 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <FileText className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold leading-none tracking-tight">
+                        {tPlt("rfp")}
+                      </h2>
+                    </div>
+                  </div>
+                </CardHeader>
+                <Separator />
+                <CardContent className="pt-6">
+                  <RFPTabs rfps={templateData.rfps} />
+                </CardContent>
+              </Card>
+            )}
           </form>
         </Form>
       </div>

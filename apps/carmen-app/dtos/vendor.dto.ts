@@ -59,8 +59,12 @@ export interface VendorFormValues {
   note?: string | null;
   business_type: { id: string; name: string }[];
   info: InfoItemDto[];
-  vendor_address: AddressDto[];
-  vendor_contact: ContactDto[];
+  vendor_address: {
+    add: AddressDto[];
+  };
+  vendor_contact: {
+    add: ContactDto[];
+  };
 }
 
 /**
@@ -74,25 +78,29 @@ export const transformVendorData = (data: VendorGetDto): VendorFormValues => {
     description: data.description ?? "",
     business_type: data.business_type ?? [],
     info: Array.isArray(data.info) ? data.info : [],
-    vendor_address:
-      data.vendor_address?.map((addr) => ({
-        address_type: addr.address_type,
-        data: {
-          address_line1: addr.data.address_line1 ?? "",
-          address_line2: addr.data.address_line2 ?? "",
-          district: addr.data.district ?? "",
-          province: addr.data.province,
-          city: addr.data.city,
-          postal_code: addr.data.postal_code ?? "",
-          country: addr.data.country ?? "",
-        },
-      })) || [],
-    vendor_contact:
-      data.vendor_contact?.map((contact) => ({
-        name: contact.name,
-        email: contact.email,
-        phone: contact.phone,
-        is_primary: contact.is_primary ?? false,
-      })) || [],
+    vendor_address: {
+      add:
+        data.vendor_address?.map((addr) => ({
+          address_type: addr.address_type,
+          data: {
+            address_line1: addr.data.address_line1 ?? "",
+            address_line2: addr.data.address_line2 ?? "",
+            district: addr.data.district ?? "",
+            province: addr.data.province,
+            city: addr.data.city,
+            postal_code: addr.data.postal_code ?? "",
+            country: addr.data.country ?? "",
+          },
+        })) || [],
+    },
+    vendor_contact: {
+      add:
+        data.vendor_contact?.map((contact) => ({
+          name: contact.name,
+          email: contact.email,
+          phone: contact.phone,
+          is_primary: contact.is_primary ?? false,
+        })) || [],
+    },
   };
 };

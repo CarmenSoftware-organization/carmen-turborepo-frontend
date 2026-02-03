@@ -100,12 +100,14 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
       {
         id: "no",
         header: "#",
-        cell: ({ row }) => <span>{row.index + 1}</span>,
+        cell: ({ row }) => (
+          <span className="font-mono text-xs text-muted-foreground">{row.index + 1}</span>
+        ),
         size: 50,
       },
       {
         accessorKey: "name",
-        header: () => <span className="text-xs">{tRfp("vendor_name")}</span>,
+        header: () => <span className="text-xs font-semibold">{tRfp("vendor_name")}</span>,
         cell: ({ row }) => {
           if (row.original.isPlaceholder) {
             return (
@@ -153,35 +155,43 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
               />
             );
           }
-          return <span className="text-xs">{row.original.name}</span>;
+          return <span className="text-sm font-medium">{row.original.name}</span>;
         },
-        size: 150,
+        size: 250,
       },
       {
         id: "email",
-        header: () => <span className="text-xs">{tRfp("email")}</span>,
+        header: () => <span className="text-xs font-semibold">{tRfp("email")}</span>,
         cell: ({ row }) =>
           row.original.contact_email ? (
             <Button
               size={"sm"}
               variant="outline"
+              className="h-7 text-xs gap-2"
               onClick={() => checkPriceList(row.original.url_token ?? "")}
             >
-              <Mail />
+              <Mail className="h-3.5 w-3.5" />
               {row.original.contact_email}
             </Button>
-          ) : null,
-        size: 150,
+          ) : (
+            <span className="text-muted-foreground text-xs">-</span>
+          ),
+        size: 200,
       },
       {
         id: "action",
-        header: () => <span className="text-xs">{tRfp("action")}</span>,
+        header: () => <span className="text-xs font-semibold">{tRfp("action")}</span>,
         cell: ({ row }) => {
           if (isViewMode) return null;
           if (row.original.isPlaceholder) {
             return (
               <div className="flex justify-end pr-2">
-                <Button variant="ghost" size="icon" onClick={() => setIsAdding(false)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => setIsAdding(false)}
+                >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
@@ -192,9 +202,10 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
               <Button
                 variant="ghost"
                 size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                 onClick={() => handleRemoveVendor(row.original.id || row.original.vendor_id || "")}
               >
-                <Trash2 className="h-4 w-4 text-destructive" />
+                <Trash2 className="h-4 w-4" />
               </Button>
             </div>
           );
@@ -212,24 +223,45 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
   });
 
   return (
-    <div className="space-y-4">
+    <div className="w-full">
       {!isViewMode && !isAdding && (
-        <div className="flex justify-end">
-          <Button onClick={() => setIsAdding(true)} size="sm" className="h-7">
-            <Plus className="h-4 w-4" />
+        <div className="flex justify-end bg-muted/20 px-4 py-2 border-b">
+          <Button
+            onClick={() => setIsAdding(true)}
+            size="sm"
+            variant="outline"
+            className="h-8 gap-1.5 text-xs font-medium"
+          >
+            <Plus className="h-3.5 w-3.5" />
             {tRfp("add_vendors")}
           </Button>
         </div>
       )}
 
-      <DataGrid table={table} recordCount={displayVendors.length} isLoading={false}>
-        <DataGridContainer>
-          <ScrollArea className="h-[400px]">
-            <DataGridTable />
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </DataGridContainer>
-      </DataGrid>
+      <div className="border-none">
+        <DataGrid
+          table={table}
+          recordCount={displayVendors.length}
+          isLoading={false}
+          tableLayout={{
+            headerSticky: true,
+            rowBorder: true,
+            headerBackground: true,
+            headerBorder: true,
+            width: "fixed",
+            dense: true,
+          }}
+        >
+          <div className="w-full">
+            <DataGridContainer>
+              <ScrollArea className="h-[400px]">
+                <DataGridTable />
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </DataGridContainer>
+          </div>
+        </DataGrid>
+      </div>
     </div>
   );
 }

@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { FileText, Save, X } from "lucide-react";
+import { FileText, Save, X, ChevronLeft } from "lucide-react";
 import { Form } from "@/components/ui/form";
 import { formType } from "@/dtos/form.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
@@ -20,6 +20,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Separator } from "@/components/ui/separator";
 import { PriceListBreadcrumb, ProductsCardHeader } from "../shared";
 import { PricelistDetail } from "../../_schema/pl.dto";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface PriceListFormProps {
   readonly initialData?: PricelistDetail;
@@ -92,6 +94,7 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
           product_id: p.product_id,
           product_name: p.product_name || "",
           product_code: "", // Not available in DTO
+          price: p.price,
           unit_id: p.unit_id,
           unit_name: p.unit_name || "",
           tax_profile_id: p.tax_profile_id,
@@ -127,6 +130,7 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
           product_id: p.product_id,
           product_name: p.product_name || "",
           product_code: "", // Not available in DTO
+          price: p.price,
           unit_id: p.unit_id,
           unit_name: p.unit_name || "",
           tax_profile_id: p.tax_profile_id,
@@ -155,6 +159,7 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
       .map((item, index) => ({
         sequence_no: item.sequence_no ?? index + 1,
         product_id: item.product_id,
+        price: item.price,
         unit_id: item.unit_id,
         tax_profile_id: item.tax_profile_id,
         tax_rate: item.tax_rate || 0,
@@ -167,6 +172,7 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
         id: item.dbId,
         sequence_no: item.sequence_no,
         product_id: item.product_id,
+        price: item.price,
         unit_id: item.unit_id,
         tax_profile_id: item.tax_profile_id,
         tax_rate: item.tax_rate || 0,
@@ -222,87 +228,113 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
     }
   };
 
+  // Determine status color
+  const getStatusColor = (status?: string) => {
+    switch (status) {
+      case "active":
+        return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+      case "submit":
+        return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
+      case "inactive":
+        return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
+      default:
+        return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400";
+    }
+  };
+
   return (
-    <div className="space-y-4 mx-auto max-w-3xl pb-10">
-      <div className="flex items-center justify-between">
-        <PriceListBreadcrumb
-          currentPage={isAddMode ? tPriceList("new_price_list") : initialData?.no || ""}
-        />
-        <div className="flex items-center gap-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={handleCancel}
-                  variant="outline"
-                  size="sm"
-                  disabled={isCreating || isUpdating}
-                  className="h-8 gap-1.5"
-                >
-                  <X className="h-4 w-4" />
-                  {tCommon("cancel")}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{tCommon("cancel")}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={form.handleSubmit(onSubmit)}
-                  variant="default"
-                  size="sm"
-                  disabled={isCreating || isUpdating}
-                  className="h-8 gap-1.5"
-                >
-                  <Save className="h-4 w-4" />
-                  {isCreating || isUpdating ? tCommon("saving") : tCommon("save")}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{tCommon("save")}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+    <div className="flex flex-col min-h-screen bg-background/50">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur-md pb-4 pt-4">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 -ml-2 text-muted-foreground hover:text-foreground"
+                onClick={handleCancel}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-3">
+                  <h1 className="text-lg font-bold tracking-tight text-foreground">
+                    {isAddMode ? tPriceList("new_price_list") : initialData?.no || "Price List"}
+                  </h1>
+                  {!isAddMode && (
+                    <Badge
+                      variant="secondary"
+                      className={cn("ml-2", getStatusColor(initialData?.status))}
+                    >
+                      {initialData?.status}
+                    </Badge>
+                  )}
+                </div>
+                <PriceListBreadcrumb
+                  currentPage={isAddMode ? tPriceList("new_price_list") : initialData?.no || ""}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={handleCancel}
+                variant="outline"
+                size="sm"
+                disabled={isCreating || isUpdating}
+                className="h-8"
+              >
+                {tCommon("cancel")}
+              </Button>
+              <Button
+                onClick={form.handleSubmit(onSubmit)}
+                variant="default"
+                size="sm"
+                disabled={isCreating || isUpdating}
+                className="h-8 gap-2 px-4 shadow-sm"
+              >
+                <Save className="h-3.5 w-3.5" />
+                {isCreating || isUpdating ? tCommon("saving") : tCommon("save")}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {/* Overview Card */}
-          <Card className="overflow-hidden">
-            <CardHeader className="bg-muted/30 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <FileText className="h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-semibold leading-none tracking-tight">
-                    {isAddMode ? tPriceList("new_price_list") : tPriceList("edit_price_list")}
-                  </h2>
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Overview Section */}
+            <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+              <div className="p-6">
+                <OverviewSection form={form} priceList={initialData} isViewMode={false} />
+              </div>
+            </div>
+
+            {/* Products Section */}
+            <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+              <div className="flex items-center justify-between border-b px-6 py-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary">
+                    <FileText className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold leading-none">Price List Items</h3>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Manage products and prices ({productsCount} items)
+                    </p>
+                  </div>
                 </div>
               </div>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <OverviewSection form={form} priceList={initialData} isViewMode={false} />
-            </CardContent>
-          </Card>
-
-          {/* Products Card */}
-          <Card>
-            <CardHeader className="pb-3">
-              <ProductsCardHeader count={productsCount} />
-            </CardHeader>
-            <Separator />
-            <CardContent className="pt-4">
-              <ProductsSection form={form} isViewMode={false} />
-            </CardContent>
-          </Card>
-        </form>
-      </Form>
+              <div className="p-0">
+                <ProductsSection form={form} isViewMode={false} />
+              </div>
+            </div>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 }

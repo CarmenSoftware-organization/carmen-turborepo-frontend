@@ -46,13 +46,17 @@ export const createVendorFormSchema = (messages: {
         })
       ),
       info: z.array(infoItemSchema),
-      vendor_address: z.array(addressSchema),
-      vendor_contact: z.array(
-        createContactSchema({
-          nameRequired: messages.contactNameRequired,
-          emailInvalid: messages.emailInvalid,
-        })
-      ),
+      vendor_address: z.object({
+        add: z.array(addressSchema),
+      }),
+      vendor_contact: z.object({
+        add: z.array(
+          createContactSchema({
+            nameRequired: messages.contactNameRequired,
+            emailInvalid: messages.emailInvalid,
+          })
+        ),
+      }),
     })
     .transform((data) => {
       // Remove id if it is an empty string

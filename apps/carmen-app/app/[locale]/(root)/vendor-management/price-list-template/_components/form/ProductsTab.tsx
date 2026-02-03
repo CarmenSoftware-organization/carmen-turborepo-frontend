@@ -14,7 +14,7 @@ export default function ProductsTab({ onProductSelect, initialProducts = [], isV
   const initProductKeys = initialProducts.map((product) => product.id);
 
   return (
-    <>
+    <div className="w-full">
       {isViewMode ? (
         <TableProductView initialProducts={initialProducts} />
       ) : (
@@ -25,6 +25,6 @@ export default function ProductsTab({ onProductSelect, initialProducts = [], isV
           initialProducts={initialProducts}
         />
       )}
-    </>
+    </div>
   );
 }

@@ -82,7 +82,12 @@
     "add_contact": "Add Contact",
     "add_address": "Add Address",
     "address": "Address",
-    "zip_code": "Zip Code"
+    "zip_code": "Zip Code",
+    "no_additional_info_added": "No additional info added",
+    "primary_contact": "Primary Contact",
+    "code_placeholder": "Enter code",
+    "name_placeholder": "Enter name",
+    "description_placeholder": "Enter description"
   },
   "VendorManagement": {
     "title": "Vendor Management",
