@@ -5,20 +5,21 @@ const dateRangeSchema = z.object({
   to: z.string().min(1, "กรุณาเลือกวันที่สิ้นสุด"),
 });
 
-// Schema สำหรับ product detail item
-// ใช้ dbId แทน id เพราะ useFieldArray สร้าง internal id ให้ทุก field
 export const priceListDetailItemSchema = z.object({
   dbId: z.string().optional(), // id จาก database (existing item)
   sequence_no: z.number().optional(),
   product_id: z.string().min(1, "กรุณาเลือกสินค้า"),
   product_name: z.string().optional(), // สำหรับ display
   product_code: z.string().optional(), // สำหรับ display
-  price: z.number(),
+  price: z.number().min(0, "ราคาไม่สามารถติดลบได้"),
+  price_without_tax: z.number().min(0, "ราคาไม่สามารถติดลบได้"),
   unit_id: z.string().optional(),
   unit_name: z.string().optional(), // สำหรับ display
   tax_profile_id: z.string().optional(),
   tax_profile_name: z.string().optional(), // สำหรับ display
-  tax_rate: z.number().optional(),
+  tax_rate: z.number().min(0, "อัตราภาษีไม่สามารถติดลบได้"),
+  tax_amt: z.number().min(0, "จำนวนเงินภาษีไม่สามารถติดลบได้"),
+  lead_time_days: z.number().min(0, "Lead time ต้องมากกว่าหรือเท่ากับ 0"),
   moq_qty: z.number().min(0, "MOQ ต้องมากกว่าหรือเท่ากับ 0").optional(),
   _action: z.enum(["add", "update", "remove", "none"]).optional(), // track action
 });

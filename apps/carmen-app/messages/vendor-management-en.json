@@ -151,9 +151,16 @@
     "unit": "Unit",
     "tax_profile": "Tax Profile",
     "moq": "MOQ",
+    "price_without_tax": "Price (Excl. Tax)",
+    "tax_amt": "Tax Amount",
+    "lead_time_days": "Lead Time (Days)",
     "add_product": "Add Product",
     "no_products_added": "No products added",
     "no_products_added_description": "Start by adding products to this price list. You can define specific prices per unit.",
+    "create_success": "Price List created successfully",
+    "create_failed": "Failed to create price list",
+    "update_success": "Price List updated successfully",
+    "update_failed": "Failed to update price list",
     "validation": {
       "name_required": "Name is required",
       "vendor_required": "Vendor is required",
@@ -206,7 +213,9 @@
     "inactive": "Inactive",
     "draft": "Draft",
     "details": "Details",
-    "no_products": "No Products"
+    "no_products": "No Products",
+    "add_product": "Add Product",
+    "no_products_added_description": "Start by adding products to this template."
   },
   "RFP": {
     "title": "Request for Pricing",

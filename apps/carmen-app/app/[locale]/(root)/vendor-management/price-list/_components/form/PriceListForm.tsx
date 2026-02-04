@@ -62,11 +62,14 @@ const toFormValues = (data: PricelistDetail): PriceListFormData => {
       product_name: p.product_name || "",
       product_code: p.product_code || "",
       price: p.price,
+      price_without_tax: p.price_without_tax ?? 0,
       unit_id: p.unit_id,
       unit_name: p.unit_name || "",
       tax_profile_id: p.tax_profile_id,
       tax_profile_name: p.tax_profile?.rate ? `${p.tax_profile.rate}%` : "",
       tax_rate: p.tax_profile?.rate ?? 0,
+      tax_amt: p.tax_amt ?? 0,
+      lead_time_days: p.lead_time_days ?? 0,
       moq_qty: p.moq_qty,
       _action: "none" as const,
     })),
@@ -124,7 +127,6 @@ export default function PriceListForm({ initialData, mode }: PriceListFormProps)
 
   const isSubmitting = isCreating || isUpdating;
 
-  // Reset form when initialData changes
   useEffect(() => {
     if (initialData && currentMode !== formType.ADD) {
       const formValues = toFormValues(initialData);
@@ -159,9 +161,7 @@ export default function PriceListForm({ initialData, mode }: PriceListFormProps)
     deletePriceList(initialData.id, {
       onSuccess: () => {
         toastSuccess({ message: tPriceList("delete_success") });
-        // Remove the deleted item's query first to prevent refetch causing 404
         queryClient.removeQueries({ queryKey: ["price-list", buCode, initialData.id] });
-        // Then invalidate list queries to refresh the list data
         queryClient.invalidateQueries({ queryKey: ["price-list", buCode] });
         router.replace("/vendor-management/price-list");
       },
@@ -188,9 +188,12 @@ export default function PriceListForm({ initialData, mode }: PriceListFormProps)
           sequence_no: item.sequence_no ?? index + 1,
           product_id: item.product_id,
           price: item.price,
+          price_without_tax: item.price_without_tax || 0,
           unit_id: item.unit_id,
           tax_profile_id: item.tax_profile_id,
           tax_rate: item.tax_rate || 0,
+          tax_amt: item.tax_amt || 0,
+          lead_time_days: item.lead_time_days || 0,
           moq_qty: Number(item.moq_qty) || 0,
         }));
 
@@ -201,9 +204,12 @@ export default function PriceListForm({ initialData, mode }: PriceListFormProps)
           sequence_no: item.sequence_no,
           product_id: item.product_id,
           price: item.price,
+          price_without_tax: item.price_without_tax || 0,
           unit_id: item.unit_id,
           tax_profile_id: item.tax_profile_id,
           tax_rate: item.tax_rate || 0,
+          tax_amt: item.tax_amt || 0,
+          lead_time_days: item.lead_time_days || 0,
           moq_qty: Number(item.moq_qty) || 0,
         }));
 
@@ -245,6 +251,7 @@ export default function PriceListForm({ initialData, mode }: PriceListFormProps)
         createPriceList(payload, {
           onSuccess: () => {
             toastSuccess({ message: tPriceList("create_success") });
+            queryClient.invalidateQueries({ queryKey: ["price-list", buCode] });
             router.push("/vendor-management/price-list");
           },
           onError: (error: any) => {
@@ -257,7 +264,7 @@ export default function PriceListForm({ initialData, mode }: PriceListFormProps)
   );
 
   return (
-    <div className="flex flex-col min-h-screen px-2">
+    <div className="flex flex-col min-h-screen mx-4 pb-10">
       {/* Delete Confirmation Dialog */}
       <DeleteConfirmDialog
         open={isDeleteDialogOpen}

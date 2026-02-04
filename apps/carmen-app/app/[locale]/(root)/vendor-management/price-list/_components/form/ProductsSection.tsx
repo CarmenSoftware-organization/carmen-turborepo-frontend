@@ -38,10 +38,13 @@ export default function ProductsSection({ form, isViewMode, token, buCode }: Pro
       sequence_no: fields.length + 1,
       product_id: "",
       price: 0,
+      price_without_tax: 0,
       unit_id: "",
       unit_name: "",
       tax_profile_id: "",
       tax_rate: 0,
+      tax_amt: 0,
+      lead_time_days: 0,
       moq_qty: 1,
       _action: "add",
     };
@@ -134,7 +137,9 @@ export default function ProductsSection({ form, isViewMode, token, buCode }: Pro
       },
       {
         accessorKey: "product_id",
-        header: ({ column }) => <DataGridColumnHeader column={column} title={tPriceList("product")} />,
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tPriceList("product")} />
+        ),
         cell: ({ row }) => {
           const item = row.original;
           const index = getOriginalIndex(item.id);
@@ -161,7 +166,9 @@ export default function ProductsSection({ form, isViewMode, token, buCode }: Pro
       },
       {
         accessorKey: "price",
-        header: ({ column }) => <DataGridColumnHeader column={column} title={tPriceList("price")} />,
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tPriceList("price")} />
+        ),
         cell: ({ row }) => {
           const item = row.original;
           const index = getOriginalIndex(item.id || "");
@@ -180,6 +187,30 @@ export default function ProductsSection({ form, isViewMode, token, buCode }: Pro
           );
         },
         size: 120,
+      },
+      {
+        accessorKey: "price_without_tax",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tPriceList("price_without_tax")} />
+        ),
+        cell: ({ row }) => {
+          const item = row.original;
+          const index = getOriginalIndex(item.id || "");
+          if (index === -1) return null;
+
+          return isViewMode ? (
+            <span className="text-xs">{item.price_without_tax ?? 0}</span>
+          ) : (
+            <NumberInput
+              value={item.price_without_tax ?? 0}
+              onChange={(value) => handleFieldChange(index, "price_without_tax", value)}
+              min={0}
+              step={0.01}
+              classNames="text-xs h-7"
+            />
+          );
+        },
+        size: 150,
       },
       {
         accessorKey: "unit_id",
@@ -208,7 +239,9 @@ export default function ProductsSection({ form, isViewMode, token, buCode }: Pro
       },
       {
         accessorKey: "tax_profile_id",
-        header: ({ column }) => <DataGridColumnHeader column={column} title={tPriceList("tax_profile")} />,
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tPriceList("tax_profile")} />
+        ),
         cell: ({ row }) => {
           const item = row.original;
           const index = getOriginalIndex(item.id || "");
@@ -227,6 +260,53 @@ export default function ProductsSection({ form, isViewMode, token, buCode }: Pro
                 });
               }}
               classNames="h-7"
+            />
+          );
+        },
+        size: 150,
+      },
+      {
+        accessorKey: "tax_amt",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tPriceList("tax_amt")} />
+        ),
+        cell: ({ row }) => {
+          const item = row.original;
+          const index = getOriginalIndex(item.id || "");
+          if (index === -1) return null;
+
+          return isViewMode ? (
+            <span className="text-xs">{item.tax_amt ?? 0}</span>
+          ) : (
+            <NumberInput
+              value={item.tax_amt ?? 0}
+              onChange={(value) => handleFieldChange(index, "tax_amt", value)}
+              min={0}
+              step={0.01}
+              classNames="text-xs h-7"
+            />
+          );
+        },
+        size: 120,
+      },
+      {
+        accessorKey: "lead_time_days",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tPriceList("lead_time_days")} />
+        ),
+        cell: ({ row }) => {
+          const item = row.original;
+          const index = getOriginalIndex(item.id || "");
+          if (index === -1) return null;
+
+          return isViewMode ? (
+            <span className="text-xs">{item.lead_time_days ?? 0}</span>
+          ) : (
+            <NumberInput
+              value={item.lead_time_days ?? 0}
+              onChange={(value) => handleFieldChange(index, "lead_time_days", value)}
+              min={0}
+              classNames="text-xs h-7"
             />
           );
         },
@@ -321,7 +401,7 @@ export default function ProductsSection({ form, isViewMode, token, buCode }: Pro
           >
             <div className="w-full">
               <DataGridContainer>
-                <ScrollArea className="h-[calc(100vh-500px)] min-h-[300px]">
+                <ScrollArea className="h-[calc(100vh-500px)]">
                   <DataGridTable />
                   <ScrollBar orientation="horizontal" />
                 </ScrollArea>
@@ -330,8 +410,8 @@ export default function ProductsSection({ form, isViewMode, token, buCode }: Pro
           </DataGrid>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+        <div className="flex flex-col items-center justify-center pb-5 text-center">
+          <div className="flex h-12 w-12 items-center justify-center">
             <Package className="h-6 w-6 text-muted-foreground" />
           </div>
           <h3 className="mt-4 text-sm font-semibold">{tPriceList("no_products_added")}</h3>
