@@ -1,16 +1,6 @@
+import { z } from "zod";
 import { VendorGetDto } from "./vendor-management";
 
-/**
- * Vendor DTO - Pure TypeScript interfaces
- * Zod schemas moved to: app/.../vendor/_schemas/vendor-form.schema.ts
- */
-
-/**
- * Info Item DTO
- */
-/**
- * Info Item DTO
- */
 export interface InfoItemDto {
   label: string;
   value: string;
@@ -30,12 +20,6 @@ export interface AddressDataDto {
   country: string;
 }
 
-/**
- * Address DTO
- */
-/**
- * Address DTO
- */
 export interface AddressDto {
   id?: string;
   is_new?: boolean;
@@ -43,9 +27,6 @@ export interface AddressDto {
   data: AddressDataDto;
 }
 
-/**
- * Contact DTO
- */
 export interface ContactDto {
   id?: string;
   is_new?: boolean;
@@ -56,7 +37,22 @@ export interface ContactDto {
 }
 
 /**
- * Vendor Form Values DTO (includes UI state fields)
+ * Initial data for vendor form (loaded from API)
+ */
+export interface VendorInitData {
+  id?: string;
+  name: string;
+  code: string;
+  description?: string | null;
+  note?: string | null;
+  business_type: { id: string; name: string }[];
+  info: InfoItemDto[];
+  addresses: AddressDto[];
+  contacts: ContactDto[];
+}
+
+/**
+ * Vendor Form Values (for form state - without UI arrays)
  */
 export interface VendorFormValues {
   id?: string;
@@ -66,30 +62,25 @@ export interface VendorFormValues {
   note?: string | null;
   business_type: { id: string; name: string }[];
   info: InfoItemDto[];
-  addresses: AddressDto[]; // UI State only
-  contacts: ContactDto[]; // UI State only
   vendor_address: {
     add: AddressDto[];
     update: AddressDto[];
-    delete: { id: string }[];
+    remove: { id: string }[];
   };
   vendor_contact: {
     add: ContactDto[];
     update: ContactDto[];
-    delete: { id: string }[];
+    remove: { id: string }[];
   };
 }
 
-/**
- * Vendor Payload DTO (for API submission - excludes UI state fields)
- */
-export type VendorPayload = Omit<VendorFormValues, "addresses" | "contacts">;
+export type VendorPayload = VendorFormValues;
 
 /**
- * Transform Vendor API response to Form values
+ * Transform Vendor API response to initial data
  */
-export const transformVendorData = (data: VendorGetDto): VendorFormValues => {
-  // Use tb_vendor_contact if available (has id), otherwise use vendor_contact (no id)
+export const transformVendorData = (data: VendorGetDto): VendorInitData => {
+  // Use tb_vendor_contact if available (has id), otherwise use vendor_contact
   const contacts =
     data.tb_vendor_contact?.map((contact) => ({
       id: contact.id,
@@ -99,7 +90,7 @@ export const transformVendorData = (data: VendorGetDto): VendorFormValues => {
       is_primary: contact.is_primary ?? false,
     })) ||
     data.vendor_contact?.map((contact) => ({
-      // vendor_contact doesn't have id field
+      id: contact.id,
       name: contact.name,
       email: contact.email,
       phone: contact.phone,
@@ -130,17 +121,96 @@ export const transformVendorData = (data: VendorGetDto): VendorFormValues => {
     description: data.description ?? "",
     business_type: data.business_type ?? [],
     info: Array.isArray(data.info) ? data.info : [],
-    addresses: addresses,
-    contacts: contacts,
-    vendor_address: {
-      add: [],
-      update: [],
-      delete: [],
-    },
-    vendor_contact: {
-      add: [],
-      update: [],
-      delete: [],
-    },
+    addresses,
+    contacts,
   };
 };
+
+export const infoItemSchema = z.object({
+  label: z.string(),
+  value: z.string(),
+  data_type: z.enum(["string", "number", "date", "datetime", "boolean", "dataset"]),
+});
+
+const addressSchema = z.object({
+  id: z.string().optional(),
+  is_new: z.boolean().optional(),
+  address_type: z.string(),
+  data: z.object({
+    address_line1: z.string(),
+    address_line2: z.string().optional().or(z.literal("")),
+    district: z.string(),
+    province: z.string().optional().or(z.literal("")),
+    city: z.string().optional().or(z.literal("")),
+    postal_code: z.string(),
+    country: z.string(),
+  }),
+});
+
+export const createContactSchema = (messages: { nameRequired: string; emailInvalid: string }) =>
+  z.object({
+    id: z.string().optional(),
+    is_new: z.boolean().optional(),
+    name: z.string().min(1, messages.nameRequired),
+    email: z.string().email(messages.emailInvalid).optional().or(z.literal("")),
+    phone: z.string().optional().or(z.literal("")),
+    is_primary: z.boolean().optional(),
+  });
+
+export const createVendorFormSchema = (messages: {
+  nameRequired: string;
+  codeRequired: string;
+  contactNameRequired: string;
+  emailInvalid: string;
+}) =>
+  z
+    .object({
+      id: z.string().optional(),
+      name: z.string().min(1, messages.nameRequired),
+      code: z.string().min(1, messages.codeRequired),
+      description: z.string().nullish(),
+      business_type: z
+        .array(
+          z.object({
+            id: z.string(),
+            name: z.string(),
+          })
+        )
+        .default([]),
+      info: z.array(infoItemSchema).default([]),
+      vendor_address: z.object({
+        add: z.array(addressSchema).default([]),
+        update: z.array(addressSchema).default([]),
+        remove: z.array(z.object({ id: z.string() })).default([]),
+      }),
+      vendor_contact: z.object({
+        add: z
+          .array(
+            createContactSchema({
+              nameRequired: messages.contactNameRequired,
+              emailInvalid: messages.emailInvalid,
+            })
+          )
+          .default([]),
+        update: z
+          .array(
+            createContactSchema({
+              nameRequired: messages.contactNameRequired,
+              emailInvalid: messages.emailInvalid,
+            })
+          )
+          .default([]),
+        remove: z.array(z.object({ id: z.string() })).default([]),
+      }),
+    })
+    .transform((data) => {
+      // Remove id if it is an empty string
+      if (data.id === "") {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id, ...rest } = data;
+        return rest;
+      }
+      return data;
+    });
+
+export type VendorFormData = z.infer<ReturnType<typeof createVendorFormSchema>>;

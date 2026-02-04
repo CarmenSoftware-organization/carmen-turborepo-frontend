@@ -18,8 +18,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { VendorFormValues } from "@/dtos/vendor.dto";
-import { infoItemSchema } from "@/app/[locale]/(root)/vendor-management/vendor/_schemas/vendor-form.schema";
+import { VendorFormValues, infoItemSchema } from "@/dtos/vendor.dto";
 
 interface InfoVendorProps {
   form: UseFormReturn<VendorFormValues>;

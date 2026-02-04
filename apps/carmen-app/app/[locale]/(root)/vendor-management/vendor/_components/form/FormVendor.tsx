@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef, useMemo } from "react";
-import { useForm, useFieldArray, UseFormReturn } from "react-hook-form";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import {
@@ -14,25 +14,11 @@ import {
   Info,
   Pencil,
   Loader2,
-  Trash2,
   User,
-  Mail,
-  Check,
-  X,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Form,
   FormControl,
@@ -49,387 +35,53 @@ import { FormBusinessTypeDialog } from "@/components/shared/FormBusinessTypeDial
 
 import { useAuth } from "@/context/AuthContext";
 import { formType } from "@/dtos/form.dto";
-import { VendorFormValues, VendorPayload, AddressDto, ContactDto } from "@/dtos/vendor.dto";
-import { createVendorFormSchema } from "../../_schemas/vendor-form.schema";
+import {
+  VendorFormValues,
+  VendorInitData,
+  VendorPayload,
+  AddressDto,
+  ContactDto,
+  createVendorFormSchema,
+} from "@/dtos/vendor.dto";
 import { useVendorMutation, useUpdateVendor } from "@/hooks/use-vendor";
 import { useBuTypeQuery, useBuTypeMutation } from "@/hooks/use-bu-type";
 import { BuTypeGetAllDto, BuTypeFormDto } from "@/dtos/bu-type.dto";
 import { useRouter } from "@/lib/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
-import { cn } from "@/lib/utils";
 import InfoVendor from "./InfoVendor";
+import ContactRow from "./ContactRow";
+import AddressRow from "./AddressRow";
 
-// ============================================================
-// Types
-// ============================================================
-
-interface VendorFormProps {
+interface Props {
   readonly mode: formType;
-  readonly initData?: VendorFormValues;
+  readonly initData?: VendorInitData;
 }
 
-// ============================================================
-// Default Values
-// ============================================================
-
-const defaultValues: VendorFormValues = {
+const defaultFormValues: VendorFormValues = {
   id: "",
   name: "",
   code: "",
   description: "",
   business_type: [],
   info: [],
-  addresses: [],
-  contacts: [],
-  vendor_address: { add: [], update: [], delete: [] },
-  vendor_contact: { add: [], update: [], delete: [] },
+  vendor_address: { add: [], update: [], remove: [] },
+  vendor_contact: { add: [], update: [], remove: [] },
 };
 
-// ============================================================
-// Address Row Component
-// ============================================================
+const toFormValues = (data: VendorInitData): VendorFormValues => ({
+  id: data.id,
+  name: data.name,
+  code: data.code,
+  description: data.description,
+  note: data.note,
+  business_type: data.business_type,
+  info: data.info,
+  vendor_address: { add: [], update: [], remove: [] },
+  vendor_contact: { add: [], update: [], remove: [] },
+});
 
-interface AddressRowProps {
-  fieldId: string;
-  index: number;
-  form: UseFormReturn<VendorFormValues>;
-  isEditing: boolean;
-  isViewMode: boolean;
-  isDeleting?: boolean;
-  onToggleEdit: (fieldId: string, index: number) => void;
-  onRemove: (fieldId: string, index: number) => void;
-  t: ReturnType<typeof useTranslations<"Vendor">>;
-}
-
-function AddressRow({
-  fieldId,
-  index,
-  form,
-  isEditing,
-  isViewMode,
-  isDeleting,
-  onToggleEdit,
-  onRemove,
-  t,
-}: AddressRowProps) {
-  const addressType = form.watch(`addresses.${index}.address_type`);
-  const addressData = form.watch(`addresses.${index}.data`);
-
-  const getAddressTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      mailing_address: t("mailing_address"),
-      billing_address: t("billing_address"),
-      shipping_address: t("shipping_address"),
-      contact_address: t("contact_address"),
-    };
-    return labels[type] || type;
-  };
-
-  return (
-    <div
-      className={cn(
-        "relative p-4 rounded-lg border transition-all duration-300",
-        isEditing ? "border-primary/50 bg-primary/5" : "border-border",
-        isDeleting && "opacity-0 scale-95 -translate-x-4"
-      )}
-    >
-      {/* Action Buttons */}
-      {!isViewMode && (
-        <div className="absolute right-2 top-2 flex gap-1">
-          <Button
-            type="button"
-            variant={isEditing ? "default" : "ghost"}
-            size="xs"
-            onClick={() => onToggleEdit(fieldId, index)}
-          >
-            {isEditing ? <Check className="h-3.5 w-3.5" /> : <Pencil className="h-3.5 w-3.5" />}
-          </Button>
-          <Button type="button" variant="ghost" size="xs" onClick={() => onRemove(fieldId, index)}>
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-      )}
-
-      {isEditing ? (
-        // Edit Mode
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-start">
-          {/* Address Type */}
-          <div className="space-y-1">
-            <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-              {t("address_type")}
-            </Label>
-            <Select
-              value={form.watch(`addresses.${index}.address_type`)}
-              onValueChange={(value) => form.setValue(`addresses.${index}.address_type`, value)}
-            >
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue placeholder={t("select_type")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="mailing_address">{t("mailing_address")}</SelectItem>
-                <SelectItem value="billing_address">{t("billing_address")}</SelectItem>
-                <SelectItem value="shipping_address">{t("shipping_address")}</SelectItem>
-                <SelectItem value="contact_address">{t("contact_address")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Address Line 1 */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-3 space-y-1">
-            <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-              {t("address")} <span className="text-destructive">*</span>
-            </Label>
-            <div className="relative">
-              <MapPin className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-              <Input
-                {...form.register(`addresses.${index}.data.address_line1`)}
-                placeholder={t("address_line1")}
-                className="h-8 text-xs pl-8"
-              />
-            </div>
-            <Input
-              {...form.register(`addresses.${index}.data.address_line2`)}
-              placeholder={t("address_line2")}
-              className="h-8 text-xs mt-1"
-            />
-          </div>
-
-          {/* District */}
-          <div className="space-y-1">
-            <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-              {t("locality")}
-            </Label>
-            <Input
-              {...form.register(`addresses.${index}.data.district`)}
-              placeholder={t("district")}
-              className="h-8 text-xs"
-            />
-          </div>
-
-          {/* City */}
-          <div className="space-y-1">
-            <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-              {t("city")}
-            </Label>
-            <Input
-              {...form.register(`addresses.${index}.data.city`)}
-              placeholder={t("city")}
-              className="h-8 text-xs"
-            />
-          </div>
-
-          {/* Province */}
-          <div className="space-y-1">
-            <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-              {t("province")}
-            </Label>
-            <Input
-              {...form.register(`addresses.${index}.data.province`)}
-              placeholder={t("province")}
-              className="h-8 text-xs"
-            />
-          </div>
-
-          {/* Postal Code & Country */}
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-1">
-              <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-                {t("zip_code")}
-              </Label>
-              <Input
-                {...form.register(`addresses.${index}.data.postal_code`)}
-                placeholder={t("zip_code")}
-                className="h-8 text-xs"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-                {t("country")}
-              </Label>
-              <Input
-                {...form.register(`addresses.${index}.data.country`)}
-                placeholder={t("country")}
-                className="h-8 text-xs"
-              />
-            </div>
-          </div>
-        </div>
-      ) : (
-        // View Mode
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-xs">
-              {getAddressTypeLabel(addressType)}
-            </Badge>
-          </div>
-          <div className="text-sm">
-            <p>{addressData?.address_line1}</p>
-            {addressData?.address_line2 && <p>{addressData.address_line2}</p>}
-            <p>
-              {[addressData?.district, addressData?.city, addressData?.province]
-                .filter(Boolean)
-                .join(", ")}
-            </p>
-            <p>{[addressData?.postal_code, addressData?.country].filter(Boolean).join(" ")}</p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ============================================================
-// Contact Row Component
-// ============================================================
-
-interface ContactRowProps {
-  fieldId: string;
-  index: number;
-  form: UseFormReturn<VendorFormValues>;
-  isEditing: boolean;
-  isViewMode: boolean;
-  isDeleting?: boolean;
-  onToggleEdit: (fieldId: string, index: number) => void;
-  onRemove: (fieldId: string, index: number) => void;
-  onSetPrimary: (index: number) => void;
-  t: ReturnType<typeof useTranslations<"Vendor">>;
-}
-
-function ContactRow({
-  fieldId,
-  index,
-  form,
-  isEditing,
-  isViewMode,
-  isDeleting,
-  onToggleEdit,
-  onRemove,
-  onSetPrimary,
-  t,
-}: ContactRowProps) {
-  const isPrimary = form.watch(`contacts.${index}.is_primary`);
-  const contactData = form.watch(`contacts.${index}`);
-
-  return (
-    <div
-      className={cn(
-        "relative p-4 rounded-lg border transition-all duration-300",
-        isPrimary && "border-primary/50 bg-primary/5",
-        isEditing && !isPrimary && "border-blue-500/50 bg-blue-500/5",
-        isDeleting && "opacity-0 scale-95 -translate-x-4"
-      )}
-    >
-      {/* Action Buttons */}
-      {!isViewMode && (
-        <div className="absolute right-2 top-2 flex gap-1">
-          <Button
-            type="button"
-            variant={isEditing ? "default" : "ghost"}
-            size="xs"
-            onClick={() => onToggleEdit(fieldId, index)}
-          >
-            {isEditing ? <Check className="h-3.5 w-3.5" /> : <Pencil className="h-3.5 w-3.5" />}
-          </Button>
-          <Button type="button" variant="ghost" size="xs" onClick={() => onRemove(fieldId, index)}>
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-      )}
-
-      {isEditing ? (
-        // Edit Mode
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-start">
-          {/* Name */}
-          <div className="space-y-1">
-            <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-              {t("contact_name")} <span className="text-destructive">*</span>
-            </Label>
-            <div className="relative">
-              <User className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-              <Input
-                {...form.register(`contacts.${index}.name`)}
-                placeholder={t("contact_name")}
-                className="h-8 text-xs pl-8"
-              />
-            </div>
-          </div>
-
-          {/* Email */}
-          <div className="space-y-1">
-            <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-              {t("email")}
-            </Label>
-            <div className="relative">
-              <Mail className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-              <Input
-                {...form.register(`contacts.${index}.email`)}
-                placeholder={t("email")}
-                className="h-8 text-xs pl-8"
-              />
-            </div>
-          </div>
-
-          {/* Phone */}
-          <div className="space-y-1">
-            <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-              {t("phone")}
-            </Label>
-            <div className="relative">
-              <Phone className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-              <Input
-                {...form.register(`contacts.${index}.phone`)}
-                placeholder={t("phone")}
-                className="h-8 text-xs pl-8"
-              />
-            </div>
-          </div>
-
-          {/* Primary Checkbox */}
-          <div className="flex items-center space-x-2 pt-6">
-            <Checkbox
-              id={`primary-${fieldId}`}
-              checked={isPrimary || false}
-              onCheckedChange={() => onSetPrimary(index)}
-            />
-            <Label htmlFor={`primary-${fieldId}`} className="text-xs font-medium">
-              {t("primary_contact")}
-            </Label>
-          </div>
-        </div>
-      ) : (
-        // View Mode
-        <div className="flex items-center gap-4">
-          <User className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">{contactData?.name || "-"}</span>
-          {isPrimary && (
-            <Badge variant="default" className="text-xs">
-              Primary
-            </Badge>
-          )}
-          {contactData?.email && (
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <Mail className="h-3.5 w-3.5" />
-              {contactData.email}
-            </div>
-          )}
-          {contactData?.phone && (
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <Phone className="h-3.5 w-3.5" />
-              {contactData.phone}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ============================================================
-// Main Form Component
-// ============================================================
-
-export default function FormVendor({ mode, initData }: VendorFormProps) {
+export default function FormVendor({ mode, initData }: Props) {
   const { token, buCode } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -469,44 +121,25 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
     [t]
   );
 
-  // Form
   const form = useForm<VendorFormValues>({
     resolver: zodResolver(vendorFormSchema),
-    defaultValues: currentMode === formType.ADD ? defaultValues : initData,
+    defaultValues:
+      currentMode === formType.ADD
+        ? defaultFormValues
+        : initData
+          ? toFormValues(initData)
+          : defaultFormValues,
   });
 
-  const watchForm = form.watch();
+  const [addresses, setAddresses] = useState<(AddressDto & { _fieldId: string })[]>(() =>
+    (initData?.addresses || []).map((addr, i) => ({ ...addr, _fieldId: `addr-${addr.id || i}` }))
+  );
+  const [contacts, setContacts] = useState<(ContactDto & { _fieldId: string })[]>(() =>
+    (initData?.contacts || []).map((c, i) => ({ ...c, _fieldId: `contact-${c.id || i}` }))
+  );
 
-  console.log("watchForm", watchForm);
-
-  // Field Arrays
-  const {
-    fields: addressFields,
-    prepend: prependAddress,
-    remove: removeAddress,
-  } = useFieldArray({
-    control: form.control,
-    name: "addresses",
-  });
-
-  const {
-    fields: contactFields,
-    prepend: prependContact,
-    remove: removeContact,
-  } = useFieldArray({
-    control: form.control,
-    name: "contacts",
-  });
-
-  // ============================================================
-  // Inline Editing State (Pattern: ใช้ field.id แทน index)
-  // ============================================================
   const [editingAddresses, setEditingAddresses] = useState<Set<string>>(new Set());
   const [editingContacts, setEditingContacts] = useState<Set<string>>(new Set());
-
-  // Track adding state to auto-open edit mode
-  const isAddingAddressRef = useRef(false);
-  const isAddingContactRef = useRef(false);
 
   // Deleted IDs for API
   const [deletedAddressIds, setDeletedAddressIds] = useState<string[]>([]);
@@ -526,42 +159,35 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
   const [deletingAddressIds, setDeletingAddressIds] = useState<Set<string>>(new Set());
   const [deletingContactIds, setDeletingContactIds] = useState<Set<string>>(new Set());
 
-  // ============================================================
-  // Effects
-  // ============================================================
+  // Counter for generating unique field IDs
+  const fieldIdCounter = useRef(0);
 
-  // Reset form when initData changes (for VIEW and EDIT modes)
+  // Reset all states when initData changes
   useEffect(() => {
     if (initData && currentMode !== formType.ADD) {
-      form.reset(initData);
+      form.reset(toFormValues(initData));
+      setAddresses(
+        (initData.addresses || []).map((addr, i) => ({ ...addr, _fieldId: `addr-${addr.id || i}` }))
+      );
+      setContacts(
+        (initData.contacts || []).map((c, i) => ({ ...c, _fieldId: `contact-${c.id || i}` }))
+      );
+      // Clear all states
+      setEditingAddresses(new Set());
+      setEditingContacts(new Set());
+      setDeletedAddressIds([]);
+      setDeletedContactIds([]);
+      setDeletingAddressIds(new Set());
+      setDeletingContactIds(new Set());
+      setDeleteAddressIndex(null);
+      setDeleteContactIndex(null);
     }
   }, [form, initData, currentMode]);
 
-  // Auto-open edit mode after adding address (prepend adds at index 0)
-  useEffect(() => {
-    if (isAddingAddressRef.current && addressFields.length > 0) {
-      const firstField = addressFields[0];
-      setEditingAddresses((prev) => new Set(prev).add(firstField.id));
-      isAddingAddressRef.current = false;
-    }
-  }, [addressFields.length]);
-
-  // Auto-open edit mode after adding contact (prepend adds at index 0)
-  useEffect(() => {
-    if (isAddingContactRef.current && contactFields.length > 0) {
-      const firstField = contactFields[0];
-      setEditingContacts((prev) => new Set(prev).add(firstField.id));
-      isAddingContactRef.current = false;
-    }
-  }, [contactFields.length]);
-
-  // ============================================================
-  // Address Handlers
-  // ============================================================
-
   const handleAddAddress = useCallback(() => {
-    isAddingAddressRef.current = true;
-    prependAddress({
+    const newFieldId = `addr-new-${++fieldIdCounter.current}`;
+    const newAddress: AddressDto & { _fieldId: string } = {
+      _fieldId: newFieldId,
       is_new: true,
       address_type: "",
       data: {
@@ -573,37 +199,30 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
         postal_code: "",
         country: "",
       },
-    });
-  }, [prependAddress]);
+    };
+    setAddresses((prev) => [newAddress, ...prev]);
+    setEditingAddresses((prev) => new Set(prev).add(newFieldId));
+  }, []);
 
-  const handleToggleEditAddress = useCallback(
-    async (fieldId: string, index: number) => {
-      // Validate before closing edit mode
-      if (editingAddresses.has(fieldId)) {
-        const isValid = await form.trigger(`addresses.${index}`);
-        if (!isValid) return;
+  const handleToggleEditAddress = useCallback((fieldId: string) => {
+    setEditingAddresses((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(fieldId)) {
+        newSet.delete(fieldId);
+      } else {
+        newSet.add(fieldId);
       }
-
-      setEditingAddresses((prev) => {
-        const newSet = new Set(prev);
-        if (newSet.has(fieldId)) {
-          newSet.delete(fieldId);
-        } else {
-          newSet.add(fieldId);
-        }
-        return newSet;
-      });
-    },
-    [editingAddresses, form]
-  );
+      return newSet;
+    });
+  }, []);
 
   const handleRemoveAddress = useCallback(
     (fieldId: string, index: number) => {
-      const itemToDelete = form.getValues(`addresses.${index}`);
+      const itemToDelete = addresses[index];
 
       // If it's a new item, delete directly without confirmation
       if (itemToDelete?.is_new) {
-        removeAddress(index);
+        setAddresses((prev) => prev.filter((_, i) => i !== index));
         setEditingAddresses((prev) => {
           const newSet = new Set(prev);
           newSet.delete(fieldId);
@@ -614,20 +233,25 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
         setDeleteAddressIndex({ fieldId, index });
       }
     },
-    [form, removeAddress]
+    [addresses]
   );
 
   const handleConfirmDeleteAddress = useCallback(() => {
     if (deleteAddressIndex) {
       const { fieldId, index } = deleteAddressIndex;
-      const itemToDelete = form.getValues(`addresses.${index}`);
+      const itemToDelete = addresses[index];
 
-      // Track deleted ID for API (both state and form value)
+      console.log("handleConfirmDeleteAddress", { fieldId, index, itemToDelete });
+
+      // Track deleted ID for API
       if (itemToDelete?.id) {
         setDeletedAddressIds((prev) => [...prev, itemToDelete.id!]);
         // Also update form value for visibility in watchForm
-        const currentDeletes = form.getValues("vendor_address.delete") || [];
-        form.setValue("vendor_address.delete", [...currentDeletes, { id: itemToDelete.id! }]);
+        const currentDeletes = form.getValues("vendor_address.remove") || [];
+        form.setValue("vendor_address.remove", [...currentDeletes, { id: itemToDelete.id! }]);
+        console.log("Added to vendor_address.remove", { id: itemToDelete.id });
+      } else {
+        console.log("No id found on itemToDelete");
       }
 
       // Start animation
@@ -636,7 +260,7 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
 
       // Delay actual removal to allow animation to complete
       setTimeout(() => {
-        removeAddress(index);
+        setAddresses((prev) => prev.filter((_, i) => i !== index));
         setEditingAddresses((prev) => {
           const newSet = new Set(prev);
           newSet.delete(fieldId);
@@ -649,51 +273,41 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
         });
       }, 300);
     }
-  }, [deleteAddressIndex, form, removeAddress]);
-
-  // ============================================================
-  // Contact Handlers
-  // ============================================================
+  }, [deleteAddressIndex, addresses, form]);
 
   const handleAddContact = useCallback(() => {
-    isAddingContactRef.current = true;
-    prependContact({
+    const newFieldId = `contact-new-${++fieldIdCounter.current}`;
+    const newContact: ContactDto & { _fieldId: string } = {
+      _fieldId: newFieldId,
       is_new: true,
       name: "",
       email: "",
       phone: "",
       is_primary: false,
-    });
-  }, [prependContact]);
+    };
+    setContacts((prev) => [newContact, ...prev]);
+    setEditingContacts((prev) => new Set(prev).add(newFieldId));
+  }, []);
 
-  const handleToggleEditContact = useCallback(
-    async (fieldId: string, index: number) => {
-      // Validate before closing edit mode
-      if (editingContacts.has(fieldId)) {
-        const isValid = await form.trigger(`contacts.${index}`);
-        if (!isValid) return;
+  const handleToggleEditContact = useCallback((fieldId: string) => {
+    setEditingContacts((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(fieldId)) {
+        newSet.delete(fieldId);
+      } else {
+        newSet.add(fieldId);
       }
-
-      setEditingContacts((prev) => {
-        const newSet = new Set(prev);
-        if (newSet.has(fieldId)) {
-          newSet.delete(fieldId);
-        } else {
-          newSet.add(fieldId);
-        }
-        return newSet;
-      });
-    },
-    [editingContacts, form]
-  );
+      return newSet;
+    });
+  }, []);
 
   const handleRemoveContact = useCallback(
     (fieldId: string, index: number) => {
-      const itemToDelete = form.getValues(`contacts.${index}`);
+      const itemToDelete = contacts[index];
 
       // If it's a new item, delete directly without confirmation
       if (itemToDelete?.is_new) {
-        removeContact(index);
+        setContacts((prev) => prev.filter((_, i) => i !== index));
         setEditingContacts((prev) => {
           const newSet = new Set(prev);
           newSet.delete(fieldId);
@@ -704,20 +318,20 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
         setDeleteContactIndex({ fieldId, index });
       }
     },
-    [form, removeContact]
+    [contacts]
   );
 
   const handleConfirmDeleteContact = useCallback(() => {
     if (deleteContactIndex) {
       const { fieldId, index } = deleteContactIndex;
-      const itemToDelete = form.getValues(`contacts.${index}`);
+      const itemToDelete = contacts[index];
 
-      // Track deleted ID for API (both state and form value)
+      // Track deleted ID for API
       if (itemToDelete?.id) {
         setDeletedContactIds((prev) => [...prev, itemToDelete.id!]);
         // Also update form value for visibility in watchForm
-        const currentDeletes = form.getValues("vendor_contact.delete") || [];
-        form.setValue("vendor_contact.delete", [...currentDeletes, { id: itemToDelete.id! }]);
+        const currentDeletes = form.getValues("vendor_contact.remove") || [];
+        form.setValue("vendor_contact.remove", [...currentDeletes, { id: itemToDelete.id! }]);
       }
 
       // Start animation
@@ -726,7 +340,7 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
 
       // Delay actual removal to allow animation to complete
       setTimeout(() => {
-        removeContact(index);
+        setContacts((prev) => prev.filter((_, i) => i !== index));
         setEditingContacts((prev) => {
           const newSet = new Set(prev);
           newSet.delete(fieldId);
@@ -739,25 +353,16 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
         });
       }, 300);
     }
-  }, [deleteContactIndex, form, removeContact]);
+  }, [deleteContactIndex, contacts, form]);
 
-  const handleSetPrimary = useCallback(
-    (index: number) => {
-      const currentContacts = form.getValues("contacts");
-      currentContacts.forEach((_, i) => {
-        if (i !== index) {
-          form.setValue(`contacts.${i}.is_primary`, false);
-        }
-      });
-      const currentValue = form.getValues(`contacts.${index}.is_primary`);
-      form.setValue(`contacts.${index}.is_primary`, !currentValue);
-    },
-    [form]
-  );
-
-  // ============================================================
-  // Form Handlers
-  // ============================================================
+  const handleSetPrimary = useCallback((index: number) => {
+    setContacts((prev) =>
+      prev.map((contact, i) => ({
+        ...contact,
+        is_primary: i === index ? !contact.is_primary : false,
+      }))
+    );
+  }, []);
 
   const handleBusinessTypeChange = useCallback(
     (values: string[], onChange: (value: any) => void) => {
@@ -817,33 +422,40 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
         );
       };
 
-      // Build payloads
+      // Build payloads from local state arrays (exclude _fieldId and is_new from payload)
       const vendorAddressPayload = {
-        add: data.addresses.filter((addr) => addr.is_new) || [],
+        add:
+          addresses.filter((addr) => addr.is_new).map(({ _fieldId, is_new, ...rest }) => rest) ||
+          [],
         update:
-          data.addresses.filter((addr) => {
-            const original = initData?.addresses?.find((o) => o.id === addr.id);
-            return addr.id && !addr.is_new && original && isAddressChanged(addr, original);
-          }) || [],
-        delete: deletedAddressIds.map((id) => ({ id })),
+          addresses
+            .filter((addr) => {
+              const original = initData?.addresses?.find((o) => o.id === addr.id);
+              return addr.id && !addr.is_new && original && isAddressChanged(addr, original);
+            })
+            .map(({ _fieldId, is_new, ...rest }) => rest) || [],
+        remove: deletedAddressIds.map((id) => ({ id })),
       };
 
       const vendorContactPayload = {
-        add: data.contacts.filter((contact) => contact.is_new) || [],
+        add:
+          contacts
+            .filter((contact) => contact.is_new)
+            .map(({ _fieldId, is_new, ...rest }) => rest) || [],
         update:
-          data.contacts.filter((contact) => {
-            const original = initData?.contacts?.find((o) => o.id === contact.id);
-            return contact.id && !contact.is_new && original && isContactChanged(contact, original);
-          }) || [],
-        delete: deletedContactIds.map((id) => ({ id })),
+          contacts
+            .filter((contact) => {
+              const original = initData?.contacts?.find((o) => o.id === contact.id);
+              return (
+                contact.id && !contact.is_new && original && isContactChanged(contact, original)
+              );
+            })
+            .map(({ _fieldId, is_new, ...rest }) => rest) || [],
+        remove: deletedContactIds.map((id) => ({ id })),
       };
 
-      // Destructure to remove UI-only fields from payload
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { addresses, contacts, ...restData } = data;
-
       const submitData: VendorPayload = {
-        ...restData,
+        ...data,
         vendor_address: vendorAddressPayload,
         vendor_contact: vendorContactPayload,
       };
@@ -870,9 +482,7 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
             toastSuccess({ message: t("update_success") });
             queryClient.invalidateQueries({ queryKey: ["vendor", buCode, initData.id] });
             setCurrentMode(formType.VIEW);
-            // Clear editing states
-            setEditingAddresses(new Set());
-            setEditingContacts(new Set());
+            // Note: state reset is handled by key prop in parent (component remounts on data change)
           },
           onError: () => {
             toastError({ message: t("update_error") });
@@ -883,6 +493,8 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
     [
       currentMode,
       initData,
+      addresses,
+      contacts,
       deletedAddressIds,
       deletedContactIds,
       createVendor,
@@ -905,19 +517,30 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
       if (currentMode === formType.ADD) {
         router.back();
       } else {
-        form.reset(initData);
+        // Reset form and local state
+        if (initData) {
+          form.reset(toFormValues(initData));
+          setAddresses(
+            initData.addresses.map((addr, i) => ({ ...addr, _fieldId: `addr-${addr.id || i}` }))
+          );
+          setContacts(
+            initData.contacts.map((c, i) => ({ ...c, _fieldId: `contact-${c.id || i}` }))
+          );
+        }
         setCurrentMode(formType.VIEW);
+        // Clear all states
         setEditingAddresses(new Set());
         setEditingContacts(new Set());
+        setDeletedAddressIds([]);
+        setDeletedContactIds([]);
+        setDeletingAddressIds(new Set());
+        setDeletingContactIds(new Set());
+        setDeleteAddressIndex(null);
+        setDeleteContactIndex(null);
       }
     },
     [currentMode, form, initData, router]
   );
-
-  // ============================================================
-  // Render
-  // ============================================================
-
   const SectionLabel = ({ children }: { children: React.ReactNode }) => (
     <FormLabel className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
       {children}
@@ -976,7 +599,7 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
               {isViewMode ? (
                 <Button size="sm" onClick={onEdit}>
                   <Pencil className="h-4 w-4" />
-                  Edit Vendor
+                  {t("edit_vendor")}
                 </Button>
               ) : (
                 <>
@@ -1152,16 +775,23 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
               </div>
             </div>
             <div className="p-3 space-y-3">
-              {addressFields.length > 0 ? (
-                addressFields.map((field, index) => (
+              {addresses.length > 0 ? (
+                addresses.map((address, index) => (
                   <AddressRow
-                    key={field.id}
-                    fieldId={field.id}
+                    key={address._fieldId}
+                    fieldId={address._fieldId}
                     index={index}
-                    form={form}
-                    isEditing={editingAddresses.has(field.id)}
+                    address={address}
+                    onAddressChange={(newAddress) => {
+                      setAddresses((prev) =>
+                        prev.map((a, i) =>
+                          i === index ? { ...newAddress, _fieldId: a._fieldId } : a
+                        )
+                      );
+                    }}
+                    isEditing={editingAddresses.has(address._fieldId)}
                     isViewMode={isViewMode}
-                    isDeleting={deletingAddressIds.has(field.id)}
+                    isDeleting={deletingAddressIds.has(address._fieldId)}
                     onToggleEdit={handleToggleEditAddress}
                     onRemove={handleRemoveAddress}
                     t={t}
@@ -1201,16 +831,23 @@ export default function FormVendor({ mode, initData }: VendorFormProps) {
               </div>
             </div>
             <div className="p-3 space-y-3">
-              {contactFields.length > 0 ? (
-                contactFields.map((field, index) => (
+              {contacts.length > 0 ? (
+                contacts.map((contact, index) => (
                   <ContactRow
-                    key={field.id}
-                    fieldId={field.id}
+                    key={contact._fieldId}
+                    fieldId={contact._fieldId}
                     index={index}
-                    form={form}
-                    isEditing={editingContacts.has(field.id)}
+                    contact={contact}
+                    onContactChange={(newContact) => {
+                      setContacts((prev) =>
+                        prev.map((c, i) =>
+                          i === index ? { ...newContact, _fieldId: c._fieldId } : c
+                        )
+                      );
+                    }}
+                    isEditing={editingContacts.has(contact._fieldId)}
                     isViewMode={isViewMode}
-                    isDeleting={deletingContactIds.has(field.id)}
+                    isDeleting={deletingContactIds.has(contact._fieldId)}
                     onToggleEdit={handleToggleEditContact}
                     onRemove={handleRemoveContact}
                     onSetPrimary={handleSetPrimary}

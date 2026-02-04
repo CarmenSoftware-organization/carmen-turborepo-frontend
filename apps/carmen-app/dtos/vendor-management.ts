@@ -91,10 +91,14 @@ export interface VendorGetDto {
     is_active: boolean;
   }[];
   vendor_contact?: {
+    id: string;
     name: string;
     email: string;
     phone: string;
     is_primary: boolean;
+    description?: string | null;
+    info?: any;
+    is_active?: boolean;
   }[];
   tb_vendor_contact?: {
     id: string;
