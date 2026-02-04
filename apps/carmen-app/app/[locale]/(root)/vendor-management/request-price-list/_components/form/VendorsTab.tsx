@@ -107,7 +107,7 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
       },
       {
         accessorKey: "name",
-        header: () => <span className="text-xs font-semibold">{tRfp("vendor_name")}</span>,
+        header: () => <span className="text-xs">{tRfp("vendor_name")}</span>,
         cell: ({ row }) => {
           if (row.original.isPlaceholder) {
             return (
@@ -155,13 +155,13 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
               />
             );
           }
-          return <span className="text-sm font-medium">{row.original.name}</span>;
+          return <span className="text-xs">{row.original.name}</span>;
         },
         size: 250,
       },
       {
         id: "email",
-        header: () => <span className="text-xs font-semibold">{tRfp("email")}</span>,
+        header: () => <span className="text-xs">{tRfp("email")}</span>,
         cell: ({ row }) =>
           row.original.contact_email ? (
             <Button
@@ -174,43 +174,43 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
               {row.original.contact_email}
             </Button>
           ) : (
-            <span className="text-muted-foreground text-xs">-</span>
+            <span className="text-xs">-</span>
           ),
         size: 200,
       },
       {
         id: "action",
-        header: () => <span className="text-xs font-semibold">{tRfp("action")}</span>,
+        header: () => <span className="text-xs">{tRfp("action")}</span>,
         cell: ({ row }) => {
           if (isViewMode) return null;
           if (row.original.isPlaceholder) {
             return (
-              <div className="flex justify-end pr-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7"
-                  onClick={() => setIsAdding(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            );
-          }
-          return (
-            <div className="flex justify-end pr-2">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                onClick={() => handleRemoveVendor(row.original.id || row.original.vendor_id || "")}
+                className="h-7 w-7"
+                onClick={() => setIsAdding(false)}
               >
-                <Trash2 className="h-4 w-4" />
+                <X className="h-4 w-4" />
               </Button>
-            </div>
+            );
+          }
+          return (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+              onClick={() => handleRemoveVendor(row.original.id || row.original.vendor_id || "")}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           );
         },
-        size: 50,
+        size: 100,
+        meta: {
+          cellClassName: "text-right",
+          headerClassName: "text-right",
+        },
       },
     ],
     [isViewMode, isAdding, rfpData, vendors, form, tRfp]
@@ -225,7 +225,7 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
   return (
     <div className="w-full">
       {!isViewMode && !isAdding && (
-        <div className="flex justify-end bg-muted/20 px-4 py-2 border-b">
+        <div className="flex justify-end pb-2">
           <Button
             onClick={() => setIsAdding(true)}
             size="sm"
@@ -254,7 +254,7 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
         >
           <div className="w-full">
             <DataGridContainer>
-              <ScrollArea className="h-[400px]">
+              <ScrollArea>
                 <DataGridTable />
                 <ScrollBar orientation="horizontal" />
               </ScrollArea>

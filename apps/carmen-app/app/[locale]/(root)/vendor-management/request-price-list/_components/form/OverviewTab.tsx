@@ -19,10 +19,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format, isSameDay } from "date-fns";
+import { isSameDay } from "date-fns";
 import { UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { Separator } from "@/components/ui/separator";
+import { formatDate } from "@/utils/format/date";
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,9 +30,10 @@ interface Props {
   isViewMode: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   templates: any;
+  dateFormat: string;
 }
 
-export default function OverviewTab({ form, isViewMode, templates }: Props) {
+export default function OverviewTab({ form, isViewMode, templates, dateFormat }: Props) {
   const tRfp = useTranslations("RFP");
   const tPlt = useTranslations("PriceListTemplate");
   const endDate = form.watch("end_date");
@@ -136,7 +137,7 @@ export default function OverviewTab({ form, isViewMode, templates }: Props) {
             control={form.control}
             name="start_date"
             render={({ field }) => (
-              <FormItem className="space-y-1">
+              <FormItem className="space-y-1 col-span-2">
                 <Label>{tRfp("validity_period")}</Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -144,15 +145,16 @@ export default function OverviewTab({ form, isViewMode, templates }: Props) {
                       <Button
                         variant={"outline"}
                         className={cn(
-                          "w-full pl-3 text-left font-normal h-8 text-sm",
+                          "w-full pl-3 text-left font-normal h-8 text-xs",
                           !field.value && "text-muted-foreground"
                         )}
                         disabled={isViewMode}
                       >
                         {field.value && endDate ? (
                           <>
-                            {format(new Date(field.value), "LLL dd, y")} -{" "}
-                            {format(new Date(endDate), "LLL dd, y")}
+                            <span>{formatDate(field.value, dateFormat || "yyyy-MM-dd")}</span>
+                            {"-"}
+                            <span>{formatDate(endDate, dateFormat || "yyyy-MM-dd")}</span>
                           </>
                         ) : (
                           <span>{tRfp("pick_date_range")}</span>
@@ -222,9 +224,6 @@ export default function OverviewTab({ form, isViewMode, templates }: Props) {
         </div>
       </div>
 
-      <Separator className="bg-border/60" />
-
-      {/* Section 2: Description */}
       <div>
         <h3 className="mb-4 text-sm font-semibold text-foreground">Details</h3>
         <FormField
@@ -237,9 +236,9 @@ export default function OverviewTab({ form, isViewMode, templates }: Props) {
                 <Textarea
                   {...field}
                   disabled={isViewMode}
-                  className="resize-none min-h-[80px] text-sm"
-                  rows={3}
+                  className="resize-none text-xs"
                   placeholder={tRfp("description_placeholder")}
+                  rows={6}
                 />
               </FormControl>
               <FormMessage />
