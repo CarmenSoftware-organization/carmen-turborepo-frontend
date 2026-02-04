@@ -52,53 +52,18 @@ export interface VendorInitData {
 }
 
 /**
- * Vendor Form Values (for form state - without UI arrays)
- */
-export interface VendorFormValues {
-  id?: string;
-  name: string;
-  code: string;
-  description?: string | null;
-  note?: string | null;
-  business_type: { id: string; name: string }[];
-  info: InfoItemDto[];
-  vendor_address: {
-    add: AddressDto[];
-    update: AddressDto[];
-    remove: { id: string }[];
-  };
-  vendor_contact: {
-    add: ContactDto[];
-    update: ContactDto[];
-    remove: { id: string }[];
-  };
-}
-
-export type VendorPayload = VendorFormValues;
-
-/**
  * Transform Vendor API response to initial data
  */
 export const transformVendorData = (data: VendorGetDto): VendorInitData => {
-  // Use tb_vendor_contact if available (has id), otherwise use vendor_contact
   const contacts =
-    data.tb_vendor_contact?.map((contact) => ({
-      id: contact.id,
-      name: contact.name,
-      email: contact.email,
-      phone: contact.phone,
-      is_primary: contact.is_primary ?? false,
-    })) ||
     data.vendor_contact?.map((contact) => ({
       id: contact.id,
       name: contact.name,
       email: contact.email,
       phone: contact.phone,
       is_primary: contact.is_primary ?? false,
-    })) ||
-    [];
+    })) || [];
 
-  // vendor_address has id field
   const addresses =
     data.vendor_address?.map((addr) => ({
       id: addr.id,
@@ -119,12 +84,37 @@ export const transformVendorData = (data: VendorGetDto): VendorInitData => {
     name: data.name,
     code: data.code,
     description: data.description ?? "",
+    note: data.note,
     business_type: data.business_type ?? [],
     info: Array.isArray(data.info) ? data.info : [],
     addresses,
     contacts,
   };
 };
+
+export interface VendorFormValues {
+  id?: string;
+  name: string;
+  code: string;
+  description?: string | null;
+  note?: string | null;
+  business_type: { id: string; name: string }[];
+  info: InfoItemDto[];
+  addresses: AddressDto[]; // UI State only
+  contacts: ContactDto[]; // UI State only
+  vendor_address: {
+    add: AddressDto[];
+    update: AddressDto[];
+    remove: { id: string }[];
+  };
+  vendor_contact: {
+    add: ContactDto[];
+    update: ContactDto[];
+    remove: { id: string }[];
+  };
+}
+
+export type VendorPayload = Omit<VendorFormValues, "addresses" | "contacts">;
 
 export const infoItemSchema = z.object({
   label: z.string(),
@@ -178,6 +168,15 @@ export const createVendorFormSchema = (messages: {
         )
         .default([]),
       info: z.array(infoItemSchema).default([]),
+      addresses: z.array(addressSchema).default([]),
+      contacts: z
+        .array(
+          createContactSchema({
+            nameRequired: messages.contactNameRequired,
+            emailInvalid: messages.emailInvalid,
+          })
+        )
+        .default([]),
       vendor_address: z.object({
         add: z.array(addressSchema).default([]),
         update: z.array(addressSchema).default([]),

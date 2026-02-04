@@ -17,11 +17,10 @@ export default function VendorPage() {
   const id = params.id as string;
   const { vendor, isLoading } = useVendorById(token, buCode, id);
 
-  // Transform API response to form values
   const formData = useMemo(() => {
-    if (!vendor?.data) return undefined;
-    return transformVendorData(vendor.data);
-  }, [vendor?.data]);
+    if (!vendor) return undefined;
+    return transformVendorData(vendor);
+  }, [vendor]);
 
   if (isLoading) return <DetailLoading />;
 

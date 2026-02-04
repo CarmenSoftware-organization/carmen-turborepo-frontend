@@ -8,6 +8,7 @@ import {
   getByIdApiRequest,
   postApiRequest,
   updateApiRequest,
+  deleteApiRequest,
 } from "@/lib/config.api";
 import { VendorPayload } from "@/dtos/vendor.dto";
 
@@ -62,7 +63,7 @@ export const useVendorById = (token: string, buCode: string, id: string) => {
     enabled: !!token && !!buCode && !!id,
   });
 
-  const vendor = data;
+  const vendor = data?.data;
   const isUnauthorized = error instanceof Error && error.message.includes("Unauthorized");
 
   return {
@@ -89,6 +90,18 @@ export const useUpdateVendor = (token: string, buCode: string, id: string) => {
         throw new Error("Unauthorized: Missing required parameters");
       }
       return updateApiRequest(API_ID, token, data, "Failed to update vendor", "PUT");
+    },
+  });
+};
+
+export const useDeleteVendor = (token: string, buCode: string) => {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      if (!token || !buCode || !id) {
+        throw new Error("Unauthorized: Missing required parameters");
+      }
+      const API_ID = vendorApiUrl(buCode, id);
+      return await deleteApiRequest(API_ID, token, "Error deleting vendor");
     },
   });
 };

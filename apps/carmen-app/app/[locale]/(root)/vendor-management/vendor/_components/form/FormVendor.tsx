@@ -15,6 +15,7 @@ import {
   Pencil,
   Loader2,
   User,
+  Trash2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -43,7 +44,7 @@ import {
   ContactDto,
   createVendorFormSchema,
 } from "@/dtos/vendor.dto";
-import { useVendorMutation, useUpdateVendor } from "@/hooks/use-vendor";
+import { useVendorMutation, useUpdateVendor, useDeleteVendor } from "@/hooks/use-vendor";
 import { useBuTypeQuery, useBuTypeMutation } from "@/hooks/use-bu-type";
 import { BuTypeGetAllDto, BuTypeFormDto } from "@/dtos/bu-type.dto";
 import { useRouter } from "@/lib/navigation";
@@ -65,6 +66,8 @@ const defaultFormValues: VendorFormValues = {
   description: "",
   business_type: [],
   info: [],
+  addresses: [],
+  contacts: [],
   vendor_address: { add: [], update: [], remove: [] },
   vendor_contact: { add: [], update: [], remove: [] },
 };
@@ -77,6 +80,8 @@ const toFormValues = (data: VendorInitData): VendorFormValues => ({
   note: data.note,
   business_type: data.business_type,
   info: data.info,
+  addresses: data.addresses,
+  contacts: data.contacts,
   vendor_address: { add: [], update: [], remove: [] },
   vendor_contact: { add: [], update: [], remove: [] },
 });
@@ -96,6 +101,7 @@ export default function FormVendor({ mode, initData }: Props) {
   );
   const { buTypes } = useBuTypeQuery(token, buCode, { perpage: -1 });
   const { mutate: createBuType } = useBuTypeMutation(token, buCode);
+  const { mutate: deleteVendor, isPending: isDeleting } = useDeleteVendor(token, buCode);
 
   const BUSINESS_TYPE_OPTIONS =
     buTypes?.data?.map((item: BuTypeGetAllDto) => ({
@@ -158,6 +164,9 @@ export default function FormVendor({ mode, initData }: Props) {
   // Delete Animation State (track items being animated out)
   const [deletingAddressIds, setDeletingAddressIds] = useState<Set<string>>(new Set());
   const [deletingContactIds, setDeletingContactIds] = useState<Set<string>>(new Set());
+
+  // Delete Vendor Dialog
+  const [isDeleteVendorDialogOpen, setIsDeleteVendorDialogOpen] = useState(false);
 
   // Counter for generating unique field IDs
   const fieldIdCounter = useRef(0);
@@ -240,18 +249,12 @@ export default function FormVendor({ mode, initData }: Props) {
     if (deleteAddressIndex) {
       const { fieldId, index } = deleteAddressIndex;
       const itemToDelete = addresses[index];
-
-      console.log("handleConfirmDeleteAddress", { fieldId, index, itemToDelete });
-
       // Track deleted ID for API
       if (itemToDelete?.id) {
         setDeletedAddressIds((prev) => [...prev, itemToDelete.id!]);
         // Also update form value for visibility in watchForm
         const currentDeletes = form.getValues("vendor_address.remove") || [];
         form.setValue("vendor_address.remove", [...currentDeletes, { id: itemToDelete.id! }]);
-        console.log("Added to vendor_address.remove", { id: itemToDelete.id });
-      } else {
-        console.log("No id found on itemToDelete");
       }
 
       // Start animation
@@ -510,6 +513,26 @@ export default function FormVendor({ mode, initData }: Props) {
     setCurrentMode(formType.EDIT);
   }, []);
 
+  const onDeleteVendor = useCallback(() => {
+    setIsDeleteVendorDialogOpen(true);
+  }, []);
+
+  const handleConfirmDeleteVendor = useCallback(() => {
+    if (!initData?.id) return;
+
+    deleteVendor(initData.id, {
+      onSuccess: () => {
+        toastSuccess({ message: t("delete_success") });
+        queryClient.invalidateQueries({ queryKey: ["vendor", buCode] });
+        router.replace("/vendor-management/vendor");
+      },
+      onError: () => {
+        toastError({ message: t("delete_error") });
+      },
+    });
+    setIsDeleteVendorDialogOpen(false);
+  }, [initData?.id, deleteVendor, t, queryClient, buCode, router]);
+
   const onCancel = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
@@ -541,6 +564,7 @@ export default function FormVendor({ mode, initData }: Props) {
     },
     [currentMode, form, initData, router]
   );
+
   const SectionLabel = ({ children }: { children: React.ReactNode }) => (
     <FormLabel className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
       {children}
@@ -549,7 +573,14 @@ export default function FormVendor({ mode, initData }: Props) {
 
   return (
     <div className="pb-10">
-      {/* Delete Confirmation Dialogs */}
+      <DeleteConfirmDialog
+        open={isDeleteVendorDialogOpen}
+        onOpenChange={setIsDeleteVendorDialogOpen}
+        onConfirm={handleConfirmDeleteVendor}
+        title={t("delete_vendor")}
+        description={t("delete_vendor_description")}
+      />
+
       <DeleteConfirmDialog
         open={deleteAddressIndex !== null}
         onOpenChange={(open) => !open && setDeleteAddressIndex(null)}
@@ -564,7 +595,6 @@ export default function FormVendor({ mode, initData }: Props) {
         title={t("delete_contact_title")}
         description={t("delete_contact_description")}
       />
-
       {/* Sticky Header */}
       <div className="sticky top-0 z-10 bg-background">
         <div className="container">
@@ -622,13 +652,21 @@ export default function FormVendor({ mode, initData }: Props) {
                       </>
                     )}
                   </Button>
+                  <Button
+                    variant={"destructive"}
+                    size={"sm"}
+                    disabled={isDeleting}
+                    onClick={onDeleteVendor}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    {t("delete")}
+                  </Button>
                 </>
               )}
             </div>
           </div>
         </div>
       </div>
-
       <div className="container">
         <Form {...form}>
           <form className="px-6 py-3">
