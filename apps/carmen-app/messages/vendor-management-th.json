@@ -196,7 +196,12 @@
     "vendor_instruction_placeholder": "กรอกคำแนะนำผู้จัดจำหน่าย",
     "product_name": "ชื่อสินค้า",
     "product_code": "โค้ดสินค้า",
-    "order_unit": "หน่วยสั่งซื้อ"
+    "order_unit": "หน่วยสั่งซื้อ",
+    "active": "ใช้งาน",
+    "inactive": "ไม่ใช้งาน",
+    "draft": "ร่าง",
+    "details": "รายละเอียด",
+    "no_products": "ไม่มีสินค้า"
   },
   "RFP": {
     "title": "รายงานขอราคาสินค้า (แคมเปญ)",

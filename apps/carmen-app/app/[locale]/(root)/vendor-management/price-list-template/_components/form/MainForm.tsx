@@ -17,14 +17,11 @@ import ProductsTab from "./ProductsTab";
 import RFPTabs from "./RFPTabs";
 import { FormValues, FormSchema } from "../../_schema/price-list-template.schema";
 import { useProductSelection } from "../../_hooks/useProductSelection";
-import { ChevronLeft, FileText, Loader2, PenBoxIcon, Save, X } from "lucide-react";
+import { ChevronLeft, Loader2, PenBoxIcon, Save, Trash2 } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
 import { useTranslations } from "next-intl";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 
 interface Props {
   readonly templateData?: PriceListTemplateDetailsDto;
@@ -36,7 +33,7 @@ export default function MainForm({ templateData, mode }: Props) {
   const tPlt = useTranslations("PriceListTemplate");
   const tCommon = useTranslations("Common");
   const [currentMode, setCurrentMode] = useState<formType>(mode);
-  const { token, buCode } = useAuth();
+  const { token, buCode, currencyBase } = useAuth();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -103,25 +100,11 @@ export default function MainForm({ templateData, mode }: Props) {
 
   const isViewMode = currentMode === formType.VIEW;
 
-  // Determine status color
-  const getStatusColor = (status?: string) => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
-      case "draft":
-        return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400";
-      case "inactive":
-        return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
-      default:
-        return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400";
-    }
-  };
-
   return (
-    <div className="flex flex-col min-h-screen bg-background/50">
+    <div className="flex flex-col min-h-screen p-3 pb-10">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur-md pb-4 pt-4">
-        <div className="container mx-auto px-4 max-w-7xl">
+      <div className="sticky top-0 z-10 bg-background">
+        <div className="container">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
@@ -140,11 +123,8 @@ export default function MainForm({ templateData, mode }: Props) {
                       (templateData?.name || "Price List Template")}
                   </h1>
                   {templateData && (
-                    <Badge
-                      variant="secondary"
-                      className={cn("ml-2", getStatusColor(templateData.status))}
-                    >
-                      {templateData.status}
+                    <Badge variant={templateData.status} className="font-bold">
+                      {templateData.status.toLocaleUpperCase()}
                     </Badge>
                   )}
                 </div>
@@ -184,14 +164,13 @@ export default function MainForm({ templateData, mode }: Props) {
                     form="price-list-template-form"
                     size="sm"
                     disabled={form.formState.isSubmitting}
-                    className="h-8 gap-2 px-4 shadow-sm"
                   >
-                    {form.formState.isSubmitting ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    ) : (
-                      <Save className="h-3.5 w-3.5" />
-                    )}
+                    {form.formState.isSubmitting ? <Loader2 className="animate-spin" /> : <Save />}
                     {tCommon("save")}
+                  </Button>
+                  <Button variant="destructive" size="sm">
+                    <Trash2 />
+                    {tCommon("delete")}
                   </Button>
                 </>
               )}
@@ -200,84 +179,28 @@ export default function MainForm({ templateData, mode }: Props) {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
-        <Form {...form}>
-          <form
-            id="price-list-template-form"
-            onSubmit={(e) => {
-              e.stopPropagation();
-              form.handleSubmit(onSubmit)(e);
-            }}
-            className="space-y-6"
-          >
-            {/* Overview Section */}
-            <Card className="overflow-hidden">
-              <CardHeader className="bg-muted/30 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <FileText className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-semibold leading-none tracking-tight">
-                      {tPlt("overview")}
-                    </h2>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <OverviewTab form={form} isViewMode={isViewMode} templateData={templateData} />
-              </CardContent>
-            </Card>
-
-            {/* Products Section */}
-            <Card className="overflow-hidden">
-              <CardHeader className="bg-muted/30 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <FileText className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-semibold leading-none tracking-tight">
-                      {tPlt("product")}
-                    </h2>
-                  </div>
-                </div>
-              </CardHeader>
-              <Separator />
-              <CardContent className="pt-6">
-                <ProductsTab
-                  onProductSelect={handleTreeProductSelect}
-                  initialProducts={initProducts}
-                  isViewMode={isViewMode}
-                />
-              </CardContent>
-            </Card>
-
-            {/* RFPs Section */}
-            {templateData && templateData.rfps && templateData.rfps.length > 0 && (
-              <Card className="overflow-hidden">
-                <CardHeader className="bg-muted/30 pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <FileText className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-semibold leading-none tracking-tight">
-                        {tPlt("rfp")}
-                      </h2>
-                    </div>
-                  </div>
-                </CardHeader>
-                <Separator />
-                <CardContent className="pt-6">
-                  <RFPTabs rfps={templateData.rfps} />
-                </CardContent>
-              </Card>
-            )}
-          </form>
-        </Form>
-      </div>
+      <Form {...form}>
+        <form
+          id="price-list-template-form"
+          onSubmit={(e) => {
+            e.stopPropagation();
+            form.handleSubmit(onSubmit)(e);
+          }}
+          className="space-y-4"
+        >
+          <div className="my-4">
+            <OverviewTab form={form} isViewMode={isViewMode} currencyBase={currencyBase ?? ""} />
+          </div>
+          <ProductsTab
+            onProductSelect={handleTreeProductSelect}
+            initialProducts={initProducts}
+            isViewMode={isViewMode}
+          />
+          {templateData && templateData.rfps && templateData.rfps.length > 0 && (
+            <RFPTabs rfps={templateData.rfps} />
+          )}
+        </form>
+      </Form>
     </div>
   );
 }

@@ -242,7 +242,9 @@
     "form_has_errors": "Please review your input",
     "please_fix_errors": "Please fix the errors below before saving",
     "error": "Something Went Wrong",
-    "errorLoadingData": "We're having trouble loading your data right now. Please wait a moment and try again. If the problem continues, please contact support."
+    "errorLoadingData": "We're having trouble loading your data right now. Please wait a moment and try again. If the problem continues, please contact support.",
+    "confirm_delete": "Confirm Delete",
+    "confirm_delete_all_products": "Confirm Delete All Products"
   },
   "TableHeader": {
     "all": "All",

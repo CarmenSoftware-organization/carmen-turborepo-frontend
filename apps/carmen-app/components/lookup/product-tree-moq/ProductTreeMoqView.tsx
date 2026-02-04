@@ -20,7 +20,7 @@ export function ProductTreeMoqView({
 
   return (
     <div className="border rounded-md p-4 flex flex-col h-full">
-      <h3 className="font-semibold mb-4">Product Tree (MOQ)</h3>
+      <h3 className="font-semibold mb-4 text-xs">Product Tree (MOQ)</h3>
       <ScrollArea className="max-h-[calc(100vh-250px)]">
         <TreeStructure tree={tree} indent={24} toggleIconType="chevron" className="pr-4">
           {allItems.map((item: ItemInstance<TreeNodeData>) => {
@@ -48,7 +48,7 @@ export function ProductTreeMoqView({
                             }}
                           />
                         </div>
-                        <p className="text-sm">
+                        <p className="text-xs">
                           {data.name} {data.local_name ? `- ${data.local_name}` : ""}
                         </p>
                         <Badge variant="product_badge">{data.code}</Badge>
@@ -71,7 +71,7 @@ export function ProductTreeMoqView({
                             }}
                           />
                         </div>
-                        <p className="text-sm font-medium">{data.name}</p>
+                        <p className="text-xs font-medium">{data.name}</p>
                         <Badge variant="product_badge">{data.children?.length || 0}</Badge>
                       </div>
                     )}

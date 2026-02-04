@@ -9,9 +9,9 @@ import TreeProductLoading from "./TreeProductLoading";
 import ProductTreeMoqContent from "./ProductTreeMoqContent";
 
 interface Props {
-  onSelect?: (products: { id: string; moq?: MoqItem[] }[]) => void;
-  initialSelectedIds?: string[];
-  initialProducts?: InitialProduct[];
+  readonly onSelect?: (products: { id: string; moq?: MoqItem[] }[]) => void;
+  readonly initialSelectedIds?: string[];
+  readonly initialProducts?: InitialProduct[];
 }
 
 export default function ProductTreeMoq({

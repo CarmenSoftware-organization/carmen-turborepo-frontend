@@ -201,7 +201,12 @@
     "vendor_instruction_placeholder": "Enter vendor instruction",
     "product_name": "Product Name",
     "product_code": "Product Code",
-    "order_unit": "Order Unit"
+    "order_unit": "Order Unit",
+    "active": "Active",
+    "inactive": "Inactive",
+    "draft": "Draft",
+    "details": "Details",
+    "no_products": "No Products"
   },
   "RFP": {
     "title": "Request for Pricing",

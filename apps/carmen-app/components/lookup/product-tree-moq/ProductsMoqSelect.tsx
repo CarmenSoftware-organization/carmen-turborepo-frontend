@@ -60,7 +60,7 @@ export function ProductsMoqSelect({
   return (
     <div className="border border-border rounded-lg p-4 flex flex-col h-full">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-semibold">{tCommon("init_products")}</h3>
+        <h3 className="text-xs font-semibold">{tCommon("init_products")}</h3>
       </div>
 
       <div className="mt-2">
