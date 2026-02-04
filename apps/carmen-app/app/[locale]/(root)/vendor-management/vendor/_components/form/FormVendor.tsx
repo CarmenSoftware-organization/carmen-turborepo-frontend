@@ -595,7 +595,7 @@ export default function FormVendor({ mode, initData }: Props) {
         title={t("delete_contact_title")}
         description={t("delete_contact_description")}
       />
-      {/* Sticky Header */}
+
       <div className="sticky top-0 z-10 bg-background">
         <div className="container">
           <div className="flex items-center justify-between">

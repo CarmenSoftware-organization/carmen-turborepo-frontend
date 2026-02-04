@@ -115,6 +115,22 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
         size: 180,
       },
       {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("name")}
+            icon={<List className="h-4 w-4" />}
+          />
+        ),
+        cell: ({ row }) => {
+          const priceList = row.original;
+          return <span>{priceList.name}</span>;
+        },
+        enableSorting: false,
+        size: 150,
+      },
+      {
         accessorKey: "vendor.name",
         header: ({ column }) => (
           <DataGridColumnHeader column={column} title={tTableHeader("vendor")} />
@@ -159,8 +175,8 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
         accessorKey: "status",
         header: () => <span>{tTableHeader("status")}</span>,
         cell: ({ row }) => (
-          <Badge variant={row.original.status} className="capitalize text-xs">
-            {row.original.status}
+          <Badge variant={row.original.status} className="font-bold text-xs">
+            {row.original.status.toUpperCase()}
           </Badge>
         ),
         enableSorting: false,

@@ -1,32 +1,29 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { FileText, Save, X, ChevronLeft } from "lucide-react";
-import { Form } from "@/components/ui/form";
+import { FileText, Save, ChevronLeft, Pencil, Loader2, Trash2 } from "lucide-react";
 import { formType } from "@/dtos/form.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { priceListSchema, type PriceListFormData } from "../../_schema/price-list.schema";
 import OverviewSection from "./OverviewSection";
 import ProductsSection from "./ProductsSection";
-import { useCreatePriceList, useUpdatePriceList } from "@/hooks/use-price-list";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Separator } from "@/components/ui/separator";
-import { PriceListBreadcrumb, ProductsCardHeader } from "../shared";
+import { useCreatePriceList, useUpdatePriceList, useDeletePriceList } from "@/hooks/use-price-list";
+import { PriceListBreadcrumb } from "../shared";
 import { PricelistDetail } from "../../_schema/pl.dto";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { Form } from "@/components/form-custom/form";
 
 interface PriceListFormProps {
   readonly initialData?: PricelistDetail;
-  readonly mode: formType.ADD | formType.EDIT;
-  readonly onViewMode: () => void;
+  readonly mode: formType;
 }
 
 const getEffectivePeriod = (period: any): { from: string; to: string } => {
@@ -43,28 +40,78 @@ const getEffectivePeriod = (period: any): { from: string; to: string } => {
   return { from: "", to: "" };
 };
 
-export default function PriceListForm({ initialData, mode, onViewMode }: PriceListFormProps) {
+const toFormValues = (data: PricelistDetail): PriceListFormData => {
+  // Handle both nested vendor.id and flat vendor_id from API
+  const vendorId = data.vendor?.id || (data as any).vendor_id || "";
+  const currencyId = data.currency?.id || (data as any).currency_id || "";
+
+  return {
+    no: data.no || "",
+    name: data.name || "",
+    vendorId,
+    rfpId: "",
+    description: data.description || "",
+    note: data.note || "",
+    status: data.status as PriceListFormData["status"],
+    currencyId,
+    effectivePeriod: getEffectivePeriod(data.effectivePeriod),
+    pricelist_detail: (data.pricelist_detail || []).map((p: any) => ({
+      dbId: p.id,
+      sequence_no: p.sequence_no,
+      product_id: p.product_id,
+      product_name: p.product_name || "",
+      product_code: p.product_code || "",
+      price: p.price,
+      unit_id: p.unit_id,
+      unit_name: p.unit_name || "",
+      tax_profile_id: p.tax_profile_id,
+      tax_profile_name: p.tax_profile?.rate ? `${p.tax_profile.rate}%` : "",
+      tax_rate: p.tax_profile?.rate ?? 0,
+      moq_qty: p.moq_qty,
+      _action: "none" as const,
+    })),
+  };
+};
+
+const getDefaultFormValues = (defaultCurrencyId?: string): PriceListFormData => ({
+  no: "",
+  name: "",
+  vendorId: "",
+  rfpId: "",
+  description: "",
+  note: "",
+  status: "draft",
+  currencyId: defaultCurrencyId || "",
+  effectivePeriod: { from: "", to: "" },
+  pricelist_detail: [],
+});
+
+export default function PriceListForm({ initialData, mode }: PriceListFormProps) {
   const router = useRouter();
-  const { token, buCode } = useAuth();
+  const { token, buCode, defaultCurrencyId, dateFormat } = useAuth();
+  const queryClient = useQueryClient();
   const tCommon = useTranslations("Common");
   const tPriceList = useTranslations("PriceList");
 
-  const isAddMode = mode === formType.ADD;
+  // Mode State
+  const [currentMode, setCurrentMode] = useState<formType>(mode);
+  const isViewMode = currentMode === formType.VIEW;
+  const isAddMode = currentMode === formType.ADD;
+
+  // Delete Dialog State
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const defaultFormValues = getDefaultFormValues(defaultCurrencyId ?? "");
+
+  const getInitialFormValues = (): PriceListFormData => {
+    if (isAddMode) return defaultFormValues;
+    if (initialData) return toFormValues(initialData);
+    return defaultFormValues;
+  };
 
   const form = useForm<PriceListFormData>({
     resolver: zodResolver(priceListSchema),
-    defaultValues: {
-      no: "",
-      name: "",
-      vendorId: "",
-      rfpId: "",
-      description: "",
-      note: "",
-      status: "draft",
-      currencyId: "",
-      effectivePeriod: { from: "", to: "" },
-      pricelist_detail: [],
-    },
+    defaultValues: getInitialFormValues(),
   });
 
   const { mutate: createPriceList, isPending: isCreating } = useCreatePriceList(token, buCode);
@@ -73,76 +120,57 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
     buCode,
     initialData?.id || ""
   );
+  const { mutate: deletePriceList, isPending: isDeleting } = useDeletePriceList(token, buCode);
 
-  const productsCount = form.watch("pricelist_detail")?.length || 0;
+  const isSubmitting = isCreating || isUpdating;
 
+  // Reset form when initialData changes
   useEffect(() => {
-    if (initialData) {
-      form.reset({
-        no: initialData.no || "",
-        name: initialData.name || "",
-        vendorId: initialData.vendor?.id,
-        // rfpId: initialData.rfp?.id || "",
-        description: initialData.description || "",
-        note: initialData.note || "",
-        status: initialData.status as PriceListFormData["status"],
-        currencyId: initialData.currency?.id,
-        effectivePeriod: getEffectivePeriod(initialData.effectivePeriod),
-        pricelist_detail: (initialData.pricelist_detail || []).map((p) => ({
-          dbId: p.id, // ใช้ dbId แทน id
-          sequence_no: p.sequence_no,
-          product_id: p.product_id,
-          product_name: p.product_name || "",
-          product_code: "", // Not available in DTO
-          price: p.price,
-          unit_id: p.unit_id,
-          unit_name: p.unit_name || "",
-          tax_profile_id: p.tax_profile_id,
-          tax_profile_name: p.tax_profile?.rate ? `${p.tax_profile.rate}%` : "",
-          tax_rate: p.tax_profile?.rate ?? 0,
-          moq_qty: p.moq_qty,
-          _action: "none" as const,
-        })),
-      });
+    if (initialData && currentMode !== formType.ADD) {
+      const formValues = toFormValues(initialData);
+      form.reset(formValues);
     }
-  }, [initialData, form]);
+  }, [initialData, form, currentMode]);
 
-  const handleCancel = () => {
+  const handleEdit = useCallback(() => {
+    setCurrentMode(formType.EDIT);
+  }, []);
+
+  const handleCancel = useCallback(() => {
     if (isAddMode) {
       router.push("/vendor-management/price-list");
       return;
     }
 
+    // Reset form to initial data
     if (initialData) {
-      form.reset({
-        no: initialData.no || "",
-        name: initialData.name || "",
-        vendorId: initialData.vendor?.id,
-        // rfpId: initialData.rfp?.id || "",
-        description: initialData.description || "",
-        note: initialData.note || "",
-        status: initialData.status as PriceListFormData["status"],
-        currencyId: initialData.currency?.id,
-        effectivePeriod: getEffectivePeriod(initialData.effectivePeriod),
-        pricelist_detail: (initialData.pricelist_detail || []).map((p) => ({
-          dbId: p.id, // ใช้ dbId แทน id
-          sequence_no: p.sequence_no,
-          product_id: p.product_id,
-          product_name: p.product_name || "",
-          product_code: "", // Not available in DTO
-          price: p.price,
-          unit_id: p.unit_id,
-          unit_name: p.unit_name || "",
-          tax_profile_id: p.tax_profile_id,
-          tax_profile_name: p.tax_profile?.rate ? `${p.tax_profile.rate}%` : "",
-          tax_rate: p.tax_profile?.rate ?? 0,
-          moq_qty: p.moq_qty,
-          _action: "none" as const,
-        })),
-      });
+      form.reset(toFormValues(initialData));
     }
-    onViewMode();
-  };
+    setCurrentMode(formType.VIEW);
+  }, [isAddMode, initialData, form, router]);
+
+  const handleDelete = useCallback(() => {
+    setIsDeleteDialogOpen(true);
+  }, []);
+
+  const handleConfirmDelete = useCallback(() => {
+    if (!initialData?.id) return;
+
+    deletePriceList(initialData.id, {
+      onSuccess: () => {
+        toastSuccess({ message: tPriceList("delete_success") });
+        // Remove the deleted item's query first to prevent refetch causing 404
+        queryClient.removeQueries({ queryKey: ["price-list", buCode, initialData.id] });
+        // Then invalidate list queries to refresh the list data
+        queryClient.invalidateQueries({ queryKey: ["price-list", buCode] });
+        router.replace("/vendor-management/price-list");
+      },
+      onError: () => {
+        toastError({ message: tPriceList("delete_error") });
+      },
+    });
+    setIsDeleteDialogOpen(false);
+  }, [initialData?.id, deletePriceList, tPriceList, queryClient, buCode, router]);
 
   const formatDateToISO = (dateStr: string) => {
     if (!dateStr) return "";
@@ -150,124 +178,116 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
     return date.toISOString();
   };
 
-  const onSubmit = (data: PriceListFormData) => {
-    const items = data.pricelist_detail || [];
+  const onSubmit = useCallback(
+    (data: PriceListFormData) => {
+      const items = data.pricelist_detail || [];
 
-    // แยก items ตาม action
-    const addItems = items
-      .filter((item) => item._action === "add")
-      .map((item, index) => ({
-        sequence_no: item.sequence_no ?? index + 1,
-        product_id: item.product_id,
-        price: item.price,
-        unit_id: item.unit_id,
-        tax_profile_id: item.tax_profile_id,
-        tax_rate: item.tax_rate || 0,
-        moq_qty: Number(item.moq_qty) || 0,
-      }));
+      const addItems = items
+        .filter((item) => item._action === "add")
+        .map((item, index) => ({
+          sequence_no: item.sequence_no ?? index + 1,
+          product_id: item.product_id,
+          price: item.price,
+          unit_id: item.unit_id,
+          tax_profile_id: item.tax_profile_id,
+          tax_rate: item.tax_rate || 0,
+          moq_qty: Number(item.moq_qty) || 0,
+        }));
 
-    const updateItems = items
-      .filter((item) => item._action === "update" && item.dbId)
-      .map((item) => ({
-        id: item.dbId,
-        sequence_no: item.sequence_no,
-        product_id: item.product_id,
-        price: item.price,
-        unit_id: item.unit_id,
-        tax_profile_id: item.tax_profile_id,
-        tax_rate: item.tax_rate || 0,
-        moq_qty: Number(item.moq_qty) || 0,
-      }));
+      const updateItems = items
+        .filter((item) => item._action === "update" && item.dbId)
+        .map((item) => ({
+          id: item.dbId,
+          sequence_no: item.sequence_no,
+          product_id: item.product_id,
+          price: item.price,
+          unit_id: item.unit_id,
+          tax_profile_id: item.tax_profile_id,
+          tax_rate: item.tax_rate || 0,
+          moq_qty: Number(item.moq_qty) || 0,
+        }));
 
-    const removeItems = items
-      .filter((item) => item._action === "remove" && item.dbId)
-      .map((item) => ({ id: item.dbId! }));
+      const removeItems = items
+        .filter((item) => item._action === "remove" && item.dbId)
+        .map((item) => ({ id: item.dbId! }));
 
-    // สร้าง pricelist_detail object โดยใส่เฉพาะ array ที่มีข้อมูล
-    const pricelistDetail: Record<string, any> = {};
-    if (addItems.length > 0) pricelistDetail.add = addItems;
-    if (updateItems.length > 0) pricelistDetail.update = updateItems;
-    if (removeItems.length > 0) pricelistDetail.remove = removeItems;
+      const pricelistDetail: Record<string, any> = {};
+      if (addItems.length > 0) pricelistDetail.add = addItems;
+      if (updateItems.length > 0) pricelistDetail.update = updateItems;
+      if (removeItems.length > 0) pricelistDetail.remove = removeItems;
 
-    const payload = {
-      vendor_id: data.vendorId,
-      name: data.name,
-      description: data.description,
-      status: data.status,
-      currency_id: data.currencyId,
-      effective_from_date: formatDateToISO(data.effectivePeriod.from),
-      effective_to_date: formatDateToISO(data.effectivePeriod.to),
-      note: data.note,
-      pricelist_detail: Object.keys(pricelistDetail).length > 0 ? pricelistDetail : undefined,
-    };
+      const payload = {
+        vendor_id: data.vendorId,
+        name: data.name,
+        description: data.description,
+        status: data.status,
+        currency_id: data.currencyId,
+        effective_from_date: formatDateToISO(data.effectivePeriod.from),
+        effective_to_date: formatDateToISO(data.effectivePeriod.to),
+        note: data.note,
+        pricelist_detail: Object.keys(pricelistDetail).length > 0 ? pricelistDetail : undefined,
+      };
 
-    if (initialData?.id) {
-      // @ts-ignore
-      updatePriceList(payload, {
-        onSuccess: () => {
-          toastSuccess({ message: tCommon("update_success") });
-          onViewMode();
-          router.refresh();
-        },
-        onError: (error: any) => {
-          toastError({ message: error.message || tCommon("update_error") });
-        },
-      });
-    } else {
-      // @ts-ignore
-      createPriceList(payload, {
-        onSuccess: () => {
-          toastSuccess({ message: tCommon("create_success") });
-          router.push("/vendor-management/price-list");
-          router.refresh();
-        },
-        onError: (error: any) => {
-          toastError({ message: error.message || tCommon("create_error") });
-        },
-      });
-    }
-  };
-
-  // Determine status color
-  const getStatusColor = (status?: string) => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
-      case "submit":
-        return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
-      case "inactive":
-        return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
-      default:
-        return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400";
-    }
-  };
+      if (initialData?.id) {
+        // @ts-ignore
+        updatePriceList(payload, {
+          onSuccess: () => {
+            toastSuccess({ message: tPriceList("update_success") });
+            queryClient.invalidateQueries({ queryKey: ["price-list", buCode, initialData.id] });
+            setCurrentMode(formType.VIEW);
+          },
+          onError: (error: any) => {
+            toastError({ message: error.message || tPriceList("update_error") });
+          },
+        });
+      } else {
+        // @ts-ignore
+        createPriceList(payload, {
+          onSuccess: () => {
+            toastSuccess({ message: tPriceList("create_success") });
+            router.push("/vendor-management/price-list");
+          },
+          onError: (error: any) => {
+            toastError({ message: error.message || tPriceList("create_error") });
+          },
+        });
+      }
+    },
+    [initialData, updatePriceList, createPriceList, tCommon, queryClient, buCode, router]
+  );
 
   return (
-    <div className="flex flex-col min-h-screen bg-background/50">
+    <div className="flex flex-col min-h-screen px-2">
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={handleConfirmDelete}
+        title={tPriceList("delete_price_list")}
+        description={tPriceList("delete_price_list_confirmation")}
+      />
+
       {/* Sticky Header */}
-      <div className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur-md pb-4 pt-4">
-        <div className="container mx-auto px-4 max-w-7xl">
+      <div className="sticky top-0 z-10 bg-background pb-4">
+        <div className="container">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 -ml-2 text-muted-foreground hover:text-foreground"
-                onClick={handleCancel}
+                onClick={() => router.back()}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <div className="flex flex-col">
                 <div className="flex items-center gap-3">
                   <h1 className="text-lg font-bold tracking-tight text-foreground">
-                    {isAddMode ? tPriceList("new_price_list") : initialData?.no || "Price List"}
+                    {isAddMode ? tPriceList("new_price_list") : initialData?.name || "Price List"}
                   </h1>
-                  {!isAddMode && (
-                    <Badge
-                      variant="secondary"
-                      className={cn("ml-2", getStatusColor(initialData?.status))}
-                    >
-                      {initialData?.status}
+                  {!isAddMode && initialData?.status && (
+                    <Badge variant={initialData.status} className="font-bold">
+                      {initialData.status.toUpperCase()}
                     </Badge>
                   )}
                 </div>
@@ -277,61 +297,78 @@ export default function PriceListForm({ initialData, mode, onViewMode }: PriceLi
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <Button
-                onClick={handleCancel}
-                variant="outline"
-                size="sm"
-                disabled={isCreating || isUpdating}
-                className="h-8"
-              >
-                {tCommon("cancel")}
-              </Button>
-              <Button
-                onClick={form.handleSubmit(onSubmit)}
-                variant="default"
-                size="sm"
-                disabled={isCreating || isUpdating}
-                className="h-8 gap-2 px-4 shadow-sm"
-              >
-                <Save className="h-3.5 w-3.5" />
-                {isCreating || isUpdating ? tCommon("saving") : tCommon("save")}
-              </Button>
+            <div className="flex items-center gap-2">
+              {isViewMode ? (
+                <Button size="sm" onClick={handleEdit}>
+                  <Pencil className="h-4 w-4" />
+                  {tCommon("edit")}
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCancel}
+                    disabled={isSubmitting}
+                    className="h-8"
+                  >
+                    {tCommon("cancel")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={form.handleSubmit(onSubmit)}
+                    disabled={isSubmitting}
+                    className="h-8 gap-2"
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <>
+                        <Save className="h-3.5 w-3.5" />
+                        {tCommon("save")}
+                      </>
+                    )}
+                  </Button>
+                  {!isAddMode && (
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={handleDelete}
+                      disabled={isDeleting}
+                      className="h-8"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      {tCommon("delete")}
+                    </Button>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
       </div>
-
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <div className="container">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Overview Section */}
-            <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-              <div className="p-6">
-                <OverviewSection form={form} priceList={initialData} isViewMode={false} />
-              </div>
-            </div>
-
-            {/* Products Section */}
-            <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-              <div className="flex items-center justify-between border-b px-6 py-4">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary">
-                    <FileText className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold leading-none">Price List Items</h3>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Manage products and prices ({productsCount} items)
-                    </p>
-                  </div>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <OverviewSection
+              form={form}
+              priceList={initialData}
+              isViewMode={isViewMode}
+              defaultCurrency={defaultCurrencyId || ""}
+              dateFormat={dateFormat ?? "yyyy-MM-dd"}
+            />
+            <div className="flex items-center justify-between border-t pt-4">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary">
+                  <FileText className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold leading-none">{tPriceList("pl_items")}</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">{tPriceList("mangage_pl")}</p>
                 </div>
               </div>
-              <div className="p-0">
-                <ProductsSection form={form} isViewMode={false} />
-              </div>
             </div>
+            <ProductsSection form={form} isViewMode={isViewMode} token={token} buCode={buCode} />
           </form>
         </Form>
       </div>

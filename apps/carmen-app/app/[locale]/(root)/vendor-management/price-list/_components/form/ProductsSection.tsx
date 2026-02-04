@@ -2,32 +2,31 @@
 
 import { UseFormReturn, useFieldArray, FieldArrayWithId } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Package, Plus, Trash2 } from "lucide-react";
 import type { PriceListFormData, PriceListDetailItem } from "../../_schema/price-list.schema";
 import LookupProduct from "@/components/lookup/LookupProduct";
-import LookupUnit from "@/components/lookup/LookupUnit";
 import LookupTaxProfile from "@/components/lookup/LookupTaxProfile";
-import { useProductQuery } from "@/hooks/use-product-query";
-import { useAuth } from "@/context/AuthContext";
-import { cn } from "@/lib/utils";
+import { PriceListUnitSelectCell } from "./PriceListUnitSelectCell";
 import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useMemo } from "react";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import NumberInput from "@/components/form-custom/NumberInput";
+import { useTranslations } from "next-intl";
 
 interface ProductsSectionProps {
   form: UseFormReturn<PriceListFormData>;
   isViewMode: boolean;
+  token: string;
+  buCode: string;
 }
 
 type ProductTableItem = FieldArrayWithId<PriceListFormData, "pricelist_detail", "id">;
 
-export default function ProductsSection({ form, isViewMode }: ProductsSectionProps) {
-  const { token, buCode } = useAuth();
-  const { products: productList } = useProductQuery({ token, buCode });
+export default function ProductsSection({ form, isViewMode, token, buCode }: ProductsSectionProps) {
+  const tPriceList = useTranslations("PriceList");
 
   const { fields, prepend, remove, update } = useFieldArray({
     control: form.control,
@@ -40,6 +39,7 @@ export default function ProductsSection({ form, isViewMode }: ProductsSectionPro
       product_id: "",
       price: 0,
       unit_id: "",
+      unit_name: "",
       tax_profile_id: "",
       tax_rate: 0,
       moq_qty: 1,
@@ -61,17 +61,35 @@ export default function ProductsSection({ form, isViewMode }: ProductsSectionPro
     }
   };
 
-  const handleProductChange = (index: number, productId: string) => {
-    const product = productList?.data?.find((p: any) => p.id === productId);
+  const handleProductChange = (
+    index: number,
+    productId: string,
+    productName?: string,
+    productCode?: string
+  ) => {
     const currentItem = fields[index];
-
     const newAction = currentItem._action === "none" ? "update" : currentItem._action;
 
     update(index, {
       ...currentItem,
       product_id: productId,
-      product_name: product?.name || "",
-      product_code: product?.code || "",
+      product_name: productName || "",
+      product_code: productCode || "",
+      // Reset unit when product changes
+      unit_id: "",
+      unit_name: "",
+      _action: newAction,
+    });
+  };
+
+  const handleUnitChange = (index: number, unitId: string, unitName: string) => {
+    const currentItem = fields[index];
+    const newAction = currentItem._action === "none" ? "update" : currentItem._action;
+
+    update(index, {
+      ...currentItem,
+      unit_id: unitId,
+      unit_name: unitName,
       _action: newAction,
     });
   };
@@ -85,6 +103,7 @@ export default function ProductsSection({ form, isViewMode }: ProductsSectionPro
       _action: newAction,
     });
   };
+
   const handleMultipleFieldChange = (index: number, changes: Partial<PriceListDetailItem>) => {
     const currentItem = fields[index];
     const newAction = currentItem._action === "none" ? "update" : currentItem._action;
@@ -106,85 +125,97 @@ export default function ProductsSection({ form, isViewMode }: ProductsSectionPro
       {
         id: "no",
         header: ({ column }) => <DataGridColumnHeader column={column} title="#" />,
-        cell: ({ row }) => <div className="text-center font-mono text-xs">{row.index + 1}</div>,
+        cell: ({ row }) => <span>{row.index + 1}</span>,
         size: 50,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
       },
       {
         accessorKey: "product_id",
-        header: ({ column }) => <DataGridColumnHeader column={column} title="Product" />,
+        header: ({ column }) => <DataGridColumnHeader column={column} title={tPriceList("product")} />,
         cell: ({ row }) => {
           const item = row.original;
-          const index = getOriginalIndex(item.id); // id from useFieldArray
+          const index = getOriginalIndex(item.id);
           if (index === -1) return null;
 
           return isViewMode ? (
-            <span className="text-sm">
-              {item.product_code} - {item.product_name}
-            </span>
+            <span className="text-xs">{item.product_name || "-"}</span>
           ) : (
-            <LookupProduct
-              value={item.product_id}
-              onValueChange={(val) => handleProductChange(index, val)}
-              placeholder="Select Product"
-              buCode={buCode}
-              token={token}
-              // className="h-8 text-sm" // Assuming Lookup supports className or size
-            />
+            <div className="min-w-[220px]">
+              <LookupProduct
+                value={item.product_id}
+                onValueChange={(val, product) => {
+                  handleProductChange(index, val, product?.name, product?.code);
+                }}
+                buCode={buCode}
+                token={token}
+                classNames="text-xs h-7 w-full"
+                initialDisplayName={item.product_name}
+              />
+            </div>
           );
         },
-        size: 300,
+        size: 250,
       },
       {
         accessorKey: "price",
-        header: ({ column }) => <DataGridColumnHeader column={column} title="Price" />,
+        header: ({ column }) => <DataGridColumnHeader column={column} title={tPriceList("price")} />,
         cell: ({ row }) => {
           const item = row.original;
           const index = getOriginalIndex(item.id || "");
           if (index === -1) return null;
 
           return isViewMode ? (
-            <span className="font-mono text-sm">{item.price}</span>
+            <span className="text-xs">{item.price}</span>
           ) : (
-            <Input
-              type="number"
+            <NumberInput
               value={item.price}
-              onChange={(e) => handleFieldChange(index, "price", Number(e.target.value))}
-              className="h-8 text-sm"
+              onChange={(value) => handleFieldChange(index, "price", value)}
+              min={0.01}
+              step={0.01}
+              classNames="text-xs h-7"
             />
           );
         },
-        size: 150,
+        size: 120,
       },
       {
         accessorKey: "unit_id",
-        header: ({ column }) => <DataGridColumnHeader column={column} title="Unit" />,
+        header: ({ column }) => <DataGridColumnHeader column={column} title={tPriceList("unit")} />,
         cell: ({ row }) => {
           const item = row.original;
           const index = getOriginalIndex(item.id || "");
           if (index === -1) return null;
 
           return isViewMode ? (
-            <span className="text-sm">{item.unit_name || "-"}</span>
+            <span className="text-xs">{item.unit_name || "-"}</span>
           ) : (
-            <LookupUnit
-              value={item.unit_id || ""}
-              onValueChange={(val) => handleFieldChange(index, "unit_id", val)}
-              placeholder="Select Unit"
-            />
+            <div className="min-w-[100px]">
+              <PriceListUnitSelectCell
+                productId={item.product_id || ""}
+                currentUnitId={item.unit_id}
+                onUnitChange={(unitId, unitName) => handleUnitChange(index, unitId, unitName)}
+                token={token}
+                buCode={buCode}
+                disabled={!item.product_id}
+              />
+            </div>
           );
         },
-        size: 150,
+        size: 120,
       },
       {
         accessorKey: "tax_profile_id",
-        header: ({ column }) => <DataGridColumnHeader column={column} title="Tax Profile" />,
+        header: ({ column }) => <DataGridColumnHeader column={column} title={tPriceList("tax_profile")} />,
         cell: ({ row }) => {
           const item = row.original;
           const index = getOriginalIndex(item.id || "");
           if (index === -1) return null;
 
           return isViewMode ? (
-            <span className="text-sm">{item.tax_profile_name || "-"}</span>
+            <span className="text-xs">{item.tax_profile_name || "-"}</span>
           ) : (
             <LookupTaxProfile
               value={item.tax_profile_id || ""}
@@ -195,28 +226,28 @@ export default function ProductsSection({ form, isViewMode }: ProductsSectionPro
                   tax_rate: obj.tax_rate,
                 });
               }}
+              classNames="h-7"
             />
           );
         },
-        size: 200,
+        size: 150,
       },
       {
         accessorKey: "moq_qty",
-        header: ({ column }) => <DataGridColumnHeader column={column} title="MOQ" />,
+        header: ({ column }) => <DataGridColumnHeader column={column} title={tPriceList("moq")} />,
         cell: ({ row }) => {
           const item = row.original;
           const index = getOriginalIndex(item.id || "");
           if (index === -1) return null;
 
           return isViewMode ? (
-            <span className="font-mono text-sm">{item.moq_qty || 0}</span>
+            <span className="text-xs">{item.moq_qty || 0}</span>
           ) : (
-            <Input
-              type="number"
+            <NumberInput
               value={item.moq_qty || 0}
-              onChange={(e) => handleFieldChange(index, "moq_qty", Number(e.target.value))}
-              className="w-full h-8 text-sm"
+              onChange={(value) => handleFieldChange(index, "moq_qty", value)}
               min={0}
+              classNames="text-xs h-7"
             />
           );
         },
@@ -268,7 +299,7 @@ export default function ProductsSection({ form, isViewMode }: ProductsSectionPro
             className="h-8 gap-1.5 text-xs font-medium"
           >
             <Plus className="h-3.5 w-3.5" />
-            Add Product
+            {tPriceList("add_product")}
           </Button>
         </div>
       )}
@@ -303,9 +334,9 @@ export default function ProductsSection({ form, isViewMode }: ProductsSectionPro
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
             <Package className="h-6 w-6 text-muted-foreground" />
           </div>
-          <h3 className="mt-4 text-sm font-semibold">No products added</h3>
+          <h3 className="mt-4 text-sm font-semibold">{tPriceList("no_products_added")}</h3>
           <p className="mb-4 text-xs text-muted-foreground max-w-sm">
-            Start by adding products to this price list. You can define specific prices per unit.
+            {tPriceList("no_products_added_description")}
           </p>
           {!isViewMode && (
             <Button
@@ -316,7 +347,7 @@ export default function ProductsSection({ form, isViewMode }: ProductsSectionPro
               className="h-8 gap-1.5"
             >
               <Plus className="h-3.5 w-3.5" />
-              Add Product
+              {tPriceList("add_product")}
             </Button>
           )}
         </div>

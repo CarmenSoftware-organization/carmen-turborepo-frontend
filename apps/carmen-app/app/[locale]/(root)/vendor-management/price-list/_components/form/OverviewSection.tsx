@@ -2,7 +2,6 @@
 
 import { UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -22,6 +21,14 @@ import type { PriceListFormData } from "../../_schema/price-list.schema";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
 import VendorLookup from "@/components/lookup/LookupVendor";
 import { Separator } from "@/components/ui/separator";
+import { formatDate } from "@/utils/format/date";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/form-custom/form";
 
 interface OverviewSectionProps {
   form: UseFormReturn<PriceListFormData>;
@@ -30,9 +37,17 @@ interface OverviewSectionProps {
     currency?: { name: string };
   };
   isViewMode: boolean;
+  defaultCurrency: string;
+  dateFormat: string;
 }
 
-export default function OverviewSection({ form, priceList, isViewMode }: OverviewSectionProps) {
+export default function OverviewSection({
+  form,
+  priceList,
+  isViewMode,
+  defaultCurrency,
+  dateFormat,
+}: OverviewSectionProps) {
   const tCommon = useTranslations("Common");
   const tStatus = useTranslations("Status");
   const tPriceList = useTranslations("PriceList");
@@ -45,14 +60,14 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
 
   return (
     <div className="space-y-6">
-      {/* Section 1: Basic Information */}
       <div>
         <div className="mb-4 flex items-center gap-2">
           <Info className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold text-foreground">Basic Information</h3>
+          <h3 className="text-sm font-semibold text-foreground">
+            {tPriceList("basic_information")}
+          </h3>
         </div>
         <div className="grid gap-x-6 gap-y-4 md:grid-cols-2 lg:grid-cols-4">
-          {/* Price List No */}
           {isViewMode && (
             <FormField
               control={form.control}
@@ -61,7 +76,7 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
                 <FormItem className="space-y-1">
                   <Label>{tPriceList("no")}</Label>
                   <FormControl>
-                    <Input {...field} disabled className="h-8 bg-muted/50 font-mono text-xs" />
+                    <Input {...field} disabled className="h-8 bg-muted/50 text-xs" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -69,10 +84,10 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
             />
           )}
 
-          {/* Name */}
           <FormField
             control={form.control}
             name="name"
+            required
             render={({ field }) => (
               <FormItem className="col-span-2 space-y-1">
                 <Label>{tPriceList("pl_name")}</Label>
@@ -89,16 +104,16 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
             )}
           />
 
-          {/* Status */}
           <FormField
             control={form.control}
             name="status"
+            required
             render={({ field }) => (
               <FormItem className="space-y-1">
                 <Label>{tCommon("status")}</Label>
                 <Select onValueChange={field.onChange} value={field.value} disabled={isViewMode}>
                   <FormControl>
-                    <SelectTrigger className="h-8 text-sm">
+                    <SelectTrigger className="h-8 text-xs">
                       <SelectValue placeholder={tCommon("select_status")} />
                     </SelectTrigger>
                   </FormControl>
@@ -118,25 +133,32 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
 
       <Separator className="bg-border/60" />
 
-      {/* Section 2: Vendor & Financials */}
       <div>
-        <h3 className="mb-4 text-sm font-semibold text-foreground">Vendor & Logic</h3>
+        <h3 className="mb-4 text-sm font-semibold text-foreground">
+          {tPriceList("vendor_section")}
+        </h3>
         <div className="grid gap-x-6 gap-y-4 md:grid-cols-2 lg:grid-cols-4">
           <FormField
             control={form.control}
             name="vendorId"
+            required
             render={({ field }) => (
-              <FormItem className="space-y-1">
+              <FormItem className="space-y-1 col-span-2">
                 <Label>{tPriceList("vendor")}</Label>
                 <FormControl>
                   {isViewMode ? (
                     <Input
                       disabled
-                      className="h-8 bg-muted/50 text-sm"
+                      className="h-8 bg-muted/50 text-xs"
                       value={priceList?.vendor?.name || "-"}
                     />
                   ) : (
-                    <VendorLookup onValueChange={field.onChange} value={field.value} />
+                    <VendorLookup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      classNames="h-8 text-xs"
+                      initialDisplayName={priceList?.vendor?.name}
+                    />
                   )}
                 </FormControl>
                 <FormMessage />
@@ -148,6 +170,7 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
           <FormField
             control={form.control}
             name="currencyId"
+            required
             render={({ field }) => (
               <FormItem className="space-y-1">
                 <Label>{tPriceList("currency")}</Label>
@@ -155,24 +178,97 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
                   {isViewMode ? (
                     <Input
                       disabled
-                      className="h-8 bg-muted/50 text-sm"
+                      className="h-7 bg-muted/50 text-sm"
                       value={priceList?.currency?.name || "-"}
                     />
                   ) : (
-                    <LookupCurrency onValueChange={field.onChange} value={field.value} />
+                    <LookupCurrency
+                      onValueChange={field.onChange}
+                      value={field.value || defaultCurrency}
+                      classNames="h-8 text-xs"
+                    />
                   )}
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+        </div>
 
-          {/* RFP */}
+        <div className="grid gap-x-6 gap-y-4 md:grid-cols-2 lg:grid-cols-4 mt-4">
+          <FormField
+            control={form.control}
+            name="effectivePeriod"
+            required
+            render={({ field }) => {
+              const dateRange =
+                field.value?.from && field.value?.to
+                  ? { from: new Date(field.value.from), to: new Date(field.value.to) }
+                  : undefined;
+
+              return (
+                <FormItem className="space-y-1 col-span-2">
+                  <Label>{tPriceList("effective_period")}</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          disabled={isViewMode}
+                          className={cn(
+                            "h-8 w-full pl-3 text-left font-normal text-sm",
+                            !dateRange && "text-muted-foreground"
+                          )}
+                        >
+                          {dateRange ? (
+                            <>
+                              <span>{formatDate(dateRange.from, dateFormat || "yyyy-MM-dd")}</span>
+                              {"-"}
+                              <span>{formatDate(dateRange.to, dateFormat || "yyyy-MM-dd")}</span>
+                            </>
+                          ) : (
+                            <span className="text-muted-foreground/40">
+                              {tPriceList("enter_effective_period")}
+                            </span>
+                          )}
+                          <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="range"
+                        defaultMonth={dateRange?.from}
+                        selected={dateRange}
+                        onSelect={(range) => {
+                          if (range?.from && range?.to) {
+                            field.onChange({
+                              from: format(range.from, "yyyy-MM-dd"),
+                              to: format(range.to, "yyyy-MM-dd"),
+                            });
+                          } else if (range?.from) {
+                            field.onChange({
+                              from: format(range.from, "yyyy-MM-dd"),
+                              to: format(range.from, "yyyy-MM-dd"),
+                            });
+                          }
+                        }}
+                        disabled={isViewMode}
+                        initialFocus
+                        numberOfMonths={2}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
           <FormField
             control={form.control}
             name="rfpId"
             render={({ field }) => (
-              <FormItem className="space-y-1 col-span-2">
+              <FormItem className="space-y-1">
                 <Label>{tPriceList("rfp")}</Label>
                 <FormControl>
                   <Input
@@ -187,77 +283,14 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
             )}
           />
         </div>
-        <FormField
-          control={form.control}
-          name="effectivePeriod"
-          render={({ field }) => {
-            const dateRange =
-              field.value?.from && field.value?.to
-                ? { from: new Date(field.value.from), to: new Date(field.value.to) }
-                : undefined;
-
-            return (
-              <FormItem className="space-y-1">
-                <Label>{tPriceList("effective_period")}</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        disabled={isViewMode}
-                        className={cn(
-                          "h-8 w-full pl-3 text-left font-normal text-sm",
-                          !dateRange && "text-muted-foreground"
-                        )}
-                      >
-                        {dateRange ? (
-                          <>
-                            {format(dateRange.from, "LLL dd, y")} -{" "}
-                            {format(dateRange.to, "LLL dd, y")}
-                          </>
-                        ) : (
-                          <span>{tPriceList("enter_effective_period")}</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="range"
-                      defaultMonth={dateRange?.from}
-                      selected={dateRange}
-                      onSelect={(range) => {
-                        if (range?.from && range?.to) {
-                          field.onChange({
-                            from: format(range.from, "yyyy-MM-dd"),
-                            to: format(range.to, "yyyy-MM-dd"),
-                          });
-                        } else if (range?.from) {
-                          field.onChange({
-                            from: format(range.from, "yyyy-MM-dd"),
-                            to: format(range.from, "yyyy-MM-dd"),
-                          });
-                        }
-                      }}
-                      disabled={isViewMode}
-                      initialFocus
-                      numberOfMonths={2}
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
       </div>
 
       <Separator className="bg-border/60" />
 
-      {/* Section 3: Additional Details */}
       <div>
-        <h3 className="mb-4 text-sm font-semibold text-foreground">Additional Details</h3>
+        <h3 className="mb-4 text-sm font-semibold text-foreground">
+          {tPriceList("additional_details")}
+        </h3>
         <div className="grid gap-6 md:grid-cols-2">
           {/* Description */}
           <FormField

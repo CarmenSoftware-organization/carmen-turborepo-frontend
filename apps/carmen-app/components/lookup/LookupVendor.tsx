@@ -20,6 +20,7 @@ import { Badge } from "../ui/badge";
 
 interface LookupVendorProps extends PropsLookup {
   readonly onSelectObject?: (obj: VendorGetDto) => void;
+  readonly initialDisplayName?: string;
 }
 
 export default function LookupVendor({
@@ -29,6 +30,7 @@ export default function LookupVendor({
   classNames,
   excludeIds = [],
   onSelectObject,
+  initialDisplayName,
 }: Readonly<LookupVendorProps>) {
   const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
@@ -46,10 +48,13 @@ export default function LookupVendor({
   }, [vendors?.data, excludeIds]);
 
   const selectedVendorName = useMemo(() => {
-    if (!value || !vendorsData || !Array.isArray(vendorsData)) return null;
+    if (!value) return null;
+    if (!vendorsData || !Array.isArray(vendorsData)) {
+      return initialDisplayName || null;
+    }
     const found = vendorsData?.find((vendor: VendorGetDto) => vendor.id === value);
-    return found?.name ?? null;
-  }, [value, vendorsData]);
+    return found?.name ?? initialDisplayName ?? null;
+  }, [value, vendorsData, initialDisplayName]);
 
   const filteredVendors = useMemo(() => {
     if (!vendorsData) return [];
@@ -73,7 +78,11 @@ export default function LookupVendor({
           className={cn("w-full justify-between", classNames)}
           disabled={disabled}
         >
-          {value && selectedVendorName ? selectedVendorName : tVendor("select_vendor")}
+          {value && selectedVendorName ? (
+            <span>{selectedVendorName}</span>
+          ) : (
+            <span className="text-muted-foreground/40">{tVendor("select_vendor")}</span>
+          )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
