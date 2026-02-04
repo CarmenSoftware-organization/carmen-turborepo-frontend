@@ -82,7 +82,13 @@
     "add_contact": "เพิ่มผู้ติดต่อ",
     "add_address": "เพิ่มที่อยู่",
     "address": "ที่อยู่",
-    "zip_code": "รหัสไปรษณีย์"
+    "zip_code": "รหัสไปรษณีย์",
+    "delete_address_title": "ลบที่อยู่",
+    "delete_address_description": "คุณแน่ใจหรือไม่ว่าต้องการลบที่อยู่นี้?",
+    "delete_contact_title": "ลบผู้ติดต่อ",
+    "delete_contact_description": "คุณแน่ใจหรือไม่ว่าต้องการลบผู้ติดต่อนี้?",
+    "delete_info_title": "ลบข้อมูลเพิ่มเติม",
+    "delete_info_description": "คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลเพิ่มเติมนี้?"
   },
   "VendorManagement": {
     "title": "การจัดการผู้จัดจำหน่าย",

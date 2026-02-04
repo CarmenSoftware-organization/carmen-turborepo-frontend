@@ -9,7 +9,7 @@ import {
   postApiRequest,
   updateApiRequest,
 } from "@/lib/config.api";
-import { VendorFormValues } from "@/dtos/vendor.dto";
+import { VendorPayload } from "@/dtos/vendor.dto";
 
 const vendorApiUrl = (buCode: string, id?: string) => {
   const baseUrl = `${backendApi}/api/config/${buCode}/vendors`;
@@ -75,7 +75,7 @@ export const useVendorById = (token: string, buCode: string, id: string) => {
 export const useVendorMutation = (token: string, buCode: string) => {
   const API_URL = vendorApiUrl(buCode);
   return useMutation({
-    mutationFn: async (data: VendorFormValues) => {
+    mutationFn: async (data: VendorPayload) => {
       return await postApiRequest(API_URL, token, data, "Error creating vendor");
     },
   });
@@ -84,7 +84,7 @@ export const useVendorMutation = (token: string, buCode: string) => {
 export const useUpdateVendor = (token: string, buCode: string, id: string) => {
   const API_ID = vendorApiUrl(buCode, id);
   return useMutation({
-    mutationFn: async (data: VendorFormValues) => {
+    mutationFn: async (data: VendorPayload) => {
       if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }

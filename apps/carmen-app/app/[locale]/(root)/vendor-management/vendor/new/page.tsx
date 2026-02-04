@@ -1,11 +1,11 @@
 import { formType } from "@/dtos/form.dto";
-import VendorForm from "../_components/form/VendorForm";
 import { Metadata } from "next";
+import FormVendor from "../_components/form/FormVendor";
 
 export const metadata: Metadata = {
-    title: "New Vendor",
+  title: "New Vendor",
 };
 
 export default function NewVendor() {
-    return <VendorForm mode={formType.ADD} />
+  return <FormVendor mode={formType.ADD} />;
 }

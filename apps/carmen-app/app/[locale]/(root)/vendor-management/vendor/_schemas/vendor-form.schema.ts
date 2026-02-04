@@ -7,6 +7,8 @@ export const infoItemSchema = z.object({
 });
 
 const addressSchema = z.object({
+  id: z.string().optional(),
+  is_new: z.boolean().optional(),
   address_type: z.string(),
   data: z.object({
     address_line1: z.string(),
@@ -21,6 +23,8 @@ const addressSchema = z.object({
 
 export const createContactSchema = (messages: { nameRequired: string; emailInvalid: string }) =>
   z.object({
+    id: z.string().optional(),
+    is_new: z.boolean().optional(),
     name: z.string().min(1, messages.nameRequired),
     email: z.string().email(messages.emailInvalid).optional().or(z.literal("")),
     phone: z.string().optional().or(z.literal("")),
@@ -39,23 +43,47 @@ export const createVendorFormSchema = (messages: {
       name: z.string().min(1, messages.nameRequired),
       code: z.string().min(1, messages.codeRequired),
       description: z.string().nullish(),
-      business_type: z.array(
-        z.object({
-          id: z.string(),
-          name: z.string(),
-        })
-      ),
-      info: z.array(infoItemSchema),
-      vendor_address: z.object({
-        add: z.array(addressSchema),
-      }),
-      vendor_contact: z.object({
-        add: z.array(
+      business_type: z
+        .array(
+          z.object({
+            id: z.string(),
+            name: z.string(),
+          })
+        )
+        .default([]),
+      info: z.array(infoItemSchema).default([]),
+      addresses: z.array(addressSchema).default([]),
+      contacts: z
+        .array(
           createContactSchema({
             nameRequired: messages.contactNameRequired,
             emailInvalid: messages.emailInvalid,
           })
-        ),
+        )
+        .default([]),
+      vendor_address: z.object({
+        add: z.array(addressSchema).default([]),
+        update: z.array(addressSchema).default([]),
+        delete: z.array(z.object({ id: z.string() })).default([]),
+      }),
+      vendor_contact: z.object({
+        add: z
+          .array(
+            createContactSchema({
+              nameRequired: messages.contactNameRequired,
+              emailInvalid: messages.emailInvalid,
+            })
+          )
+          .default([]),
+        update: z
+          .array(
+            createContactSchema({
+              nameRequired: messages.contactNameRequired,
+              emailInvalid: messages.emailInvalid,
+            })
+          )
+          .default([]),
+        delete: z.array(z.object({ id: z.string() })).default([]),
       }),
     })
     .transform((data) => {
