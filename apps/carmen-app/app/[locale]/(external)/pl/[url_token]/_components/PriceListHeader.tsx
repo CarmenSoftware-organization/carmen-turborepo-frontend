@@ -22,22 +22,32 @@ export default function PriceListHeader({ data }: PriceListHeaderProps) {
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm pt-2">
         <div>
-          <span className="text-muted-foreground">Vendor Name:</span> {data.vendor_name}
+          <span className="text-muted-foreground">Vendor Name:</span>{" "}
+          <span className="font-medium">{data.vendor_name || "-"}</span>
         </div>
         <div>
-          <span className="text-muted-foreground">Currency:</span> {data.currency_code}
+          <span className="text-muted-foreground">Currency:</span>{" "}
+          <span className="font-medium">{data.currency_code}</span>
         </div>
         <div>
           <span className="text-muted-foreground">Date:</span>{" "}
-          {formatDate(data.effective_from_date, dateFormat || "yyyy-MM-dd")} -{" "}
-          {formatDate(data.effective_to_date, dateFormat || "yyyy-MM-dd")}
+          <span className="font-medium">
+            {formatDate(data.effective_from_date, dateFormat || "yyyy-MM-dd")} -{" "}
+            {formatDate(data.effective_to_date, dateFormat || "yyyy-MM-dd")}
+          </span>
         </div>
-        <div className="col-span-2">
-          <span className="text-muted-foreground">Description:</span> {data.description}
-        </div>
-        <div className="col-span-2">
-          <span className="text-muted-foreground">Note:</span> {data.note}
-        </div>
+        {data.description && (
+          <div className="col-span-2 md:col-span-4">
+            <span className="text-muted-foreground">Description:</span>{" "}
+            <span className="font-medium">{data.description}</span>
+          </div>
+        )}
+        {data.note && (
+          <div className="col-span-2 md:col-span-4">
+            <span className="text-muted-foreground">Note:</span>{" "}
+            <span className="font-medium">{data.note}</span>
+          </div>
+        )}
       </div>
     </div>
   );

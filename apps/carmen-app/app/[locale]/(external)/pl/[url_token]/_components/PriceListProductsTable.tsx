@@ -22,15 +22,26 @@ import { Badge } from "@/components/ui/badge";
 import { MoqTierDto, PricelistExternalDetailDto } from "./pl-external.dto";
 import MoqTiersSubTable from "./MoqTiersSubTable";
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
+import { Save, Send } from "lucide-react";
 
 interface PriceListProductsTableProps {
   items: PricelistExternalDetailDto[];
   onTiersUpdate?: (productId: string, tiers: MoqTierDto[]) => void;
+  onSave?: () => void;
+  onSubmit?: () => void;
+  hasPendingChanges?: boolean;
+  isSaving?: boolean;
+  isSubmitting?: boolean;
 }
 
 export default function PriceListProductsTable({
   items,
   onTiersUpdate,
+  onSave,
+  onSubmit,
+  hasPendingChanges = false,
+  isSaving = false,
+  isSubmitting = false,
 }: PriceListProductsTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -215,11 +226,29 @@ export default function PriceListProductsTable({
           </ScrollArea>
         </DataGridContainer>
         <DataGridPagination />
-        <div className="flex gap-2 justify-end">
-          <Button variant="outline" size="sm">
-            Save
+        <div className="flex items-center gap-2 justify-end">
+          {hasPendingChanges && (
+            <Badge variant="warning" className="text-xs">
+              Unsaved changes
+            </Badge>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onSave}
+            disabled={!hasPendingChanges || isSaving}
+          >
+            <Save className="h-4 w-4" />
+            {isSaving ? "Saving..." : "Save"}
           </Button>
-          <Button size="sm">Submit</Button>
+          <Button
+            size="sm"
+            onClick={onSubmit}
+            disabled={hasPendingChanges || isSubmitting}
+          >
+            <Send className="h-4 w-4" />
+            {isSubmitting ? "Submitting..." : "Submit"}
+          </Button>
         </div>
       </div>
     </DataGrid>

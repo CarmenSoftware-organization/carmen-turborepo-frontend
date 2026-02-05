@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Check, Pencil, Plus, Trash2 } from "lucide-react";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
@@ -29,6 +29,16 @@ export default function MoqTiersSubTable({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [tierToDelete, setTierToDelete] = useState<string | null>(null);
 
+  // Track if local changes have been made
+  const hasLocalChanges = useRef(false);
+
+  // Sync with parent when tiers prop changes (only if no local changes)
+  useEffect(() => {
+    if (!hasLocalChanges.current) {
+      setLocalTiers(tiers);
+    }
+  }, [tiers]);
+
   const handleToggleEdit = (tierId: string) => {
     setEditingTierIds((prev) => {
       const newSet = new Set(prev);
@@ -51,6 +61,7 @@ export default function MoqTiersSubTable({
     };
 
     const updatedTiers = [...localTiers, newTier];
+    hasLocalChanges.current = true;
     setLocalTiers(updatedTiers);
     onTiersUpdate?.(productId, updatedTiers);
     setEditingTierIds((prev) => new Set(prev).add(newId));
@@ -65,6 +76,7 @@ export default function MoqTiersSubTable({
     if (!tierToDelete) return;
 
     const updatedTiers = localTiers.filter((tier) => tier.id !== tierToDelete);
+    hasLocalChanges.current = true;
     setLocalTiers(updatedTiers);
     onTiersUpdate?.(productId, updatedTiers);
     setDeleteDialogOpen(false);
@@ -76,6 +88,7 @@ export default function MoqTiersSubTable({
       tier.id === tierId ? { ...tier, [field]: value } : tier
     );
 
+    hasLocalChanges.current = true;
     setLocalTiers(updatedTiers);
     onTiersUpdate?.(productId, updatedTiers);
   };
@@ -208,6 +221,20 @@ export default function MoqTiersSubTable({
     getCoreRowModel: getCoreRowModel(),
     getRowId: (row: MoqTierDto) => row.id,
   });
+
+  if (localTiers.length === 0) {
+    return (
+      <div className="p-4 bg-muted/30">
+        <div className="flex flex-col items-center justify-center py-6 text-center">
+          <p className="text-sm text-muted-foreground mb-2">No MOQ tiers configured</p>
+          <Button onClick={handleAddNew} size="sm" variant="outline">
+            <Plus className="h-3 w-3 mr-1" />
+            Add MOQ Tier
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
