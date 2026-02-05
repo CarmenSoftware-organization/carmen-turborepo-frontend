@@ -25,6 +25,22 @@ interface ProductsSectionProps {
 
 type ProductTableItem = FieldArrayWithId<PriceListFormData, "pricelist_detail", "id">;
 
+// Type for grouped rows in view mode - stores all values as arrays
+interface GroupedProductRow {
+  product_id: string;
+  product_name: string;
+  product_code: string;
+  itemCount: number;
+  // All values from items (displayed as list)
+  prices: number[];
+  prices_without_tax: number[];
+  tax_amts: number[];
+  moq_qtys: number[];
+  unit_names: string[];
+  tax_profile_names: string[];
+  lead_time_days_list: number[];
+}
+
 export default function ProductsSection({ form, isViewMode, token, buCode }: ProductsSectionProps) {
   const tPriceList = useTranslations("PriceList");
 
@@ -119,6 +135,46 @@ export default function ProductsSection({ form, isViewMode, token, buCode }: Pro
   };
 
   const tableData = useMemo(() => fields.filter((field) => field._action !== "remove"), [fields]);
+
+  // Grouped table data for view mode only - collects all values into arrays
+  const groupedTableData = useMemo(() => {
+    if (!isViewMode) return [];
+
+    const activeItems = fields.filter((f) => f._action !== "remove");
+    const groupMap = new Map<string, GroupedProductRow>();
+
+    for (const item of activeItems) {
+      const key = item.product_id || `ungrouped-${item.id}`;
+
+      if (groupMap.has(key)) {
+        const group = groupMap.get(key)!;
+        group.itemCount++;
+        group.prices.push(item.price);
+        group.prices_without_tax.push(item.price_without_tax ?? 0);
+        group.tax_amts.push(item.tax_amt ?? 0);
+        group.moq_qtys.push(item.moq_qty ?? 0);
+        group.unit_names.push(item.unit_name || "-");
+        group.tax_profile_names.push(item.tax_profile_name || "-");
+        group.lead_time_days_list.push(item.lead_time_days ?? 0);
+      } else {
+        groupMap.set(key, {
+          product_id: item.product_id,
+          product_name: item.product_name || "",
+          product_code: item.product_code || "",
+          itemCount: 1,
+          prices: [item.price],
+          prices_without_tax: [item.price_without_tax ?? 0],
+          tax_amts: [item.tax_amt ?? 0],
+          moq_qtys: [item.moq_qty ?? 0],
+          unit_names: [item.unit_name || "-"],
+          tax_profile_names: [item.tax_profile_name || "-"],
+          lead_time_days_list: [item.lead_time_days ?? 0],
+        });
+      }
+    }
+
+    return Array.from(groupMap.values());
+  }, [fields, isViewMode]);
 
   // Helper to find original index in fields array
   const getOriginalIndex = (id: string) => fields.findIndex((f) => f.id === id);
@@ -360,11 +416,107 @@ export default function ProductsSection({ form, isViewMode, token, buCode }: Pro
     [fields, isViewMode, buCode, token]
   );
 
-  const table = useReactTable({
+  // Columns for view mode (grouped data - displays combined pricing info)
+  const viewModeColumns = useMemo<ColumnDef<GroupedProductRow>[]>(
+    () => [
+      {
+        id: "no",
+        header: ({ column }) => <DataGridColumnHeader column={column} title="#" />,
+        cell: ({ row }) => <span>{row.index + 1}</span>,
+        size: 50,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
+      },
+      {
+        accessorKey: "product_name",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tPriceList("product")} />
+        ),
+        cell: ({ row }) => <span className="text-xs">{row.original.product_name || "-"}</span>,
+        size: 250,
+      },
+      {
+        id: "pricing",
+        header: ({ column }) => <DataGridColumnHeader column={column} title="MOQ" />,
+        cell: ({ row }) => (
+          <div className="flex flex-col gap-0.5">
+            {row.original.moq_qtys.map((moq, i) => (
+              <span key={i} className="text-xs">
+                {moq} {row.original.unit_names[i]}
+                {" → "}
+                {row.original.prices[i]}({row.original.lead_time_days_list[i]}d)
+              </span>
+            ))}
+          </div>
+        ),
+        size: 200,
+      },
+      {
+        accessorKey: "prices_without_tax",
+        header: ({ column }) => <DataGridColumnHeader column={column} title="PWT" />,
+        cell: ({ row }) => (
+          <div className="flex flex-col gap-0.5">
+            {row.original.prices_without_tax.map((p, i) => (
+              <span key={i} className="text-xs">
+                {p}
+              </span>
+            ))}
+          </div>
+        ),
+        size: 150,
+      },
+      {
+        accessorKey: "tax_profile_names",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tPriceList("tax_profile")} />
+        ),
+        cell: ({ row }) => (
+          <div className="flex flex-col gap-0.5">
+            {row.original.tax_profile_names.map((t, i) => (
+              <span key={i} className="text-xs">
+                {t}
+              </span>
+            ))}
+          </div>
+        ),
+        size: 150,
+      },
+      {
+        accessorKey: "tax_amts",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tPriceList("tax_amt")} />
+        ),
+        cell: ({ row }) => (
+          <div className="flex flex-col gap-0.5">
+            {row.original.tax_amts.map((t, i) => (
+              <span key={i} className="text-xs">
+                {t}
+              </span>
+            ))}
+          </div>
+        ),
+        size: 120,
+      },
+    ],
+    [tPriceList]
+  );
+
+  // Table for edit mode (individual rows)
+  const editTable = useReactTable({
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getRowId: (row) => row.id || "",
+  });
+
+  // Table for view mode (grouped rows)
+  const viewTable = useReactTable({
+    data: groupedTableData,
+    columns: viewModeColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.product_id || `ungrouped-${row.product_name}`,
   });
 
   return (
@@ -384,30 +536,55 @@ export default function ProductsSection({ form, isViewMode, token, buCode }: Pro
         </div>
       )}
 
-      {tableData.length > 0 ? (
+      {(isViewMode ? groupedTableData.length : tableData.length) > 0 ? (
         <div className="border-none">
-          <DataGrid
-            table={table}
-            recordCount={tableData.length}
-            isLoading={false}
-            tableLayout={{
-              headerSticky: true,
-              rowBorder: true,
-              headerBackground: true,
-              headerBorder: true,
-              width: "fixed",
-              dense: true,
-            }}
-          >
-            <div className="w-full">
-              <DataGridContainer>
-                <ScrollArea className="h-[calc(100vh-500px)]">
-                  <DataGridTable />
-                  <ScrollBar orientation="horizontal" />
-                </ScrollArea>
-              </DataGridContainer>
-            </div>
-          </DataGrid>
+          {isViewMode ? (
+            <DataGrid
+              table={viewTable}
+              recordCount={groupedTableData.length}
+              isLoading={false}
+              tableLayout={{
+                headerSticky: true,
+                rowBorder: true,
+                headerBackground: true,
+                headerBorder: true,
+                width: "fixed",
+                dense: true,
+              }}
+            >
+              <div className="w-full">
+                <DataGridContainer>
+                  <ScrollArea className="h-[calc(100vh-500px)]">
+                    <DataGridTable />
+                    <ScrollBar orientation="horizontal" />
+                  </ScrollArea>
+                </DataGridContainer>
+              </div>
+            </DataGrid>
+          ) : (
+            <DataGrid
+              table={editTable}
+              recordCount={tableData.length}
+              isLoading={false}
+              tableLayout={{
+                headerSticky: true,
+                rowBorder: true,
+                headerBackground: true,
+                headerBorder: true,
+                width: "fixed",
+                dense: true,
+              }}
+            >
+              <div className="w-full">
+                <DataGridContainer>
+                  <ScrollArea className="h-[calc(100vh-500px)]">
+                    <DataGridTable />
+                    <ScrollBar orientation="horizontal" />
+                  </ScrollArea>
+                </DataGridContainer>
+              </div>
+            </DataGrid>
+          )}
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center pb-5 text-center">
