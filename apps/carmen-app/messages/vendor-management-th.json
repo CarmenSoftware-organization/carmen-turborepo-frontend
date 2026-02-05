@@ -322,6 +322,7 @@
     "delete_confirm_title": "ลบ RFP",
     "delete_confirm_desc": "คุณแน่ใจหรือไม่ที่จะลบ RFP?",
     "delete_success": "ลบ RFP สำเร็จ",
-    "delete_failed": "ไม่สามารถลบ RFP ได้"
+    "delete_failed": "ไม่สามารถลบ RFP ได้",
+    "add_vendor": "เพิ่มผู้จัดจำหน่าย"
   }
 }

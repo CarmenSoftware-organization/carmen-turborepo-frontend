@@ -122,12 +122,12 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
       <div className="sticky top-0 z-10 bg-background">
         <div className="container">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => router.back()}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <div className="flex flex-col">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <h1 className="text-lg font-bold tracking-tight text-foreground">
                     {currentMode === formType.ADD
                       ? tRfp("create_new")
@@ -140,28 +140,18 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
 
             <div className="flex items-center gap-2">
               {isViewMode ? (
-                <Button
-                  size="sm"
-                  onClick={() => setCurrentMode(formType.EDIT)}
-                  className="h-8 gap-2"
-                >
+                <Button size="sm" onClick={() => setCurrentMode(formType.EDIT)}>
                   <PenBoxIcon className="h-4 w-4" />
                   {tRfp("edit")}
                 </Button>
               ) : (
                 <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentMode(formType.VIEW)}
-                    className="h-8"
-                  >
-                    <X className="h-4 w-4 mr-1" />
+                  <Button variant="outline" size="sm" onClick={() => setCurrentMode(formType.VIEW)}>
+                    <X className="h-4 w-4" />
                     {tRfp("cancel")}
                   </Button>
                   <Button
                     size="sm"
-                    className="h-8 gap-2 px-4 shadow-sm"
                     onClick={form.handleSubmit(onSubmit, (errors) => {
                       console.error("Form Validation Errors:", errors);
                       toastError({
@@ -183,7 +173,6 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="container pt-4">
         <Form {...form}>
           <div className="space-y-4">

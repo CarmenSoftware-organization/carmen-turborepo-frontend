@@ -65,7 +65,7 @@ export default function OverviewTab({ form, isViewMode, templates, dateFormat }:
                     {...field}
                     disabled={isViewMode}
                     placeholder={tRfp("rfp_name_placeholder")}
-                    className="h-8 text-sm"
+                    className="h-8 text-xs"
                   />
                 </FormControl>
                 <FormMessage />
@@ -85,7 +85,7 @@ export default function OverviewTab({ form, isViewMode, templates, dateFormat }:
                   disabled={isViewMode}
                 >
                   <FormControl>
-                    <SelectTrigger className="h-8 text-sm">
+                    <SelectTrigger className="h-8 text-xs">
                       <SelectValue placeholder={tRfp("select_status")} />
                     </SelectTrigger>
                   </FormControl>
@@ -114,7 +114,7 @@ export default function OverviewTab({ form, isViewMode, templates, dateFormat }:
                     value={field.value || ""}
                     disabled={isViewMode}
                   >
-                    <SelectTrigger className="h-8 text-sm">
+                    <SelectTrigger className="h-8 text-xs">
                       <SelectValue placeholder={tPlt("select_template")} />
                     </SelectTrigger>
                     <SelectContent>

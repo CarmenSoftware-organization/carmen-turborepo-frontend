@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import axios from "axios";
 import { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Trash2, Plus, X, Mail, Clipboard, ExternalLink, Check, Copy } from "lucide-react";
+import { Trash2, Mail, ExternalLink, Check, Copy, Plus, X } from "lucide-react";
 import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
@@ -14,8 +13,7 @@ import { VendorGetDto } from "@/dtos/vendor-management";
 import { RfpDetailDto } from "@/dtos/rfp.dto";
 import { RfpFormValues } from "../../_schema/rfp.schema";
 import { nanoid } from "nanoid";
-import { backendApi, frontendUrl } from "@/lib/backend-api";
-import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { frontendUrl } from "@/lib/backend-api";
 import { useTranslations } from "next-intl";
 
 interface VendorDisplay {
@@ -36,8 +34,8 @@ interface Props {
 
 export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props) {
   const tRfp = useTranslations("RFP");
-  const [isAdding, setIsAdding] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
   const addedVendors = form.watch("vendors.add") || [];
   const removedVendorIds = form.watch("vendors.remove") || [];
 
@@ -59,8 +57,9 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
 
     const list = [...existing, ...added];
 
+    // Show placeholder row only when isAdding is true (button clicked)
     if (isAdding) {
-      list.unshift({
+      list.push({
         id: nanoid(),
         name: "",
         contact_email: "",
@@ -85,6 +84,74 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
     }
   };
 
+  const handleVendorChange = (val: string, oldVendorId?: string) => {
+    const currentAdd = form.getValues("vendors.add") || [];
+    const existingIds = rfpData?.vendors?.map((v) => v.vendor_id) || [];
+    const alreadyAdded = currentAdd.some((v) => v.vendor_id === val);
+    const alreadyExists = existingIds.includes(val) && !removedVendorIds.includes(val);
+
+    if (val && !alreadyAdded && !alreadyExists) {
+      const selectedVendor = vendors.find((v) => v.id === val);
+      if (selectedVendor) {
+        const primaryContact =
+          selectedVendor.tb_vendor_contact?.find((c) => c.is_primary) ||
+          selectedVendor.tb_vendor_contact?.[0];
+        const email = primaryContact?.email || selectedVendor.vendor_contact?.[0]?.email || "";
+        const person = primaryContact?.name || selectedVendor.vendor_contact?.[0]?.name || "";
+        const phone = primaryContact?.phone || selectedVendor.vendor_contact?.[0]?.phone || "";
+
+        if (oldVendorId) {
+          // Editing existing vendor
+          const isInAddedList = currentAdd.some((v) => v.vendor_id === oldVendorId);
+
+          if (isInAddedList) {
+            // Update in add list
+            const newAdd = currentAdd.map((v) =>
+              v.vendor_id === oldVendorId
+                ? {
+                    ...v,
+                    vendor_id: selectedVendor.id,
+                    vendor_name: selectedVendor.name,
+                    contact_email: email,
+                    contact_person: person,
+                    contact_phone: phone,
+                  }
+                : v
+            );
+            form.setValue("vendors.add", newAdd, { shouldDirty: true });
+          } else {
+            // Remove from existing and add new
+            const currentRemove = form.getValues("vendors.remove") || [];
+            form.setValue("vendors.remove", [...currentRemove, oldVendorId], { shouldDirty: true });
+            const totalCurrent = (rfpData?.vendors?.length || 0) + currentAdd.length;
+            const vendorObj = {
+              vendor_id: selectedVendor.id,
+              vendor_name: selectedVendor.name,
+              sequence_no: totalCurrent + 1,
+              contact_email: email,
+              contact_person: person,
+              contact_phone: phone,
+            };
+            form.setValue("vendors.add", [...currentAdd, vendorObj], { shouldDirty: true });
+          }
+        } else {
+          // Adding new vendor
+          const totalCurrent = (rfpData?.vendors?.length || 0) + currentAdd.length;
+          const vendorObj = {
+            vendor_id: selectedVendor.id,
+            vendor_name: selectedVendor.name,
+            sequence_no: totalCurrent + 1,
+            contact_email: email,
+            contact_person: person,
+            contact_phone: phone,
+          };
+          form.setValue("vendors.add", [...currentAdd, vendorObj], { shouldDirty: true });
+          setIsAdding(false);
+        }
+      }
+    }
+  };
+
   const copyToClipboard = (id: string, url_token: string) => {
     navigator.clipboard.writeText((frontendUrl ?? "") + "/pl/" + url_token);
     setCopiedId(id);
@@ -100,60 +167,34 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
           <span className="font-mono text-xs text-muted-foreground">{row.index + 1}</span>
         ),
         size: 50,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
       },
       {
         accessorKey: "name",
         header: () => <span className="text-xs">{tRfp("vendor_name")}</span>,
         cell: ({ row }) => {
-          if (row.original.isPlaceholder) {
+          // In edit mode, always show VendorLookup
+          if (!isViewMode) {
             return (
               <VendorLookup
-                excludeIds={displayVendors.filter((v) => !v.isPlaceholder && v.id).map((v) => v.id)}
+                value={row.original.isPlaceholder ? undefined : row.original.id}
+                excludeIds={displayVendors
+                  .filter((v) => !v.isPlaceholder && v.id && v.id !== row.original.id)
+                  .map((v) => v.id)}
                 onValueChange={(val) => {
-                  const currentAdd = form.getValues("vendors.add") || [];
-                  const existingIds = rfpData?.vendors?.map((v) => v.vendor_id) || [];
-                  const alreadyAdded = currentAdd.some((v) => v.vendor_id === val);
-                  const alreadyExists = existingIds.includes(val);
-
-                  if (val && !alreadyAdded && !alreadyExists) {
-                    if (vendors) {
-                      const selectedVendor = vendors.find((v) => v.id === val);
-                      if (selectedVendor) {
-                        const totalCurrent = (rfpData?.vendors?.length || 0) + currentAdd.length;
-                        const primaryContact =
-                          selectedVendor.tb_vendor_contact?.find((c) => c.is_primary) ||
-                          selectedVendor.tb_vendor_contact?.[0];
-                        const email =
-                          primaryContact?.email || selectedVendor.vendor_contact?.[0]?.email || "";
-                        const person =
-                          primaryContact?.name || selectedVendor.vendor_contact?.[0]?.name || "";
-                        const phone =
-                          primaryContact?.phone || selectedVendor.vendor_contact?.[0]?.phone || "";
-
-                        const vendorObj = {
-                          vendor_id: selectedVendor.id,
-                          vendor_name: selectedVendor.name,
-                          sequence_no: totalCurrent + 1,
-                          contact_email: email,
-                          contact_person: person,
-                          contact_phone: phone,
-                        };
-
-                        form.setValue("vendors.add", [...currentAdd, vendorObj], {
-                          shouldDirty: true,
-                        });
-                        setIsAdding(false);
-                      }
-                    }
-                  }
+                  handleVendorChange(val, row.original.isPlaceholder ? undefined : row.original.id);
                 }}
+                classNames="text-xs h-7"
                 disabled={isViewMode}
               />
             );
           }
           return <span className="text-xs">{row.original.name}</span>;
         },
-        size: 250,
+        size: 300,
       },
       {
         id: "email",
@@ -180,39 +221,47 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
         id: "action",
         header: () => <span className="text-xs">{tRfp("action")}</span>,
         cell: ({ row }) => {
-          return (
-            <div className="flex items-center justify-end gap-1">
-              <Button
-                size={"sm"}
-                variant="ghost"
-                onClick={() => copyToClipboard(row.original.id, row.original.url_token ?? "")}
-              >
-                {copiedId === row.original.id ? (
-                  <Check className="h-3.5 w-3.5" />
-                ) : (
-                  <Copy className="h-3.5 w-3.5" />
-                )}
-              </Button>
-              <Button
-                size={"sm"}
-                variant="ghost"
-                onClick={() =>
-                  window.open((frontendUrl ?? "") + "/pl/" + row.original.url_token, "_blank")
-                }
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-              </Button>
-
-              {!isViewMode && row.original.isPlaceholder && (
-                <Button variant="ghost" size="sm" onClick={() => setIsAdding(false)}>
+          if (row.original.isPlaceholder) {
+            return (
+              <div className="flex items-center justify-end">
+                <Button variant="ghost" size="xs" onClick={() => setIsAdding(false)}>
                   <X className="h-4 w-4" />
                 </Button>
+              </div>
+            );
+          }
+
+          return (
+            <div className="flex items-center justify-end gap-1">
+              {isViewMode && (
+                <>
+                  <Button
+                    size={"xs"}
+                    variant="ghost"
+                    onClick={() => copyToClipboard(row.original.id, row.original.url_token ?? "")}
+                  >
+                    {copiedId === row.original.id ? (
+                      <Check className="h-3.5 w-3.5" />
+                    ) : (
+                      <Copy className="h-3.5 w-3.5" />
+                    )}
+                  </Button>
+                  <Button
+                    size={"xs"}
+                    variant="ghost"
+                    onClick={() =>
+                      window.open((frontendUrl ?? "") + "/pl/" + row.original.url_token, "_blank")
+                    }
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </Button>
+                </>
               )}
 
-              {!isViewMode && !row.original.isPlaceholder && (
+              {!isViewMode && (
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="xs"
                   onClick={() =>
                     handleRemoveVendor(row.original.id || row.original.vendor_id || "")
                   }
@@ -230,7 +279,7 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
         },
       },
     ],
-    [isViewMode, isAdding, rfpData, vendors, form, tRfp, copiedId]
+    [isViewMode, rfpData, vendors, form, tRfp, copiedId, displayVendors, isAdding]
   );
 
   const table = useReactTable({
@@ -240,45 +289,42 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
   });
 
   return (
-    <div className="w-full">
-      {!isViewMode && !isAdding && (
-        <div className="flex justify-end pb-2">
-          <Button
-            onClick={() => setIsAdding(true)}
-            size="sm"
-            variant="outline"
-            className="h-8 gap-1.5 text-xs font-medium"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            {tRfp("add_vendors")}
-          </Button>
-        </div>
-      )}
-
-      <div className="border-none">
-        <DataGrid
-          table={table}
-          recordCount={displayVendors.length}
-          isLoading={false}
-          tableLayout={{
-            headerSticky: true,
-            rowBorder: true,
-            headerBackground: true,
-            headerBorder: true,
-            width: "fixed",
-            dense: true,
-          }}
-        >
-          <div className="w-full">
-            <DataGridContainer>
-              <ScrollArea>
-                <DataGridTable />
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-            </DataGridContainer>
+    <div className="w-full space-y-2">
+      <div className="flex items-center justify-end">
+        {!isViewMode && (
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setIsAdding(true)}
+              disabled={isAdding}
+              className="text-xs h-7"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              {tRfp("add_vendor")}
+            </Button>
           </div>
-        </DataGrid>
+        )}
       </div>
+      <DataGrid
+        table={table}
+        recordCount={displayVendors.length}
+        isLoading={false}
+        tableLayout={{
+          headerSticky: true,
+          width: "fixed",
+          dense: true,
+        }}
+      >
+        <div className="w-full">
+          <DataGridContainer>
+            <ScrollArea>
+              <DataGridTable />
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </DataGridContainer>
+        </div>
+      </DataGrid>
     </div>
   );
 }
