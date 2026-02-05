@@ -2,8 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { LogIn } from "lucide-react";
+import { ArrowLeft, LogIn } from "lucide-react";
 import { Cat401 } from "./illustrations";
+import { useRouter } from "@/lib/navigation";
 
 interface Props {
   readonly onSignIn?: () => void;
@@ -11,7 +12,7 @@ interface Props {
 
 export default function Unauthorized({ onSignIn }: Props) {
   const tError = useTranslations("ErrorPages");
-
+  const router = useRouter();
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] py-16">
       <div className="relative mb-8">
@@ -22,9 +23,7 @@ export default function Unauthorized({ onSignIn }: Props) {
           <Cat401 />
         </div>
       </div>
-      <h2 className="text-2xl font-bold text-primary mb-3">
-        {tError("unauthorized.title")}
-      </h2>
+      <h2 className="text-2xl font-bold text-primary mb-3">{tError("unauthorized.title")}</h2>
       <p className="text-muted-foreground text-center max-w-md mb-6">
         {tError("unauthorized.description")}
       </p>
@@ -34,6 +33,10 @@ export default function Unauthorized({ onSignIn }: Props) {
           {tError("unauthorized.signIn")}
         </Button>
       )}
+      <Button onClick={() => router.back()} className="gap-2">
+        <ArrowLeft className="h-4 w-4" />
+        {tError("goBack")}
+      </Button>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import axios from "axios";
 import { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Trash2, Plus, X, Mail } from "lucide-react";
+import { Trash2, Plus, X, Mail, Clipboard, ExternalLink, Check, Copy } from "lucide-react";
 import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
@@ -14,7 +14,7 @@ import { VendorGetDto } from "@/dtos/vendor-management";
 import { RfpDetailDto } from "@/dtos/rfp.dto";
 import { RfpFormValues } from "../../_schema/rfp.schema";
 import { nanoid } from "nanoid";
-import { backendApi } from "@/lib/backend-api";
+import { backendApi, frontendUrl } from "@/lib/backend-api";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useTranslations } from "next-intl";
 
@@ -37,6 +37,7 @@ interface Props {
 export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props) {
   const tRfp = useTranslations("RFP");
   const [isAdding, setIsAdding] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const addedVendors = form.watch("vendors.add") || [];
   const removedVendorIds = form.watch("vendors.remove") || [];
 
@@ -84,15 +85,10 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
     }
   };
 
-  const checkPriceList = async (url_token: string) => {
-    try {
-      const res = await axios.post(`${backendApi}/api/check-price-list/${url_token}`);
-      if (res.data.success) {
-        toastSuccess({ message: tRfp("price_list_checked") });
-      }
-    } catch (error: any) {
-      toastError({ message: error.response?.data?.message || tRfp("price_list_check_failed") });
-    }
+  const copyToClipboard = (id: string, url_token: string) => {
+    navigator.clipboard.writeText((frontendUrl ?? "") + "/pl/" + url_token);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   const columns = useMemo<ColumnDef<VendorDisplay>[]>(
@@ -168,7 +164,9 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
               size={"sm"}
               variant="outline"
               className="h-7 text-xs gap-2"
-              onClick={() => checkPriceList(row.original.url_token ?? "")}
+              onClick={() => {
+                alert(row.original.contact_email);
+              }}
             >
               <Mail className="h-3.5 w-3.5" />
               {row.original.contact_email}
@@ -176,34 +174,53 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
           ) : (
             <span className="text-xs">-</span>
           ),
-        size: 200,
+        size: 250,
       },
       {
         id: "action",
         header: () => <span className="text-xs">{tRfp("action")}</span>,
         cell: ({ row }) => {
-          if (isViewMode) return null;
-          if (row.original.isPlaceholder) {
-            return (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                onClick={() => setIsAdding(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            );
-          }
           return (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-              onClick={() => handleRemoveVendor(row.original.id || row.original.vendor_id || "")}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center justify-end gap-1">
+              <Button
+                size={"sm"}
+                variant="ghost"
+                onClick={() => copyToClipboard(row.original.id, row.original.url_token ?? "")}
+              >
+                {copiedId === row.original.id ? (
+                  <Check className="h-3.5 w-3.5" />
+                ) : (
+                  <Copy className="h-3.5 w-3.5" />
+                )}
+              </Button>
+              <Button
+                size={"sm"}
+                variant="ghost"
+                onClick={() =>
+                  window.open((frontendUrl ?? "") + "/pl/" + row.original.url_token, "_blank")
+                }
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Button>
+
+              {!isViewMode && row.original.isPlaceholder && (
+                <Button variant="ghost" size="sm" onClick={() => setIsAdding(false)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+
+              {!isViewMode && !row.original.isPlaceholder && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() =>
+                    handleRemoveVendor(row.original.id || row.original.vendor_id || "")
+                  }
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           );
         },
         size: 100,
@@ -213,7 +230,7 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
         },
       },
     ],
-    [isViewMode, isAdding, rfpData, vendors, form, tRfp]
+    [isViewMode, isAdding, rfpData, vendors, form, tRfp, copiedId]
   );
 
   const table = useReactTable({
