@@ -54,6 +54,8 @@ export default function MainForm({ templateData, mode }: Props) {
 
   const { initProducts, handleTreeProductSelect } = useProductSelection(templateData, form);
 
+  console.log("templateData", templateData);
+
   const createMutation = useCreatePriceListTemplate(token, buCode);
   const updateMutation = useUpdatePriceListTemplate(token, buCode, templateData?.id || "");
 

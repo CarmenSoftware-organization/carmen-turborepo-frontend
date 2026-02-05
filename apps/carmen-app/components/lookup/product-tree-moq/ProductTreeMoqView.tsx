@@ -48,10 +48,11 @@ export function ProductTreeMoqView({
                             }}
                           />
                         </div>
+                        <Badge variant="product_badge">{data.code}</Badge>
+
                         <p className="text-xs">
                           {data.name} {data.local_name ? `- ${data.local_name}` : ""}
                         </p>
-                        <Badge variant="product_badge">{data.code}</Badge>
                       </div>
                     ) : (
                       <div className="flex items-center gap-2 w-full">

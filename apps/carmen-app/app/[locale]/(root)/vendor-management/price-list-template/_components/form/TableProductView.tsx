@@ -46,7 +46,7 @@ export default function TableProductView({ initialProducts = [] }: Props) {
             <TableCell colSpan={3} className="h-24 text-center">
               <div className="flex flex-col items-center justify-center pb-5 text-center">
                 <Package className="h-6 w-6 text-muted-foreground text-center" />
-                <h3 className="mt-2 text-sm font-semibold">{t("no_products")}</h3>
+                <h3 className="mt-2 text-xs font-semibold">{t("no_products")}</h3>
                 <p className="mb-4 text-xs text-muted-foreground max-w-sm">
                   {t("no_products_added_description")}
                 </p>

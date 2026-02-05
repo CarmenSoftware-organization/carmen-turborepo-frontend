@@ -128,9 +128,6 @@ export default function TabOverview({ form, isViewMode, currencyBase }: Props) {
           )}
         />
       </div>
-      <h3 className="mb-4 text-sm font-semibold text-foreground lg:col-span-4">
-        {tPlt("details")}
-      </h3>
       <div className="grid gap-6 md:grid-cols-2">
         <FormField
           control={form.control}
