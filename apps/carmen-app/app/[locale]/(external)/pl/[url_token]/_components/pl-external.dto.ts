@@ -14,6 +14,13 @@ export type PricelistExternalDto = {
   tb_pricelist_detail: PricelistExternalDetailDto[];
 };
 
+export type MoqTierDto = {
+  id: string;
+  minimum_quantity: number;
+  price: number;
+  lead_time_days?: number;
+};
+
 export type PricelistExternalDetailDto = {
   id: string;
   sequence_no: number;
@@ -31,4 +38,5 @@ export type PricelistExternalDetailDto = {
   lead_time_days: number;
   is_active: boolean;
   note: string | null;
+  moq_tiers?: MoqTierDto[];
 };
