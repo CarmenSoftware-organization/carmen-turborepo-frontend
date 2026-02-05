@@ -1,15 +1,22 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { usePriceListExternal } from "../_hooks/use-price-list-external";
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import {
+  usePriceListExternal,
+  useUpdatePriceListExternal,
+  useSubmitPriceListExternal,
+  PricelistExternalDto,
+} from "../_hooks/use-price-list-external";
 import { Unauthorized, InternalServerError } from "@/components/error-ui";
 import { AxiosError } from "axios";
 import PriceListHeader from "./PriceListHeader";
 import PriceListProductsTable from "./PriceListProductsTable";
 import { CatLoading } from "@/components/error-ui/illustrations";
 import { useTranslations } from "next-intl";
-import { MoqTierDto, PricelistExternalDetailDto } from "./pl-external.dto";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
+import { Button } from "@/components/ui/button";
+import { Eye, Pencil } from "lucide-react";
 
 interface PlExtComponentProps {
   urlToken: string;
@@ -19,81 +26,70 @@ export default function PlExtComponent({ urlToken }: PlExtComponentProps) {
   const { data, isLoading, isError, error } = usePriceListExternal(urlToken);
   const tCommon = useTranslations("Common");
 
-  // Track pending tier updates: { productId: MoqTierDto[] }
-  const [pendingTierUpdates, setPendingTierUpdates] = useState<Record<string, MoqTierDto[]>>({});
-  const [isSaving, setIsSaving] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const updateMutation = useUpdatePriceListExternal(urlToken);
+  const submitMutation = useSubmitPriceListExternal(urlToken);
 
-  const hasPendingChanges = Object.keys(pendingTierUpdates).length > 0;
+  const [isViewMode, setIsViewMode] = useState(true);
 
-  const handleTiersUpdate = useCallback((productId: string, tiers: MoqTierDto[]) => {
-    setPendingTierUpdates((prev) => ({
-      ...prev,
-      [productId]: tiers,
-    }));
-  }, []);
+  // Initialize form
+  const form = useForm<PricelistExternalDto>({
+    defaultValues: {
+      id: "",
+      pricelist_no: "",
+      name: "",
+      status: "draft",
+      vendor_id: "",
+      vendor_name: null,
+      currency_id: "",
+      currency_code: "",
+      effective_from_date: "",
+      effective_to_date: "",
+      description: null,
+      note: null,
+      tb_pricelist_detail: [],
+    },
+  });
 
-  const buildSubmitPayload = () => {
-    const tb_pricelist_detail = data?.tb_pricelist_detail.map(
-      (item: PricelistExternalDetailDto) => {
-        // Use pending updates if available, otherwise use original moq_tiers
-        const details = pendingTierUpdates[item.id] || item.moq_tiers || [];
-        return {
-          ...item,
-          details,
-        };
-      }
-    );
-
-    return {
-      ...data,
-      tb_pricelist_detail,
-    };
-  };
+  // Reset form when data is loaded
+  useEffect(() => {
+    if (data) {
+      form.reset(data);
+    }
+  }, [data, form]);
 
   const handleSave = async () => {
-    if (!hasPendingChanges) {
+    const formData = form.getValues();
+
+    if (!form.formState.isDirty) {
       toastError({ message: "No changes to save" });
       return;
     }
 
-    const payload = buildSubmitPayload();
-    console.log("Payload:", payload);
-
-    setIsSaving(true);
     try {
-      // TODO: Implement actual API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await updateMutation.mutateAsync(formData);
       toastSuccess({ message: "Changes saved successfully" });
-      setPendingTierUpdates({});
+      form.reset(formData); // Reset dirty state
     } catch (err) {
       toastError({ message: "Failed to save changes" });
-    } finally {
-      setIsSaving(false);
     }
   };
 
   const handleSubmit = async () => {
-    if (hasPendingChanges) {
+    const formData = form.getValues();
+
+    if (form.formState.isDirty) {
       toastError({ message: "Please save all changes before submitting" });
       return;
     }
 
-    const payload = buildSubmitPayload();
-    console.log("=== SUBMIT ===");
-    console.log("Payload:", payload);
-
-    setIsSubmitting(true);
     try {
-      // TODO: Implement actual API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await submitMutation.mutateAsync(formData);
       toastSuccess({ message: "Price list submitted successfully" });
     } catch (err) {
       toastError({ message: "Failed to submit price list" });
-    } finally {
-      setIsSubmitting(false);
     }
   };
+
   if (isLoading) {
     return (
       <div className="pt-40 flex flex-col items-center justify-center gap-4">
@@ -123,17 +119,40 @@ export default function PlExtComponent({ urlToken }: PlExtComponentProps) {
     return <InternalServerError />;
   }
 
+  if (!data) {
+    return null;
+  }
+
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-6">
       <PriceListHeader data={data} />
+      <div className="flex justify-end">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setIsViewMode(!isViewMode)}
+          className="gap-1.5"
+        >
+          {isViewMode ? (
+            <>
+              <Pencil className="h-4 w-4" />
+              Edit Mode
+            </>
+          ) : (
+            <>
+              <Eye className="h-4 w-4" />
+              View Mode
+            </>
+          )}
+        </Button>
+      </div>
       <PriceListProductsTable
-        items={data.tb_pricelist_detail}
-        onTiersUpdate={handleTiersUpdate}
+        form={form}
+        isViewMode={isViewMode}
         onSave={handleSave}
         onSubmit={handleSubmit}
-        hasPendingChanges={hasPendingChanges}
-        isSaving={isSaving}
-        isSubmitting={isSubmitting}
+        isSaving={updateMutation.isPending}
+        isSubmitting={submitMutation.isPending}
       />
     </div>
   );

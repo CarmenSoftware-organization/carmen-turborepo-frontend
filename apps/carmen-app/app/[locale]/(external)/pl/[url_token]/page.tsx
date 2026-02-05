@@ -1,4 +1,7 @@
+import { createMetadata } from "@/utils/metadata";
 import PlExtComponent from "./_components/PlExtComponent";
+
+export const generateMetadata = createMetadata("PriceList", "vendor_entry");
 
 interface PageProps {
   params: Promise<{ url_token: string }>;

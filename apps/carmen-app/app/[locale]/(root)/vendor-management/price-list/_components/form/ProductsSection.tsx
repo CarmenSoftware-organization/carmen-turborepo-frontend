@@ -444,9 +444,7 @@ export default function ProductsSection({ form, isViewMode, token, buCode }: Pro
           <div className="flex flex-col gap-0.5">
             {row.original.moq_qtys.map((moq, i) => (
               <span key={i} className="text-xs">
-                {moq} {row.original.unit_names[i]}
-                {" → "}
-                {row.original.prices[i]}({row.original.lead_time_days_list[i]}d)
+                {moq}+ {row.original.unit_names[i]}→{row.original.prices[i]}({row.original.lead_time_days_list[i]}d)
               </span>
             ))}
           </div>

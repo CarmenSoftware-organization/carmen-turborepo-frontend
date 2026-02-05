@@ -15,13 +15,11 @@ import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 interface MoqTiersSubTableProps {
   tiers: MoqTierDto[];
-  productId: string;
-  onTiersUpdate?: (productId: string, tiers: MoqTierDto[]) => void;
+  onTiersUpdate?: (tiers: MoqTierDto[]) => void;
 }
 
 export default function MoqTiersSubTable({
   tiers,
-  productId,
   onTiersUpdate,
 }: MoqTiersSubTableProps) {
   const [editingTierIds, setEditingTierIds] = useState<Set<string>>(new Set());
@@ -63,7 +61,7 @@ export default function MoqTiersSubTable({
     const updatedTiers = [...localTiers, newTier];
     hasLocalChanges.current = true;
     setLocalTiers(updatedTiers);
-    onTiersUpdate?.(productId, updatedTiers);
+    onTiersUpdate?.(updatedTiers);
     setEditingTierIds((prev) => new Set(prev).add(newId));
   };
 
@@ -78,7 +76,7 @@ export default function MoqTiersSubTable({
     const updatedTiers = localTiers.filter((tier) => tier.id !== tierToDelete);
     hasLocalChanges.current = true;
     setLocalTiers(updatedTiers);
-    onTiersUpdate?.(productId, updatedTiers);
+    onTiersUpdate?.(updatedTiers);
     setDeleteDialogOpen(false);
     setTierToDelete(null);
   };
@@ -90,7 +88,7 @@ export default function MoqTiersSubTable({
 
     hasLocalChanges.current = true;
     setLocalTiers(updatedTiers);
-    onTiersUpdate?.(productId, updatedTiers);
+    onTiersUpdate?.(updatedTiers);
   };
 
   const columns = useMemo<ColumnDef<MoqTierDto>[]>(

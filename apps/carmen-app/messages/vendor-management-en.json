@@ -105,6 +105,7 @@
   },
   "PriceList": {
     "title": "Price List",
+    "vendor_entry": "Vendor Entry",
     "add_price_list": "Add Price List",
     "edit_price_list": "Edit Price List",
     "new_price_list": "New Price List",

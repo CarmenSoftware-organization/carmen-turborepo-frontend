@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { UseFormReturn, useFieldArray } from "react-hook-form";
 import {
   ColumnDef,
   ExpandedState,
@@ -19,27 +20,45 @@ import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MoqTierDto, PricelistExternalDetailDto } from "./pl-external.dto";
 import MoqTiersSubTable from "./MoqTiersSubTable";
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { Save, Send } from "lucide-react";
+import NumberInput from "@/components/form-custom/NumberInput";
+import { Input } from "@/components/ui/input";
+import {
+  PricelistExternalDto,
+  PricelistExternalDetailDto,
+} from "../_hooks/use-price-list-external";
+
+// Type for grouped rows in view mode
+interface GroupedProductRow {
+  product_id: string;
+  product_name: string;
+  itemCount: number;
+  prices: string[];
+  prices_without_tax: string[];
+  tax_amts: string[];
+  moq_qtys: string[];
+  unit_names: string[];
+  tax_profile_names: string[];
+  lead_time_days_list: number[];
+  sequence_nos: number[];
+}
 
 interface PriceListProductsTableProps {
-  items: PricelistExternalDetailDto[];
-  onTiersUpdate?: (productId: string, tiers: MoqTierDto[]) => void;
+  form: UseFormReturn<PricelistExternalDto>;
+  isViewMode?: boolean;
   onSave?: () => void;
   onSubmit?: () => void;
-  hasPendingChanges?: boolean;
   isSaving?: boolean;
   isSubmitting?: boolean;
 }
 
 export default function PriceListProductsTable({
-  items,
-  onTiersUpdate,
+  form,
+  isViewMode = false,
   onSave,
   onSubmit,
-  hasPendingChanges = false,
   isSaving = false,
   isSubmitting = false,
 }: PriceListProductsTableProps) {
@@ -49,6 +68,69 @@ export default function PriceListProductsTable({
   });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [expandedRows, setExpandedRows] = useState<ExpandedState>({});
+
+  const { fields, update } = useFieldArray({
+    control: form.control,
+    name: "tb_pricelist_detail",
+  });
+
+  const hasPendingChanges = form.formState.isDirty;
+
+  // Grouped table data for view mode only
+  const groupedTableData = useMemo(() => {
+    if (!isViewMode) return [];
+
+    const groupMap = new Map<string, GroupedProductRow>();
+
+    for (const item of fields || []) {
+      const key = item.product_id || `ungrouped-${item.id}`;
+
+      if (groupMap.has(key)) {
+        const group = groupMap.get(key)!;
+        group.itemCount++;
+        group.prices.push(item.price);
+        group.prices_without_tax.push(item.price_without_tax || "0");
+        group.tax_amts.push(item.tax_amt || "0");
+        group.moq_qtys.push(item.moq_qty || "0");
+        group.unit_names.push(item.unit_name || "-");
+        group.tax_profile_names.push(item.tax_profile_name || "-");
+        group.lead_time_days_list.push(item.lead_time_days ?? 0);
+        group.sequence_nos.push(item.sequence_no ?? 0);
+      } else {
+        groupMap.set(key, {
+          product_id: item.product_id || "",
+          product_name: item.product_name || "",
+          itemCount: 1,
+          prices: [item.price],
+          prices_without_tax: [item.price_without_tax || "0"],
+          tax_amts: [item.tax_amt || "0"],
+          moq_qtys: [item.moq_qty || "0"],
+          unit_names: [item.unit_name || "-"],
+          tax_profile_names: [item.tax_profile_name || "-"],
+          lead_time_days_list: [item.lead_time_days ?? 0],
+          sequence_nos: [item.sequence_no ?? 0],
+        });
+      }
+    }
+
+    return Array.from(groupMap.values());
+  }, [fields, isViewMode]);
+
+  // Handler for updating item fields
+  const handleItemFieldChange = (
+    index: number,
+    field: keyof PricelistExternalDetailDto,
+    value: string | number
+  ) => {
+    const currentItem = fields[index];
+    update(index, { ...currentItem, [field]: value });
+  };
+
+  // Handler for updating MOQ tiers
+  const handleTiersUpdate = (itemIndex: number, tiers: PricelistExternalDetailDto["moq_tiers"]) => {
+    const currentItem = fields[itemIndex];
+    update(itemIndex, { ...currentItem, moq_tiers: tiers });
+  };
 
   const columns = useMemo<ColumnDef<PricelistExternalDetailDto>[]>(
     () => [
@@ -90,32 +172,71 @@ export default function PriceListProductsTable({
         enableResizing: true,
       },
       {
-        accessorKey: "price",
-        id: "price",
-        header: ({ column }) => (
-          <DataGridColumnHeader title="Price" visibility={true} column={column} />
-        ),
-        cell: ({ row }) => (
-          <div className="font-semibold text-primary text-xs">{row.original.price}</div>
-        ),
-        size: 100,
-        enableSorting: true,
-        enableHiding: true,
-        enableResizing: true,
-        meta: { cellClassName: "text-right" },
-      },
-      {
         accessorKey: "moq_qty",
         id: "moq_qty",
         header: ({ column }) => (
           <DataGridColumnHeader title="MOQ" visibility={true} column={column} />
         ),
-        cell: ({ row }) => <span className="text-xs">{row.original.moq_qty}</span>,
+        cell: ({ row }) => {
+          const fieldIndex = fields.findIndex((f) => f.id === row.original.id);
+          return (
+            <Input
+              type="text"
+              value={row.original.moq_qty}
+              onChange={(e) => handleItemFieldChange(fieldIndex, "moq_qty", e.target.value)}
+              className="h-7 text-xs text-right"
+            />
+          );
+        },
         size: 80,
         enableSorting: true,
         enableHiding: true,
         enableResizing: true,
-        meta: { cellClassName: "text-right" },
+      },
+      {
+        accessorKey: "price",
+        id: "price",
+        header: ({ column }) => (
+          <DataGridColumnHeader title="Price" visibility={true} column={column} />
+        ),
+        cell: ({ row }) => {
+          const fieldIndex = fields.findIndex((f) => f.id === row.original.id);
+          return (
+            <Input
+              type="text"
+              value={row.original.price}
+              onChange={(e) => handleItemFieldChange(fieldIndex, "price", e.target.value)}
+              className="h-7 text-xs text-right font-semibold"
+            />
+          );
+        },
+        size: 100,
+        enableSorting: true,
+        enableHiding: true,
+        enableResizing: true,
+      },
+      {
+        accessorKey: "lead_time_days",
+        id: "lead_time_days",
+        header: ({ column }) => (
+          <DataGridColumnHeader title="Lead Time" visibility={true} column={column} />
+        ),
+        cell: ({ row }) => {
+          const fieldIndex = fields.findIndex((f) => f.id === row.original.id);
+          return (
+            <NumberInput
+              value={row.original.lead_time_days}
+              onChange={(val) => handleItemFieldChange(fieldIndex, "lead_time_days", val)}
+              classNames="h-7 text-xs"
+              min={0}
+              placeholder="Days"
+            />
+          );
+        },
+        size: 100,
+        enableSorting: true,
+        enableHiding: true,
+        enableResizing: true,
       },
       {
         accessorKey: "price_without_tax",
@@ -123,12 +244,21 @@ export default function PriceListProductsTable({
         header: ({ column }) => (
           <DataGridColumnHeader title="PWT" visibility={true} column={column} />
         ),
-        cell: ({ row }) => <span className="text-xs">{row.original.price_without_tax}</span>,
+        cell: ({ row }) => {
+          const fieldIndex = fields.findIndex((f) => f.id === row.original.id);
+          return (
+            <Input
+              type="text"
+              value={row.original.price_without_tax || ""}
+              onChange={(e) => handleItemFieldChange(fieldIndex, "price_without_tax", e.target.value)}
+              className="h-7 text-xs text-right"
+            />
+          );
+        },
         size: 100,
         enableSorting: true,
         enableHiding: true,
         enableResizing: true,
-        meta: { cellClassName: "text-right" },
       },
       {
         accessorKey: "tax_amt",
@@ -136,21 +266,31 @@ export default function PriceListProductsTable({
         header: ({ column }) => (
           <DataGridColumnHeader title="Tax" visibility={true} column={column} />
         ),
-        cell: ({ row }) => <span className="text-xs">{row.original.tax_amt}</span>,
+        cell: ({ row }) => {
+          const fieldIndex = fields.findIndex((f) => f.id === row.original.id);
+          return (
+            <Input
+              type="text"
+              value={row.original.tax_amt || ""}
+              onChange={(e) => handleItemFieldChange(fieldIndex, "tax_amt", e.target.value)}
+              className="h-7 text-xs text-right"
+            />
+          );
+        },
         size: 80,
         enableSorting: true,
         enableHiding: true,
         enableResizing: true,
-        meta: { cellClassName: "text-right" },
       },
-
       {
         accessorKey: "tax_profile_name",
         id: "tax_profile_name",
         header: ({ column }) => (
           <DataGridColumnHeader title="Tax Profile" visibility={true} column={column} />
         ),
-        cell: ({ row }) => <span className="text-xs">{row.original.tax_profile_name || "-"}</span>,
+        cell: ({ row }) => (
+          <span className="text-xs">{row.original.tax_profile_name || "-"}</span>
+        ),
         size: 120,
         enableSorting: true,
         enableHiding: true,
@@ -173,24 +313,110 @@ export default function PriceListProductsTable({
         size: 50,
         enableResizing: false,
         meta: {
-          expandedContent: (row: PricelistExternalDetailDto) => (
-            <MoqTiersSubTable
-              tiers={row.moq_tiers || []}
-              productId={row.id}
-              onTiersUpdate={onTiersUpdate}
-            />
-          ),
+          expandedContent: (row: PricelistExternalDetailDto) => {
+            const fieldIndex = fields.findIndex((f) => f.id === row.id);
+            return (
+              <MoqTiersSubTable
+                tiers={row.moq_tiers || []}
+                onTiersUpdate={(tiers) => handleTiersUpdate(fieldIndex, tiers)}
+              />
+            );
+          },
         },
+      },
+    ],
+    [fields]
+  );
+
+  // Columns for view mode (grouped data - displays combined pricing info)
+  const viewModeColumns = useMemo<ColumnDef<GroupedProductRow>[]>(
+    () => [
+      {
+        id: "no",
+        header: "#",
+        cell: ({ row }) => <span className="text-xs">{row.index + 1}</span>,
+        size: 50,
+        enableSorting: false,
+      },
+      {
+        accessorKey: "product_name",
+        header: ({ column }) => (
+          <DataGridColumnHeader title="Product" visibility={true} column={column} />
+        ),
+        cell: ({ row }) => (
+          <div className="font-semibold text-primary text-xs">{row.original.product_name}</div>
+        ),
+        size: 300,
+        enableSorting: true,
+      },
+      {
+        id: "pricing",
+        header: ({ column }) => (
+          <DataGridColumnHeader title="MOQ" visibility={true} column={column} />
+        ),
+        cell: ({ row }) => (
+          <div className="flex flex-col gap-0.5">
+            {row.original.moq_qtys.map((moq, i) => (
+              <span key={i} className="text-xs">
+                {moq}+ {row.original.unit_names[i]}→{row.original.prices[i]}({row.original.lead_time_days_list[i]}d)
+              </span>
+            ))}
+          </div>
+        ),
+        size: 200,
+      },
+      {
+        accessorKey: "prices_without_tax",
+        header: ({ column }) => (
+          <DataGridColumnHeader title="PWT" visibility={true} column={column} />
+        ),
+        cell: ({ row }) => (
+          <div className="flex flex-col gap-0.5">
+            {row.original.prices_without_tax.map((p, i) => (
+              <span key={i} className="text-xs">{p}</span>
+            ))}
+          </div>
+        ),
+        size: 100,
+      },
+      {
+        accessorKey: "tax_amts",
+        header: ({ column }) => (
+          <DataGridColumnHeader title="Tax" visibility={true} column={column} />
+        ),
+        cell: ({ row }) => (
+          <div className="flex flex-col gap-0.5">
+            {row.original.tax_amts.map((t, i) => (
+              <span key={i} className="text-xs">{t}</span>
+            ))}
+          </div>
+        ),
+        size: 80,
+      },
+      {
+        accessorKey: "tax_profile_names",
+        header: ({ column }) => (
+          <DataGridColumnHeader title="Tax Profile" visibility={true} column={column} />
+        ),
+        cell: ({ row }) => (
+          <div className="flex flex-col gap-0.5">
+            {row.original.tax_profile_names.map((t, i) => (
+              <span key={i} className="text-xs">{t}</span>
+            ))}
+          </div>
+        ),
+        size: 120,
       },
     ],
     []
   );
 
-  const table = useReactTable({
-    data: items || [],
+  // Table for edit mode
+  const editTable = useReactTable({
+    data: fields,
     columns,
-    pageCount: Math.ceil((items?.length || 0) / pagination.pageSize),
-    getRowId: (row: PricelistExternalDetailDto) => row.id,
+    pageCount: Math.ceil((fields?.length || 0) / pagination.pageSize),
+    getRowId: (row) => row.id,
     getRowCanExpand: () => true,
     state: {
       pagination,
@@ -207,10 +433,54 @@ export default function PriceListProductsTable({
     getSortedRowModel: getSortedRowModel(),
   });
 
+  // Table for view mode (grouped rows)
+  const viewTable = useReactTable({
+    data: groupedTableData,
+    columns: viewModeColumns,
+    pageCount: Math.ceil((groupedTableData?.length || 0) / pagination.pageSize),
+    getRowId: (row) => row.product_id || `ungrouped-${row.product_name}`,
+    state: {
+      pagination,
+      sorting,
+    },
+    columnResizeMode: "onChange",
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
+  if (isViewMode) {
+    return (
+      <DataGrid
+        table={viewTable}
+        recordCount={groupedTableData.length}
+        tableLayout={{
+          columnsPinnable: true,
+          columnsResizable: true,
+          columnsMovable: true,
+          columnsVisibility: true,
+        }}
+      >
+        <div className="w-full space-y-2.5">
+          <DataGridContainer>
+            <ScrollArea>
+              <DataGridTable />
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </DataGridContainer>
+          <DataGridPagination />
+        </div>
+      </DataGrid>
+    );
+  }
+
   return (
     <DataGrid
-      table={table}
-      recordCount={items?.length || 0}
+      table={editTable}
+      recordCount={fields?.length || 0}
       tableLayout={{
         columnsPinnable: true,
         columnsResizable: true,

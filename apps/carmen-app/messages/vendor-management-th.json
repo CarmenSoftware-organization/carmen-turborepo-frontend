@@ -100,6 +100,7 @@
   },
   "PriceList": {
     "title": "ราคาสินค้า",
+    "vendor_entry": "รายชื่อผู้ขาย",
     "add_price_list": "เพิ่มราคาสินค้า",
     "edit_price_list": "แก้ไขราคาสินค้า",
     "new_price_list": "ราคาสินค้าใหม่",
