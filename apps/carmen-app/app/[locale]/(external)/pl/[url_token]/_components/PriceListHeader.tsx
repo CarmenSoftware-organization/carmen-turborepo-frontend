@@ -1,6 +1,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { formatDate } from "@/utils/format/date";
 import { PricelistExternalDto } from "./pl-external.dto";
+import { Badge } from "@/components/ui/badge";
 
 interface PriceListHeaderProps {
   data: PricelistExternalDto;
@@ -9,15 +10,15 @@ interface PriceListHeaderProps {
 export default function PriceListHeader({ data }: PriceListHeaderProps) {
   const { dateFormat } = useAuth();
   return (
-    <div className="border rounded-lg p-4 space-y-2">
+    <div className="p-4 space-y-2">
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-xl font-bold">{data.pricelist_no}</h1>
           <p className="text-muted-foreground">{data.name}</p>
         </div>
-        <span className="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">
-          {data.status}
-        </span>
+        <Badge variant={data.status} className="font-bold">
+          {data.status.toLocaleUpperCase()}
+        </Badge>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm pt-2">
         <div>
