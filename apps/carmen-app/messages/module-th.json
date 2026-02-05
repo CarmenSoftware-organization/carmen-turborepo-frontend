@@ -28,8 +28,7 @@
       "priceLists": "ราคาสินค้า",
       "priceComparisons": "เปรียบเทียบราคา",
       "priceListtemplate": "แม่แบบราคาสินค้า",
-      "request_for_price_list": "ขอราคาสินค้า",
-      "vendorEntry": "พอร์ทัลผู้จัดจำหน่าย"
+      "request_for_price_list": "ขอราคาสินค้า"
     },
     "PriceListTemplate": {
       "title": "แม่แบบราคาสินค้า",

@@ -28,8 +28,7 @@
       "priceLists": "Price Lists",
       "priceComparisons": "Price Comparisons",
       "priceListtemplate": "Price List Template",
-      "request_for_price_list": "Request for Pricing",
-      "vendorEntry": "Vendor Entry"
+      "request_for_price_list": "Request for Pricing"
     },
     "PriceListTemplate": {
       "title": "Price List Template",

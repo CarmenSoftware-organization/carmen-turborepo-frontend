@@ -224,28 +224,25 @@ export default function OverviewTab({ form, isViewMode, templates, dateFormat }:
         </div>
       </div>
 
-      <div>
-        <h3 className="mb-4 text-sm font-semibold text-foreground">Details</h3>
-        <FormField
-          control={form.control}
-          name="custom_message"
-          render={({ field }) => (
-            <FormItem className="space-y-1">
-              <Label>{tRfp("description")}</Label>
-              <FormControl>
-                <Textarea
-                  {...field}
-                  disabled={isViewMode}
-                  className="resize-none text-xs"
-                  placeholder={tRfp("description_placeholder")}
-                  rows={6}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+      <FormField
+        control={form.control}
+        name="custom_message"
+        render={({ field }) => (
+          <FormItem className="space-y-1">
+            <Label>{tRfp("description")}</Label>
+            <FormControl>
+              <Textarea
+                {...field}
+                disabled={isViewMode}
+                className="resize-none text-xs"
+                placeholder={tRfp("description_placeholder")}
+                rows={6}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   );
 }

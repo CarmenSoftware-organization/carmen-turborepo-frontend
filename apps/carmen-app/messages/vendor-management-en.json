@@ -327,8 +327,5 @@
     "delete_confirm_desc": "Are you sure you want to delete this RFP?",
     "delete_success": "RFP deleted successfully",
     "delete_failed": "Failed to delete RFP"
-  },
-  "vendorEntry": {
-    "title": "Vendor Entry"
   }
 }

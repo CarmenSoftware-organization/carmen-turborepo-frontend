@@ -118,7 +118,7 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
   };
 
   return (
-    <div className="m-4">
+    <div className="m-4 pb-10">
       <div className="sticky top-0 z-10 bg-background">
         <div className="container">
           <div className="flex items-center justify-between">
