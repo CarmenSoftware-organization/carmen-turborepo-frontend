@@ -1,4 +1,4 @@
-FROM oven/bun:1.1.20 AS base
+FROM oven/bun:1.3.2 AS base
 
 # Install dependencies only
 FROM base AS deps
