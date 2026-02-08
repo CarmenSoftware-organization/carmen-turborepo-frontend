@@ -1,0 +1,18 @@
+services:
+  carmen-app:
+    image: ${AWS_ECR_REGISTRY}/${DOCKER_IMAGE_PREFIX}-app:latest
+    container_name: carmen-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.carmen-app
+
+  carmen-platform:
+    image: ${AWS_ECR_REGISTRY}/${DOCKER_IMAGE_PREFIX}-platform:latest
+    container_name: carmen-platform
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env.carmen-platform
