@@ -12,7 +12,6 @@ RUN bun install
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/carmen-platform/node_modules ./apps/carmen-platform/node_modules
 COPY . .
 RUN bun run build --filter=carmen-platform
 
