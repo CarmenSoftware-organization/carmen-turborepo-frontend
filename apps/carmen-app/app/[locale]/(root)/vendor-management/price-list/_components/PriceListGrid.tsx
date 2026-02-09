@@ -22,13 +22,27 @@ import { formatDate } from "@/utils/format/date";
 import { useDeletePriceList } from "@/hooks/use-price-list";
 import { PriceListDtoList } from "@/dtos/price-list-dto";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import PaginationComponent from "@/components/PaginationComponent";
 
 interface PriceListGridProps {
   priceLists: any[];
   isLoading: boolean;
+  currentPage: number;
+  totalPages: number;
+  perpage: number;
+  onPageChange: (page: number) => void;
+  setPerpage: (perpage: number) => void;
 }
 
-export default function PriceListGrid({ priceLists, isLoading }: PriceListGridProps) {
+export default function PriceListGrid({
+  priceLists,
+  isLoading,
+  currentPage,
+  totalPages,
+  perpage,
+  onPageChange,
+  setPerpage,
+}: PriceListGridProps) {
   const router = useRouter();
   const { token, buCode, dateFormat } = useAuth();
   const tCommon = useTranslations("Common");
@@ -176,6 +190,14 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
           </Card>
         ))}
       </div>
+
+      <PaginationComponent
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
+        perpage={perpage}
+        setPerpage={setPerpage}
+      />
 
       <DeleteConfirmDialog
         open={alertOpen}

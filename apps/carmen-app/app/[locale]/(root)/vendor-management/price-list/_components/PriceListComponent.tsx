@@ -27,9 +27,28 @@ export default function PriceListComponent() {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [search, setSearch] = useURL("search");
   const [sort, setSort] = useURL("sort");
+  const [page, setPage] = useURL("page");
+  const [perpage, setPerpage] = useURL("perpage");
   const [view, setView] = useState<VIEW>(VIEW.LIST);
 
-  const { data: priceLists, isLoading, isUnauthorized } = usePriceList(token, buCode);
+  const { data: priceLists, isLoading, isUnauthorized } = usePriceList(token, buCode, {
+    search,
+    page,
+    sort,
+    perpage,
+  });
+
+  const currentPage = priceLists?.paginate?.page ?? 1;
+  const totalPages = priceLists?.paginate?.pages ?? 1;
+  const totalItems = priceLists?.paginate?.total ?? 0;
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage.toString());
+  };
+
+  const handleSetPerpage = (newPerpage: number) => {
+    setPerpage(newPerpage.toString());
+  };
 
   useEffect(() => {
     if (isUnauthorized) {
@@ -112,14 +131,39 @@ export default function PriceListComponent() {
   const content = (
     <>
       <div className="block lg:hidden">
-        <PriceListGrid priceLists={priceLists?.data ?? []} isLoading={isLoading} />
+        <PriceListGrid
+          priceLists={priceLists?.data ?? []}
+          isLoading={isLoading}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          perpage={priceLists?.paginate?.perpage ?? 10}
+          onPageChange={handlePageChange}
+          setPerpage={handleSetPerpage}
+        />
       </div>
 
       <div className="hidden lg:block">
         {view === VIEW.LIST ? (
-          <ListPriceList priceLists={priceLists?.data ?? []} isLoading={isLoading} />
+          <ListPriceList
+            priceLists={priceLists?.data ?? []}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            perpage={priceLists?.paginate?.perpage ?? 10}
+            onPageChange={handlePageChange}
+            setPerpage={handleSetPerpage}
+          />
         ) : (
-          <PriceListGrid priceLists={priceLists?.data ?? []} isLoading={isLoading} />
+          <PriceListGrid
+            priceLists={priceLists?.data ?? []}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            perpage={priceLists?.paginate?.perpage ?? 10}
+            onPageChange={handlePageChange}
+            setPerpage={handleSetPerpage}
+          />
         )}
       </div>
     </>

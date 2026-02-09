@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTranslations } from "next-intl";
-import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { ColumnDef, getCoreRowModel, useReactTable, PaginationState } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import {
   DataGridTable,
@@ -22,6 +22,7 @@ import {
   DataGridTableRowSelectAll,
 } from "@/components/ui/data-grid-table";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { formatDate } from "@/utils/format/date";
 import { Badge } from "@/components/ui/badge";
@@ -32,9 +33,24 @@ import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 interface ListPriceListProps {
   readonly priceLists?: any[];
   readonly isLoading?: boolean;
+  readonly currentPage: number;
+  readonly totalPages: number;
+  readonly totalItems: number;
+  readonly perpage: number;
+  readonly onPageChange: (page: number) => void;
+  readonly setPerpage: (perpage: number) => void;
 }
 
-export default function ListPriceList({ priceLists = [], isLoading = false }: ListPriceListProps) {
+export default function ListPriceList({
+  priceLists = [],
+  isLoading = false,
+  currentPage,
+  totalPages,
+  totalItems,
+  perpage,
+  onPageChange,
+  setPerpage,
+}: ListPriceListProps) {
   const { token, buCode, dateFormat } = useAuth();
   const tTableHeader = useTranslations("TableHeader");
   const tPriceList = useTranslations("PriceList");
@@ -43,6 +59,14 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
   const [deleteId, setDeleteId] = useState<string>("");
   const [alertOpen, setAlertOpen] = useState(false);
   const [selectedPriceList, setSelectedPriceList] = useState<PriceListDtoList | null>(null);
+
+  const pagination: PaginationState = useMemo(
+    () => ({
+      pageIndex: currentPage - 1,
+      pageSize: perpage,
+    }),
+    [currentPage, perpage]
+  );
 
   const { mutate: deletePriceList, isPending: isDeleting } = useDeletePriceList(token, buCode);
 
@@ -86,7 +110,9 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
       {
         id: "no",
         header: () => <div className="text-center">#</div>,
-        cell: ({ row }) => <div className="text-center">{row.index + 1}</div>,
+        cell: ({ row }) => (
+          <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
+        ),
         enableSorting: false,
         size: 30,
         meta: {
@@ -128,7 +154,7 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
           return <span>{priceList.name}</span>;
         },
         enableSorting: false,
-        size: 150,
+        size: 200,
       },
       {
         accessorKey: "vendor.name",
@@ -140,7 +166,7 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
           return <span>{priceList.vendor?.name}</span>;
         },
         enableSorting: false,
-        size: 200,
+        size: 300,
       },
       {
         accessorKey: "effectivePeriod",
@@ -169,7 +195,7 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
           return <span>{period}</span>;
         },
         enableSorting: false,
-        size: 200,
+        size: 220,
       },
       {
         accessorKey: "status",
@@ -187,75 +213,69 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
         },
       },
       {
-        accessorKey: "itemsCount", // Accessor key might be virtual or mapped, keeping it for now but cell uses pricelist_detail
-        header: () => <span className="text-right">{tTableHeader("items")}</span>,
+        accessorKey: "itemsCount",
+        header: () => <span>{tTableHeader("items")}</span>,
         cell: ({ row }) => {
-          // @ts-ignore - pricelist_detail might not be directly on the type inferred by row.original types if not fully updated in usage, but is in DTO
-          return (
-            <span className="text-right block">{row.original.pricelist_detail?.length || 0}</span>
-          );
+          return <span>{row.original.pricelist_detail?.length || 0}</span>;
         },
         enableSorting: false,
         size: 90,
         meta: {
-          cellClassName: "text-right",
-          headerClassName: "text-right",
+          cellClassName: "text-center",
+          headerClassName: "text-center",
         },
       },
       {
         id: "action",
-        header: () => <span className="text-right">{tTableHeader("action")}</span>,
+        header: () => <span>{tTableHeader("action")}</span>,
         cell: ({ row }) => {
           const priceList = row.original;
-
           return (
-            <div className="flex justify-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">More options</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    className="text-destructive cursor-pointer hover:bg-transparent"
-                    disabled={isDeleting && deleteId === priceList?.id}
-                    onClick={() => handleDeleteClick(priceList)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-destructive hover:text-destructive/80 hover:bg-transparent"
+              onClick={() => handleDeleteClick(priceList)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           );
         },
         enableSorting: false,
-        size: 150,
+        size: 120,
         meta: {
           cellClassName: "text-right",
           headerClassName: "text-right",
         },
       },
     ],
-    [tTableHeader, dateFormat, isDeleting, deleteId]
+    [tTableHeader, dateFormat, isDeleting, deleteId, currentPage, perpage]
   );
 
   // Initialize table
   const table = useReactTable({
     data: priceLists,
     columns,
+    pageCount: totalPages,
     getRowId: (row) => row.id ?? "",
+    state: {
+      pagination,
+    },
     enableRowSelection: true,
+    onPaginationChange: (updater) => {
+      const newPagination = typeof updater === "function" ? updater(pagination) : updater;
+      onPageChange(newPagination.pageIndex + 1);
+      setPerpage(newPagination.pageSize);
+    },
     getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
   });
 
   return (
     <>
       <DataGrid
         table={table}
-        recordCount={priceLists.length}
+        recordCount={totalItems}
         isLoading={isLoading}
         loadingMode="skeleton"
         emptyMessage={tCommon("no_data")}
@@ -275,6 +295,7 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
               <ScrollBar orientation="horizontal" />
             </ScrollArea>
           </DataGridContainer>
+          <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
         </div>
       </DataGrid>
 
