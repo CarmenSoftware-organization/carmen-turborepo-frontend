@@ -6,7 +6,7 @@ export enum ACTION_PERMISSION {
   DELETE = "delete",
 }
 
-export interface BasePermissionDto {
+interface BasePermissionDto {
   resource: string;
   action: ACTION_PERMISSION;
   description?: string;
