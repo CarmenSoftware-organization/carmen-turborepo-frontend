@@ -27,7 +27,7 @@ export const usePriceCompareQuery = (
         headers: requestHeaders(token),
       });
 
-      return response.data;
+      return response.data?.data?.lists;
     },
     enabled: enabled && !!token && !!buCode && !!product_id && !!unit_id && !!currency_id,
   });

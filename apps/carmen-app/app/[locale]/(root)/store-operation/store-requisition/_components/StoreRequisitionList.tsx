@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText, Building, ArrowRight, Trash2 } from "lucide-react";
+import { Calendar, FileText, Building, ArrowRight, Trash2, User } from "lucide-react";
 import { Link } from "@/lib/navigation";
 import { useMemo } from "react";
 import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
@@ -42,6 +42,10 @@ export default function StoreRequisitionList({
         enableSorting: false,
         enableHiding: false,
         size: 30,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
       },
       {
         id: "no",
@@ -57,11 +61,10 @@ export default function StoreRequisitionList({
 
       {
         accessorKey: "sr_no",
-
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
-            title="Ref"
+            title="SR No."
             icon={<FileText className="h-4 w-4" />}
           />
         ),
@@ -81,7 +84,7 @@ export default function StoreRequisitionList({
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
-            title="Date"
+            title={tTableHeader("date")}
             icon={<Calendar className="h-4 w-4" />}
           />
         ),
@@ -96,7 +99,7 @@ export default function StoreRequisitionList({
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
-            title="Location"
+            title={tTableHeader("location")}
             icon={<Building className="h-4 w-4" />}
           />
         ),
@@ -112,16 +115,26 @@ export default function StoreRequisitionList({
       },
       {
         accessorKey: "requestor_name",
-        header: () => <span>Requestor</span>,
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("requestor")}
+            icon={<User className="h-4 w-4" />}
+          />
+        ),
         cell: ({ row }) => <span>{row.original.requestor_name}</span>,
         enableSorting: false,
         size: 150,
       },
       {
         accessorKey: "doc_status",
-        header: () => <span>Status</span>,
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tTableHeader("status")} />
+        ),
         cell: ({ row }) => (
-          <Badge variant={row.original.doc_status}>{row.original.doc_status}</Badge>
+          <Badge variant={row.original.doc_status} className="font-bold">
+            {row.original.doc_status.toLocaleUpperCase()}
+          </Badge>
         ),
         enableSorting: false,
         size: 120,
@@ -136,19 +149,19 @@ export default function StoreRequisitionList({
         cell: ({ row }) => {
           return (
             <Button
-              variant="destructive"
+              variant="ghost"
               size="sm"
               onClick={() => {
                 onDelete(row.original.id);
               }}
+              className="text-destructive hover:text-destructive/80 hover:bg-transparent"
             >
               <Trash2 />
-              <span className="sr-only">Delete</span>
             </Button>
           );
         },
         enableSorting: false,
-        size: 100,
+        size: 120,
         meta: {
           cellClassName: "text-right",
           headerClassName: "text-right",

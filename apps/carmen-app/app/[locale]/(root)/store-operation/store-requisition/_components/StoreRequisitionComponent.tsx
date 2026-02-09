@@ -13,6 +13,7 @@ import { Link } from "@/lib/navigation";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { useAuth } from "@/context/AuthContext";
 import { useDeleteSr, useStoreRequisitionQuery } from "@/hooks/use-sr";
+import { SrDto } from "@/dtos/sr.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
@@ -20,6 +21,7 @@ export default function StoreRequisitionComponent() {
   const { token, buCode, dateFormat } = useAuth();
 
   const tCommon = useTranslations("Common");
+  const tSr = useTranslations("StoreRequisition");
   const [search, setSearch] = useURL("search");
   const [status, setStatus] = useURL("status");
   const [statusOpen, setStatusOpen] = useState(false);
@@ -62,9 +64,7 @@ export default function StoreRequisitionComponent() {
     });
   };
 
-  console.log(srData);
-
-  const title = "Store Requisition";
+  const title = tSr("title");
 
   const actionButtons = (
     <div className="action-btn-container" data-id="store-requisition-action-buttons">
@@ -138,8 +138,8 @@ export default function StoreRequisitionComponent() {
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
-        title="Delete Store Requisition"
-        description="Are you sure you want to delete this store requisition? This action cannot be undone."
+        title={tSr("dialog.deleteTitle")}
+        description={tSr("dialog.deleteDescription", { srNo: srData?.find((sr: SrDto) => sr.id === deleteId)?.sr_no ?? "" })}
       />
     </>
   );
