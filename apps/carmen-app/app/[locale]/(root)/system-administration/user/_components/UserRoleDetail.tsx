@@ -20,6 +20,7 @@ import { useTranslations } from "next-intl";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import LoadingUserRole from "./LoadingUserRole";
+import { initName } from "@/utils/format/name";
 
 interface UserRoleData {
   user_id: string;
@@ -55,19 +56,7 @@ export default function UserRoleDetail({ dataUser, isLoading, isError }: UserRol
     return dataUser.application_roles.map((role) => role.application_role_id);
   }, [dataUser?.application_roles]);
 
-  const initName = () => {
-    const info = dataUser;
-    if (!info) return "U";
-    const cleanName = (name: string) => {
-      const leadingVowels = /^[เแโใไ]/;
-      return name?.trim().replace(leadingVowels, "") || "";
-    };
-
-    const first = cleanName(info.firstname)[0] || "";
-    const last = cleanName(info.lastname)[0] || "";
-
-    return (first + last).toUpperCase() || "U";
-  };
+  const convertName = initName(dataUser?.firstname, dataUser?.lastname);
 
   const form = useForm<UserRoleFormValues>({
     resolver: zodResolver(userRoleFormSchema),
@@ -142,12 +131,12 @@ export default function UserRoleDetail({ dataUser, isLoading, isError }: UserRol
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pb-10">
         <div className="flex items-center justify-between">
           <Link href="/system-administration/user">
-            <Button variant="ghost" size="sm" className="gap-2" type="button">
+            <Button variant="ghost" size="sm" type="button">
               <ArrowLeft className="h-4 w-4" />
               {t("back")}
             </Button>
           </Link>
-          <Button type="submit" disabled={isPending} className="gap-2">
+          <Button type="submit" disabled={isPending}>
             {isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
@@ -162,7 +151,7 @@ export default function UserRoleDetail({ dataUser, isLoading, isError }: UserRol
             <div className="flex flex-col items-center gap-2">
               <Avatar className="h-16 w-16 text-lg">
                 <AvatarFallback className="bg-primary/10 text-primary font-semibold text-lg">
-                  {initName()}
+                  {convertName}
                 </AvatarFallback>
               </Avatar>
               <div className="text-center">

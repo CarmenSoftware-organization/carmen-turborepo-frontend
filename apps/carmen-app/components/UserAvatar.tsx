@@ -15,6 +15,7 @@ import { LogOut, User } from "lucide-react";
 import { Link } from "@/lib/navigation";
 import { useTranslations } from "next-intl";
 import "@/styles/layout.css";
+import { initName } from "@/utils/format/name";
 
 export default function UserAvatar() {
   const { logout, user } = useAuth();
@@ -22,19 +23,7 @@ export default function UserAvatar() {
 
   const userInfo = user?.data?.user_info;
 
-  const initName = () => {
-    const info = user?.data?.user_info;
-    if (!info) return "U";
-    const cleanName = (name: string) => {
-      const leadingVowels = /^[เแโใไ]/;
-      return name?.trim().replace(leadingVowels, "") || "";
-    };
-
-    const first = cleanName(info.firstname)[0] || "";
-    const last = cleanName(info.lastname)[0] || "";
-
-    return (first + last).toUpperCase() || "U";
-  };
+  const convertName = initName(userInfo?.firstname, userInfo?.lastname);
 
   const getMiddleName = () => {
     if (!user?.data.user_info?.middlename) return "";
@@ -57,7 +46,7 @@ export default function UserAvatar() {
         >
           <Avatar className="h-7 w-7 xl:h-8 xl:w-8">
             <AvatarFallback className="font-medium text-[10px] xl:text-xs">
-              {initName()}
+              {convertName}
             </AvatarFallback>
           </Avatar>
         </Button>
