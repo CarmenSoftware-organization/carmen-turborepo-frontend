@@ -7,19 +7,21 @@ const locales = ["en", "th"];
 const defaultLocale = "en";
 
 function getLocale(request: NextRequest): string {
-  // Get Accept-Language header
   const acceptLanguage = request.headers.get("Accept-Language") ?? "";
-  // Split languages by comma and trim whitespace
-  const languages = acceptLanguage.split(",").map((lang) => lang.split(";")[0].trim());
+  const languages = acceptLanguage
+    .split(",")
+    .map((lang) => lang.split(";")[0].trim())
+    .filter((lang) => lang && lang !== "*");
 
-  // Add default language if no Accept-Language header
   if (languages.length === 0) {
-    languages.push(defaultLocale);
+    return defaultLocale;
   }
 
-  // Find best matching locale
-  const locale = matchLocale(languages, locales, defaultLocale);
-  return locale;
+  try {
+    return matchLocale(languages, locales, defaultLocale);
+  } catch {
+    return defaultLocale;
+  }
 }
 
 export function middleware(request: NextRequest) {
