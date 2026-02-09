@@ -77,7 +77,7 @@ export default function SignInForm() {
                 data-id="sidebar-logo-avatar-image"
               />
             </div>
-            <p className="app-name">{tHome("CarmenSoftware")} V2</p>
+            <p className="app-name">{tHome("CarmenSoftware")}</p>
             <p className="app-description">{tHome("HotelFinanceManagementSoftware")}</p>
           </div>
 

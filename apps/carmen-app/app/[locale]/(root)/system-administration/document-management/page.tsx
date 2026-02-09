@@ -1,8 +1,8 @@
 import { createMetadata } from "@/utils/metadata";
-import DucumentManagementComponent from "./components/DucumentManagementComponent";
+import DocumentManagementComponent from "./components/DocumentManagementComponent";
 
 export const generateMetadata = createMetadata("DocumentManagement", "title");
 
-export default function DucumentManagementPage() {
-  return <DucumentManagementComponent />;
+export default function DocumentManagementPage() {
+  return <DocumentManagementComponent />;
 }

@@ -18,12 +18,17 @@ export default function Navbar() {
         >
           Carmen
         </span>
-        <span
-          className="text-[8px] xl:text-[10px] font-medium text-muted-foreground uppercase tracking-wider group-hover:text-primary/80 transition-colors duration-200"
-          data-id="sidebar-logo-text-sub"
-        >
-          Hospitality Supply Chain
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className="text-[8px] xl:text-[10px] font-medium text-muted-foreground uppercase tracking-wider group-hover:text-primary/80 transition-colors duration-200"
+            data-id="sidebar-logo-text-sub"
+          >
+            Hospitality Supply Chain
+          </span>
+          <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+            (build latest 9/2/2026)
+          </p>
+        </div>
       </Link>
       <div className="flex items-center gap-2 xl:gap-4">
         <div className="hidden md:block">

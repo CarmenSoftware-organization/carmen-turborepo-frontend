@@ -4,28 +4,32 @@ import { getAllApiRequest } from "@/lib/config.api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export const useDocumentQuery = (token: string, buCode: string, params?: ParamsGetDto) => {
+export const queryKeyDocument = "document";
+
+interface UseDocumentQueryParams {
+  token: string;
+  buCode: string;
+  params?: ParamsGetDto;
+}
+
+export const useDocumentQuery = ({ token, buCode, params }: UseDocumentQueryParams) => {
   const API_URL = `${backendApi}/api/${buCode}/documents`;
   const { data, isLoading, error } = useQuery({
-    queryKey: ["document", buCode, params],
+    queryKey: [queryKeyDocument, buCode, params],
     queryFn: async () => {
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
-      return await getAllApiRequest(API_URL, token, "Error fetching bu type", params ?? {});
+      return await getAllApiRequest(API_URL, token, "Error fetching documents", params ?? {});
     },
     enabled: !!token && !!buCode,
   });
 
-  const isUnauthorized = error instanceof Error && error.message.includes("Unauthorized");
-  const docData = data?.data;
-  const pagination = data?.pagination;
+  const documents = data;
   return {
-    docData,
-    pagination,
+    documents,
     isLoading,
     error,
-    isUnauthorized,
   };
 };
 
@@ -37,6 +41,22 @@ export const useUploadDocument = (token: string, buCode: string) => {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
+          "x-app-id": xAppId,
+        },
+      });
+      return response.data;
+    },
+  });
+};
+
+export const useDeleteDocument = (token: string, buCode: string) => {
+  const API_URL = `${backendApi}/api/${buCode}/documents`;
+  return useMutation({
+    mutationFn: async (fileToken: string) => {
+      const response = await axios.delete(`${API_URL}/${fileToken}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
           "x-app-id": xAppId,
         },
       });

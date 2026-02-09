@@ -206,7 +206,9 @@ const SidebarContent = () => {
         <div className="flex items-center gap-2">
           {item.icon && <item.icon className="h-4 w-4" />}
           {!isActuallyCollapsed && (
-            <span className="font-medium text-muted-foreground text-xs xl:text-sm">{t(`${section}.${subItem}`)}</span>
+            <span className="font-medium text-muted-foreground text-xs xl:text-sm">
+              {t(`${section}.${subItem}`)}
+            </span>
           )}
         </div>
         {!isActuallyCollapsed && renderChevron(level, openMenus[item.href])}
