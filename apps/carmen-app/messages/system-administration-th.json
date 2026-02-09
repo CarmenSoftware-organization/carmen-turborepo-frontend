@@ -6,7 +6,9 @@
     "user_not_found": "ไม่พบผู้ใช้",
     "assign_roles": "กำหนดบทบาท",
     "update_success": "อัปเดตบทบาทสำเร็จ",
-    "update_failed": "อัปเดตบทบาทไม่สำเร็จ"
+    "update_failed": "อัปเดตบทบาทไม่สำเร็จ",
+    "email": "อีเมล",
+    "username": "ชื่อผู้ใช้"
   },
   "DocumentManagement": {
     "title": "การจัดการเอกสาร",

@@ -165,14 +165,14 @@ export default function UserRoleDetail({ dataUser, isLoading, isError }: UserRol
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Mail className="h-3 w-3" />
-                  Email
+                  {t("email")}
                 </div>
                 <p className="text-sm break-all">{dataUser.email}</p>
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <AtSign className="h-3 w-3" />
-                  Username
+                  {t("username")}
                 </div>
                 <p className="text-sm break-all">{dataUser.username}</p>
               </div>

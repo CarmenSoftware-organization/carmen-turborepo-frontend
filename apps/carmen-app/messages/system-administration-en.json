@@ -6,7 +6,9 @@
     "user_not_found": "User not found",
     "assign_roles": "Assign Roles",
     "update_success": "Roles updated successfully",
-    "update_failed": "Failed to update roles"
+    "update_failed": "Failed to update roles",
+    "email": "Email",
+    "username": "Username"
   },
   "DocumentManagement": {
     "title": "Document Management",
