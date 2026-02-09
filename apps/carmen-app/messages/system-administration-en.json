@@ -1,4 +1,13 @@
 {
+  "UserRole": {
+    "back": "Back",
+    "save": "Save",
+    "saving": "Saving...",
+    "user_not_found": "User not found",
+    "assign_roles": "Assign Roles",
+    "update_success": "Roles updated successfully",
+    "update_failed": "Failed to update roles"
+  },
   "DocumentManagement": {
     "title": "Document Management",
     "upload": "Upload",

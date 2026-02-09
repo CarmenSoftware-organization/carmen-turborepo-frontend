@@ -1,4 +1,4 @@
-import UserRoleComponent from "./UserRoleComponent";
+import UserRoleComponent from "./_components/UserRoleComponent";
 
 export default function SystemUserPage() {
   return (

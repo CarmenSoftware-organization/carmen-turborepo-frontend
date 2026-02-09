@@ -1,4 +1,13 @@
 {
+  "UserRole": {
+    "back": "กลับ",
+    "save": "บันทึก",
+    "saving": "กำลังบันทึก...",
+    "user_not_found": "ไม่พบผู้ใช้",
+    "assign_roles": "กำหนดบทบาท",
+    "update_success": "อัปเดตบทบาทสำเร็จ",
+    "update_failed": "อัปเดตบทบาทไม่สำเร็จ"
+  },
   "DocumentManagement": {
     "title": "การจัดการเอกสาร",
     "upload": "อัปโหลด",
