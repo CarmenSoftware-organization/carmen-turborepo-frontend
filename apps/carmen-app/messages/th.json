@@ -74,7 +74,20 @@
     "email": "อีเมล",
     "name": "ชื่อ",
     "businessUnits": "หน่วยงาน",
-    "default": "ค่าเริ่มต้น"
+    "default": "ค่าเริ่มต้น",
+    "firstName": "ชื่อ",
+    "middleName": "ชื่อกลาง",
+    "lastName": "นามสกุล",
+    "edit_profile": "แก้ไขโปรไฟล์",
+    "edit_profile_description": "แก้ไขข้อมูลส่วนตัวของคุณที่นี่",
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "enter_your_first_name": "กรอกชื่อของคุณ",
+    "enter_your_middle_name": "กรอกชื่อกลางของคุณ (ไม่บังคับ)",
+    "enter_your_last_name": "กรอกนามสกุลของคุณ",
+    "enter_your_email": "กรอกอีเมลของคุณ",
+    "update_success": "อัปเดตโปรไฟล์สำเร็จ",
+    "update_error": "ไม่สามารถอัปเดตโปรไฟล์ได้"
   },
   "TestSSGPage": {
     "title": "ตัวอย่างการสร้างเว็บไซต์แบบสถิต",

@@ -10,6 +10,7 @@ import { EditProfileDialog } from "./EditProfileDialog";
 import { z } from "zod";
 import { Separator } from "@/components/ui/separator";
 import { useTranslations } from "next-intl";
+import { initName } from "@/utils/format/name";
 
 export const profileFormSchema = z.object({
   firstname: z.string().min(2, {
@@ -51,7 +52,7 @@ export default function ProfileComponent() {
   const tCommon = useTranslations("Common");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const fullName = `${user?.data.user_info.firstname} ${user?.data.user_info.middlename} ${user?.data.user_info.lastname}`;
-  const initials = `${user?.data.user_info.firstname.charAt(0)}${user?.data.user_info.lastname.charAt(0)}`;
+  const convertName = initName(user?.data.user_info.firstname, user?.data.user_info.lastname);
 
   const handleProfileUpdate = (values: ProfileFormValues) => {
     console.log(values);
@@ -63,7 +64,7 @@ export default function ProfileComponent() {
       <div className="flex flex-col md:flex-row items-start gap-4">
         <Avatar className="w-16 h-16">
           <AvatarImage src="/placeholder.svg?height=64&width=64" alt={fullName} />
-          <AvatarFallback className="text-sm">{initials}</AvatarFallback>
+          <AvatarFallback className="text-sm">{convertName}</AvatarFallback>
         </Avatar>
 
         <div className="flex-1">
@@ -75,13 +76,8 @@ export default function ProfileComponent() {
                 <span>{user?.data.email}</span>
               </div>
             </div>
-            <Button
-              size="sm"
-              variant="outlinePrimary"
-              onClick={() => setIsEditDialogOpen(true)}
-              className="gap-1"
-            >
-              <Edit className="h-3 w-3" />
+            <Button size="sm" onClick={() => setIsEditDialogOpen(true)} className="gap-1">
+              <Edit />
               {tCommon("edit")}
             </Button>
           </div>

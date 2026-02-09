@@ -74,7 +74,20 @@
     "email": "Email",
     "name": "Name",
     "businessUnits": "Business Units",
-    "default": "Default"
+    "default": "Default",
+    "firstName": "First Name",
+    "middleName": "Middle Name",
+    "lastName": "Last Name",
+    "edit_profile": "Edit Profile",
+    "edit_profile_description": "Make changes to your profile information here.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "enter_your_first_name": "Enter your first name",
+    "enter_your_middle_name": "Enter your middle name (optional)",
+    "enter_your_last_name": "Enter your last name",
+    "enter_your_email": "Enter your email",
+    "update_success": "Profile updated successfully",
+    "update_error": "Failed to update profile"
   },
   "TestSSGPage": {
     "title": "Static Site Generation Example",
