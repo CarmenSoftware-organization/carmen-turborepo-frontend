@@ -12,6 +12,7 @@ import {
 } from "@/hooks/use-doc";
 import { useURL } from "@/hooks/useURL";
 import { Loader2, Upload } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import ListDocument from "./ListDocument";
 import { parseSortString } from "@/utils/table";
@@ -20,19 +21,12 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { Input } from "@/components/ui/input";
-
-interface DocumentDto {
-  fileToken: string;
-  objectName: string;
-  originalName: string;
-  size: number;
-  contentType: string;
-  lastModified: string;
-}
+import { DocumentDto } from "@/dtos/doc.dto";
 
 export default function DocumentManagementComponent() {
   const { token, buCode } = useAuth();
   const queryClient = useQueryClient();
+  const t = useTranslations("DocumentManagement");
 
   const [search, setSearch] = useURL("search");
   const [sort, setSort] = useURL("sort");
@@ -87,12 +81,12 @@ export default function DocumentManagementComponent() {
 
     uploadMutation.mutate(formData, {
       onSuccess: () => {
-        toastSuccess({ message: "Upload success" });
+        toastSuccess({ message: t("upload_success") });
         if (fileInputRef.current) fileInputRef.current.value = "";
         refetchDocuments();
       },
       onError: () => {
-        toastError({ message: "Upload failed" });
+        toastError({ message: t("upload_failed") });
       },
     });
   };
@@ -106,25 +100,25 @@ export default function DocumentManagementComponent() {
     if (documentToDelete?.fileToken) {
       deleteDocument(documentToDelete.fileToken, {
         onSuccess: () => {
-          toastSuccess({ message: "Document deleted successfully" });
+          toastSuccess({ message: t("delete_success") });
           refetchDocuments();
           setDeleteDialogOpen(false);
           setDocumentToDelete(undefined);
         },
         onError: () => {
-          toastError({ message: "Failed to delete document" });
+          toastError({ message: t("delete_failed") });
         },
       });
     }
   };
 
   const sortFields = [
-    { key: "originalName", label: "File Name" },
-    { key: "size", label: "Size" },
-    { key: "lastModified", label: "Last Modified" },
+    { key: "originalName", label: t("file_name") },
+    { key: "size", label: t("size") },
+    { key: "lastModified", label: t("last_modified") },
   ];
 
-  const title = "Document Management";
+  const title = t("title");
 
   const actionButtons = (
     <div className="flex items-center gap-2" data-id="document-list-action-buttons">
@@ -138,11 +132,12 @@ export default function DocumentManagementComponent() {
         ) : (
           <Upload className="h-4 w-4" />
         )}
-        Upload
+        {t("upload")}
       </Button>
       <Input
         ref={fileInputRef}
         type="file"
+        accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt"
         onChange={handleFileChange}
         className="hidden"
         disabled={uploadMutation.isPending}
@@ -155,7 +150,7 @@ export default function DocumentManagementComponent() {
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
-        placeholder="Search"
+        placeholder={t("search")}
         data-id="document-list-search-input"
       />
       <div className="fxr-c gap-2">
@@ -197,8 +192,8 @@ export default function DocumentManagementComponent() {
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
-        title="Delete Document"
-        description={`Are you sure you want to delete "${documentToDelete?.originalName}"?`}
+        title={t("delete_document")}
+        description={t("delete_confirm", { name: documentToDelete?.originalName ?? "" })}
       />
     </>
   );

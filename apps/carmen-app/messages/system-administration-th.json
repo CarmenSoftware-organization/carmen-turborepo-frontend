@@ -1,5 +1,19 @@
 {
   "DocumentManagement": {
-    "title": "การจัดการเอกสาร"
+    "title": "การจัดการเอกสาร",
+    "upload": "อัปโหลด",
+    "search": "ค้นหา",
+    "file_name": "ชื่อไฟล์",
+    "type": "ประเภท",
+    "size": "ขนาด",
+    "last_modified": "แก้ไขล่าสุด",
+    "action": "การดำเนินการ",
+    "no_documents": "ไม่พบเอกสาร",
+    "upload_success": "อัปโหลดสำเร็จ",
+    "upload_failed": "อัปโหลดไม่สำเร็จ",
+    "delete_document": "ลบเอกสาร",
+    "delete_confirm": "คุณแน่ใจหรือไม่ที่จะลบ \"{name}\"?",
+    "delete_success": "ลบเอกสารสำเร็จ",
+    "delete_failed": "ลบเอกสารไม่สำเร็จ"
   }
 }

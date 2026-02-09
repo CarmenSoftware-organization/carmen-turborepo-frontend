@@ -1,5 +1,5 @@
 import { createMetadata } from "@/utils/metadata";
-import DocumentManagementComponent from "./components/DocumentManagementComponent";
+import DocumentManagementComponent from "./_components/DocumentManagementComponent";
 
 export const generateMetadata = createMetadata("DocumentManagement", "title");
 

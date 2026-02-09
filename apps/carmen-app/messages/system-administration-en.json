@@ -1,5 +1,19 @@
 {
   "DocumentManagement": {
-    "title": "Document Management"
+    "title": "Document Management",
+    "upload": "Upload",
+    "search": "Search",
+    "file_name": "File Name",
+    "type": "Type",
+    "size": "Size",
+    "last_modified": "Last Modified",
+    "action": "Action",
+    "no_documents": "No documents found",
+    "upload_success": "Upload success",
+    "upload_failed": "Upload failed",
+    "delete_document": "Delete Document",
+    "delete_confirm": "Are you sure you want to delete \"{name}\"?",
+    "delete_success": "Document deleted successfully",
+    "delete_failed": "Failed to delete document"
   }
 }

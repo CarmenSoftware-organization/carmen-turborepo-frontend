@@ -1,21 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  FileText,
-  FileImage,
-  FileSpreadsheet,
-  FileArchive,
-  File,
-  MoreHorizontal,
-  Trash2,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { FileText, FileImage, FileSpreadsheet, FileArchive, File, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import {
   ColumnDef,
@@ -25,23 +12,11 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
-import {
-  DataGridTable,
-  DataGridTableRowSelect,
-  DataGridTableRowSelectAll,
-} from "@/components/ui/data-grid-table";
+import { DataGridTable } from "@/components/ui/data-grid-table";
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-
-interface DocumentDto {
-  fileToken: string;
-  objectName: string;
-  originalName: string;
-  size: number;
-  contentType: string;
-  lastModified: string;
-}
+import { DocumentDto } from "@/dtos/doc.dto";
 
 interface ListDocumentProps {
   readonly documents: DocumentDto[];
@@ -99,6 +74,8 @@ export default function ListDocument({
   onDelete,
   setPerpage,
 }: ListDocumentProps) {
+  const t = useTranslations("DocumentManagement");
+
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
@@ -119,7 +96,7 @@ export default function ListDocument({
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
-            title="File Name"
+            title={t("file_name")}
             icon={<FileText className="h-4 w-4" />}
           />
         ),
@@ -127,12 +104,12 @@ export default function ListDocument({
         enableSorting: true,
         size: 300,
         meta: {
-          headerTitle: "File Name",
+          headerTitle: t("file_name"),
         },
       },
       {
         accessorKey: "contentType",
-        header: ({ column }) => <DataGridColumnHeader column={column} title="Type" />,
+        header: ({ column }) => <DataGridColumnHeader column={column} title={t("type")} />,
         cell: ({ row }) => (
           <div className="flex items-center justify-center" title={row.original.contentType}>
             {getFileTypeIcon(row.original.contentType)}
@@ -141,22 +118,22 @@ export default function ListDocument({
         enableSorting: false,
         size: 60,
         meta: {
-          headerTitle: "Type",
+          headerTitle: t("type"),
         },
       },
       {
         accessorKey: "size",
-        header: ({ column }) => <DataGridColumnHeader column={column} title="Size" />,
+        header: ({ column }) => <DataGridColumnHeader column={column} title={t("size")} />,
         cell: ({ row }) => <span className="text-xs">{formatFileSize(row.original.size)}</span>,
         enableSorting: true,
         size: 100,
         meta: {
-          headerTitle: "Size",
+          headerTitle: t("size"),
         },
       },
       {
         accessorKey: "lastModified",
-        header: ({ column }) => <DataGridColumnHeader column={column} title="Last Modified" />,
+        header: ({ column }) => <DataGridColumnHeader column={column} title={t("last_modified")} />,
         cell: ({ row }) => (
           <span className="text-xs break-all">
             {new Date(row.original.lastModified).toLocaleString()}
@@ -165,12 +142,12 @@ export default function ListDocument({
         enableSorting: true,
         size: 180,
         meta: {
-          headerTitle: "Last Modified",
+          headerTitle: t("last_modified"),
         },
       },
       {
         id: "action",
-        header: () => <span className="text-right">Action</span>,
+        header: () => <span className="text-right">{t("action")}</span>,
         cell: ({ row }) => {
           const doc = row.original;
           return (
@@ -185,14 +162,14 @@ export default function ListDocument({
           );
         },
         enableSorting: false,
-        size: 80,
+        size: 120,
         meta: {
           cellClassName: "text-right",
           headerClassName: "text-right",
         },
       },
     ],
-    [currentPage, perpage, onDelete]
+    [t, currentPage, perpage, onDelete]
   );
 
   const table = useReactTable({
@@ -232,7 +209,7 @@ export default function ListDocument({
       recordCount={totalItems}
       isLoading={isLoading}
       loadingMode="skeleton"
-      emptyMessage="No documents found"
+      emptyMessage={t("no_documents")}
       tableLayout={{
         headerSticky: true,
         dense: false,
