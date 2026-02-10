@@ -6,7 +6,7 @@ WORKDIR /app
 COPY package.json bun.lockb turbo.json ./
 COPY apps/carmen-platform/package.json ./apps/carmen-platform/
 COPY packages/ ./packages/
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # Build the app
 FROM base AS builder
