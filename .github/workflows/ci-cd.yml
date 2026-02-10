@@ -67,6 +67,12 @@ jobs:
       ECR_REGISTRY: ${{ secrets.AWS_ECR_REGISTRY }}
       IMAGE_PREFIX: ${{ vars.DOCKER_IMAGE_PREFIX }}
     steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache
+          sudo docker system prune -af
+          df -h
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -100,6 +106,9 @@ jobs:
             -t $ECR_REGISTRY/$IMAGE_PREFIX-app:latest \
             -t $ECR_REGISTRY/$IMAGE_PREFIX-app:${{ github.sha }} \
             --push .
+
+      - name: Clean buildx cache
+        run: docker buildx prune -f
 
       - name: Build & push carmen-platform image
         run: |
