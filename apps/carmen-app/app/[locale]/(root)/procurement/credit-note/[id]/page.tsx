@@ -3,7 +3,7 @@
 import { DetailLoading } from "@/components/loading/DetailLoading";
 import { useAuth } from "@/context/AuthContext";
 import { useCreditNoteByIdQuery } from "../_hooks/use-credit-note";
-import { useParams } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import CnForm from "../_components/form/CnForm";
 import { formType } from "@/dtos/form.dto";
 
@@ -17,7 +17,9 @@ export default function CreditNoteDetailPage() {
 
   if (isLoading) return <DetailLoading />;
 
-  if (error) return <div>Error loading data</div>;
+  if (error) {
+    notFound();
+  }
 
   return <CnForm mode={formType.VIEW} initialValues={data?.data} />;
 }

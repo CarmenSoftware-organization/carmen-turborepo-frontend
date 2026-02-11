@@ -10,7 +10,7 @@ type ErrorProps = Readonly<{
 
 export default function ErrorPage({ error, reset }: ErrorProps) {
   useEffect(() => {
-    console.error("Application error:", error);
+    console.error("Vendor management error:", error);
   }, [error]);
 
   return <InternalServerError onReset={reset} />;

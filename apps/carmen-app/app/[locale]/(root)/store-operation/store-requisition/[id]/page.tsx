@@ -4,7 +4,7 @@ import { formType } from "@/dtos/form.dto";
 import FormStoreRequisition from "../_components/form/FormStoreRequisition";
 import { useAuth } from "@/context/AuthContext";
 import { useSrById } from "@/hooks/use-sr";
-import { useParams } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { DetailLoading } from "@/components/loading/DetailLoading";
 
 export default function StoreRequisitionIdPage() {
@@ -19,7 +19,7 @@ export default function StoreRequisitionIdPage() {
   }
 
   if (error) {
-    return <div>Error loading data</div>;
+    notFound();
   }
 
   return <FormStoreRequisition mode={formType.VIEW} initData={data?.data} />;
