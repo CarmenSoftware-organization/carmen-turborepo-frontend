@@ -22,15 +22,7 @@ export const useProductQuery = ({
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["product", params],
-    queryFn: async () => {
-      try {
-        const result = await getAllApiRequest(API_URL, token, "Error fetching products", params);
-        return result;
-      } catch (error) {
-        console.log("error", error);
-        throw error;
-      }
-    },
+    queryFn: () => getAllApiRequest(API_URL, token, "Error fetching products", params),
     enabled: !!token && !!buCode,
   });
   const products = data;

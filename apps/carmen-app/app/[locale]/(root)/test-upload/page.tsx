@@ -69,8 +69,6 @@ export default function TestUploadPage() {
           body: formData,
         });
 
-        console.log("response", response);
-
         if (!response.ok) {
           const error = await response.json();
           throw new Error(error.error || "Upload failed");

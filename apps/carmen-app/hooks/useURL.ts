@@ -78,7 +78,6 @@ export const useURL = (paramName: string, options: URLStateOptions = {}) => {
         new URLSearchParams(globalThis.window.location.search).get(paramName) ?? defaultValue;
 
       if (currentValue !== value) {
-        console.log(`🔄 [useURL] Syncing ${paramName}: ${value} → ${currentValue}`);
         setValue(currentValue);
         onUpdate?.(currentValue);
       }

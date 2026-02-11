@@ -1,9 +1,13 @@
+"use client";
+
+import dynamic from "next/dynamic";
 import { energyData, scopeData } from "@/mock-data/environment";
 import MetricCard from "./MetricCard";
-import EmissionsScope from "./EmissionsScope";
-import EnergyUsageTrend from "./EnergyUsageTrend";
-import EmissionsDistribution from "./EmissionsDistribution";
-import ConsumptionBreakdown from "./ConsumptionBreakdown";
+
+const EmissionsScope = dynamic(() => import("./EmissionsScope"), { ssr: false });
+const EnergyUsageTrend = dynamic(() => import("./EnergyUsageTrend"), { ssr: false });
+const EmissionsDistribution = dynamic(() => import("./EmissionsDistribution"), { ssr: false });
+const ConsumptionBreakdown = dynamic(() => import("./ConsumptionBreakdown"), { ssr: false });
 
 export default function DashboardComponent() {
   const latestYear = energyData.length ? energyData[energyData.length - 1] : null;

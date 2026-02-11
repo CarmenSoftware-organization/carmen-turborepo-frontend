@@ -31,15 +31,7 @@ export const useItemGroupQuery = ({
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["itemgroup", buCode, params],
-    queryFn: async () => {
-      try {
-        const result = await getAllApiRequest(API_URL, token, "Error fetching item group", params);
-        return result;
-      } catch (error) {
-        console.log("error", error);
-        throw error;
-      }
-    },
+    queryFn: () => getAllApiRequest(API_URL, token, "Error fetching item group", params),
     enabled: !!token && !!buCode,
     staleTime: 5 * 60 * 1000,
   });

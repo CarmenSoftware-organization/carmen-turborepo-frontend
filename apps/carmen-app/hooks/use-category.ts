@@ -31,15 +31,7 @@ export const useCategoryQuery = ({
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["category", buCode, params],
-    queryFn: async () => {
-      try {
-        const result = await getAllApiRequest(API_URL, token, "Error fetching category", params);
-        return result;
-      } catch (error) {
-        console.log("error", error);
-        throw error;
-      }
-    },
+    queryFn: () => getAllApiRequest(API_URL, token, "Error fetching category", params),
     enabled: !!token && !!buCode,
     staleTime: 5 * 60 * 1000,
   });

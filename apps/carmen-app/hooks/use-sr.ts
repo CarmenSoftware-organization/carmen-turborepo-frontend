@@ -38,15 +38,7 @@ export const useStoreRequisitionQuery = ({
 
   const { data, isLoading, error } = useQuery({
     queryKey: [srKey, buCode, params],
-    queryFn: async () => {
-      try {
-        const result = await getAllApiRequest(API_URL, token, "Error fetching SR", params);
-        return result;
-      } catch (error) {
-        console.log("error", error);
-        throw error;
-      }
-    },
+    queryFn: () => getAllApiRequest(API_URL, token, "Error fetching SR", params),
     enabled: !!token && !!buCode,
   });
 

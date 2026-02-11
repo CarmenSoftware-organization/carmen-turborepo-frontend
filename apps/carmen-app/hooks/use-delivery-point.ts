@@ -35,20 +35,12 @@ export const useDeliveryPointQuery = ({
 
   const { data, isLoading, error } = useQuery({
     queryKey: [queryKeyDeliveryPoint, buCode, params],
-    queryFn: async () => {
-      try {
-        const result = await getAllApiRequest(
-          API_URL,
-          token,
-          "Error fetching delivery point",
-          params
-        );
-        return result;
-      } catch (error) {
-        console.log("error", error);
-        throw error;
-      }
-    },
+    queryFn: () => getAllApiRequest(
+      API_URL,
+      token,
+      "Error fetching delivery point",
+      params
+    ),
     enabled: !!token && !!buCode,
     staleTime: 5 * 60 * 1000,
   });

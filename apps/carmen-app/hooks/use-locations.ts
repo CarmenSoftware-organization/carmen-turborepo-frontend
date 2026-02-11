@@ -37,18 +37,7 @@ export const useLocationsQuery = (
     queryKey: ["locations", buCode, params],
     queryFn: async () => {
       if (!token || !buCode) throw new Error("Unauthorized");
-      try {
-        const result = await getAllApiRequest(
-          API_URL,
-          token,
-          "Error fetching locations",
-          params
-        );
-        return result;
-      } catch (error) {
-        console.log("error", error);
-        throw error;
-      }
+      return getAllApiRequest(API_URL, token, "Error fetching locations", params);
     },
     enabled: !!token && !!buCode,
   });
@@ -88,19 +77,7 @@ export const useLocationByIdQuery = (
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["location", buCode, id],
-    queryFn: async () => {
-      try {
-        const result = await getByIdApiRequest(
-          API_URL,
-          token,
-          "Error fetching location"
-        );
-        return result;
-      } catch (error) {
-        console.log("error", error);
-        throw error;
-      }
-    },
+    queryFn: () => getByIdApiRequest(API_URL, token, "Error fetching location"),
     enabled: enabled && !!token && !!buCode,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
