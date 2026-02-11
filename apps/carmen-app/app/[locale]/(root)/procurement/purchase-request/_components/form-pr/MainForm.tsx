@@ -287,6 +287,7 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
                         prStatus={prStatus ?? ""}
                         bu_code={bu_code}
                         prId={initValues?.id ?? ""}
+                        role={initValues?.role}
                       />
                     </TabsContent>
                     <TabsContent value="workflow" className="mt-2">

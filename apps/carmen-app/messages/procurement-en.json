@@ -142,7 +142,8 @@
     "delete_prt_desc": "Are you sure you want to delete this PR Template?",
     "select_template_desc": "Select Purchase Request Template Description",
     "split_success": "Split Purchase Request success",
-    "split_failed": "Split Purchase Request failed"
+    "split_failed": "Split Purchase Request failed",
+    "auto_allocate": "Auto Allocate"
   },
   "PurchaseOrder": {
     "title": "Purchase Order",

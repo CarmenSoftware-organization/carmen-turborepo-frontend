@@ -21,7 +21,7 @@ import SelectAllDialog from "./dialogs/SelectAllDialog";
 import { useCurrenciesQuery } from "@/hooks/use-currency";
 import { useSplitPr } from "@/hooks/use-purchase-request";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
-import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
+import { toastError } from "@/components/ui-custom/Toast";
 import { fetchPriceCompare } from "@/hooks/use-bidding";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -47,6 +47,7 @@ interface Props {
   prStatus?: string;
   bu_code?: string;
   prId: string;
+  role?: string;
 }
 
 export default function PurchaseItemDataGrid({
@@ -63,6 +64,7 @@ export default function PurchaseItemDataGrid({
   prStatus,
   bu_code,
   prId,
+  role,
 }: Props) {
   const { dateFormat, currencyBase, token, buCode } = useAuth();
   const currentBuCode = bu_code ?? buCode;
@@ -96,6 +98,58 @@ export default function PurchaseItemDataGrid({
     onItemRemove,
     getItemValue,
   });
+
+  const handleAutoAllocate = async () => {
+    for (const item of items) {
+      const productId = getItemValue(item, "product_id") as string;
+      const unitId = getItemValue(item, "inventory_unit_id") as string;
+      const currencyId = getItemValue(item, "currency_id") as string;
+      const deliveryDate = String(getItemValue(item, "delivery_date") ?? "").split("T")[0];
+      if (!productId || !unitId || !currencyId) continue;
+
+      try {
+        const lists = await fetchPriceCompare(token || "", currentBuCode || "", {
+          product_id: productId,
+          unit_id: unitId,
+          currency_id: currencyId,
+          at_date: deliveryDate,
+        });
+
+        if (!lists || lists.length === 0) continue;
+
+        // Pick preferred vendor, or first in list
+        const selected = lists.find((v: { is_preferred: boolean }) => v.is_preferred) || lists[0];
+
+        const apvQty = Number(getItemValue(item, "apv_qty") ?? 0);
+        const reqQty = Number(getItemValue(item, "req_qty") ?? 0);
+        const qty = apvQty > 0 ? apvQty : reqQty;
+        const price = selected.price || 0;
+        const subTotal = qty * price;
+
+        const updates: Record<string, unknown> = {
+          vendor_id: selected.vendor_id,
+          vendor_name: selected.vendor_name,
+          pricelist_detail_id: selected.pricelist_detail_id,
+          pricelist_no: selected.pricelist_no,
+          pricelist_unit: selected.unit_id,
+          pricelist_price: price,
+          currency_name: selected.currency,
+          exchange_rate: selected.exchange_rate,
+          sub_total_price: subTotal,
+          total_price: subTotal,
+          base_price: selected.base_price,
+          base_sub_total_price: qty * (selected.base_price || 0),
+          base_total_price: qty * (selected.base_price || 0),
+        };
+
+        for (const [fieldName, value] of Object.entries(updates)) {
+          onItemUpdate(item.id, fieldName, value);
+        }
+      } catch (error) {
+        console.error(`Row ${item.id} error:`, error);
+      }
+    }
+  };
 
   const usedProductIdsMap = useMemo(() => {
     const map = new Map<string, string[]>();
@@ -265,33 +319,11 @@ export default function PurchaseItemDataGrid({
             </Tooltip>
           </TooltipProvider>
         )}
-        <Button
-          size={"sm"}
-          className="h-7"
-          onClick={async () => {
-            for (const item of items) {
-              const productId = getItemValue(item, "product_id") as string;
-              const unitId = getItemValue(item, "inventory_unit_id") as string;
-              const currencyId = getItemValue(item, "currency_id") as string;
-              const deliveryDate = String(getItemValue(item, "delivery_date") ?? "").split("T")[0];
-              if (!productId || !unitId || !currencyId) continue;
-
-              try {
-                const lists = await fetchPriceCompare(token || "", currentBuCode || "", {
-                  product_id: productId,
-                  unit_id: unitId,
-                  currency_id: currencyId,
-                  at_date: deliveryDate,
-                });
-                console.log(`Row ${item.id}:`, lists);
-              } catch (error) {
-                console.error(`Row ${item.id} error:`, error);
-              }
-            }
-          }}
-        >
-          Auto Allowcate
-        </Button>
+        {role === "purchase" && (
+          <Button size={"sm"} className="h-7" onClick={handleAutoAllocate}>
+            {tPr("auto_allocate")}
+          </Button>
+        )}
       </div>
       {selectedRowsCount > 0 && currentMode !== formType.VIEW && (
         <div className="flex items-center gap-2">
