@@ -94,6 +94,7 @@ interface UserInfo {
 interface NumberFormat {
   locales: string;
   minimumIntegerDigits: number;
+  minimumFractionDigits: number;
 }
 
 interface CurrencyInfo {
