@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import type { KeyboardEvent } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -17,7 +17,7 @@ interface Props {
   readonly inputClassName?: string;
   readonly onInputChange?: (value: string) => void;
 }
-export default function SearchInput({
+const SearchInput = memo(function SearchInput({
   defaultValue,
   onSearch,
   placeholder,
@@ -88,4 +88,6 @@ export default function SearchInput({
       </div>
     </div>
   );
-}
+});
+
+export default SearchInput;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -29,14 +29,14 @@ interface PaginationProps {
   setPerpage?: (perpage: number) => void;
 }
 
-const PaginationComponent = ({
+const PaginationComponent = memo(function PaginationComponent({
   currentPage,
   totalPages,
   onPageChange,
   position = "right",
   perpage,
   setPerpage,
-}: PaginationProps) => {
+}: PaginationProps) {
   const tCommon = useTranslations("Common");
 
   const [inputValue, setInputValue] = useState(currentPage.toString());
@@ -249,6 +249,6 @@ const PaginationComponent = ({
       </PaginationContent>
     </Pagination>
   );
-};
+});
 
 export default PaginationComponent;

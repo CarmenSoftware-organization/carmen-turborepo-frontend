@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -6,7 +7,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export const StatusCustom = ({ is_active, dense, children }: Props) => {
+export const StatusCustom = memo(function StatusCustom({ is_active, dense, children }: Props) {
   return (
     <div className="flex items-center justify-center gap-1">
       <div className={cn("w-2 h-2 rounded-full", is_active ? "bg-active" : "bg-inactive")}></div>
@@ -21,4 +22,4 @@ export const StatusCustom = ({ is_active, dense, children }: Props) => {
       </p>
     </div>
   );
-};
+});
