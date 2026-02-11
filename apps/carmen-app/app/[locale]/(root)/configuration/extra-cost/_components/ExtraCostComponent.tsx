@@ -25,6 +25,7 @@ import ExtraCostDialog from "./ExtraCostDialog";
 import { useTranslations } from "next-intl";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
+import { InternalServerError } from "@/components/error-ui";
 
 export default function ExtraCostComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -56,7 +57,7 @@ export default function ExtraCostComponent() {
     undefined
   );
 
-  const { extraCostTypes, isLoading } = useExtraCostTypeQuery(token, buCode, {
+  const { extraCostTypes, isLoading, error } = useExtraCostTypeQuery(token, buCode, {
     search,
     filter,
     sort,
@@ -71,6 +72,8 @@ export default function ExtraCostComponent() {
     selectedExtraCost?.id ?? ""
   );
   const { mutate: deleteExtraCost } = useDeleteExtraCostType(token, buCode);
+
+  if (error) return <InternalServerError />;
 
   const extraCostData = Array.isArray(extraCostTypes) ? extraCostTypes : extraCostTypes?.data || [];
   const currentPage = extraCostTypes?.paginate?.page ?? 1;

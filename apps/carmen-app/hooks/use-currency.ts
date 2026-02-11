@@ -66,6 +66,7 @@ export const useCurrenciesQuery = (token: string, buCode: string, params?: Param
     getCurrencyExchangeRate,
     isLoading,
     isUnauthorized,
+    error,
   };
 };
 

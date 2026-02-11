@@ -22,6 +22,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { Input } from "@/components/ui/input";
 import { DocumentDto } from "@/dtos/doc.dto";
+import { InternalServerError } from "@/components/error-ui";
 
 export default function DocumentManagementComponent() {
   const { token, buCode } = useAuth();
@@ -38,7 +39,7 @@ export default function DocumentManagementComponent() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<DocumentDto | undefined>(undefined);
 
-  const { documents, isLoading } = useDocumentQuery({
+  const { documents, isLoading, error } = useDocumentQuery({
     token,
     buCode,
     params: {
@@ -51,6 +52,8 @@ export default function DocumentManagementComponent() {
 
   const uploadMutation = useUploadDocument(token, buCode);
   const { mutate: deleteDocument } = useDeleteDocument(token, buCode);
+
+  if (error) return <InternalServerError />;
 
   const documentsData: DocumentDto[] = documents?.data ?? [];
   const currentPage = documents?.paginate?.page ?? 1;

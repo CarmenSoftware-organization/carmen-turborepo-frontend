@@ -23,6 +23,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import { InternalServerError } from "@/components/error-ui";
 
 const sortFields = [
   { key: "name", label: "Name" },
@@ -33,7 +34,7 @@ const sortFields = [
 export default function CreditTermComponent() {
   const { token, buCode } = useAuth();
   const queryClient = useQueryClient();
-  const { creditTerms, isLoading } = useCreditTermQuery(token, buCode);
+  const { creditTerms, isLoading, error } = useCreditTermQuery(token, buCode);
 
   const [selectedCreditTerm, setSelectedCreditTerm] = useState<CreditTermGetAllDto | null>(null);
   const { mutate: createCreditTerm, isPending: isCreating } = useCreateCreditTerm(token, buCode);
@@ -54,6 +55,9 @@ export default function CreditTermComponent() {
   const [dialogMode, setDialogMode] = useState<formType | undefined>(undefined);
 
   const tCreditTerm = useTranslations("CreditTerm");
+
+  if (error) return <InternalServerError />;
+
   const title = tCreditTerm("title");
 
   const parsedSort = sort

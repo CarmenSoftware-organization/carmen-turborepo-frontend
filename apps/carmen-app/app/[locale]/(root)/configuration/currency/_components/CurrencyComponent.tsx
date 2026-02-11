@@ -26,6 +26,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
+import { InternalServerError } from "@/components/error-ui";
 
 export default function CurrencyComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -45,7 +46,7 @@ export default function CurrencyComponent() {
   const tHeader = useTranslations("TableHeader");
   const queryClient = useQueryClient();
 
-  const { currencies: data, isLoading } = useCurrenciesQuery(token, buCode, {
+  const { currencies: data, isLoading, error } = useCurrenciesQuery(token, buCode, {
     search: search || undefined,
     page: page || 1,
     filter: filter || undefined,
@@ -81,6 +82,8 @@ export default function CurrencyComponent() {
     selectedCurrency?.id || ""
   );
   const deleteStatusMutation = useCurrencyDeleteMutation(token, buCode);
+
+  if (error) return <InternalServerError />;
 
   const handleToggleStatus = (currency: CurrencyUpdateDto) => {
     if (!currency.id) {

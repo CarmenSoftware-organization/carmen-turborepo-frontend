@@ -18,6 +18,7 @@ import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown"
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { Plus } from "lucide-react";
 import { FieldConfig } from "@/constants/uiConfig";
+import { InternalServerError } from "@/components/error-ui";
 
 export default function PurchaseOrderComponent() {
   const { token, buCode } = useAuth();
@@ -31,7 +32,7 @@ export default function PurchaseOrderComponent() {
   const [perpage, setPerpage] = useURL("perpage");
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useWorkflow(token, buCode, {
+  const { data, isLoading, error } = useWorkflow(token, buCode, {
     search: search || undefined,
     page: page || 1,
     filter: filter || undefined,
@@ -95,6 +96,8 @@ export default function PurchaseOrderComponent() {
   const title = tWf("title");
   const searchParams = useSearchParams();
   const defaultTab = searchParams.get("tab") || "workflow";
+
+  if (error) return <InternalServerError />;
 
   const actionButtons = (
     <div className="flex items-center gap-2">

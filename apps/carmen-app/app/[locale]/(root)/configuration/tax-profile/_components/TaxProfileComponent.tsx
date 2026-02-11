@@ -19,6 +19,7 @@ import {
   useUpdateTaxProfile,
 } from "@/hooks/use-tax-profile";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import { InternalServerError } from "@/components/error-ui";
 
 export function TaxProfileComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -30,7 +31,7 @@ export function TaxProfileComponent() {
   const tCommon = useTranslations("Common");
   const tTaxProfile = useTranslations("TaxProfile");
 
-  const { taxProfiles: taxProfileData, isLoading } = useTaxProfileQuery(token, buCode);
+  const { taxProfiles: taxProfileData, isLoading, error } = useTaxProfileQuery(token, buCode);
 
   // Use data directly from query instead of local state
   const taxProfiles = taxProfileData?.data || [];
@@ -43,6 +44,8 @@ export function TaxProfileComponent() {
 
   const [deleteProfileId, setDeleteProfileId] = useState<string | null>(null);
   const { mutate: deleteTaxProfile } = useDeleteTaxProfile(token, buCode);
+
+  if (error) return <InternalServerError />;
 
   const title = tTaxProfile("title");
 

@@ -14,6 +14,7 @@ import { useURL } from "@/hooks/useURL";
 import { User, Mail, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/lib/navigation";
+import { InternalServerError } from "@/components/error-ui";
 
 interface UserDto {
   user_id: string;
@@ -33,7 +34,7 @@ export default function UserRoleComponent() {
   const currentPage = page ? Number(page) : 1;
   const perpageValue = perpage ? Number(perpage) : 10;
 
-  const { userList, isLoading } = useUserList(token, buCode, {
+  const { userList, isLoading, error } = useUserList(token, buCode, {
     page: currentPage,
     perpage: perpageValue,
   });
@@ -133,6 +134,8 @@ export default function UserRoleComponent() {
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
   });
+
+  if (error) return <InternalServerError />;
 
   return (
     <DataGrid

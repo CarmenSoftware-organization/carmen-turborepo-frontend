@@ -17,6 +17,7 @@ import { RoleDto } from "@/dtos/role.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import { InternalServerError } from "@/components/error-ui";
 
 export default function RoleComponent() {
   const { token, buCode } = useAuth();
@@ -35,7 +36,7 @@ export default function RoleComponent() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState<RoleDto | undefined>(undefined);
 
-  const { roles, isLoading, paginate } = useRoleQuery({
+  const { roles, isLoading, paginate, error } = useRoleQuery({
     token,
     buCode,
     params: {
@@ -47,6 +48,8 @@ export default function RoleComponent() {
   });
 
   const { mutate: deleteRole, isPending: isDeleting } = useDeleteRole(token, buCode);
+
+  if (error) return <InternalServerError />;
 
   const currentPage = paginate?.page ?? 1;
   const totalPages = paginate?.pages ?? 1;

@@ -23,6 +23,7 @@ import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 
 import { VIEW } from "@/constants/enum";
 import { DepartmentListItemDto } from "@/dtos/department.dto";
+import { InternalServerError } from "@/components/error-ui";
 
 export default function DepartmentComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -48,7 +49,7 @@ export default function DepartmentComponent() {
   const [perpage, setPerpage] = useURL("perpage");
   const [view, setView] = useState<VIEW>(VIEW.LIST);
 
-  const { departments, isLoading, isUnauthorized } = useDepartmentsQuery(token, buCode, {
+  const { departments, isLoading, isUnauthorized, error } = useDepartmentsQuery(token, buCode, {
     search,
     page,
     sort,
@@ -66,6 +67,8 @@ export default function DepartmentComponent() {
       setLoginDialogOpen(true);
     }
   }, [isUnauthorized]);
+
+  if (error && !isUnauthorized) return <InternalServerError />;
 
   const currentPage = departments?.paginate.page ?? 1;
   const totalPages = departments?.paginate.pages ?? 1;

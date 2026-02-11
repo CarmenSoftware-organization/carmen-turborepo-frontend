@@ -44,6 +44,7 @@ export const useUserList = (token: string, buCode: string, params?: ParamsGetDto
     isLoading,
     isUnauthorized,
     getUserName,
+    error,
   };
 };
 

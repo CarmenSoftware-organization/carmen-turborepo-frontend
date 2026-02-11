@@ -23,6 +23,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import { AdjustmentTypeDto } from "@/dtos/adjustment-type.dto";
 import { useTranslations } from "next-intl";
+import { InternalServerError } from "@/components/error-ui";
 
 export default function AdjustmentTypeComponent() {
   const { token, buCode } = useAuth();
@@ -41,7 +42,7 @@ export default function AdjustmentTypeComponent() {
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
 
-  const { adjustmentTypeData, paginate, isLoading, isUnauthorized } = useAdjustmentTypeQuery(
+  const { adjustmentTypeData, paginate, isLoading, isUnauthorized, error } = useAdjustmentTypeQuery(
     token,
     buCode,
     {
@@ -63,6 +64,8 @@ export default function AdjustmentTypeComponent() {
       setLoginDialogOpen(true);
     }
   }, [isUnauthorized]);
+
+  if (error && !isUnauthorized) return <InternalServerError />;
 
   const currentPage = paginate?.current_page ?? 1;
   const totalPages = paginate?.last_page ?? 1;

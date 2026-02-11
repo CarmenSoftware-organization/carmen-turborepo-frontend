@@ -26,6 +26,7 @@ import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import DeliveryPointDialog from "@/components/shared/DeliveryPointDialog";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
+import { InternalServerError } from "@/components/error-ui";
 
 export default function DeliveryPointComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -54,7 +55,7 @@ export default function DeliveryPointComponent() {
     DeliveryPointUpdateDto | undefined
   >(undefined);
 
-  const { deliveryPoints, isLoading } = useDeliveryPointQuery({
+  const { deliveryPoints, isLoading, error } = useDeliveryPointQuery({
     token,
     buCode,
     params: {
@@ -69,6 +70,8 @@ export default function DeliveryPointComponent() {
   const { mutate: createDeliveryPoint } = useDeliveryPointMutation(token, buCode);
   const { mutate: updateDeliveryPoint } = useUpdateDeliveryPoint(token, buCode);
   const { mutate: deleteDeliveryPoint } = useDeleteDeliveryPoint(token, buCode);
+
+  if (error) return <InternalServerError />;
 
   const deliveryPointsData = deliveryPoints?.data ?? [];
   const currentPage = deliveryPoints?.paginate.page ?? 1;

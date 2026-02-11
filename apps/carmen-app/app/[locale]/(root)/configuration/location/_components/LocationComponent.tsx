@@ -20,6 +20,7 @@ import { configurationPermission } from "@/lib/permission";
 import { StoreLocationDto } from "@/dtos/location.dto";
 import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
+import { InternalServerError } from "@/components/error-ui";
 
 export default function LocationComponent() {
   const tCommon = useTranslations("Common");
@@ -64,6 +65,8 @@ export default function LocationComponent() {
       setLoginDialogOpen(true);
     }
   }, [error, setLoginDialogOpen]);
+
+  if (error && (error as { response?: { status?: number } })?.response?.status !== 401) return <InternalServerError />;
 
   const sortFields = [{ key: "name", label: tHeader("name") }];
 

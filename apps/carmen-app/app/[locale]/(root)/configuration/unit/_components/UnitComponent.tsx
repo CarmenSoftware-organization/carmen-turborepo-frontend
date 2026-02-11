@@ -20,6 +20,7 @@ import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { productManagementPermission } from "@/lib/permission";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import { InternalServerError } from "@/components/error-ui";
 
 export default function UnitComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -39,7 +40,7 @@ export default function UnitComponent() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [unitToDelete, setUnitToDelete] = useState<UnitDto | undefined>(undefined);
 
-  const { units, isLoading } = useUnitQuery({
+  const { units, isLoading, error } = useUnitQuery({
     token,
     buCode,
     params: {
@@ -54,6 +55,8 @@ export default function UnitComponent() {
   const { mutate: createUnit } = useUnitMutation(token, buCode);
   const { mutate: updateUnit } = useUpdateUnit(token, buCode, selectedUnit?.id ?? "");
   const { mutate: deleteUnit } = useDeleteUnit(token, buCode);
+
+  if (error) return <InternalServerError />;
 
   const totalItems = units?.paginate?.total ?? 0;
   const totalPages = units?.paginate?.pages ?? 1;
