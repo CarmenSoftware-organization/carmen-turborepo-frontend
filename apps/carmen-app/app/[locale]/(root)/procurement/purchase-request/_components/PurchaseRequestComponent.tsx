@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FileDown, FileStack, Grid, List, ListTodo, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useURL } from "@/hooks/useURL";
 import { useEffect, useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
@@ -37,7 +38,7 @@ export default function PurchaseRequestComponent() {
   const tStatus = useTranslations("Status");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [view, setView] = useState<VIEW>(VIEW.LIST);
-  const [search, setSearch] = useURL("search");
+  const { search, setSearch, sort, setSort, page, setPage, perpage, handlePageChange, handleSetPerpage } = useListPageState();
   const [keyword, setKeyword] = useState(search || "");
   const debouncedKeyword = useDebounce(keyword, 500);
   const [fetchType, setFetchType] = useState<FETCH_TYPE | undefined>(FETCH_TYPE.MY_PENDING);
@@ -48,10 +49,7 @@ export default function PurchaseRequestComponent() {
     }
   }, [debouncedKeyword, search, setSearch]);
 
-  const [sort, setSort] = useURL("sort");
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
 
   const [filterStatus, setFilterStatus] = useURL("filter_status");
   const [filterStage, setFilterStage] = useURL("stage");
@@ -115,10 +113,6 @@ export default function PurchaseRequestComponent() {
       setPage("");
     }
   }, [search, setPage]);
-
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
 
   const handleApplyFilter = (filters: PurchaseRequestFilterValues) => {
     setFilterStatus(filters.status || "");
@@ -320,10 +314,6 @@ export default function PurchaseRequestComponent() {
       </div>
     </div>
   );
-
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
 
   const currentPageNumber = Number(page || "1");
 

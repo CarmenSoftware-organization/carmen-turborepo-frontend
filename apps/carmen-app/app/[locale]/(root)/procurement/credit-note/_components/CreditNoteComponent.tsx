@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { FileDown, Filter, Grid, List, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useURL } from "@/hooks/useURL";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import CreditNoteList from "./CreditNoteList";
 import { VIEW } from "@/constants/enum";
@@ -25,31 +26,17 @@ export default function CreditNoteComponent() {
   const tCreditNote = useTranslations("CreditNote");
   const router = useRouter();
   const { token, buCode } = useAuth();
-  const [search, setSearch] = useURL("search");
+  const { search, setSearch, sort, setSort, pageNumber, perpageNumber, handlePageChange, handleSetPerpage } = useListPageState();
   const [status, setStatus] = useURL("status");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
   const [statusOpen, setStatusOpen] = useState(false);
-  const [sort, setSort] = useURL("sort");
   const [view, setView] = useState<VIEW>(VIEW.LIST);
 
   const { creditNotes, isLoading } = useCreditNoteQuery(token, buCode, {
     search,
     sort,
-    page: page ? Number(page) : 1,
-    perpage: perpage ? Number(perpage) : 10,
+    page: pageNumber,
+    perpage: perpageNumber,
   });
-
-  const handlePageChange = useCallback(
-    (newPage: number) => {
-      setPage(newPage.toString());
-    },
-    [setPage]
-  );
-
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
 
   const totalItems = creditNotes?.paginate.total;
   const perpageItem = creditNotes?.paginate.perpage;

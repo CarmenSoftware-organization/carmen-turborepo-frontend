@@ -2,6 +2,7 @@
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Building, Grid, List, Plus } from "lucide-react";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
@@ -22,7 +23,7 @@ import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown"
 export default function SpotCheckComponent() {
   const t = useTranslations("InventoryManagement");
   const tCommon = useTranslations("Common");
-  const [search, setSearch] = useURL("search");
+  const { search, setSearch } = useListPageState();
   const [status, setStatus] = useURL("status");
   const [statusOpen, setStatusOpen] = useState(false);
   const [view, setView] = useState<VIEW>(VIEW.LIST);

@@ -7,7 +7,8 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useDepartmentsQuery, useDepartmentDeleteMutation } from "@/hooks/use-departments";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
+import { useDeleteDialog } from "@/hooks/use-delete-dialog";
 import { useRouter } from "@/lib/navigation";
 import { FileDown, Plus, Printer, List, Grid } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -17,8 +18,6 @@ import DepartmentGrid from "./DepartmentGrid";
 import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
-import { useQueryClient } from "@tanstack/react-query";
-import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 
 import { VIEW } from "@/constants/enum";
 import { DepartmentListItemDto } from "@/dtos/department.dto";
@@ -30,22 +29,12 @@ export default function DepartmentComponent() {
 
   // Get permissions for department resource
   const departmentPerms = configurationPermission.get(permissions, "department");
-  const queryClient = useQueryClient();
-
   const tDepartment = useTranslations("Department");
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const router = useRouter();
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [departmentToDelete, setDepartmentToDelete] = useState<DepartmentListItemDto | undefined>(
-    undefined
-  );
+  const { search, setSearch, filter, setFilter, sort, setSort, page, perpage, handlePageChange, handleSetPerpage } = useListPageState();
   const [statusOpen, setStatusOpen] = useState(false);
-  const [search, setSearch] = useURL("search");
-  const [filter, setFilter] = useURL("filter");
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
   const [view, setView] = useState<VIEW>(VIEW.LIST);
 
   const { departments, isLoading, error } = useDepartmentsQuery(token, buCode, {
@@ -56,10 +45,14 @@ export default function DepartmentComponent() {
     perpage,
   });
 
-  const { mutate: deleteDepartment, isPending: isDeleting } = useDepartmentDeleteMutation(
-    token,
-    buCode
-  );
+  const { mutate: deleteDepartment } = useDepartmentDeleteMutation(token, buCode);
+
+  const deleteDialog = useDeleteDialog<DepartmentListItemDto>(deleteDepartment, {
+    queryKey: ["departments", buCode],
+    successMessage: tDepartment("delete_success"),
+    errorMessage: tDepartment("delete_error"),
+    logContext: "delete department",
+  });
 
   if (error) {
     const errorType = getApiErrorType(error);
@@ -72,45 +65,8 @@ export default function DepartmentComponent() {
   const totalPages = departments?.paginate.pages ?? 1;
   const totalItems = departments?.paginate.total ?? 0;
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
   const handleAdd = () => {
     router.push("/configuration/department/new");
-  };
-
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
-
-  const handleDelete = (department: DepartmentListItemDto) => {
-    setDepartmentToDelete(department);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (departmentToDelete?.id) {
-      deleteDepartment(departmentToDelete.id, {
-        onSuccess: () => {
-          toastSuccess({ message: tDepartment("delete_success") });
-          queryClient.invalidateQueries({ queryKey: ["departments", buCode] });
-          setDeleteDialogOpen(false);
-          setDepartmentToDelete(undefined);
-        },
-        onError: (error: Error) => {
-          toastError({ message: tDepartment("delete_error") });
-          console.error("Failed to delete department:", error);
-          setDeleteDialogOpen(false);
-          setDepartmentToDelete(undefined);
-        },
-      });
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setDeleteDialogOpen(false);
-    setDepartmentToDelete(undefined);
   };
 
   const sortFields = [
@@ -208,7 +164,7 @@ export default function DepartmentComponent() {
         <DepartmentGrid
           departments={departments?.data ?? []}
           isLoading={isLoading}
-          onDelete={handleDelete}
+          onDelete={deleteDialog.openDialog}
           canUpdate={departmentPerms.canUpdate}
           canDelete={departmentPerms.canDelete}
         />
@@ -227,7 +183,7 @@ export default function DepartmentComponent() {
             sort={parseSortString(sort)}
             onSort={setSort}
             setPerpage={handleSetPerpage}
-            onDelete={handleDelete}
+            onDelete={deleteDialog.openDialog}
             canUpdate={departmentPerms.canUpdate}
             canDelete={departmentPerms.canDelete}
           />
@@ -235,7 +191,7 @@ export default function DepartmentComponent() {
           <DepartmentGrid
             departments={departments?.data ?? []}
             isLoading={isLoading}
-            onDelete={handleDelete}
+            onDelete={deleteDialog.openDialog}
             canUpdate={departmentPerms.canUpdate}
             canDelete={departmentPerms.canDelete}
           />
@@ -253,14 +209,11 @@ export default function DepartmentComponent() {
         content={content}
       />
       <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
+        {...deleteDialog.dialogProps}
         title={tDepartment("confirm_delete")}
         description={tDepartment("confirm_delete_description", {
-          name: departmentToDelete?.name || "",
+          name: deleteDialog.entityToDelete?.name || "",
         })}
-        isLoading={isDeleting}
       />
     </>
   );

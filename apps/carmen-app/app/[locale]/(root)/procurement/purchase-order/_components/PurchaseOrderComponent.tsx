@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useEffect, useState } from "react";
 import PurchaseOrderList from "./PurchaseOrderList";
 import DialogNewPo from "./DialogNewPo";
@@ -20,11 +20,8 @@ export default function PurchaseOrderComponent() {
   const tCommon = useTranslations("Common");
   const tDataControls = useTranslations("DataControls");
   const tPurchaseOrder = useTranslations("PurchaseOrder");
-  const [search, setSearch] = useURL("search");
-  const [sort, setSort] = useURL("sort");
+  const { search, setSearch, sort, setSort, setPage, pageNumber, perpageNumber, handlePageChange, handleSetPerpage } = useListPageState();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
 
   const { poData, paginate, isLoading, isUnauthorized } = usePoQuery(token, buCode);
 
@@ -47,14 +44,6 @@ export default function PurchaseOrderComponent() {
       setPage("");
     }
   }, [search, setPage]);
-
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
-
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
 
   const title = tPurchaseOrder("title");
 
@@ -107,10 +96,10 @@ export default function PurchaseOrderComponent() {
   const content = (
     <PurchaseOrderList
       purchaseOrders={poData || []}
-      currentPage={page ? Number(page) : 1}
+      currentPage={pageNumber}
       totalPages={paginate?.pages ?? 1}
       totalItems={totalItems ?? 0}
-      perpage={perpage ? Number(perpage) : 10}
+      perpage={perpageNumber}
       onPageChange={handlePageChange}
       isLoading={isLoading}
       sort={parseSortString(sort)}

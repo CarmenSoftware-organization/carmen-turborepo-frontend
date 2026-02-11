@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useBuConfig } from "@/context/BuConfigContext";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Plus, Printer, FileDown } from "lucide-react";
@@ -18,19 +18,15 @@ import InventoryAdjustmentList from "./InventoryAdjustmentList";
 export default function InventoryAdjustmentComponent() {
   const { token, buCode } = useAuth();
   const { dateFormat } = useBuConfig();
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
-  const [search, setSearch] = useURL("search");
-  const [sort, setSort] = useURL("sort");
-  const [filter, setFilter] = useURL("filter");
+  const { search, setSearch, filter, setFilter, sort, setSort, perpageNumber, pageNumber, handlePageChange, handleSetPerpage } = useListPageState();
   const tAdj = useTranslations("InventoryAdjustment");
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const [statusOpen, setStatusOpen] = useState(false);
 
   const { adjDatas, isLoading, paginate } = useInventoryAdjustmentQuery(token, buCode, {
-    page: page ? Number(page) : 1,
-    perpage: perpage,
+    page: pageNumber,
+    perpage: perpageNumber,
     search,
     filter,
     sort,
@@ -54,14 +50,6 @@ export default function InventoryAdjustmentComponent() {
       setSort("");
     }
   }, [search, setSort]);
-
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
 
   const actionButtons = (
     <div className="action-btn-container" data-id="adj-type-list-action-buttons">

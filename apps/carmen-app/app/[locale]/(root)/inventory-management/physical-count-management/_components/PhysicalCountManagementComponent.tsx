@@ -1,5 +1,6 @@
 "use client";
 
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useURL } from "@/hooks/useURL";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -27,7 +28,7 @@ enum VIEW {
 export default function PhysicalCountManagementComponent() {
   const t = useTranslations("InventoryManagement");
   const tCommon = useTranslations("Common");
-  const [search, setSearch] = useURL("search");
+  const { search, setSearch } = useListPageState();
   const [status, setStatus] = useURL("status");
   const [statusOpen, setStatusOpen] = useState(false);
   const [view, setView] = useState<VIEW>(VIEW.List);

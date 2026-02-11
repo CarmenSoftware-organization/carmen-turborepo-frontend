@@ -20,7 +20,7 @@ import {
   useCurrencyUpdateMutation,
   useCurrencyDeleteMutation,
 } from "@/hooks/use-currency";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { CurrencyGetDto, CurrencyCreateDto, CurrencyUpdateDto } from "@/dtos/currency.dto";
 import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
@@ -33,15 +33,11 @@ export default function CurrencyComponent() {
   const { token, buCode, permissions } = useAuth();
   const { currencyBase } = useBuConfig();
   const currencyPerms = configurationPermission.get(permissions, "currency");
-  const [search, setSearch] = useURL("search");
-  const [filter, setFilter] = useURL("filter");
+  const { search, setSearch, filter, setFilter, sort, setSort, page, perpage, handlePageChange, handleSetPerpage } = useListPageState();
   const [statusOpen, setStatusOpen] = useState(false);
-  const [sort, setSort] = useURL("sort");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyGetDto | undefined>();
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
   const tCurrency = useTranslations("Currency");
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
@@ -155,10 +151,6 @@ export default function CurrencyComponent() {
     }
   };
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
   const isSubmitting =
     createCurrencyMutation.isPending ||
     updateCurrencyMutation.isPending ||
@@ -178,10 +170,6 @@ export default function CurrencyComponent() {
       label: tHeader("exchangeRate"),
     },
   ];
-
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
 
   const title = tCurrency("title");
 

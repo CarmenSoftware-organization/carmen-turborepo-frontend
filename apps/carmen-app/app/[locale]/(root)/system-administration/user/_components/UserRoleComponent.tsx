@@ -10,7 +10,7 @@ import { DataGridTable } from "@/components/ui/data-grid-table";
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { User, Mail, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/lib/navigation";
@@ -29,11 +29,7 @@ export default function UserRoleComponent() {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
 
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
-
-  const currentPage = page ? Number(page) : 1;
-  const perpageValue = perpage ? Number(perpage) : 10;
+  const { pageNumber: currentPage, perpageNumber: perpageValue, setPage, setPerpage } = useListPageState();
 
   const { userList, isLoading, error } = useUserList(token, buCode, {
     page: currentPage,

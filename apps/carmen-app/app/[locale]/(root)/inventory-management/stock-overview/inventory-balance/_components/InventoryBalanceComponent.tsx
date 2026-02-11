@@ -3,7 +3,7 @@
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { Button } from "@/components/ui/button";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { ChevronDown, FileDown, Printer, RefreshCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -18,8 +18,7 @@ import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown"
 
 export default function InventoryBalanceComponent() {
   const tCommon = useTranslations("Common");
-  const [search, setSearch] = useURL("search");
-  const [filter, setFilter] = useURL("filter");
+  const { search, setSearch, filter, setFilter } = useListPageState();
   const [statusOpen, setStatusOpen] = useState(false);
 
   const actionButtons = (

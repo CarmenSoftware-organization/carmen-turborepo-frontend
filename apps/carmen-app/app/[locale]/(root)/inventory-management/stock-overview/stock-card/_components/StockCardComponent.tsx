@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FileDown, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
@@ -15,10 +16,9 @@ import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown"
 export default function StockCardComponent() {
   const t = useTranslations("InventoryManagement");
   const tCommon = useTranslations("Common");
-  const [search, setSearch] = useURL("search");
+  const { search, setSearch, sort, setSort } = useListPageState();
   const [status, setStatus] = useURL("status");
   const [statusOpen, setStatusOpen] = useState(false);
-  const [sort, setSort] = useURL("sort");
 
   const sortFields = [
     { key: "code", label: "Code" },

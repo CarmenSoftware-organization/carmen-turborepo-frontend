@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { usePriceListTemplates } from "@/hooks/use-price-list-template";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { Button } from "@/components/ui/button";
 
 import { useTranslations } from "next-intl";
@@ -24,8 +24,7 @@ export default function PriceListTemplate() {
   const tCommon = useTranslations("Common");
   const tPlt = useTranslations("PriceListTemplate");
   const router = useRouter();
-  const [search, setSearch] = useURL("search");
-  const [sort, setSort] = useURL("sort");
+  const { search, setSearch, sort, setSort } = useListPageState();
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
   const [view, setView] = useState<VIEW>(VIEW.LIST);

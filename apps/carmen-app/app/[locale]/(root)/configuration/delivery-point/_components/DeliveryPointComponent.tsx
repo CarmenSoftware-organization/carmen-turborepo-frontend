@@ -11,7 +11,8 @@ import {
   useDeleteDeliveryPoint,
   queryKeyDeliveryPoint,
 } from "@/hooks/use-delivery-point";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
+import { useDeleteDialog } from "@/hooks/use-delete-dialog";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -38,21 +39,12 @@ export default function DeliveryPointComponent() {
   const tDeliveryPoint = useTranslations("DeliveryPoint");
   const queryClient = useQueryClient();
 
-  const [search, setSearch] = useURL("search");
-  const [filter, setFilter] = useURL("filter");
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
+  const { search, setSearch, filter, setFilter, sort, setSort, pageNumber, perpageNumber, handlePageChange, handleSetPerpage } = useListPageState();
   const [statusOpen, setStatusOpen] = useState(false);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
   const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState<
-    DeliveryPointUpdateDto | undefined
-  >(undefined);
-
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deliveryPointToDelete, setDeliveryPointToDelete] = useState<
     DeliveryPointUpdateDto | undefined
   >(undefined);
 
@@ -63,14 +55,21 @@ export default function DeliveryPointComponent() {
       search,
       filter,
       sort,
-      page: page ? Number(page) : 1,
-      perpage: perpage ? Number(perpage) : 10,
+      page: pageNumber,
+      perpage: perpageNumber,
     },
   });
 
   const { mutate: createDeliveryPoint } = useDeliveryPointMutation(token, buCode);
   const { mutate: updateDeliveryPoint } = useUpdateDeliveryPoint(token, buCode);
   const { mutate: deleteDeliveryPoint } = useDeleteDeliveryPoint(token, buCode);
+
+  const deleteDialog = useDeleteDialog<DeliveryPointUpdateDto>(deleteDeliveryPoint, {
+    queryKey: [queryKeyDeliveryPoint],
+    successMessage: tDeliveryPoint("del_success"),
+    errorMessage: tDeliveryPoint("del_error"),
+    logContext: "delete delivery point",
+  });
 
   if (error) {
     const errorType = getApiErrorType(error);
@@ -84,10 +83,6 @@ export default function DeliveryPointComponent() {
   const totalPages = deliveryPoints?.paginate.pages ?? 1;
   const totalItems = deliveryPoints?.paginate.total ?? deliveryPoints?.data?.length ?? 0;
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
   const handleAdd = () => {
     setDialogMode(formType.ADD);
     setSelectedDeliveryPoint(undefined);
@@ -98,27 +93,6 @@ export default function DeliveryPointComponent() {
     setDialogMode(formType.EDIT);
     setSelectedDeliveryPoint(data);
     setDialogOpen(true);
-  };
-
-  const handleDelete = (data: DeliveryPointUpdateDto) => {
-    setDeliveryPointToDelete(data);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (deliveryPointToDelete?.id) {
-      deleteDeliveryPoint(deliveryPointToDelete.id, {
-        onSuccess: () => {
-          toastSuccess({ message: tDeliveryPoint("del_success") });
-          refetchDeliveryPoints();
-          setDeleteDialogOpen(false);
-          setDeliveryPointToDelete(undefined);
-        },
-        onError: () => {
-          toastError({ message: tDeliveryPoint("del_error") });
-        },
-      });
-    }
   };
 
   const refetchDeliveryPoints = () => {
@@ -195,10 +169,6 @@ export default function DeliveryPointComponent() {
     </div>
   );
 
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
-
   const filters = (
     <div className="filter-container" data-id="delivery-point-list-filters">
       <SearchInput
@@ -235,7 +205,7 @@ export default function DeliveryPointComponent() {
       onPageChange={handlePageChange}
       sort={parseSortString(sort)}
       onEdit={handleEdit}
-      onToggleStatus={handleDelete}
+      onToggleStatus={deleteDialog.openDialog}
       onSort={setSort}
       setPerpage={handleSetPerpage}
       perpage={deliveryPoints?.paginate.perpage}
@@ -261,9 +231,7 @@ export default function DeliveryPointComponent() {
         isLoading={isLoading}
       />
       <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        onConfirm={handleConfirmDelete}
+        {...deleteDialog.dialogProps}
         title={tDeliveryPoint("del_delivery_point")}
         description={tDeliveryPoint("del_delivery_point_description")}
       />

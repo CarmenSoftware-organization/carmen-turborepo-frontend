@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FileDown, Grid, List, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useURL } from "@/hooks/useURL";
 import { useEffect, useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
@@ -17,10 +18,9 @@ import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown"
 
 export default function RecipeComponent() {
   const tCommon = useTranslations("Common");
-  const [search, setSearch] = useURL("search");
+  const { search, setSearch, sort, setSort } = useListPageState();
   const [status, setStatus] = useURL("status");
   const [statusOpen, setStatusOpen] = useState(false);
-  const [sort, setSort] = useURL("sort");
   const [view, setView] = useState<VIEW>(VIEW.GRID);
   const [recipe, setRecipe] = useState<RecipeDto[]>([]);
   const [isLoading, setIsLoading] = useState(false);

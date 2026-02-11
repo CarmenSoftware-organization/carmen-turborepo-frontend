@@ -2,8 +2,8 @@
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useURL } from "@/hooks/useURL";
-import { use, useEffect, useState } from "react";
+import { useListPageState } from "@/hooks/use-list-page-state";
+import { useEffect, useState } from "react";
 import WorkflowList from "./WorkflowList";
 import { WorkflowTemplates } from "./WorkflowTemplates";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
@@ -25,12 +25,8 @@ export default function PurchaseOrderComponent() {
   const { token, buCode } = useAuth();
   const tWf = useTranslations("Workflow");
   const tCommon = useTranslations("Common");
-  const [filter, setFilter] = useURL("filter");
+  const { search, setSearch, filter, setFilter, sort, setSort, page, setPage, perpage, pageNumber, perpageNumber, handlePageChange, handleSetPerpage } = useListPageState();
   const [statusOpen, setStatusOpen] = useState(false);
-  const [search, setSearch] = useURL("search");
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
   const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useWorkflow(token, buCode, {
@@ -85,14 +81,6 @@ export default function PurchaseOrderComponent() {
       setPage("");
     }
   }, [search, setPage]);
-
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
-
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
 
   const title = tWf("title");
   const searchParams = useSearchParams();
@@ -155,10 +143,10 @@ export default function PurchaseOrderComponent() {
         <WorkflowList
           isLoading={isLoading}
           workflows={workflows}
-          currentPage={page ? Number(page) : 1}
+          currentPage={pageNumber}
           totalPages={totalPages}
           totalItems={totalItems}
-          perpage={perpage ? Number(perpage) : 10}
+          perpage={perpageNumber}
           onPageChange={handlePageChange}
           sort={parseSortString(sort)}
           onSort={setSort}

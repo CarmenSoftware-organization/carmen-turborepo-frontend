@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useDeleteRfp, useRfps } from "@/hooks/use-rfp";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { Button } from "@/components/ui/button";
 
 import { useTranslations } from "next-intl";
@@ -27,10 +27,7 @@ export default function Rfp() {
   const tRfp = useTranslations("RFP");
   const router = useRouter();
 
-  const [search, setSearch] = useURL("search");
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
+  const { search, setSearch, sort, setSort, pageNumber, perpageNumber, handlePageChange, handleSetPerpage } = useListPageState();
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -40,8 +37,8 @@ export default function Rfp() {
   const { rfps, isLoading, isUnauthorized } = useRfps(token, buCode, {
     search,
     sort,
-    page: page ? Number(page) : 1,
-    perpage: perpage ? Number(perpage) : 10,
+    page: pageNumber,
+    perpage: perpageNumber,
   });
 
   const { mutate: deleteRfp, isPending: isDeleting } = useDeleteRfp(token, buCode);
@@ -51,14 +48,6 @@ export default function Rfp() {
       setLoginDialogOpen(true);
     }
   }, [isUnauthorized]);
-
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
-  const handlePerpageChange = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
 
   const onDelete = (rfpId: string) => {
     setDeleteId(rfpId);
@@ -185,7 +174,7 @@ export default function Rfp() {
             totalPages={totalPages}
             totalItems={totalItems}
             perpage={currentPerpage}
-            setPerpage={handlePerpageChange}
+            setPerpage={handleSetPerpage}
             onDelete={onDelete}
           />
         ) : (

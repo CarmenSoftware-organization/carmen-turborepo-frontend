@@ -6,7 +6,7 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { BuTypeEditDto, BuTypeFormDto, BuTypeGetAllDto } from "@/dtos/bu-type.dto";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { Plus, Printer, FileDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -30,11 +30,7 @@ export default function BusinessTypeComponent() {
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const tBusinessType = useTranslations("BusinessType");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
-  const [search, setSearch] = useURL("search");
-  const [sort, setSort] = useURL("sort");
-  const [filter, setFilter] = useURL("filter");
+  const { search, setSearch, filter, setFilter, sort, setSort, page, perpage, pageNumber, handlePageChange, handleSetPerpage } = useListPageState();
   const [statusOpen, setStatusOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProfile, setEditingProfile] = useState<BuTypeFormDto | null>(null);
@@ -42,7 +38,7 @@ export default function BusinessTypeComponent() {
   const [deleteProfileId, setDeleteProfileId] = useState<string | null>(null);
 
   const { buTypes, isLoading } = useBuTypeQuery(token, buCode, {
-    page: page ? Number(page) : 1,
+    page: pageNumber,
     perpage: perpage,
     search,
     filter,
@@ -80,10 +76,6 @@ export default function BusinessTypeComponent() {
       setSort("");
     }
   }, [search, setSort]);
-
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
 
   const handleAddNew = () => {
     setEditingProfile(null);
@@ -153,10 +145,6 @@ export default function BusinessTypeComponent() {
     }
   };
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
   const handleCreate = (data: BuTypeFormDto) => {
     createBuType(data, {
       onSuccess: () => {
@@ -208,7 +196,7 @@ export default function BusinessTypeComponent() {
       isLoading={isLoading}
       onEdit={handleEdit}
       onDelete={handleDelete}
-      currentPage={Number(page || "1")}
+      currentPage={pageNumber}
       totalPages={buTypes?.paginate.pages ?? 1}
       totalItems={buTypes?.paginate.total ?? buTypes?.data?.length ?? 0}
       perpage={buTypes?.paginate.perpage ?? 10}

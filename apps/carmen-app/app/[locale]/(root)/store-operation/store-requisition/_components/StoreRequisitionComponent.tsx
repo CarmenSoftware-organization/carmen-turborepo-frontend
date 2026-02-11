@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FileDown, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
@@ -24,10 +25,9 @@ export default function StoreRequisitionComponent() {
 
   const tCommon = useTranslations("Common");
   const tSr = useTranslations("StoreRequisition");
-  const [search, setSearch] = useURL("search");
+  const { search, setSearch, sort, setSort } = useListPageState();
   const [status, setStatus] = useURL("status");
   const [statusOpen, setStatusOpen] = useState(false);
-  const [sort, setSort] = useURL("sort");
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);

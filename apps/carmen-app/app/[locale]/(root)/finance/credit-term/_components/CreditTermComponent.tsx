@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useState } from "react";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useURL } from "@/hooks/useURL";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { CreditTermGetAllDto, CreateCreditTermFormValues } from "@/dtos/credit-term.dto";
@@ -47,10 +48,9 @@ export default function CreditTermComponent() {
   const { mutate: deleteCreditTerm, isPending: isDeleting } = useDeleteCreditTerm(token, buCode);
 
   const tCommon = useTranslations("Common");
-  const [search, setSearch] = useURL("search");
+  const { search, setSearch, sort, setSort } = useListPageState();
   const [status, setStatus] = useURL("status");
   const [statusOpen, setStatusOpen] = useState(false);
-  const [sort, setSort] = useURL("sort");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<formType | undefined>(undefined);

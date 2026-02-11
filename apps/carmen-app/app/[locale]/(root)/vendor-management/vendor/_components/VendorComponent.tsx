@@ -11,6 +11,7 @@ import SignInDialog from "@/components/SignInDialog";
 import { useVendor } from "@/hooks/use-vendor";
 import { useRouter } from "@/lib/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useURL } from "@/hooks/useURL";
 import { useEffect, useState } from "react";
 import { parseSortString } from "@/utils/table";
@@ -28,19 +29,16 @@ export default function VendorComponent() {
   const tCommon = useTranslations("Common");
   const tVendor = useTranslations("Vendor");
   const tAction = useTranslations("Action");
-  const [search, setSearch] = useURL("search");
+  const { search, setSearch, sort, setSort, pageNumber, perpageNumber, handlePageChange, handleSetPerpage } = useListPageState();
   const [status, setStatus] = useURL("status");
   const [statusOpen, setStatusOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
 
   const { vendors, isLoading, isUnauthorized } = useVendor(token, buCode, {
     search,
     sort,
-    page: page ? Number(page) : 1,
-    perpage: perpage ? Number(perpage) : 10,
+    page: pageNumber,
+    perpage: perpageNumber,
   });
 
   const totalItems = vendors?.paginate?.total ?? 0;
@@ -48,19 +46,11 @@ export default function VendorComponent() {
   const currentPage = vendors?.paginate?.page ?? 1;
   const currentPerpage = vendors?.paginate?.perpage ?? 10;
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
   useEffect(() => {
     if (isUnauthorized) {
       setLoginDialogOpen(true);
     }
   }, [isUnauthorized]);
-
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
 
   const title = tVendor("title");
 

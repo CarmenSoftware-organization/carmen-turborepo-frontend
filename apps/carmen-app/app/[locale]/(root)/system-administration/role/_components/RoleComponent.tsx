@@ -5,17 +5,15 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useRoleQuery, useDeleteRole, roleKeyList } from "@/hooks/use-role";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
+import { useDeleteDialog } from "@/hooks/use-delete-dialog";
 import { useRouter } from "@/lib/navigation";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import ListRole from "./ListRole";
 import { parseSortString } from "@/utils/table";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { RoleDto } from "@/dtos/role.dto";
-import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
-import { useQueryClient } from "@tanstack/react-query";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { InternalServerError, Unauthorized, Forbidden } from "@/components/error-ui";
 import { getApiErrorType } from "@/utils/error";
@@ -23,19 +21,12 @@ import { getApiErrorType } from "@/utils/error";
 export default function RoleComponent() {
   const { token, buCode } = useAuth();
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const tRole = useTranslations("Role");
 
-  const [search, setSearch] = useURL("search");
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
-
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [roleToDelete, setRoleToDelete] = useState<RoleDto | undefined>(undefined);
+  const { search, setSearch, sort, setSort, pageNumber, perpageNumber, handlePageChange, handleSetPerpage } = useListPageState();
 
   const { roles, isLoading, paginate, error } = useRoleQuery({
     token,
@@ -43,12 +34,19 @@ export default function RoleComponent() {
     params: {
       search,
       sort,
-      page: page ? Number(page) : 1,
-      perpage: perpage ? Number(perpage) : 10,
+      page: pageNumber,
+      perpage: perpageNumber,
     },
   });
 
-  const { mutate: deleteRole, isPending: isDeleting } = useDeleteRole(token, buCode);
+  const { mutate: deleteRole } = useDeleteRole(token, buCode);
+
+  const deleteDialog = useDeleteDialog<RoleDto>(deleteRole, {
+    queryKey: [roleKeyList, buCode],
+    successMessage: tRole("del_success"),
+    errorMessage: tRole("del_error"),
+    logContext: "delete role",
+  });
 
   if (error) {
     const errorType = getApiErrorType(error);
@@ -62,38 +60,8 @@ export default function RoleComponent() {
   const totalItems = paginate?.total ?? 0;
   const perpageItems = paginate?.perpage ?? 10;
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
   const handleAdd = () => {
     router.push("/system-administration/role/new");
-  };
-
-  const handleDelete = (data: RoleDto) => {
-    setRoleToDelete(data);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (roleToDelete?.id) {
-      deleteRole(roleToDelete.id, {
-        onSuccess: () => {
-          toastSuccess({ message: tRole("del_success") });
-          queryClient.invalidateQueries({ queryKey: [roleKeyList, buCode] });
-          setDeleteDialogOpen(false);
-          setRoleToDelete(undefined);
-        },
-        onError: () => {
-          toastError({ message: tRole("del_error") });
-        },
-      });
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setDeleteDialogOpen(false);
-    setRoleToDelete(undefined);
   };
 
   const sortFields = [
@@ -124,10 +92,6 @@ export default function RoleComponent() {
     </div>
   );
 
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
-
   const filters = (
     <div className="filter-container" data-id="role-list-filters">
       <SearchInput
@@ -156,7 +120,7 @@ export default function RoleComponent() {
       totalItems={totalItems}
       onPageChange={handlePageChange}
       sort={parseSortString(sort)}
-      onDelete={handleDelete}
+      onDelete={deleteDialog.openDialog}
       onSort={setSort}
       setPerpage={handleSetPerpage}
       perpage={perpageItems}
@@ -172,12 +136,9 @@ export default function RoleComponent() {
         content={content}
       />
       <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
+        {...deleteDialog.dialogProps}
         title={tRole("del_role")}
         description={tRole("del_role_description")}
-        isLoading={isDeleting}
       />
     </>
   );

@@ -10,7 +10,8 @@ import {
   useUpdateExtraCostType,
   useDeleteExtraCostType,
 } from "@/hooks/use-extra-cost-type";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
+import { useDeleteDialog } from "@/hooks/use-delete-dialog";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useState } from "react";
 import ListExtraCost from "./ListExtraCost";
@@ -38,11 +39,7 @@ export default function ExtraCostComponent() {
   const tConfig = useTranslations("Modules.Configuration");
   const tExtraCost = useTranslations("ExtraCost");
 
-  const [search, setSearch] = useURL("search");
-  const [filter, setFilter] = useURL("filter");
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
+  const { search, setSearch, filter, setFilter, sort, setSort, pageNumber, perpageNumber, handlePageChange, handleSetPerpage } = useListPageState();
   const [statusOpen, setStatusOpen] = useState(false);
 
   // Dialog state
@@ -52,18 +49,12 @@ export default function ExtraCostComponent() {
     undefined
   );
 
-  // Delete confirmation dialog state
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [extraCostToDelete, setExtraCostToDelete] = useState<ExtraCostTypeDto | undefined>(
-    undefined
-  );
-
   const { extraCostTypes, isLoading, error } = useExtraCostTypeQuery(token, buCode, {
     search,
     filter,
     sort,
-    page: page ? Number(page) : 1,
-    perpage: perpage ? Number(perpage) : 10,
+    page: pageNumber,
+    perpage: perpageNumber,
   });
 
   const { mutate: createExtraCost } = useCreateExtraCostType(token, buCode);
@@ -73,6 +64,13 @@ export default function ExtraCostComponent() {
     selectedExtraCost?.id ?? ""
   );
   const { mutate: deleteExtraCost } = useDeleteExtraCostType(token, buCode);
+
+  const deleteDialog = useDeleteDialog<ExtraCostTypeDto>(deleteExtraCost, {
+    queryKey: ["extra-cost-type", buCode],
+    successMessage: tExtraCost("delete_success"),
+    errorMessage: tExtraCost("delete_error"),
+    logContext: "delete extra cost",
+  });
 
   if (error) {
     const errorType = getApiErrorType(error);
@@ -86,14 +84,6 @@ export default function ExtraCostComponent() {
   const totalPages = extraCostTypes?.paginate?.pages ?? 1;
   const totalItems = extraCostTypes?.paginate?.total ?? extraCostData.length;
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
-  const handlePerpageChange = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
-
   const handleAdd = () => {
     setDialogMode(formType.ADD);
     setSelectedExtraCost(undefined);
@@ -104,28 +94,6 @@ export default function ExtraCostComponent() {
     setDialogMode(formType.EDIT);
     setSelectedExtraCost(data);
     setDialogOpen(true);
-  };
-
-  const handleDelete = (data: ExtraCostTypeDto) => {
-    setExtraCostToDelete(data);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (extraCostToDelete?.id) {
-      deleteExtraCost(extraCostToDelete.id, {
-        onSuccess: () => {
-          toastSuccess({ message: tExtraCost("delete_success") });
-          queryClient.invalidateQueries({ queryKey: ["extra-cost-type", buCode] });
-          setDeleteDialogOpen(false);
-          setExtraCostToDelete(undefined);
-        },
-        onError: (error: Error) => {
-          toastError({ message: tExtraCost("delete_error") });
-          console.error("Failed to delete extra cost:", error);
-        },
-      });
-    }
   };
 
   const handleDialogSubmit = (data: ExtraCostTypeDto) => {
@@ -234,9 +202,9 @@ export default function ExtraCostComponent() {
       onPageChange={handlePageChange}
       sort={parseSortString(sort)}
       onSort={setSort}
-      setPerpage={handlePerpageChange}
+      setPerpage={handleSetPerpage}
       onEdit={handleEdit}
-      onToggleStatus={handleDelete}
+      onToggleStatus={deleteDialog.openDialog}
       canUpdate={extraCostPerms.canUpdate}
       canDelete={extraCostPerms.canDelete}
     />
@@ -259,12 +227,9 @@ export default function ExtraCostComponent() {
         isLoading={isLoading}
       />
       <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        onConfirm={handleConfirmDelete}
+        {...deleteDialog.dialogProps}
         title={tExtraCost("del_extra_cost")}
         description={tExtraCost("del_extra_cost_description")}
-        isLoading={isLoading}
       />
     </>
   );

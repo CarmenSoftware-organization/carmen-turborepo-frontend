@@ -3,7 +3,8 @@
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { useAuth } from "@/context/AuthContext";
 import { useLocationsQuery, useDeleteLocation } from "@/hooks/use-locations";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
+import { useDeleteDialog } from "@/hooks/use-delete-dialog";
 import { useTranslations } from "next-intl";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,8 +18,6 @@ import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
 import { StoreLocationDto } from "@/dtos/location.dto";
-import { useQueryClient } from "@tanstack/react-query";
-import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import { InternalServerError, Unauthorized, Forbidden } from "@/components/error-ui";
 import { getApiErrorType } from "@/utils/error";
 
@@ -30,16 +29,9 @@ export default function LocationComponent() {
   const router = useRouter();
 
   const locationPerms = configurationPermission.get(permissions, "store_location");
-  const queryClient = useQueryClient();
 
-  const [search, setSearch] = useURL("search");
-  const [filter, setFilter] = useURL("filter");
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
+  const { search, setSearch, filter, setFilter, sort, setSort, page, perpage, handlePageChange, handleSetPerpage } = useListPageState();
   const [statusOpen, setStatusOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [locationToDelete, setLocationToDelete] = useState<StoreLocationDto | undefined>(undefined);
 
   const {
     data: locations,
@@ -53,11 +45,18 @@ export default function LocationComponent() {
       filter,
       sort,
       page,
-      perpage: perpage,
+      perpage,
     },
   });
 
   const { mutate: deleteLocation } = useDeleteLocation(token, buCode);
+
+  const deleteDialog = useDeleteDialog<StoreLocationDto>(deleteLocation, {
+    queryKey: ["locations", buCode],
+    successMessage: tStoreLocation("del_success"),
+    errorMessage: tStoreLocation("del_error"),
+    logContext: "delete location",
+  });
 
   if (error) {
     const errorType = getApiErrorType(error);
@@ -67,38 +66,6 @@ export default function LocationComponent() {
   }
 
   const sortFields = [{ key: "name", label: tHeader("name") }];
-
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
-  const handleDelete = (location: StoreLocationDto) => {
-    setLocationToDelete(location);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (locationToDelete?.id) {
-      deleteLocation(locationToDelete.id, {
-        onSuccess: () => {
-          toastSuccess({ message: tStoreLocation("del_success") });
-          queryClient.invalidateQueries({ queryKey: ["locations", buCode] });
-          setDeleteDialogOpen(false);
-          setLocationToDelete(undefined);
-        },
-        onError: () => {
-          toastError({ message: tStoreLocation("del_error") });
-          setDeleteDialogOpen(false);
-          setLocationToDelete(undefined);
-        },
-      });
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setDeleteDialogOpen(false);
-    setLocationToDelete(undefined);
-  };
 
   const actionButtons = (
     <div className="action-btn-container" data-id="store-location-list-action-buttons">
@@ -153,10 +120,6 @@ export default function LocationComponent() {
     </div>
   );
 
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
-
   const content = (
     <ListLocations
       locations={locations?.data ?? []}
@@ -168,7 +131,7 @@ export default function LocationComponent() {
       sort={parseSortString(sort)}
       onSort={setSort}
       onPageChange={handlePageChange}
-      onDelete={handleDelete}
+      onDelete={deleteDialog.openDialog}
       canUpdate={locationPerms.canUpdate}
       canDelete={locationPerms.canDelete}
       setPerpage={handleSetPerpage}
@@ -185,9 +148,7 @@ export default function LocationComponent() {
         data-id="location-list-template"
       />
       <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
+        {...deleteDialog.dialogProps}
         title="Delete Location"
         description="Are you sure you want to delete this location? This action cannot be undone."
       />

@@ -17,7 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import CnItemDialog from "./CnItemDialog";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useTranslations } from "next-intl";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { useLocationsQuery } from "@/hooks/use-locations";
@@ -59,7 +59,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState<CreditNoteDetailFormItemDto | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | undefined>();
-  const [search, setSearch] = useURL("search");
+  const { search, setSearch } = useListPageState();
 
   // Delete confirmation dialog states
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);

@@ -3,10 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useGrnQuery } from "@/hooks/use-grn";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useTranslations } from "next-intl";
 import { FileDown, Filter, Plus, Printer } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import SortComponent from "@/components/ui-custom/SortComponent";
@@ -20,29 +20,19 @@ export default function GoodsReceivedNoteComponent() {
   const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
-  const [search, setSearch] = useURL("search");
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage] = useURL("perpage");
+  const { search, setSearch, sort, setSort, pageNumber, perpageNumber, handlePageChange, handleSetPerpage } = useListPageState();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [status, setStatus] = useState("");
   const [statusOpen, setStatusOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
   const { data, isLoading } = useGrnQuery(token, buCode, {
-    page: page ? Number(page) : 1,
+    page: pageNumber,
     sort,
     search,
   });
 
   console.log(data);
-
-  const handlePageChange = useCallback(
-    (newPage: number) => {
-      setPage(newPage.toString());
-    },
-    [setPage]
-  );
 
   const sortFields = [{ key: "name", label: "Name" }];
 
@@ -106,12 +96,12 @@ export default function GoodsReceivedNoteComponent() {
       currentPage={data?.data.paginate?.page ?? 1}
       totalPages={data?.data.paginate?.pages ?? 1}
       totalItems={data?.data.paginate?.total ?? 0}
-      perpage={perpage ? Number(perpage) : 10}
+      perpage={perpageNumber}
       onPageChange={handlePageChange}
       isLoading={isLoading}
       sort={parseSortString(sort)}
       onSort={setSort}
-      setPerpage={(newPerpage) => setPage(newPerpage.toString())}
+      setPerpage={handleSetPerpage}
     />
   );
 

@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button";
 
 import { useAuth } from "@/context/AuthContext";
 import { useProductQuery } from "@/hooks/use-product-query";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useURL } from "@/hooks/useURL";
 import { Link } from "@/lib/navigation";
 import { parseSortString } from "@/utils/table";
 import { FileDown, Grid, List, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ProductList from "./ProductList";
 import ProductGrid from "./ProductGrid";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
@@ -23,11 +24,8 @@ export default function ProductComponent() {
   const tHeader = useTranslations("TableHeader");
   const tProduct = useTranslations("Products");
 
-  const [search, setSearch] = useURL("search");
+  const { search, setSearch, sort, setSort, pageNumber, perpageNumber, handlePageChange, handleSetPerpage } = useListPageState();
   const [status, setStatus] = useURL("status");
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
   const [statusOpen, setStatusOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [isMobile, setIsMobile] = useState(false);
@@ -55,8 +53,8 @@ export default function ProductComponent() {
     params: {
       search,
       sort,
-      page: page ? Number(page) : 1,
-      perpage: perpage ? Number(perpage) : 10,
+      page: pageNumber,
+      perpage: perpageNumber,
     },
   });
 
@@ -68,20 +66,6 @@ export default function ProductComponent() {
   ];
 
   const title = tProduct("title");
-
-  const handlePageChange = useCallback(
-    (newPage: number) => {
-      setPage(newPage.toString());
-    },
-    [setPage]
-  );
-
-  const handlePerpageChange = useCallback(
-    (newPerpage: number) => {
-      setPerpage(newPerpage.toString());
-    },
-    [setPerpage]
-  );
 
   const actionButtons = (
     <div className="action-btn-container" data-id="product-list-action-buttons">
@@ -172,7 +156,7 @@ export default function ProductComponent() {
         sort={parseSortString(sort)}
         onSort={setSort}
         perpage={currentPerpage}
-        setPerpage={handlePerpageChange}
+        setPerpage={handleSetPerpage}
       />
     ) : (
       <ProductGrid

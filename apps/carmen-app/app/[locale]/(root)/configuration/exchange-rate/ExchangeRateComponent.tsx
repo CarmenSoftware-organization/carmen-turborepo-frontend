@@ -9,7 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useBuConfig } from "@/context/BuConfigContext";
 import { useExchangeRateMutation, useExchangeRateQuery } from "@/hooks/use-exchange-rate";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
@@ -67,11 +67,7 @@ export default function ExchangeRateComponent() {
       });
   }, [currencyList, exchangeRates, currencyBase]);
 
-  const [search, setSearch] = useURL("search");
-  const [filter, setFilter] = useURL("filter");
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
+  const { search, setSearch, filter, setFilter, sort, setSort, setPage, setPerpage, pageNumber, perpageNumber, handlePageChange } = useListPageState();
 
   const {
     excData,
@@ -81,8 +77,8 @@ export default function ExchangeRateComponent() {
     currentPage,
     perpage: perpageData,
   } = useExchangeRateQuery(token, buCode, {
-    page: page ? Number(page) : 1,
-    perpage: perpage ? Number(perpage) : 10,
+    page: pageNumber,
+    perpage: perpageNumber,
     sort: "at_date:desc",
   });
   const { mutate: updateExchangeRates } = useExchangeRateMutation(token, buCode);
@@ -163,10 +159,6 @@ export default function ExchangeRateComponent() {
       </div>
     </div>
   );
-
-  const handlePageChange = (newPage: number) => {
-    setPage(String(newPage));
-  };
 
   const handlePerpageChange = (newPerpage: number) => {
     setPerpage(String(newPerpage));

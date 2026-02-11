@@ -11,15 +11,14 @@ import {
   useDeleteAdjustmentTypeMutation,
   adjustmentTypeQueryKey,
 } from "@/hooks/use-adjustment-type";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
+import { useDeleteDialog } from "@/hooks/use-delete-dialog";
 import { useRouter } from "@/lib/navigation";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useState } from "react";
 import AdjustmentTypeList from "./AdjustmentTypeList";
 import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
-import { useQueryClient } from "@tanstack/react-query";
-import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import { AdjustmentTypeDto } from "@/dtos/adjustment-type.dto";
 import { useTranslations } from "next-intl";
 import { InternalServerError, Unauthorized, Forbidden } from "@/components/error-ui";
@@ -29,17 +28,10 @@ export default function AdjustmentTypeComponent() {
   const { token, buCode } = useAuth();
   const tAdj = useTranslations("AdjustmentType");
   const tCommon = useTranslations("Common");
-  const queryClient = useQueryClient();
 
   const router = useRouter();
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<AdjustmentTypeDto | undefined>(undefined);
+  const { search, setSearch, filter, setFilter, sort, setSort, page, perpage, handlePageChange, handleSetPerpage } = useListPageState();
   const [statusOpen, setStatusOpen] = useState(false);
-  const [search, setSearch] = useURL("search");
-  const [filter, setFilter] = useURL("filter");
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
 
   const { adjustmentTypeData, paginate, isLoading, error } = useAdjustmentTypeQuery(
     token,
@@ -53,10 +45,17 @@ export default function AdjustmentTypeComponent() {
     }
   );
 
-  const { mutate: deleteAdjustmentType, isPending: isDeleting } = useDeleteAdjustmentTypeMutation(
+  const { mutate: deleteAdjustmentType } = useDeleteAdjustmentTypeMutation(
     token,
     buCode
   );
+
+  const deleteDialog = useDeleteDialog<AdjustmentTypeDto>(deleteAdjustmentType, {
+    queryKey: [adjustmentTypeQueryKey, buCode],
+    successMessage: tAdj("delete_success"),
+    errorMessage: tAdj("delete_error"),
+    logContext: "delete adjustment type",
+  });
 
   if (error) {
     const errorType = getApiErrorType(error);
@@ -69,45 +68,8 @@ export default function AdjustmentTypeComponent() {
   const totalPages = paginate?.last_page ?? 1;
   const totalItems = paginate?.total ?? 0;
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
   const handleAdd = () => {
     router.push("/configuration/adjustment-type/new");
-  };
-
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
-
-  const handleDelete = (item: AdjustmentTypeDto) => {
-    setItemToDelete(item);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (itemToDelete?.id) {
-      deleteAdjustmentType(itemToDelete.id, {
-        onSuccess: () => {
-          toastSuccess({ message: tAdj("delete_success") });
-          queryClient.invalidateQueries({ queryKey: [adjustmentTypeQueryKey, buCode] });
-          setDeleteDialogOpen(false);
-          setItemToDelete(undefined);
-        },
-        onError: (error: Error) => {
-          toastError({ message: tAdj("delete_error") });
-          console.error("Failed to delete adjustment type:", error);
-          setDeleteDialogOpen(false);
-          setItemToDelete(undefined);
-        },
-      });
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setDeleteDialogOpen(false);
-    setItemToDelete(undefined);
   };
 
   const sortFields = [
@@ -175,7 +137,7 @@ export default function AdjustmentTypeComponent() {
       sort={parseSortString(sort)}
       onSort={setSort}
       setPerpage={handleSetPerpage}
-      onDelete={handleDelete}
+      onDelete={deleteDialog.openDialog}
     />
   );
 
@@ -188,12 +150,9 @@ export default function AdjustmentTypeComponent() {
         content={content}
       />
       <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
+        {...deleteDialog.dialogProps}
         title={tAdj("delete_adjustment_type")}
-        description={tAdj("confirm_delete_description", { name: itemToDelete?.name || "" })}
-        isLoading={isDeleting}
+        description={tAdj("confirm_delete_description", { name: deleteDialog.entityToDelete?.name || "" })}
       />
     </>
   );

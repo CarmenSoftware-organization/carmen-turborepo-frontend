@@ -10,7 +10,7 @@ import {
   useDeleteDocument,
   queryKeyDocument,
 } from "@/hooks/use-doc";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { Loader2, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
@@ -30,10 +30,7 @@ export default function DocumentManagementComponent() {
   const queryClient = useQueryClient();
   const t = useTranslations("DocumentManagement");
 
-  const [search, setSearch] = useURL("search");
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
+  const { search, setSearch, sort, setSort, pageNumber, perpageNumber, handlePageChange, handleSetPerpage } = useListPageState();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -46,8 +43,8 @@ export default function DocumentManagementComponent() {
     params: {
       search,
       sort,
-      page: page ? Number(page) : 1,
-      perpage: perpage ? Number(perpage) : 10,
+      page: pageNumber,
+      perpage: perpageNumber,
     },
   });
 
@@ -65,14 +62,6 @@ export default function DocumentManagementComponent() {
   const currentPage = documents?.paginate?.page ?? 1;
   const totalPages = documents?.paginate?.pages ?? 1;
   const totalItems = documents?.paginate?.total ?? documents?.data?.length ?? 0;
-
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
 
   const refetchDocuments = () => {
     queryClient.invalidateQueries({

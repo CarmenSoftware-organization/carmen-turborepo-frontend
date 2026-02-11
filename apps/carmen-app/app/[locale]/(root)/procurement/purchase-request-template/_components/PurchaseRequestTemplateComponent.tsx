@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FileDown, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
+import { useListPageState } from "@/hooks/use-list-page-state";
 import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
@@ -21,14 +22,12 @@ export default function PurchaseRequestTemplateComponent() {
   const tDataControls = useTranslations("DataControls");
   const tPurchaseRequest = useTranslations("PurchaseRequest");
   const router = useRouter();
-  const [search, setSearch] = useURL("search");
+  const { search, setSearch, sort, setSort, pageNumber, handlePageChange, handleSetPerpage } = useListPageState();
   const [status, setStatus] = useURL("status");
   const [statusOpen, setStatusOpen] = useState(false);
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
 
   const { prTmplData, paginate, isLoading } = usePrTemplateQuery(token, buCode, {
-    page: page ? Number(page) : 1,
+    page: pageNumber,
     sort,
     search,
   });
@@ -99,10 +98,10 @@ export default function PurchaseRequestTemplateComponent() {
       currentPage={currentPage}
       totalPages={totalPages ?? 1}
       perpage={perpageItem ?? 10}
-      onPageChange={() => {}}
+      onPageChange={handlePageChange}
       sort={parseSortString(sort)}
       onSort={setSort}
-      setPerpage={() => {}}
+      setPerpage={handleSetPerpage}
     />
   );
 

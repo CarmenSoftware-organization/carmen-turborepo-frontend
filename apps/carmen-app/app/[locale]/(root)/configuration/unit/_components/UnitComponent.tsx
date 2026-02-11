@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useDeleteUnit, useUnitMutation, useUnitQuery, useUpdateUnit } from "@/hooks/use-unit";
 import { useQueryClient } from "@tanstack/react-query";
-import { useURL } from "@/hooks/useURL";
+import { useListPageState } from "@/hooks/use-list-page-state";
+import { useDeleteDialog } from "@/hooks/use-delete-dialog";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -29,17 +30,11 @@ export default function UnitComponent() {
   const tCommon = useTranslations("Common");
   const tUnit = useTranslations("Unit");
   const queryClient = useQueryClient();
-  const [search, setSearch] = useURL("search");
-  const [filter, setFilter] = useURL("filter");
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
+  const { search, setSearch, filter, setFilter, sort, setSort, pageNumber, perpageNumber, handlePageChange, handleSetPerpage } = useListPageState();
   const [statusOpen, setStatusOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
   const [selectedUnit, setSelectedUnit] = useState<UnitDto | undefined>(undefined);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [unitToDelete, setUnitToDelete] = useState<UnitDto | undefined>(undefined);
 
   const { units, isLoading, error } = useUnitQuery({
     token,
@@ -48,14 +43,21 @@ export default function UnitComponent() {
       search,
       filter,
       sort,
-      page: page ? Number(page) : 1,
-      perpage: perpage ? Number(perpage) : 10,
+      page: pageNumber,
+      perpage: perpageNumber,
     },
   });
 
   const { mutate: createUnit } = useUnitMutation(token, buCode);
   const { mutate: updateUnit } = useUpdateUnit(token, buCode, selectedUnit?.id ?? "");
   const { mutate: deleteUnit } = useDeleteUnit(token, buCode);
+
+  const deleteDialog = useDeleteDialog<UnitDto>(deleteUnit, {
+    queryKey: ["units"],
+    successMessage: tUnit("delete_success"),
+    errorMessage: tUnit("delete_error"),
+    logContext: "delete unit",
+  });
 
   if (error) {
     const errorType = getApiErrorType(error);
@@ -69,14 +71,6 @@ export default function UnitComponent() {
   const currentPage = units?.paginate?.page ?? 1;
   const currentPerpage = units?.paginate?.perpage ?? 10;
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
-
   const handleAdd = () => {
     setDialogMode(formType.ADD);
     setSelectedUnit(undefined);
@@ -87,28 +81,6 @@ export default function UnitComponent() {
     setDialogMode(formType.EDIT);
     setSelectedUnit(unit);
     setDialogOpen(true);
-  };
-
-  const handleDelete = (unit: UnitDto) => {
-    setUnitToDelete(unit);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (unitToDelete) {
-      deleteUnit(unitToDelete.id, {
-        onSuccess: () => {
-          toastSuccess({ message: tUnit("delete_success") });
-          queryClient.invalidateQueries({ queryKey: ["units"] });
-          setDeleteDialogOpen(false);
-          setUnitToDelete(undefined);
-        },
-        onError: (error) => {
-          toastError({ message: tUnit("delete_error") });
-          console.error("Failed to delete unit:", error);
-        },
-      });
-    }
   };
 
   const handleDialogSubmit = (data: CreateUnitDto) => {
@@ -211,7 +183,7 @@ export default function UnitComponent() {
       totalPages={totalPages}
       onPageChange={handlePageChange}
       onEdit={handleEdit}
-      onDelete={handleDelete}
+      onDelete={deleteDialog.openDialog}
       totalItems={totalItems}
       sort={parseSortString(sort)}
       onSort={setSort}
@@ -238,9 +210,7 @@ export default function UnitComponent() {
         onSubmit={handleDialogSubmit}
       />
       <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={() => setDeleteDialogOpen(false)}
-        onConfirm={handleConfirmDelete}
+        {...deleteDialog.dialogProps}
         title={tCommon("delete")}
         description={tCommon("del_desc")}
       />
