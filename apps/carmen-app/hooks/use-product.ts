@@ -40,7 +40,7 @@ export const useProductsQuery = ({ token, buCode, params }: UseProductQueryParam
       if (!token || !buCode) throw new Error("Unauthorized");
       return getAllApiRequest(API_URL, token, "Error fetching products", params);
     },
-    staleTime: 60000, // 1 minute
+    staleTime: 5 * 60 * 1000,
     enabled: !!token && !!buCode,
   });
 };
@@ -54,7 +54,7 @@ export const useProductByIdQuery = ({ token, buCode, id, enabled = true }: UsePr
       if (!token || !buCode || !id) throw new Error("Unauthorized");
       return getByIdApiRequest(API_URL_BY_ID, token, "Error fetching product");
     },
-    staleTime: 60000,
+    staleTime: 5 * 60 * 1000,
     enabled: enabled && !!token && !!buCode && !!id,
   });
 };

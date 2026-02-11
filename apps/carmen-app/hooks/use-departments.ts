@@ -35,6 +35,7 @@ export const useDepartmentsQuery = (token: string, buCode: string, params?: Para
       return await getAllApiRequest(API_URL, token, "Error fetching department", params ?? {});
     },
     enabled: !!token && !!buCode,
+    staleTime: 5 * 60 * 1000,
   });
 
   const departments = data;
@@ -68,6 +69,7 @@ export const useDepartmentByIdQuery = (token: string, buCode: string, id: string
       return await getByIdApiRequest(API_ID, token, "Error fetching department");
     },
     enabled: !!token && !!buCode && !!id,
+    staleTime: 5 * 60 * 1000,
   });
 };
 

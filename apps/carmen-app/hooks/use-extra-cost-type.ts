@@ -38,6 +38,7 @@ export const useExtraCostTypeQuery = (
       );
     },
     enabled: !!token && !!buCode,
+    staleTime: 5 * 60 * 1000,
   });
 
   const extraCostTypes = data;
@@ -81,6 +82,7 @@ export const useExtraCostTypeByIdQuery = (
         "Error fetching extra cost type"
       );
     },
+    staleTime: 5 * 60 * 1000,
   });
 };
 

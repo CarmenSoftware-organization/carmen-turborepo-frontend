@@ -28,6 +28,7 @@ export const useVendor = (token: string, buCode: string, params?: ParamsGetDto) 
       return await getAllApiRequest(API_URL, token, "Error fetching vendors", params ?? {});
     },
     enabled: !!token && !!buCode,
+    staleTime: 5 * 60 * 1000,
   });
 
   const vendors = data;
@@ -61,6 +62,7 @@ export const useVendorById = (token: string, buCode: string, id: string) => {
       return await getByIdApiRequest(API_ID, token, "Error fetching vendor");
     },
     enabled: !!token && !!buCode && !!id,
+    staleTime: 5 * 60 * 1000,
   });
 
   const vendor = data?.data;

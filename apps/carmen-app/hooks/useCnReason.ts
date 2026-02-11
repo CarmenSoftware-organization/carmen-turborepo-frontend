@@ -32,6 +32,7 @@ export const useCnReasonQuery = ({
       );
     },
     enabled: !!token && !!buCode,
+    staleTime: 5 * 60 * 1000,
   });
 
   const cnReasons = data?.data ?? [];

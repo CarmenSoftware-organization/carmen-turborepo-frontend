@@ -28,6 +28,7 @@ export const useCurrenciesQuery = (token: string, buCode: string, params?: Param
       return await getAllApiRequest(API_URL, token, "Error fetching currency", params ?? {});
     },
     enabled: !!token && !!buCode,
+    staleTime: 5 * 60 * 1000,
   });
 
   const currencies = data;

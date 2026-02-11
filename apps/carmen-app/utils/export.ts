@@ -1,7 +1,3 @@
-import * as XLSX from "xlsx";
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
-
 export interface ExportData {
   headers: string[];
   rows: (string | number)[][];
@@ -10,8 +6,11 @@ export interface ExportData {
 
 /**
  * Export data to Excel file
+ * XLSX is loaded on-demand (~200KB) to avoid bloating the initial bundle
  */
-export const exportToExcel = (data: ExportData) => {
+export const exportToExcel = async (data: ExportData) => {
+  const XLSX = await import("xlsx");
+
   // Create worksheet from data
   const ws = XLSX.utils.aoa_to_sheet([data.headers, ...data.rows]);
 
@@ -25,8 +24,12 @@ export const exportToExcel = (data: ExportData) => {
 
 /**
  * Export data to PDF file
+ * jsPDF + autoTable are loaded on-demand (~300KB) to avoid bloating the initial bundle
  */
-export const exportToPDF = (data: ExportData) => {
+export const exportToPDF = async (data: ExportData) => {
+  const { jsPDF } = await import("jspdf");
+  const autoTable = (await import("jspdf-autotable")).default;
+
   const doc = new jsPDF();
 
   // Add title

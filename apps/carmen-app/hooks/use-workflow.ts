@@ -60,6 +60,7 @@ export const useWorkflow = (token: string, buCode: string, params?: ParamsGetDto
       };
     },
     enabled: !!token && !!buCode,
+    staleTime: 5 * 60 * 1000,
   });
 
   const isUnauthorized = error instanceof Error && error.message.includes("Unauthorized");
@@ -81,7 +82,7 @@ export const useWorkflowIdQuery = ({
       if (!token || !buCode || !id) throw new Error("Unauthorized");
       return getByIdApiRequest(API_URL_BY_ID, token, "Error fetching workflow");
     },
-    staleTime: 60000,
+    staleTime: 5 * 60 * 1000,
     enabled: enabled && !!token && !!buCode && !!id,
   });
 };
@@ -165,6 +166,7 @@ export const useWorkflowTypeQuery = (token: string, buCode: string, type: enum_w
       return data;
     },
     enabled: !!token && !!buCode,
+    staleTime: 5 * 60 * 1000,
   });
 
   return {

@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 interface UseAiGenerateReturn {
   generate: (prompt: string) => Promise<string | null>;
@@ -9,9 +10,15 @@ interface UseAiGenerateReturn {
 }
 
 export function useAiGenerate(): UseAiGenerateReturn {
+  const { token } = useAuth();
+
   const mutation = useMutation({
     mutationFn: async (prompt: string) => {
-      const { data } = await axios.post("/api/generate", { prompt });
+      const { data } = await axios.post(
+        "/api/generate",
+        { prompt },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       return data.text;
     },
   });

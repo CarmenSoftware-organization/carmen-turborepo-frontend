@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, X, Info } from "lucide-react";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
 
 interface UploadResponse {
   id: string;
@@ -16,6 +17,7 @@ interface FileWithDescription extends File {
 }
 
 export default function TestUploadPage() {
+  const { token } = useAuth();
   const [files, setFiles] = useState<FileWithDescription[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<UploadResponse[]>([]);
@@ -63,6 +65,7 @@ export default function TestUploadPage() {
 
         const response = await fetch("/api/upload", {
           method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
           body: formData,
         });
 

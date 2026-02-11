@@ -42,6 +42,7 @@ export const useRoleQuery = ({
       }
     },
     enabled: !!token && !!buCode,
+    staleTime: 5 * 60 * 1000,
   });
 
   const roles = data?.data;
@@ -102,6 +103,7 @@ export const useRoleByIdQuery = (token: string, buCode: string, id: string) => {
       }
     },
     enabled: !!token && !!buCode && !!id,
+    staleTime: 5 * 60 * 1000,
   });
 
   const roleData = data?.data;
@@ -138,6 +140,7 @@ export const useUserRoleIdQuery = (token: string, buCode: string, userId: string
       }
     },
     enabled: !!token && !!buCode && !!userId,
+    staleTime: 5 * 60 * 1000,
   });
 
   const userData = data?.data;

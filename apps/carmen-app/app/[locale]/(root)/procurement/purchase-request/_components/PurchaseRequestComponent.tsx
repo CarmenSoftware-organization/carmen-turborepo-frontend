@@ -150,7 +150,7 @@ export default function PurchaseRequestComponent() {
     setPage("");
   };
 
-  const handleExport = (format: ExportFormat) => {
+  const handleExport = async (format: ExportFormat) => {
     if (!prs?.data || prs.data.length === 0) {
       console.warn("No data to export");
       return;
@@ -184,13 +184,13 @@ export default function PurchaseRequestComponent() {
 
     switch (format) {
       case "excel":
-        exportToExcel(exportData);
+        await exportToExcel(exportData);
         break;
       case "word":
         exportToWord(exportData);
         break;
       case "pdf":
-        exportToPDF(exportData);
+        await exportToPDF(exportData);
         break;
     }
   };

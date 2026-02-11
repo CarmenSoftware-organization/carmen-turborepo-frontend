@@ -39,6 +39,7 @@ export const useTaxProfileQuery = (
       );
     },
     enabled: !!token && !!buCode,
+    staleTime: 5 * 60 * 1000,
   });
 
   const taxProfiles = data;
@@ -83,6 +84,7 @@ export const useTaxProfileByIdQuery = (
       );
     },
     enabled: !!token && !!buCode && !!id,
+    staleTime: 5 * 60 * 1000,
   });
 };
 

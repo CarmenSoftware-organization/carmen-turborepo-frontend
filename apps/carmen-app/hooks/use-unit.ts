@@ -33,6 +33,7 @@ export const useUnitQuery = ({
       return await getAllApiRequest(API_URL, token, "Error fetching units", params);
     },
     enabled: !!token && !!buCode,
+    staleTime: 5 * 60 * 1000,
   });
 
   const getUnitName = useCallback(
@@ -111,6 +112,7 @@ export const useOrderUnitByProduct = ({
       return response;
     },
     enabled: !!token && !!buCode && !!productId && enabled,
+    staleTime: 5 * 60 * 1000,
   });
 
   // filter ตอน ที่มี id ซ้ํา เพราะ inventory unit และ order unit มีค่าเดียวกัน

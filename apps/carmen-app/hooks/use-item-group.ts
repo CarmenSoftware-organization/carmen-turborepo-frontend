@@ -41,7 +41,7 @@ export const useItemGroupQuery = ({
       }
     },
     enabled: !!token && !!buCode,
-    staleTime: 60000,
+    staleTime: 5 * 60 * 1000,
   });
 
   const getItemGroupName = useCallback(
