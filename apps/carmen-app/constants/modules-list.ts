@@ -194,8 +194,8 @@ export const moduleItems: ModuleItem[] = [
         icon: Eye,
       },
       {
-        labelKey: "Modules.InventoryManagement.physicalCountManagement",
-        href: "/inventory-management/physical-count-management",
+        labelKey: "Modules.InventoryManagement.physicalCount",
+        href: "/inventory-management/physical-count",
         icon: ClipboardList,
       },
       {

@@ -25,14 +25,14 @@ enum VIEW {
   Grid = "grid",
 }
 
-export default function PhysicalCountManagementComponent() {
+export default function PhysicalCountComponent() {
   const t = useTranslations("InventoryManagement");
   const tCommon = useTranslations("Common");
   const { search, setSearch } = useListPageState();
   const [status, setStatus] = useURL("status");
   const [statusOpen, setStatusOpen] = useState(false);
   const [view, setView] = useState<VIEW>(VIEW.List);
-  const title = t("PhysicalCountManagement.title");
+  const title = t("PhysicalCount.title");
 
   const actionButtons = (
     <div className="action-btn-container" data-id="physical-count-list-action-buttons">

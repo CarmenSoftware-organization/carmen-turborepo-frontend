@@ -358,7 +358,7 @@
       "title": "สิ้นงวด",
       "description": "จัดการสิ้นงวดสินค้า"
     },
-    "PhysicalCountManagement": {
+    "PhysicalCount": {
       "title": "ตรวจนับสินค้า",
       "description": "จัดการกระบวนการตรวจนับสินค้า"
     },

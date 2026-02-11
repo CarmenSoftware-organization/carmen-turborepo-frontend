@@ -49,7 +49,7 @@
       "stockOverview": "Stock Overview",
       "inventoryAdjustments": "Inventory Adjustments",
       "spotCheck": "Spot Check",
-      "physicalCountManagement": "Physical Count Management",
+      "physicalCount": "Physical Count",
       "periodEnd": "Period End",
       "storeRequisition": "Store Requisitions",
       "stockReplenishment": "Stock Replenishment",
