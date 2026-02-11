@@ -88,52 +88,85 @@ interface UserInfo {
   firstname: string;
   middlename?: string;
   lastname: string;
+  telephone?: string;
+}
+
+interface NumberFormat {
+  locales: string;
+  minimumIntegerDigits: number;
+}
+
+interface CurrencyInfo {
+  code: string;
+  name: string;
+  symbol: string;
+  description: string;
+  decimal_places: number;
+}
+
+interface ContactInfo {
+  name: string;
+  tel: string;
+  email: string;
+  address: string;
+  zip_code: string;
+}
+
+interface BusinessUnitConfig {
+  calculation_method?: string;
+  default_currency_id?: string;
+  default_currency?: CurrencyInfo;
+  hotel?: ContactInfo;
+  company?: ContactInfo;
+  tax_no?: string;
+  branch_no?: string;
+  date_format?: string;
+  time_format?: string;
+  date_time_format?: string;
+  long_time_format?: string;
+  short_time_format?: string;
+  timezone?: string;
+  perpage_format?: { default: number };
+  amount_format?: NumberFormat;
+  quantity_format?: NumberFormat;
+  recipe_format?: NumberFormat;
+  description?: string;
+  info?: unknown;
+  is_hq?: boolean;
+  is_active?: boolean;
 }
 
 interface BusinessUnit {
   id: string;
   name: string;
   code: string;
+  alias_name?: string;
   is_default?: boolean;
+  system_level?: string;
+  is_active?: boolean;
   department?: {
     id: string;
-    is_hod: boolean;
     name: string;
   };
-  config?: {
-    calculation_method?: string;
-    currency_base?: string;
-    date_format?: string;
-    date_time_format?: string;
-    long_time_format?: string;
-    perpage?: number;
-    short_time_format?: string;
-    timezone?: string;
-    amount?: {
-      locales: string;
-      minimumFractionDigits: number;
-    };
-    quantity?: {
-      locales: string;
-      minimumIntegerDigits: number;
-    };
-    recipe?: {
-      locales: string;
-      minimumIntegerDigits: number;
-    };
-  };
+  hod_department?: Array<{
+    id: string;
+    name: string;
+  }>;
+  config?: BusinessUnitConfig;
 }
 
 interface UserData {
   id: string;
   email: string;
+  alias_name?: string;
+  platform_role?: string;
   user_info: UserInfo;
   business_unit: BusinessUnit[];
 }
 
 interface User {
   data: UserData;
-  permissions: Permissions;
+  permissions?: Permissions;
 }
 
 interface AuthContextType {
@@ -149,17 +182,18 @@ interface AuthContextType {
   buId: string;
   handleChangeBu: (buId: string) => void;
   departments: BusinessUnit["department"] | null;
+  hodDepartments: BusinessUnit["hod_department"] | null;
   defaultCurrencyId: string | null;
-  currencyBase: NonNullable<BusinessUnit["config"]>["currency_base"] | null;
-  dateFormat: NonNullable<BusinessUnit["config"]>["date_format"] | null;
-  dateTimeFormat: NonNullable<BusinessUnit["config"]>["date_time_format"] | null;
-  longTimeFormat: NonNullable<BusinessUnit["config"]>["long_time_format"] | null;
-  perpage: NonNullable<BusinessUnit["config"]>["perpage"] | null;
-  shortTimeFormat: NonNullable<BusinessUnit["config"]>["short_time_format"] | null;
-  timezone: NonNullable<BusinessUnit["config"]>["timezone"] | null;
-  amount: NonNullable<BusinessUnit["config"]>["amount"] | null;
-  quantity: NonNullable<BusinessUnit["config"]>["quantity"] | null;
-  recipe: NonNullable<BusinessUnit["config"]>["recipe"] | null;
+  currencyBase: string | null;
+  dateFormat: string | null;
+  dateTimeFormat: string | null;
+  longTimeFormat: string | null;
+  perpage: number | null;
+  shortTimeFormat: string | null;
+  timezone: string | null;
+  amount: NumberFormat | null;
+  quantity: NumberFormat | null;
+  recipe: NumberFormat | null;
   buCode: string;
   businessUnits: BusinessUnit[] | null;
 }
@@ -178,6 +212,7 @@ export const AuthContext = createContext<AuthContextType>({
   buId: "",
   handleChangeBu: () => {},
   departments: null,
+  hodDepartments: null,
   defaultCurrencyId: null,
   currencyBase: null,
   dateFormat: null,
@@ -252,6 +287,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
   const {
     departments,
+    hodDepartments,
     defaultCurrencyId,
     currencyBase,
     dateFormat,
@@ -268,29 +304,22 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
     const firstBu = user?.data.business_unit?.[0];
     const selectedBu = defaultBu || firstBu;
-
-    // Helper function to get config value by key (config is an array)
-    const getConfigValue = (key: string) => {
-      if (!selectedBu?.config || !Array.isArray(selectedBu.config)) return null;
-      const configItem = selectedBu.config.find((item: { key: string }) => item.key === key);
-      return configItem?.value ?? null;
-    };
-
-    const currencyBaseConfig = getConfigValue("currency_base");
+    const config = selectedBu?.config;
 
     return {
       departments: defaultBu?.department || null,
-      currencyBase: currencyBaseConfig?.code || "THB",
-      defaultCurrencyId: currencyBaseConfig?.currency_id || null,
-      dateFormat: getConfigValue("date_format") || "yyyy-MM-dd",
-      dateTimeFormat: getConfigValue("date_time_format") || "yyyy-MM-dd HH:mm",
-      longTimeFormat: getConfigValue("long_time_format") || "HH:mm:ss",
-      shortTimeFormat: getConfigValue("short_time_format") || "HH:mm",
-      perpage: getConfigValue("perpage") || null,
-      timezone: getConfigValue("timezone") || null,
-      amount: getConfigValue("amount") || null,
-      quantity: getConfigValue("quantity") || null,
-      recipe: getConfigValue("recipe") || null,
+      hodDepartments: defaultBu?.hod_department || null,
+      currencyBase: config?.default_currency?.code || "THB",
+      defaultCurrencyId: config?.default_currency_id || null,
+      dateFormat: config?.date_format || "yyyy-MM-dd",
+      dateTimeFormat: config?.date_time_format || "yyyy-MM-dd HH:mm",
+      longTimeFormat: config?.long_time_format || "HH:mm:ss",
+      shortTimeFormat: config?.short_time_format || "HH:mm",
+      perpage: config?.perpage_format?.default ?? null,
+      timezone: config?.timezone || null,
+      amount: config?.amount_format || null,
+      quantity: config?.quantity_format || null,
+      recipe: config?.recipe_format || null,
     };
   }, [user]);
 
@@ -512,6 +541,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       buId,
       handleChangeBu,
       departments,
+      hodDepartments,
       defaultCurrencyId,
       currencyBase,
       dateFormat,
@@ -538,6 +568,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       buId,
       handleChangeBu,
       departments,
+      hodDepartments,
       defaultCurrencyId,
       currencyBase,
       dateFormat,

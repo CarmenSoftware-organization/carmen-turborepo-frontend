@@ -22,6 +22,7 @@ import { useCurrenciesQuery } from "@/hooks/use-currency";
 import { useSplitPr } from "@/hooks/use-purchase-request";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
+import { fetchPriceCompare } from "@/hooks/use-bidding";
 import { toast } from "sonner";
 import Link from "next/link";
 
@@ -239,33 +240,58 @@ export default function PurchaseItemDataGrid({
 
   return (
     <div className="mt-4 space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
         <p className="font-semibold text-muted-foreground ">{tPr("items")}</p>
-        <div className="flex items-center gap-2">
-          {currentMode !== formType.VIEW && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onAddItem();
-                    }}
-                    size="sm"
-                    className={cn("w-7 h-7", !workflow_id && "bg-muted-foreground")}
-                    disabled={!workflow_id}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{tPr("add_item")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </div>
+        {currentMode !== formType.VIEW && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onAddItem();
+                  }}
+                  size="sm"
+                  className={cn("w-7 h-7", !workflow_id && "bg-muted-foreground")}
+                  disabled={!workflow_id}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{tPr("add_item")}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+        <Button
+          size={"sm"}
+          className="h-7"
+          onClick={async () => {
+            for (const item of items) {
+              const productId = getItemValue(item, "product_id") as string;
+              const unitId = getItemValue(item, "inventory_unit_id") as string;
+              const currencyId = getItemValue(item, "currency_id") as string;
+              const deliveryDate = String(getItemValue(item, "delivery_date") ?? "").split("T")[0];
+              if (!productId || !unitId || !currencyId) continue;
+
+              try {
+                const lists = await fetchPriceCompare(token || "", currentBuCode || "", {
+                  product_id: productId,
+                  unit_id: unitId,
+                  currency_id: currencyId,
+                  at_date: deliveryDate,
+                });
+                console.log(`Row ${item.id}:`, lists);
+              } catch (error) {
+                console.error(`Row ${item.id} error:`, error);
+              }
+            }
+          }}
+        >
+          Auto Allowcate
+        </Button>
       </div>
       {selectedRowsCount > 0 && currentMode !== formType.VIEW && (
         <div className="flex items-center gap-2">

@@ -31,6 +31,7 @@ interface Props {
   productName?: string;
   unitId?: string;
   currencyId?: string;
+  deliveryDate?: string;
   bu_code?: string;
   token: string;
   onItemUpdate: (
@@ -72,6 +73,7 @@ export default function VendorComparison({
   productName,
   unitId,
   currencyId,
+  deliveryDate,
   bu_code,
   onItemUpdate,
   token,
@@ -92,6 +94,7 @@ export default function VendorComparison({
       product_id: productId || "",
       unit_id: unitId || "",
       currency_id: currencyId || "",
+      at_date: deliveryDate ? deliveryDate.split("T")[0] : "",
     },
     isOpen && !!productId && !!unitId && !!currencyId
   );

@@ -163,6 +163,7 @@ export default function ExpandedContent({
                   productName={item.product_name}
                   unitId={item.requested_unit_id}
                   currencyId={item.currency_id}
+                  deliveryDate={item.delivery_date}
                   itemId={item.id}
                   bu_code={buCode}
                   onItemUpdate={onItemUpdate}

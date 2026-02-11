@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { backendApi, xAppId } from "@/lib/backend-api";
 
+/* TODO: Uncomment mock permissions for testing
 const mockAdminPermission = {
   configuration: {
     currency: ["view_all", "create", "update", "delete"],
@@ -145,6 +146,7 @@ const mockUserPermission = {
     credit_term: ["view_all"],
   },
 };
+*/
 
 // Query keys for better cache management
 export const authQueryKeys = {
@@ -166,12 +168,7 @@ export const useUserProfileQuery = (token: string, enabled: boolean = true) => {
         },
       });
 
-      // TODO: Remove mock permissions when backend is ready
-
-      return {
-        ...response.data,
-        permissions: response.data.permissions || mockAdminPermission, // เปลี่ยนเป็น mockLeaderPermission หรือ mockUserPermission เพื่อทดสอบสิทธิ์อื่นๆ
-      };
+      return response.data;
     },
     enabled: !!token && enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
