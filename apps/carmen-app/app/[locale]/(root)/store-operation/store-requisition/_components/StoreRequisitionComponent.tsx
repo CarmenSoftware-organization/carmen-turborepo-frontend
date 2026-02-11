@@ -12,13 +12,15 @@ import StoreRequisitionList from "./StoreRequisitionList";
 import { Link } from "@/lib/navigation";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { useDeleteSr, useStoreRequisitionQuery } from "@/hooks/use-sr";
 import { SrDto } from "@/dtos/sr.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
 export default function StoreRequisitionComponent() {
-  const { token, buCode, dateFormat } = useAuth();
+  const { token, buCode } = useAuth();
+  const { dateFormat } = useBuConfig();
 
   const tCommon = useTranslations("Common");
   const tSr = useTranslations("StoreRequisition");

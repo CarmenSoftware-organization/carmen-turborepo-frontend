@@ -13,6 +13,7 @@ import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { useState } from "react";
 import { parseSortString } from "@/utils/table";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import {
   useCurrenciesQuery,
   useCurrencyMutation,
@@ -27,7 +28,8 @@ import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown"
 import { configurationPermission } from "@/lib/permission";
 
 export default function CurrencyComponent() {
-  const { token, buCode, permissions, currencyBase } = useAuth();
+  const { token, buCode, permissions } = useAuth();
+  const { currencyBase } = useBuConfig();
   const currencyPerms = configurationPermission.get(permissions, "currency");
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");

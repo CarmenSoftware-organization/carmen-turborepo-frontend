@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { usePurchaseItemManagement } from "../../_hooks/use-purchase-item-management";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { Form } from "@/components/ui/form";
 import {
   Tabs,
@@ -60,7 +61,8 @@ interface Props {
 }
 
 export default function MainForm({ mode, initValues, bu_code }: Props) {
-  const { user, departments, defaultCurrencyId } = useAuth();
+  const { user, departments } = useAuth();
+  const { defaultCurrencyId } = useBuConfig();
   const tPR = useTranslations("PurchaseRequest");
   const tComment = useTranslations("CommentAttachments");
   // For new PR from template, init items go to "add" array

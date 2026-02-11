@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { CreditNoteGetAllDto } from "@/dtos/credit-note.dto";
 import { Link } from "@/lib/navigation";
 import { formatDate } from "@/utils/format/date";
@@ -27,7 +27,7 @@ export default function CreditNoteCard({
   isLoading,
   selectedItems,
 }: CreditNoteCardProps) {
-  const { dateFormat } = useAuth();
+  const { dateFormat } = useBuConfig();
   return (
     <>
       <div className="flex items-center justify-between">

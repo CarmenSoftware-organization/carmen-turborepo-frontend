@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { Button } from "@/components/ui/button";
 import { FileText, Save, ChevronLeft, Pencil, Loader2, Trash2 } from "lucide-react";
 import { formType } from "@/dtos/form.dto";
@@ -91,7 +92,8 @@ const getDefaultFormValues = (defaultCurrencyId?: string): PriceListFormData => 
 
 export default function PriceListForm({ initialData, mode }: PriceListFormProps) {
   const router = useRouter();
-  const { token, buCode, defaultCurrencyId, dateFormat } = useAuth();
+  const { token, buCode } = useAuth();
+  const { defaultCurrencyId, dateFormat } = useBuConfig();
   const queryClient = useQueryClient();
   const tCommon = useTranslations("Common");
   const tPriceList = useTranslations("PriceList");

@@ -18,6 +18,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { getAllApiRequest } from "@/lib/config.api";
 import { backendApi } from "@/lib/backend-api";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { useTranslations } from "next-intl";
 
 interface LookupCurrencyProps extends PropsLookup {
@@ -34,7 +35,8 @@ export default function LookupCurrency({
   bu_code,
   defaultCode,
 }: Readonly<LookupCurrencyProps>) {
-  const { token, buCode, currencyBase } = useAuth();
+  const { token, buCode } = useAuth();
+  const { currencyBase } = useBuConfig();
   const currentBuCode = bu_code ?? buCode;
   const t = useTranslations("Currency");
   const [open, setOpen] = useState(false);

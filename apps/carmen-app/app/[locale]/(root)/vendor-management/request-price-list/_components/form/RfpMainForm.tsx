@@ -11,6 +11,7 @@ import { Save, X, PenBoxIcon, ChevronLeft, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "@/lib/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { useVendor } from "@/hooks/use-vendor";
 import { useCreateRfp, useUpdateRfp } from "@/hooks/use-rfp";
 import { createRfp } from "../../_handlers/rfp-create.handlers";
@@ -31,7 +32,8 @@ interface Props {
 export default function RfpMainForm({ rfpData, mode }: Props) {
   const router = useRouter();
   const tRfp = useTranslations("RFP");
-  const { token, buCode, dateFormat } = useAuth();
+  const { token, buCode } = useAuth();
+  const { dateFormat } = useBuConfig();
   const { data: templates } = usePriceListTemplates(token, buCode);
 
   const { vendors } = useVendor(token, buCode, { perpage: -1 });

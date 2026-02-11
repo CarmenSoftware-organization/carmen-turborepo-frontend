@@ -1,5 +1,6 @@
 import { ThemeProvider } from "./theme-provider";
 import { AuthProvider } from "@/context/AuthContext";
+import { BuConfigProvider } from "@/context/BuConfigContext";
 import { QueryProvider } from "./query-provider";
 
 export function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -7,7 +8,9 @@ export function Providers({ children }: Readonly<{ children: React.ReactNode }>)
         <ThemeProvider>
             <QueryProvider>
                 <AuthProvider>
-                    {children}
+                    <BuConfigProvider>
+                        {children}
+                    </BuConfigProvider>
                 </AuthProvider>
             </QueryProvider>
         </ThemeProvider>

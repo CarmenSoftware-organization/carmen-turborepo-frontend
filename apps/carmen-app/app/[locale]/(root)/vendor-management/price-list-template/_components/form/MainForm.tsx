@@ -12,6 +12,7 @@ import {
   useUpdatePriceListTemplate,
 } from "@/hooks/use-price-list-template";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import OverviewTab from "./OverviewTab";
 import ProductsTab from "./ProductsTab";
 import RFPTabs from "./RFPTabs";
@@ -33,7 +34,8 @@ export default function MainForm({ templateData, mode }: Props) {
   const tPlt = useTranslations("PriceListTemplate");
   const tCommon = useTranslations("Common");
   const [currentMode, setCurrentMode] = useState<formType>(mode);
-  const { token, buCode, currencyBase } = useAuth();
+  const { token, buCode } = useAuth();
+  const { currencyBase } = useBuConfig();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),

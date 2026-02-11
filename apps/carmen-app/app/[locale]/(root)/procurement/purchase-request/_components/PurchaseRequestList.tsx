@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { PurchaseRequestListDto } from "@/dtos/purchase-request.dto";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { formatDate } from "@/utils/format/date";
 import { formatPrice } from "@/utils/format/currency";
 import { useMemo, useState } from "react";
@@ -83,7 +84,7 @@ export default function PurchaseRequestList({
   const tPr = useTranslations("PurchaseRequest");
   const searchParams = useSearchParams();
 
-  const { dateFormat, amount, currencyBase } = useAuth();
+  const { dateFormat, amount, currencyBase } = useBuConfig();
 
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
 

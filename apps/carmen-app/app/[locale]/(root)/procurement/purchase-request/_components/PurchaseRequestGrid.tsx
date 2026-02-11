@@ -17,6 +17,7 @@ import {
 import { formatDate } from "@/utils/format/date";
 import { formatPrice } from "@/utils/format/currency";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/lib/navigation";
 import CardLoading from "@/components/loading/CardLoading";
@@ -42,7 +43,7 @@ export default function PurchaseRequestGrid({
   isLoading = false,
   convertStatus,
 }: PurchaseRequestGridProps) {
-  const { dateFormat, amount, currencyBase } = useAuth();
+  const { dateFormat, amount, currencyBase } = useBuConfig();
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
   const tPr = useTranslations("PurchaseRequest");

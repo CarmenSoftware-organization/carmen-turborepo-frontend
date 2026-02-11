@@ -6,6 +6,7 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { useExchangeRateMutation, useExchangeRateQuery } from "@/hooks/use-exchange-rate";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import { useURL } from "@/hooks/useURL";
@@ -28,7 +29,8 @@ interface CurrencyWithDiff {
 }
 
 export default function ExchangeRateComponent() {
-  const { token, buCode, currencyBase } = useAuth();
+  const { token, buCode } = useAuth();
+  const { currencyBase } = useBuConfig();
   const tCommon = useTranslations("Common");
 
   const tExchangeRate = useTranslations("ExchangeRate");

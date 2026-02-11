@@ -14,6 +14,7 @@ import { Form } from "@/components/form-custom/form";
 import PrtItems from "./PrtItems";
 import { PrtFormValues } from "../../_schema/prt.schema";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { useCreatePrTemplate, useDeletePrTemplate, useUpdatePrTemplate } from "@/hooks/use-pr-tmpl";
 import { useRouter } from "@/lib/navigation";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
@@ -24,7 +25,8 @@ interface PrtFormProps {
   readonly mode: formType;
 }
 export default function PrtForm({ prtData, mode }: PrtFormProps) {
-  const { buCode, departments, token, defaultCurrencyId } = useAuth();
+  const { buCode, departments, token } = useAuth();
+  const { defaultCurrencyId } = useBuConfig();
   const tPurchaseRequest = useTranslations("PurchaseRequest");
   const router = useRouter();
   const [currentMode, setCurrentMode] = useState<formType>(mode);

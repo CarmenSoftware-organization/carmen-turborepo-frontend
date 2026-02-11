@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { CreditNoteGetAllDto } from "@/dtos/credit-note.dto";
 import ButtonLink from "@/components/ButtonLink";
-import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { formatDate } from "@/utils/format/date";
 import CreditNoteCard from "./CreditNoteCard";
 import {
@@ -67,7 +67,7 @@ export default function CreditNoteList({
   onSort,
   setPerpage,
 }: CreditNoteListProps) {
-  const { dateFormat } = useAuth();
+  const { dateFormat } = useBuConfig();
   const tTableHeader = useTranslations("TableHeader");
   const tStatus = useTranslations("Status");
   const tCommon = useTranslations("Common");

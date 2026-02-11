@@ -16,6 +16,29 @@ import {
   useAuthCache,
 } from "@/hooks/use-auth-query";
 import { toastSuccess } from "@/components/ui-custom/Toast";
+import type { BusinessUnit, Permissions, User } from "@/types/auth.types";
+
+// Re-export types เพื่อ backward compatibility กับ consumers ที่ import จากที่นี่
+export type {
+  BasePermissionAction,
+  WorkflowPermissionAction,
+  PermissionAction,
+  PermissionModule,
+  ConfigurationResource,
+  ProductManagementResource,
+  VendorManagementResource,
+  ProcurementResource,
+  ResourceByModule,
+  Permissions,
+  NumberFormat,
+  CurrencyInfo,
+  ContactInfo,
+  BusinessUnitConfig,
+  BusinessUnit,
+  UserData,
+  UserInfo,
+  User,
+} from "@/types/auth.types";
 
 enum LOCAL_STORAGE {
   ACCESS_TOKEN = "access_token",
@@ -23,151 +46,6 @@ enum LOCAL_STORAGE {
   REFRESH_TOKEN = "refresh_token",
   BU_ID = "bu_id",
   USER = "user",
-}
-
-// Permission Types
-// Base actions ที่ใช้ทั่วไป
-export type BasePermissionAction =
-  | "view_all"
-  | "view"
-  | "view_dp" // view by department
-  | "create"
-  | "update"
-  | "delete";
-
-// Workflow actions สำหรับ document ที่มี approval flow
-export type WorkflowPermissionAction = "approve" | "reject" | "send_back" | "submit";
-
-// รวม action ทั้งหมด
-export type PermissionAction = BasePermissionAction | WorkflowPermissionAction;
-
-// Module หลักของระบบ
-export type PermissionModule =
-  | "configuration"
-  | "product_management"
-  | "vendor_management"
-  | "procurement";
-
-// Resources แต่ละ module
-export type ConfigurationResource =
-  | "currency"
-  | "exchange_rates"
-  | "delivery_point"
-  | "store_location"
-  | "department"
-  | "tax_profile"
-  | "extra_cost"
-  | "business_type";
-
-export type ProductManagementResource = "product" | "category" | "report" | "unit";
-
-export type VendorManagementResource = "vendor" | "vendor_contact";
-
-export type ProcurementResource = "purchase_order" | "purchase_request" | "grn";
-
-// Helper type: ดึง resource type ตาม module
-export type ResourceByModule<T extends PermissionModule> = T extends "configuration"
-  ? ConfigurationResource
-  : T extends "product_management"
-    ? ProductManagementResource
-    : T extends "vendor_management"
-      ? VendorManagementResource
-      : T extends "procurement"
-        ? ProcurementResource
-        : never;
-
-// Permission structure - ใช้ string[] เพื่อรองรับ dynamic actions
-export type Permissions = {
-  configuration?: Partial<Record<ConfigurationResource, string[]>>;
-  product_management?: Partial<Record<ProductManagementResource, string[]>>;
-  vendor_management?: Partial<Record<VendorManagementResource, string[]>>;
-  procurement?: Partial<Record<ProcurementResource, string[]>>;
-};
-
-interface UserInfo {
-  firstname: string;
-  middlename?: string;
-  lastname: string;
-  telephone?: string;
-}
-
-interface NumberFormat {
-  locales: string;
-  minimumIntegerDigits: number;
-  minimumFractionDigits: number;
-}
-
-interface CurrencyInfo {
-  code: string;
-  name: string;
-  symbol: string;
-  description: string;
-  decimal_places: number;
-}
-
-interface ContactInfo {
-  name: string;
-  tel: string;
-  email: string;
-  address: string;
-  zip_code: string;
-}
-
-interface BusinessUnitConfig {
-  calculation_method?: string;
-  default_currency_id?: string;
-  default_currency?: CurrencyInfo;
-  hotel?: ContactInfo;
-  company?: ContactInfo;
-  tax_no?: string;
-  branch_no?: string;
-  date_format?: string;
-  time_format?: string;
-  date_time_format?: string;
-  long_time_format?: string;
-  short_time_format?: string;
-  timezone?: string;
-  perpage_format?: { default: number };
-  amount_format?: NumberFormat;
-  quantity_format?: NumberFormat;
-  recipe_format?: NumberFormat;
-  description?: string;
-  info?: unknown;
-  is_hq?: boolean;
-  is_active?: boolean;
-}
-
-interface BusinessUnit {
-  id: string;
-  name: string;
-  code: string;
-  alias_name?: string;
-  is_default?: boolean;
-  system_level?: string;
-  is_active?: boolean;
-  department?: {
-    id: string;
-    name: string;
-  };
-  hod_department?: Array<{
-    id: string;
-    name: string;
-  }>;
-  config?: BusinessUnitConfig;
-}
-
-interface UserData {
-  id: string;
-  email: string;
-  alias_name?: string;
-  platform_role?: string;
-  user_info: UserInfo;
-  business_unit: BusinessUnit[];
-}
-
-interface User {
-  data: UserData;
-  permissions?: Permissions;
 }
 
 interface AuthContextType {
@@ -184,17 +62,6 @@ interface AuthContextType {
   handleChangeBu: (buId: string) => void;
   departments: BusinessUnit["department"] | null;
   hodDepartments: BusinessUnit["hod_department"] | null;
-  defaultCurrencyId: string | null;
-  currencyBase: string | null;
-  dateFormat: string | null;
-  dateTimeFormat: string | null;
-  longTimeFormat: string | null;
-  perpage: number | null;
-  shortTimeFormat: string | null;
-  timezone: string | null;
-  amount: NumberFormat | null;
-  quantity: NumberFormat | null;
-  recipe: NumberFormat | null;
   buCode: string;
   businessUnits: BusinessUnit[] | null;
 }
@@ -214,17 +81,6 @@ export const AuthContext = createContext<AuthContextType>({
   handleChangeBu: () => {},
   departments: null,
   hodDepartments: null,
-  defaultCurrencyId: null,
-  currencyBase: null,
-  dateFormat: null,
-  dateTimeFormat: null,
-  longTimeFormat: null,
-  perpage: null,
-  shortTimeFormat: null,
-  timezone: null,
-  amount: null,
-  quantity: null,
-  recipe: null,
   buCode: "",
   businessUnits: null,
 });
@@ -286,47 +142,22 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const updateBusinessUnitMutation = useUpdateBusinessUnitMutation();
   const { clearAuthCache } = useAuthCache();
 
-  const {
-    departments,
-    hodDepartments,
-    defaultCurrencyId,
-    currencyBase,
-    dateFormat,
-    dateTimeFormat,
-    longTimeFormat,
-    perpage,
-    shortTimeFormat,
-    timezone,
-    amount,
-    quantity,
-    recipe,
-  } = useMemo(() => {
-    const defaultBu = user?.data.business_unit?.find((bu: BusinessUnit) => bu.is_default === true);
-
-    const firstBu = user?.data.business_unit?.[0];
-    const selectedBu = defaultBu || firstBu;
-    const config = selectedBu?.config;
+  const { departments, hodDepartments } = useMemo(() => {
+    const defaultBu = user?.data.business_unit?.find(
+      (bu: BusinessUnit) => bu.is_default === true
+    );
 
     return {
       departments: defaultBu?.department || null,
       hodDepartments: defaultBu?.hod_department || null,
-      currencyBase: config?.default_currency?.code || "THB",
-      defaultCurrencyId: config?.default_currency_id || null,
-      dateFormat: config?.date_format || "yyyy-MM-dd",
-      dateTimeFormat: config?.date_time_format || "yyyy-MM-dd HH:mm",
-      longTimeFormat: config?.long_time_format || "HH:mm:ss",
-      shortTimeFormat: config?.short_time_format || "HH:mm",
-      perpage: config?.perpage_format?.default ?? null,
-      timezone: config?.timezone || null,
-      amount: config?.amount_format || null,
-      quantity: config?.quantity_format || null,
-      recipe: config?.recipe_format || null,
     };
   }, [user]);
 
   useEffect(() => {
     if (user?.data.business_unit?.length && isHydrated) {
-      const defaultBu = user.data.business_unit.find((bu: BusinessUnit) => bu.is_default === true);
+      const defaultBu = user.data.business_unit.find(
+        (bu: BusinessUnit) => bu.is_default === true
+      );
       const firstBu = user.data.business_unit[0];
       const newBuId = defaultBu?.id ?? firstBu?.id ?? "";
       const newBuCode = defaultBu?.code ?? firstBu?.code ?? "";
@@ -543,17 +374,6 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       handleChangeBu,
       departments,
       hodDepartments,
-      defaultCurrencyId,
-      currencyBase,
-      dateFormat,
-      dateTimeFormat,
-      longTimeFormat,
-      perpage,
-      shortTimeFormat,
-      timezone,
-      amount,
-      quantity,
-      recipe,
       buCode,
       businessUnits: user?.data.business_unit || null,
     }),
@@ -570,17 +390,6 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       handleChangeBu,
       departments,
       hodDepartments,
-      defaultCurrencyId,
-      currencyBase,
-      dateFormat,
-      dateTimeFormat,
-      longTimeFormat,
-      perpage,
-      shortTimeFormat,
-      timezone,
-      amount,
-      quantity,
-      recipe,
       buCode,
     ]
   );

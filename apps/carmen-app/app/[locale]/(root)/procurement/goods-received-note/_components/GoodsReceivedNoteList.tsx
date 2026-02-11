@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import ButtonLink from "@/components/ButtonLink";
-import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { formatDate } from "@/utils/format/date";
 import { formatPrice } from "@/utils/format/currency";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
@@ -68,7 +68,7 @@ export default function GoodsReceivedNoteList({
 }: GoodsReceivedNoteListProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
-  const { dateFormat, amount, currencyBase } = useAuth();
+  const { dateFormat, amount, currencyBase } = useBuConfig();
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
 
   // Action header component

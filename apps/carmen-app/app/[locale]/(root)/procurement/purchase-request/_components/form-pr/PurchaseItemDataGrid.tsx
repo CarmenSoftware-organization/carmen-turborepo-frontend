@@ -7,6 +7,7 @@ import { PurchaseRequestTemplateDetailDto } from "@/dtos/pr-template.dto";
 import { useMemo, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { useTranslations } from "next-intl";
 import { getCoreRowModel, useReactTable, getExpandedRowModel } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
@@ -66,7 +67,8 @@ export default function PurchaseItemDataGrid({
   prId,
   role,
 }: Props) {
-  const { dateFormat, currencyBase, token, buCode } = useAuth();
+  const { token, buCode } = useAuth();
+  const { dateFormat, currencyBase } = useBuConfig();
   const currentBuCode = bu_code ?? buCode;
   const tPr = useTranslations("PurchaseRequest");
   const tHeader = useTranslations("TableHeader");

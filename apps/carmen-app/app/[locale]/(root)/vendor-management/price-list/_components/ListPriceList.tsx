@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, List, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import ButtonLink from "@/components/ButtonLink";
@@ -51,7 +52,8 @@ export default function ListPriceList({
   onPageChange,
   setPerpage,
 }: ListPriceListProps) {
-  const { token, buCode, dateFormat } = useAuth();
+  const { token, buCode } = useAuth();
+  const { dateFormat } = useBuConfig();
   const tTableHeader = useTranslations("TableHeader");
   const tPriceList = useTranslations("PriceList");
   const tCommon = useTranslations("Common");

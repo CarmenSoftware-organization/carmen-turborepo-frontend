@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "@/lib/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { useTranslations } from "next-intl";
 import { PR_ERROR_MESSAGES } from "../_constants/error-messages";
 import { useQueryClient } from "@tanstack/react-query";
@@ -42,7 +43,8 @@ export const useMainFormLogic = ({
   bu_code,
 }: UseMainFormLogicProps) => {
   const router = useRouter();
-  const { token, buCode, user, departments, defaultCurrencyId } = useAuth();
+  const { token, buCode, user, departments } = useAuth();
+  const { defaultCurrencyId } = useBuConfig();
   const currentBuCode = bu_code ?? buCode;
   const tPR = useTranslations("PurchaseRequest");
   const queryClient = useQueryClient();

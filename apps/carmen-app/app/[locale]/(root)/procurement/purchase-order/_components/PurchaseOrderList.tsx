@@ -38,7 +38,7 @@ import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/utils/format/date";
-import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { formatPrice } from "@/utils/format/currency";
 
 interface PurchaseOrderListProps {
@@ -65,7 +65,7 @@ export default function PurchaseOrderList({
   onSort,
   setPerpage,
 }: PurchaseOrderListProps) {
-  const { dateFormat, amount, currencyBase } = useAuth();
+  const { dateFormat, amount, currencyBase } = useBuConfig();
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
 
   const tTableHeader = useTranslations("TableHeader");

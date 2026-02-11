@@ -21,6 +21,7 @@ import { Form } from "@/components/form-custom/form";
 import { PoDetailDto } from "@/dtos/po.dto";
 import { PoFormSchema, PoFormValues } from "../../_schema/po.schema";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { usePoMutation, usePoUpdateMutation, usePoDeleteMutation } from "@/hooks/use-po";
@@ -36,7 +37,8 @@ interface PoFormProps {
 const getTomorrow = () => addDays(new Date(), 1).toISOString();
 
 export default function PoForm({ poData, mode }: PoFormProps) {
-  const { buCode, token, dateFormat, currencyBase } = useAuth();
+  const { buCode, token } = useAuth();
+  const { dateFormat, currencyBase } = useBuConfig();
   const router = useRouter();
   const tPurchaseOrder = useTranslations("PurchaseOrder");
   const [currentMode, setCurrentMode] = useState<formType>(mode);

@@ -35,7 +35,7 @@ import {
   createCurrencyUpdateSchema,
 } from "../_schemas/currency-form.schema";
 import FormBoolean from "@/components/form-custom/form-boolean";
-import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 
 interface CurrencyDialogProps {
   readonly open: boolean;
@@ -56,7 +56,7 @@ export default function CurrencyDialog({
 }: CurrencyDialogProps) {
   const tCurrency = useTranslations("Currency");
   const tCommon = useTranslations("Common");
-  const { currencyBase } = useAuth();
+  const { currencyBase } = useBuConfig();
   const { exchangeRates } = useExchangeRate({ baseCurrency: currencyBase || "THB" });
 
   const defaultCurrencyValues = useMemo(

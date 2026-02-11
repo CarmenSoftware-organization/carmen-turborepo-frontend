@@ -5,6 +5,7 @@ import { useForm, useFieldArray, FormProvider, UseFormReturn, useWatch } from "r
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
@@ -67,7 +68,8 @@ interface Props {
 }
 
 export default function FormAdjustment({ mode, form_type, initValues }: Props) {
-  const { token, buCode, dateFormat } = useAuth();
+  const { token, buCode } = useAuth();
+  const { dateFormat } = useBuConfig();
   const router = useRouter();
   const queryClient = useQueryClient();
 

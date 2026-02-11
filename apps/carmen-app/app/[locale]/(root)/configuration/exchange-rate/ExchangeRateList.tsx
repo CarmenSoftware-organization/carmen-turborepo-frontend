@@ -11,7 +11,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Banknote, Calendar, Hash } from "lucide-react";
 import { ExchangeRateItem } from "@/dtos/exchange-rate.dto";
 import { formatDate } from "@/utils/format/date";
-import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 
 interface Props {
   readonly excList?: ExchangeRateItem[];
@@ -38,7 +38,7 @@ export default function ExchangeRateList({
 }: Props) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
-  const { dateFormat } = useAuth();
+  const { dateFormat } = useBuConfig();
 
   const pagination: PaginationState = useMemo(
     () => ({

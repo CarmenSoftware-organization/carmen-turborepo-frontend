@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { useRouter } from "@/lib/navigation";
 import { Calendar, List, MoreHorizontal, Package, Trash2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,7 +45,8 @@ export default function PriceListGrid({
   setPerpage,
 }: PriceListGridProps) {
   const router = useRouter();
-  const { token, buCode, dateFormat } = useAuth();
+  const { token, buCode } = useAuth();
+  const { dateFormat } = useBuConfig();
   const tCommon = useTranslations("Common");
   const tPriceList = useTranslations("PriceList");
   const queryClient = useQueryClient();

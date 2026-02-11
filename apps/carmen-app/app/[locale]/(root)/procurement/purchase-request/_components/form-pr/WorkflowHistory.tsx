@@ -7,7 +7,7 @@ import {
   TimelineTitle,
 } from "@/components/ui-custom/timeline";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { formatDate } from "@/utils/format/date";
 import { ArrowRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -28,7 +28,7 @@ interface Props {
 }
 
 export default function WorkflowHistory({ workflow_history }: Props) {
-  const { dateFormat } = useAuth();
+  const { dateFormat } = useBuConfig();
   const tWorkflow = useTranslations("Workflow");
 
   if (!workflow_history || workflow_history.length === 0) {

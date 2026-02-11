@@ -6,7 +6,7 @@ import type {
   ProductManagementResource,
   VendorManagementResource,
   ProcurementResource,
-} from "@/context/AuthContext";
+} from "@/types/auth.types";
 
 /**
  * เช็คว่า user มี permission สำหรับ action นั้นๆ หรือไม่

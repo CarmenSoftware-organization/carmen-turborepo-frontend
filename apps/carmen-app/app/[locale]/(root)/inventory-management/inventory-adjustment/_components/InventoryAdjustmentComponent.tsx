@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { useURL } from "@/hooks/useURL";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -15,7 +16,8 @@ import { useInventoryAdjustmentQuery } from "@/hooks/use-inventory-adjustment";
 import InventoryAdjustmentList from "./InventoryAdjustmentList";
 
 export default function InventoryAdjustmentComponent() {
-  const { token, buCode, dateFormat } = useAuth();
+  const { token, buCode } = useAuth();
+  const { dateFormat } = useBuConfig();
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
   const [search, setSearch] = useURL("search");

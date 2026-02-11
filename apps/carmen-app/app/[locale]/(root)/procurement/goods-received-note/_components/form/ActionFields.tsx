@@ -1,6 +1,6 @@
 import { StatusBadge } from "@/components/ui-custom/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { formType } from "@/dtos/form.dto";
 import { Link, useRouter } from "@/lib/navigation";
 import { formatDate } from "@/utils/format/date";
@@ -29,7 +29,7 @@ export default function ActionFields({
   docStatus,
 }: ActionFieldsProps) {
   const router = useRouter();
-  const { dateFormat } = useAuth();
+  const { dateFormat } = useBuConfig();
   const tStatus = useTranslations("Status");
   const tCommon = useTranslations("Common");
 

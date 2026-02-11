@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { formatDate } from "@/utils/format/date";
 import { PricelistExternalDto } from "./pl-external.dto";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +8,7 @@ interface PriceListHeaderProps {
 }
 
 export default function PriceListHeader({ data }: PriceListHeaderProps) {
-  const { dateFormat } = useAuth();
+  const { dateFormat } = useBuConfig();
   return (
     <div className="p-4 space-y-2">
       <div className="flex justify-between items-start">

@@ -43,6 +43,7 @@ import {
   PurchaseRequestTemplateDetailDto,
 } from "@/dtos/pr-template.dto";
 import { useAuth } from "@/context/AuthContext";
+import { useBuConfig } from "@/context/BuConfigContext";
 import { formatDate } from "@/utils/format/date";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
@@ -82,7 +83,8 @@ export default function PurchaseRequestTemplateList({
   onSort,
   setPerpage,
 }: PurchaseRequestTemplateListProps) {
-  const { dateFormat, token, buCode } = useAuth();
+  const { token, buCode } = useAuth();
+  const { dateFormat } = useBuConfig();
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
   const tPurchaseRequest = useTranslations("PurchaseRequest");
