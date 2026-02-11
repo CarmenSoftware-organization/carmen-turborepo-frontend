@@ -8,11 +8,10 @@ import { useTranslations } from "next-intl";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SortComponent from "@/components/ui-custom/SortComponent";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListLocations from "./ListLocations";
 import { useRouter } from "@/lib/navigation";
-import SignInDialog from "@/components/SignInDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
@@ -20,7 +19,8 @@ import { configurationPermission } from "@/lib/permission";
 import { StoreLocationDto } from "@/dtos/location.dto";
 import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
-import { InternalServerError } from "@/components/error-ui";
+import { InternalServerError, Unauthorized, Forbidden } from "@/components/error-ui";
+import { getApiErrorType } from "@/utils/error";
 
 export default function LocationComponent() {
   const tCommon = useTranslations("Common");
@@ -38,7 +38,6 @@ export default function LocationComponent() {
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
   const [statusOpen, setStatusOpen] = useState(false);
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [locationToDelete, setLocationToDelete] = useState<StoreLocationDto | undefined>(undefined);
 
@@ -60,13 +59,12 @@ export default function LocationComponent() {
 
   const { mutate: deleteLocation } = useDeleteLocation(token, buCode);
 
-  useEffect(() => {
-    if ((error as { response?: { status?: number } })?.response?.status === 401) {
-      setLoginDialogOpen(true);
-    }
-  }, [error, setLoginDialogOpen]);
-
-  if (error && (error as { response?: { status?: number } })?.response?.status !== 401) return <InternalServerError />;
+  if (error) {
+    const errorType = getApiErrorType(error);
+    if (errorType === "unauthorized") return <Unauthorized />;
+    if (errorType === "forbidden") return <Forbidden />;
+    return <InternalServerError />;
+  }
 
   const sortFields = [{ key: "name", label: tHeader("name") }];
 
@@ -193,7 +191,6 @@ export default function LocationComponent() {
         title="Delete Location"
         description="Are you sure you want to delete this location? This action cannot be undone."
       />
-      <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
     </>
   );
 }

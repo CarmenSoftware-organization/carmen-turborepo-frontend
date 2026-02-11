@@ -23,7 +23,8 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
-import { InternalServerError } from "@/components/error-ui";
+import { InternalServerError, Unauthorized, Forbidden } from "@/components/error-ui";
+import { getApiErrorType } from "@/utils/error";
 
 const sortFields = [
   { key: "name", label: "Name" },
@@ -56,7 +57,12 @@ export default function CreditTermComponent() {
 
   const tCreditTerm = useTranslations("CreditTerm");
 
-  if (error) return <InternalServerError />;
+  if (error) {
+    const errorType = getApiErrorType(error);
+    if (errorType === "unauthorized") return <Unauthorized />;
+    if (errorType === "forbidden") return <Forbidden />;
+    return <InternalServerError />;
+  }
 
   const title = tCreditTerm("title");
 

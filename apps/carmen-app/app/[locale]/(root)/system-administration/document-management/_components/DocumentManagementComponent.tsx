@@ -22,7 +22,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { Input } from "@/components/ui/input";
 import { DocumentDto } from "@/dtos/doc.dto";
-import { InternalServerError } from "@/components/error-ui";
+import { InternalServerError, Unauthorized, Forbidden } from "@/components/error-ui";
+import { getApiErrorType } from "@/utils/error";
 
 export default function DocumentManagementComponent() {
   const { token, buCode } = useAuth();
@@ -53,7 +54,12 @@ export default function DocumentManagementComponent() {
   const uploadMutation = useUploadDocument(token, buCode);
   const { mutate: deleteDocument } = useDeleteDocument(token, buCode);
 
-  if (error) return <InternalServerError />;
+  if (error) {
+    const errorType = getApiErrorType(error);
+    if (errorType === "unauthorized") return <Unauthorized />;
+    if (errorType === "forbidden") return <Forbidden />;
+    return <InternalServerError />;
+  }
 
   const documentsData: DocumentDto[] = documents?.data ?? [];
   const currentPage = documents?.paginate?.page ?? 1;

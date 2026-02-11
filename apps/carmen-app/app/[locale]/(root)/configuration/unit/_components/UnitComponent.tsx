@@ -20,7 +20,8 @@ import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { productManagementPermission } from "@/lib/permission";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
-import { InternalServerError } from "@/components/error-ui";
+import { InternalServerError, Unauthorized, Forbidden } from "@/components/error-ui";
+import { getApiErrorType } from "@/utils/error";
 
 export default function UnitComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -56,7 +57,12 @@ export default function UnitComponent() {
   const { mutate: updateUnit } = useUpdateUnit(token, buCode, selectedUnit?.id ?? "");
   const { mutate: deleteUnit } = useDeleteUnit(token, buCode);
 
-  if (error) return <InternalServerError />;
+  if (error) {
+    const errorType = getApiErrorType(error);
+    if (errorType === "unauthorized") return <Unauthorized />;
+    if (errorType === "forbidden") return <Forbidden />;
+    return <InternalServerError />;
+  }
 
   const totalItems = units?.paginate?.total ?? 0;
   const totalPages = units?.paginate?.pages ?? 1;

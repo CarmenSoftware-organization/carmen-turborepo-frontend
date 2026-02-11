@@ -26,7 +26,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
-import { InternalServerError } from "@/components/error-ui";
+import { InternalServerError, Unauthorized, Forbidden } from "@/components/error-ui";
+import { getApiErrorType } from "@/utils/error";
 
 export default function CurrencyComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -83,7 +84,12 @@ export default function CurrencyComponent() {
   );
   const deleteStatusMutation = useCurrencyDeleteMutation(token, buCode);
 
-  if (error) return <InternalServerError />;
+  if (error) {
+    const errorType = getApiErrorType(error);
+    if (errorType === "unauthorized") return <Unauthorized />;
+    if (errorType === "forbidden") return <Forbidden />;
+    return <InternalServerError />;
+  }
 
   const handleToggleStatus = (currency: CurrencyUpdateDto) => {
     if (!currency.id) {

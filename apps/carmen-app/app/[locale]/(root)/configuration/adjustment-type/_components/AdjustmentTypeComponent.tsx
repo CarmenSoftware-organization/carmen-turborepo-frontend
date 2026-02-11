@@ -1,6 +1,5 @@
 "use client";
 
-import SignInDialog from "@/components/SignInDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SearchInput from "@/components/ui-custom/SearchInput";
@@ -15,7 +14,7 @@ import {
 import { useURL } from "@/hooks/useURL";
 import { useRouter } from "@/lib/navigation";
 import { FileDown, Plus, Printer } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AdjustmentTypeList from "./AdjustmentTypeList";
 import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
@@ -23,7 +22,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import { AdjustmentTypeDto } from "@/dtos/adjustment-type.dto";
 import { useTranslations } from "next-intl";
-import { InternalServerError } from "@/components/error-ui";
+import { InternalServerError, Unauthorized, Forbidden } from "@/components/error-ui";
+import { getApiErrorType } from "@/utils/error";
 
 export default function AdjustmentTypeComponent() {
   const { token, buCode } = useAuth();
@@ -32,7 +32,6 @@ export default function AdjustmentTypeComponent() {
   const queryClient = useQueryClient();
 
   const router = useRouter();
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<AdjustmentTypeDto | undefined>(undefined);
   const [statusOpen, setStatusOpen] = useState(false);
@@ -42,7 +41,7 @@ export default function AdjustmentTypeComponent() {
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
 
-  const { adjustmentTypeData, paginate, isLoading, isUnauthorized, error } = useAdjustmentTypeQuery(
+  const { adjustmentTypeData, paginate, isLoading, error } = useAdjustmentTypeQuery(
     token,
     buCode,
     {
@@ -59,13 +58,12 @@ export default function AdjustmentTypeComponent() {
     buCode
   );
 
-  useEffect(() => {
-    if (isUnauthorized) {
-      setLoginDialogOpen(true);
-    }
-  }, [isUnauthorized]);
-
-  if (error && !isUnauthorized) return <InternalServerError />;
+  if (error) {
+    const errorType = getApiErrorType(error);
+    if (errorType === "unauthorized") return <Unauthorized />;
+    if (errorType === "forbidden") return <Forbidden />;
+    return <InternalServerError />;
+  }
 
   const currentPage = paginate?.current_page ?? 1;
   const totalPages = paginate?.last_page ?? 1;
@@ -197,7 +195,6 @@ export default function AdjustmentTypeComponent() {
         description={tAdj("confirm_delete_description", { name: itemToDelete?.name || "" })}
         isLoading={isDeleting}
       />
-      <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
     </>
   );
 }

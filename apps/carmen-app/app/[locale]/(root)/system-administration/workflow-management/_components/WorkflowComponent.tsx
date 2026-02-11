@@ -18,7 +18,8 @@ import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown"
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { Plus } from "lucide-react";
 import { FieldConfig } from "@/constants/uiConfig";
-import { InternalServerError } from "@/components/error-ui";
+import { InternalServerError, Unauthorized, Forbidden } from "@/components/error-ui";
+import { getApiErrorType } from "@/utils/error";
 
 export default function PurchaseOrderComponent() {
   const { token, buCode } = useAuth();
@@ -97,7 +98,12 @@ export default function PurchaseOrderComponent() {
   const searchParams = useSearchParams();
   const defaultTab = searchParams.get("tab") || "workflow";
 
-  if (error) return <InternalServerError />;
+  if (error) {
+    const errorType = getApiErrorType(error);
+    if (errorType === "unauthorized") return <Unauthorized />;
+    if (errorType === "forbidden") return <Forbidden />;
+    return <InternalServerError />;
+  }
 
   const actionButtons = (
     <div className="flex items-center gap-2">

@@ -21,7 +21,7 @@ export const useProductQuery = ({
   const API_URL = productApiUrl(buCode);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["product", params],
+    queryKey: ["product", buCode, params],
     queryFn: () => getAllApiRequest(API_URL, token, "Error fetching products", params),
     enabled: !!token && !!buCode,
   });

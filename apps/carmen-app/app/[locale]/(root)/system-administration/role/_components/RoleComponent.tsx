@@ -17,7 +17,8 @@ import { RoleDto } from "@/dtos/role.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
-import { InternalServerError } from "@/components/error-ui";
+import { InternalServerError, Unauthorized, Forbidden } from "@/components/error-ui";
+import { getApiErrorType } from "@/utils/error";
 
 export default function RoleComponent() {
   const { token, buCode } = useAuth();
@@ -49,7 +50,12 @@ export default function RoleComponent() {
 
   const { mutate: deleteRole, isPending: isDeleting } = useDeleteRole(token, buCode);
 
-  if (error) return <InternalServerError />;
+  if (error) {
+    const errorType = getApiErrorType(error);
+    if (errorType === "unauthorized") return <Unauthorized />;
+    if (errorType === "forbidden") return <Forbidden />;
+    return <InternalServerError />;
+  }
 
   const currentPage = paginate?.page ?? 1;
   const totalPages = paginate?.pages ?? 1;

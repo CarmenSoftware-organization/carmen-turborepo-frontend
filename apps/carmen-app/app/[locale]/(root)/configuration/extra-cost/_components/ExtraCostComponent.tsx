@@ -25,7 +25,8 @@ import ExtraCostDialog from "./ExtraCostDialog";
 import { useTranslations } from "next-intl";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
-import { InternalServerError } from "@/components/error-ui";
+import { InternalServerError, Unauthorized, Forbidden } from "@/components/error-ui";
+import { getApiErrorType } from "@/utils/error";
 
 export default function ExtraCostComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -73,7 +74,12 @@ export default function ExtraCostComponent() {
   );
   const { mutate: deleteExtraCost } = useDeleteExtraCostType(token, buCode);
 
-  if (error) return <InternalServerError />;
+  if (error) {
+    const errorType = getApiErrorType(error);
+    if (errorType === "unauthorized") return <Unauthorized />;
+    if (errorType === "forbidden") return <Forbidden />;
+    return <InternalServerError />;
+  }
 
   const extraCostData = Array.isArray(extraCostTypes) ? extraCostTypes : extraCostTypes?.data || [];
   const currentPage = extraCostTypes?.paginate?.page ?? 1;

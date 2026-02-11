@@ -19,7 +19,8 @@ import {
   useUpdateTaxProfile,
 } from "@/hooks/use-tax-profile";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
-import { InternalServerError } from "@/components/error-ui";
+import { InternalServerError, Unauthorized, Forbidden } from "@/components/error-ui";
+import { getApiErrorType } from "@/utils/error";
 
 export function TaxProfileComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -45,7 +46,12 @@ export function TaxProfileComponent() {
   const [deleteProfileId, setDeleteProfileId] = useState<string | null>(null);
   const { mutate: deleteTaxProfile } = useDeleteTaxProfile(token, buCode);
 
-  if (error) return <InternalServerError />;
+  if (error) {
+    const errorType = getApiErrorType(error);
+    if (errorType === "unauthorized") return <Unauthorized />;
+    if (errorType === "forbidden") return <Forbidden />;
+    return <InternalServerError />;
+  }
 
   const title = tTaxProfile("title");
 

@@ -1,6 +1,5 @@
 "use client";
 
-import SignInDialog from "@/components/SignInDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SearchInput from "@/components/ui-custom/SearchInput";
@@ -12,7 +11,7 @@ import { useURL } from "@/hooks/useURL";
 import { useRouter } from "@/lib/navigation";
 import { FileDown, Plus, Printer, List, Grid } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DepartmentList from "./DepartmentList";
 import DepartmentGrid from "./DepartmentGrid";
 import { parseSortString } from "@/utils/table";
@@ -23,7 +22,8 @@ import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 
 import { VIEW } from "@/constants/enum";
 import { DepartmentListItemDto } from "@/dtos/department.dto";
-import { InternalServerError } from "@/components/error-ui";
+import { InternalServerError, Unauthorized, Forbidden } from "@/components/error-ui";
+import { getApiErrorType } from "@/utils/error";
 
 export default function DepartmentComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -36,7 +36,6 @@ export default function DepartmentComponent() {
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const router = useRouter();
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [departmentToDelete, setDepartmentToDelete] = useState<DepartmentListItemDto | undefined>(
     undefined
@@ -49,7 +48,7 @@ export default function DepartmentComponent() {
   const [perpage, setPerpage] = useURL("perpage");
   const [view, setView] = useState<VIEW>(VIEW.LIST);
 
-  const { departments, isLoading, isUnauthorized, error } = useDepartmentsQuery(token, buCode, {
+  const { departments, isLoading, error } = useDepartmentsQuery(token, buCode, {
     search,
     page,
     sort,
@@ -62,13 +61,12 @@ export default function DepartmentComponent() {
     buCode
   );
 
-  useEffect(() => {
-    if (isUnauthorized) {
-      setLoginDialogOpen(true);
-    }
-  }, [isUnauthorized]);
-
-  if (error && !isUnauthorized) return <InternalServerError />;
+  if (error) {
+    const errorType = getApiErrorType(error);
+    if (errorType === "unauthorized") return <Unauthorized />;
+    if (errorType === "forbidden") return <Forbidden />;
+    return <InternalServerError />;
+  }
 
   const currentPage = departments?.paginate.page ?? 1;
   const totalPages = departments?.paginate.pages ?? 1;
@@ -264,7 +262,6 @@ export default function DepartmentComponent() {
         })}
         isLoading={isDeleting}
       />
-      <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
     </>
   );
 }
