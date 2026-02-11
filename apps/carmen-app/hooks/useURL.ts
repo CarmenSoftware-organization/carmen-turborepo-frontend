@@ -2,6 +2,8 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 
+const URL_CHANGE_EVENT = "useurl:change";
+
 type URLStateOptions = {
   defaultValue?: string;
   onUpdate?: (value: string) => void;
@@ -40,6 +42,7 @@ export const useURL = (paramName: string, options: URLStateOptions = {}) => {
             "",
             url.toString()
           );
+          globalThis.window.dispatchEvent(new CustomEvent(URL_CHANGE_EVENT));
         }
 
         onUpdate?.(newValue);
@@ -52,41 +55,29 @@ export const useURL = (paramName: string, options: URLStateOptions = {}) => {
   useEffect(() => {
     if (globalThis.window === undefined) return;
 
-    const handlePopState = () => {
-      if (isUpdatingRef.current) return;
-
-      const newValue =
-        new URLSearchParams(globalThis.window.location.search).get(paramName) ?? defaultValue;
-      setValue(newValue);
-      onUpdate?.(newValue);
-    };
-
-    globalThis.window.addEventListener("popstate", handlePopState);
-    return () => {
-      if (globalThis.window !== undefined) {
-        globalThis.window.removeEventListener("popstate", handlePopState);
-      }
-    };
-  }, [paramName, defaultValue, onUpdate]);
-
-  useEffect(() => {
-    if (globalThis.window === undefined) return;
-
-    const checkURLChange = () => {
+    const syncFromURL = () => {
       if (isUpdatingRef.current) return;
       const currentValue =
         new URLSearchParams(globalThis.window.location.search).get(paramName) ?? defaultValue;
-
-      if (currentValue !== value) {
-        setValue(currentValue);
-        onUpdate?.(currentValue);
-      }
+      setValue((prev) => {
+        if (prev !== currentValue) {
+          onUpdate?.(currentValue);
+          return currentValue;
+        }
+        return prev;
+      });
     };
 
-    const interval = setInterval(checkURLChange, 100);
+    globalThis.window.addEventListener("popstate", syncFromURL);
+    globalThis.window.addEventListener(URL_CHANGE_EVENT, syncFromURL);
 
-    return () => clearInterval(interval);
-  }, [paramName, defaultValue, value, onUpdate]);
+    return () => {
+      if (globalThis.window !== undefined) {
+        globalThis.window.removeEventListener("popstate", syncFromURL);
+        globalThis.window.removeEventListener(URL_CHANGE_EVENT, syncFromURL);
+      }
+    };
+  }, [paramName, defaultValue, onUpdate]);
 
   return [value, updateValue] as const;
 };
