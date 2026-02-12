@@ -31,7 +31,6 @@ import {
   MapPin,
   Building,
   Receipt,
-  Plus,
   AlertTriangle,
   Eye,
   Calendar,
@@ -57,6 +56,23 @@ import {
   Warehouse,
   File,
   ShieldCheck,
+  Handshake,
+  Building2,
+  ArrowUpDown,
+  ArrowLeftRight,
+  UtensilsCrossed,
+  ListChecks,
+  ClipboardCheck,
+  PackagePlus,
+  PackageSearch,
+  LineChart,
+  Timer,
+  CircleDollarSign,
+  BadgeDollarSign,
+  ChefHat,
+  SlidersHorizontal,
+  ScrollText,
+  FileInput,
 } from "lucide-react";
 
 export const moduleItems: ModuleItem[] = [
@@ -98,7 +114,7 @@ export const moduleItems: ModuleItem[] = [
       {
         labelKey: "Modules.Procurement.creditNote",
         href: "/procurement/credit-note",
-        icon: CreditCard,
+        icon: FileInput,
       },
       {
         labelKey: "Modules.Procurement.purchaseRequestTemplate",
@@ -127,17 +143,17 @@ export const moduleItems: ModuleItem[] = [
   {
     labelKey: "Modules.vendorManagement",
     href: "/vendor-management",
-    icon: Hotel,
+    icon: Handshake,
     children: [
       {
         labelKey: "Modules.VendorManagement.manageVendors",
         href: "/vendor-management/vendor",
-        icon: Hotel,
+        icon: Building2,
       },
       {
         labelKey: "Modules.VendorManagement.priceLists",
         href: "/vendor-management/price-list",
-        icon: Coins,
+        icon: BadgeDollarSign,
       },
       {
         labelKey: "Modules.VendorManagement.priceListtemplate",
@@ -164,12 +180,12 @@ export const moduleItems: ModuleItem[] = [
       {
         labelKey: "Modules.StoreOperations.storeRequisitions",
         href: "/store-operation/store-requisition",
-        icon: ClipboardList,
+        icon: ListChecks,
       },
       {
         labelKey: "Modules.StoreOperations.stockReplenishment",
         href: "/store-operation/stock-replenishment",
-        icon: Package,
+        icon: PackagePlus,
       },
       {
         labelKey: "Modules.StoreOperations.wastageReporting",
@@ -181,12 +197,12 @@ export const moduleItems: ModuleItem[] = [
   {
     labelKey: "Modules.inventoryManagement",
     href: "/inventory-management",
-    icon: Ruler,
+    icon: Warehouse,
     children: [
       {
         labelKey: "Modules.InventoryManagement.inventoryAdjustments",
         href: "/inventory-management/inventory-adjustment",
-        icon: Plus,
+        icon: ArrowUpDown,
       },
       {
         labelKey: "Modules.InventoryManagement.spotCheck",
@@ -196,7 +212,7 @@ export const moduleItems: ModuleItem[] = [
       {
         labelKey: "Modules.InventoryManagement.physicalCount",
         href: "/inventory-management/physical-count",
-        icon: ClipboardList,
+        icon: ClipboardCheck,
       },
       {
         labelKey: "Modules.InventoryManagement.periodEnd",
@@ -221,7 +237,7 @@ export const moduleItems: ModuleItem[] = [
           {
             labelKey: "Modules.InventoryManagement.StockOverview.inventoryAging",
             href: "/inventory-management/stock-overview/inventory-aging",
-            icon: TrendingUp,
+            icon: Timer,
           },
           {
             labelKey: "Modules.InventoryManagement.StockOverview.stockCard",
@@ -250,7 +266,7 @@ export const moduleItems: ModuleItem[] = [
           {
             labelKey: "Modules.OperationalPlanning.RecipesManagement.recipe",
             href: "/operational-planning/recipe-management/recipe",
-            icon: FileText,
+            icon: ScrollText,
           },
           {
             labelKey: "Modules.OperationalPlanning.RecipesManagement.category",
@@ -260,24 +276,24 @@ export const moduleItems: ModuleItem[] = [
           {
             labelKey: "Modules.OperationalPlanning.RecipesManagement.cuisineType",
             href: "/operational-planning/recipe-management/cuisine-type",
-            icon: MapPin,
+            icon: UtensilsCrossed,
           },
         ],
       },
       {
         labelKey: "Modules.OperationalPlanning.menuEngineering",
         href: "/operational-planning/menu-engineering",
-        icon: BarChart3,
+        icon: ChefHat,
       },
       {
         labelKey: "Modules.OperationalPlanning.demandForecasting",
         href: "/operational-planning/demand-forecasting",
-        icon: TrendingUp,
+        icon: LineChart,
       },
       {
         labelKey: "Modules.OperationalPlanning.inventoryPlanning",
         href: "/operational-planning/inventory-planning",
-        icon: Package,
+        icon: PackageSearch,
       },
     ],
   },
@@ -336,7 +352,7 @@ export const moduleItems: ModuleItem[] = [
       {
         labelKey: "Modules.ReportingAndAnalytics.costAnalysis",
         href: "/reporting-analytic/cost-analysis",
-        icon: Calculator,
+        icon: CircleDollarSign,
       },
       {
         labelKey: "Modules.ReportingAndAnalytics.salesAnalysis",
@@ -385,7 +401,7 @@ export const moduleItems: ModuleItem[] = [
       {
         labelKey: "Modules.Configuration.exchangeRates",
         href: "/configuration/exchange-rate",
-        icon: TrendingUp,
+        icon: ArrowLeftRight,
       },
       {
         labelKey: "Modules.Configuration.deliveryPoint",
@@ -410,7 +426,7 @@ export const moduleItems: ModuleItem[] = [
       {
         labelKey: "Modules.Configuration.extra_cost",
         href: "/configuration/extra-cost",
-        icon: DollarSign,
+        icon: Coins,
       },
       {
         labelKey: "Modules.Configuration.business_type",
@@ -420,19 +436,19 @@ export const moduleItems: ModuleItem[] = [
       {
         labelKey: "Modules.ProductManagement.unit",
         href: "/configuration/unit",
-        icon: Ruler,
+        icon: Scale,
       },
       {
         labelKey: "Modules.Configuration.adjustment_type",
         href: "/configuration/adjustment-type",
-        icon: Ruler,
+        icon: SlidersHorizontal,
       },
     ],
   },
   {
     labelKey: "Modules.SystemAdministration.systemAdministration",
     href: "/system-administration",
-    icon: Settings,
+    icon: Shield,
     children: [
       // {
       //   labelKey: "Modules.SystemAdministration.userManagement",

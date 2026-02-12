@@ -96,7 +96,7 @@ const TableTemplate = ({
         <TableRow>
           {columns.map((column) => (
             <TableHead key={column.key} className={cn(getAlignClass(column.align), column.width)}>
-              <div className={cn("flex items-center gap-1 h-11", getFlexAlignClass(column.align))}>
+              <div className={cn("flex items-center gap-1 h-8", getFlexAlignClass(column.align))}>
                 {column.icon}
                 {column.title}
               </div>
@@ -127,9 +127,9 @@ const TableTemplate = ({
           ) : (
             <TableRow>
               <TableCell colSpan={colSpan} className="text-center">
-                <div className="flex flex-col items-center justify-center py-8 gap-4 text-gray-500">
-                  <FileX className="w-12 h-12 text-gray-400" />
-                  <p className="text-sm">{tCommon("no_data_found")}</p>
+                <div className="flex flex-col items-center justify-center py-6 gap-3 text-muted-foreground">
+                  <FileX className="w-8 h-8 text-muted-foreground" />
+                  <p className="text-xs">{tCommon("no_data_found")}</p>
                 </div>
               </TableCell>
             </TableRow>
@@ -138,11 +138,11 @@ const TableTemplate = ({
       )}
 
       {totalItems > 0 && (
-        <TableFooter className="h-14">
+        <TableFooter className="h-10">
           <TableRow>
             <TableCell colSpan={colSpan} className="px-4">
               <div className="flex items-center justify-between w-full">
-                <p className="text-sm">
+                <p className="text-xs text-muted-foreground">
                   {dataSource.length > 0 ? (
                     <>
                       {startItem}-{endItem} {tCommon("of")} {totalItems} {tCommon("itemFound")}

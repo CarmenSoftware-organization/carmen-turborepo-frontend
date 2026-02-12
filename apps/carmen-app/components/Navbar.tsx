@@ -10,7 +10,7 @@ import { Link } from "@/lib/navigation";
 
 export default function Navbar() {
   return (
-    <div className="flex items-center justify-between p-2 gap-2 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+    <div className="flex items-center justify-between p-2 gap-2 border-b border-border/40 bg-card shadow-sm">
       <Link href="/dashboard" className="px-1 group flex flex-col justify-center">
         <span
           className="text-xl font-bold tracking-tight text-primary hover:text-primary/80 transition-colors duration-200"

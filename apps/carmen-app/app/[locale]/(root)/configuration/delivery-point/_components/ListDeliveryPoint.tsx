@@ -105,7 +105,7 @@ export default function ListDeliveryPoint({
             return (
               <button
                 type="button"
-                className="text-primary dark:text-foreground cursor-pointer hover:underline text-left text-xs md:text-sm"
+                className="text-primary dark:text-foreground cursor-pointer hover:underline text-left text-xs"
                 onClick={() => onEdit(deliveryPoint)}
               >
                 {deliveryPoint.name}

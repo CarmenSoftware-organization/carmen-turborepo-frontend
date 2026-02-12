@@ -296,7 +296,7 @@ const SidebarContent = () => {
       transition={{ duration: 0.3, ease: "easeInOut" }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="flex flex-col border-r border-border h-full hidden md:block relative overflow-y-auto"
+      className="flex flex-col border-r border-border bg-card h-full hidden md:block relative overflow-y-auto"
       aria-label="Sidebar Navigation"
     >
       <div className="flex-1 overflow-y-auto px-2.5 py-2.5 space-y-1">
