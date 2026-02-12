@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { formType } from "@/dtos/form.dto";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
 import { cn } from "@/lib/utils";
-import { Building2, Calendar, CircleCheck, Clock4, FileText, GitBranch, User } from "lucide-react";
+import { Building2, Calendar, FileText, GitBranch, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { usePurchaseRequestContext } from "./PurchaseRequestContext";
@@ -30,14 +30,11 @@ export default function HeadForm({ bu_code, requestorName }: HeadFormProps) {
     workflowId: workflow_id,
     requestorName: requestor_name,
     departmentName: department_name,
-    workflowStages,
   } = usePurchaseRequestContext();
 
   const displayRequestorName = requestorName ?? requestor_name;
 
   const tPr = useTranslations("PurchaseRequest");
-  const lastThreeSteps =
-    workflowStages && workflowStages.length > 0 ? workflowStages.slice(-3) : [];
 
   return (
     <div className="grid grid-cols-4 gap-2">
@@ -92,7 +89,12 @@ export default function HeadForm({ bu_code, requestorName }: HeadFormProps) {
             {tPr("department")}
           </div>
         </Label>
-        <Input placeholder="PR-XXXX" disabled className="bg-muted" value={department_name} />
+        <Input
+          placeholder={tPr("department")}
+          disabled
+          className="bg-muted"
+          value={department_name}
+        />
       </div>
 
       <FormField
@@ -134,47 +136,6 @@ export default function HeadForm({ bu_code, requestorName }: HeadFormProps) {
           </FormItem>
         )}
       />
-
-      {lastThreeSteps.length > 0 && (
-        <div className="col-span-2 pt-8">
-          <div
-            className="bg-muted/80 p-2 rounded-md grid gap-0"
-            style={{ gridTemplateColumns: `repeat(${lastThreeSteps.length}, minmax(0, 1fr))` }}
-          >
-            {lastThreeSteps.map((step, index) => {
-              const isLast = index === lastThreeSteps.length - 1;
-              const uniqueKey = `${step.title}-${index}`;
-              return (
-                <div key={uniqueKey} className="flex flex-col items-center relative">
-                  <div
-                    className={cn(
-                      "w-7 h-7 rounded-full flex items-center justify-center text-sm font-medium mb-1 z-10",
-                      isLast ? "bg-primary" : "bg-active"
-                    )}
-                  >
-                    {isLast ? (
-                      <Clock4 className="size-4 text-white" />
-                    ) : (
-                      <CircleCheck className="size-4 text-white" />
-                    )}
-                  </div>
-                  <span
-                    className={cn(
-                      "text-xs text-center",
-                      isLast ? "font-semibold text-primary" : "text-active"
-                    )}
-                  >
-                    {step.title}
-                  </span>
-                  {index < lastThreeSteps.length - 1 && (
-                    <div className="absolute top-4 left-1/2 w-full h-0.5 bg-muted-foreground -translate-y-1/2"></div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -76,9 +76,9 @@ export default function ActionFields({ isViewOnly }: ActionFieldsProps) {
 
           <div className="flex items-center gap-2">
             {currentMode === formType.ADD ? (
-              <p className="text-lg font-semibold">{tPr("title")}</p>
+              <p className="text-base font-semibold">{tPr("title")}</p>
             ) : (
-              <p className="text-lg font-semibold">{initValues?.pr_no}</p>
+              <p className="text-base font-semibold">{initValues?.pr_no}</p>
             )}
             {initValues?.pr_status && (
               <Badge variant={initValues?.pr_status}>{getStatusLabel(initValues?.pr_status)}</Badge>

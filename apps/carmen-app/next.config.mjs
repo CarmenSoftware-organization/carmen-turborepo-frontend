@@ -1,5 +1,10 @@
 // import { withSentryConfig } from '@sentry/nextjs'; // DISABLED
+import withBundleAnalyzer from "@next/bundle-analyzer";
 import createNextIntlPlugin from "next-intl/plugin";
+
+const withAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
@@ -37,7 +42,7 @@ const nextConfig = {
 };
 
 // SENTRY DISABLED - Export without Sentry wrapper
-export default withNextIntl(nextConfig);
+export default withAnalyzer(withNextIntl(nextConfig));
 
 // ORIGINAL SENTRY CONFIG (DISABLED):
 // export default withSentryConfig(withNextIntl(nextConfig), {

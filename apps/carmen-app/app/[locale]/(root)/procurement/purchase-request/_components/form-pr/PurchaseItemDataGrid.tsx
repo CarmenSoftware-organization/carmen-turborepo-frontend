@@ -295,7 +295,7 @@ export default function PurchaseItemDataGrid({
   };
 
   return (
-    <div className="mt-4 space-y-4">
+    <div className="mt-3 space-y-3">
       <div className="flex items-center gap-2">
         <p className="font-semibold text-muted-foreground ">{tPr("items")}</p>
         {currentMode !== formType.VIEW && (

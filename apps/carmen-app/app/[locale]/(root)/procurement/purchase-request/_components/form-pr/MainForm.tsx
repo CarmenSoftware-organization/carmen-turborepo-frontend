@@ -43,6 +43,7 @@ import {
   useDeletePrCommentAttachment,
 } from "@/hooks/use-comment-attachments";
 import { AttachmentDto } from "@/dtos/comment-attachments.dto";
+import WorkflowStep from "./WorkflowStep";
 
 const sanitizeItemsForForm = (items: PurchaseRequestDetail[]) => {
   return items.map((item) => {
@@ -253,74 +254,74 @@ export default function MainForm({ mode, initValues, bu_code }: Props) {
         }
       >
         <PurchaseRequestProvider value={logic}>
-          <div className="space-y-4">
-            <Card className="p-4">
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(handleSubmit, () => {
-                    toastError({
-                      message: tPR("pls_complete_required_fields"),
-                    });
-                  })}
-                >
-                  <ActionFields isViewOnly={isViewOnly} />
-                  <HeadForm bu_code={bu_code} requestorName={initValues?.requestor_name} />
-                  <Tabs defaultValue="items">
-                    <TabsList className={"mt-4"}>
-                      <TabsTrigger className={"w-full h-6"} value="items">
-                        {tPR("items")}
-                      </TabsTrigger>
-                      <TabsTrigger className="w-full h-6" value="workflow">
-                        {tPR("workflow")}
-                      </TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="items" className="mt-2">
-                      <PurchaseItemDataGrid
-                        currentMode={currentMode}
-                        items={purchaseItemManager.items}
-                        initValues={initValues?.purchase_request_detail}
-                        addFields={purchaseItemManager.addFields}
-                        onItemUpdate={purchaseItemManager.updateItem}
-                        onItemRemove={purchaseItemManager.removeItem}
-                        onAddItem={purchaseItemManager.addItem}
-                        getItemValue={purchaseItemManager.getItemValue}
-                        getCurrentStatus={getCurrentStatus}
-                        workflow_id={workflowId}
-                        prStatus={prStatus ?? ""}
-                        bu_code={bu_code}
-                        prId={initValues?.id ?? ""}
-                        role={initValues?.role}
-                      />
-                    </TabsContent>
-                    <TabsContent value="workflow" className="mt-2">
-                      <WorkflowHistory workflow_history={initValues?.workflow_history} />
-                    </TabsContent>
-                  </Tabs>
-                </form>
-              </Form>
-            </Card>
-            <ActionButtons
-              prStatus={prStatus || ""}
-              isNewPr={currentMode === formType.ADD}
-              isDraft={initValues?.pr_status === "draft"}
-              isPending={isPending}
-              isDisabled={isDisabled}
-              isSubmitDisabled={!workflowId}
-              isApproveDisabled={isApproveDisabled}
-              itemsStatusSummary={itemsStatusSummary}
-              onReject={onReject}
-              onSendBack={onSendBack}
-              onReview={onReview}
-              onApprove={onApprove}
-              onPurchaseApprove={onPurchaseApprove}
-              onSubmitPr={onSubmitPr}
-              onSave={form.handleSubmit(handleSubmit, (errors) => {
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit, () => {
                 toastError({
                   message: tPR("pls_complete_required_fields"),
                 });
               })}
-            />
-          </div>
+              className="space-y-2"
+            >
+              <Card className="p-2">
+                <ActionFields isViewOnly={isViewOnly} />
+                <HeadForm bu_code={bu_code} requestorName={initValues?.requestor_name} />
+                <Tabs defaultValue="items">
+                  <TabsList className={"mt-4"}>
+                    <TabsTrigger className={"w-full h-6"} value="items">
+                      {tPR("items")}
+                    </TabsTrigger>
+                    <TabsTrigger className="w-full h-6" value="workflow">
+                      {tPR("workflow")}
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="items" className="mt-2">
+                    <PurchaseItemDataGrid
+                      currentMode={currentMode}
+                      items={purchaseItemManager.items}
+                      initValues={initValues?.purchase_request_detail}
+                      addFields={purchaseItemManager.addFields}
+                      onItemUpdate={purchaseItemManager.updateItem}
+                      onItemRemove={purchaseItemManager.removeItem}
+                      onAddItem={purchaseItemManager.addItem}
+                      getItemValue={purchaseItemManager.getItemValue}
+                      getCurrentStatus={getCurrentStatus}
+                      workflow_id={workflowId}
+                      prStatus={prStatus ?? ""}
+                      bu_code={bu_code}
+                      prId={initValues?.id ?? ""}
+                      role={initValues?.role}
+                    />
+                  </TabsContent>
+                  <TabsContent value="workflow" className="mt-2">
+                    <WorkflowHistory workflow_history={initValues?.workflow_history} />
+                  </TabsContent>
+                </Tabs>
+              </Card>
+              <WorkflowStep />
+            </form>
+          </Form>
+          <ActionButtons
+            prStatus={prStatus || ""}
+            isNewPr={currentMode === formType.ADD}
+            isDraft={initValues?.pr_status === "draft"}
+            isPending={isPending}
+            isDisabled={isDisabled}
+            isSubmitDisabled={!workflowId}
+            isApproveDisabled={isApproveDisabled}
+            itemsStatusSummary={itemsStatusSummary}
+            onReject={onReject}
+            onSendBack={onSendBack}
+            onReview={onReview}
+            onApprove={onApprove}
+            onPurchaseApprove={onPurchaseApprove}
+            onSubmitPr={onSubmitPr}
+            onSave={form.handleSubmit(handleSubmit, (errors) => {
+              toastError({
+                message: tPR("pls_complete_required_fields"),
+              });
+            })}
+          />
         </PurchaseRequestProvider>
       </DetailsAndComments>
 

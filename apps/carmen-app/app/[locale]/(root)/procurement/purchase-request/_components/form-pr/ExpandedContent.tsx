@@ -340,7 +340,7 @@ export default function ExpandedContent({
                       <Label className="text-muted-foreground text-xs font-medium">
                         {tPr("total")}
                       </Label>
-                      <p className="font-bold text-base text-active">
+                      <p className="font-semibold text-sm text-active">
                         {formatPrice(
                           Number(getItemValue(item, "total_price") ?? item.total_price),
                           (getItemValue(item, "currency_code") as string) || "THB",
@@ -360,9 +360,9 @@ export default function ExpandedContent({
       <Accordion type="single" collapsible>
         <AccordionItem value="item-2">
           <AccordionTrigger iconPosition="left" className="px-2 border-b border-border">
-            <h4 className="font-bold text-xs text-muted-foreground">{tPr("inventory_info")}</h4>
+            <h4 className="font-semibold text-xs text-muted-foreground">{tPr("inventory_info")}</h4>
           </AccordionTrigger>
-          <AccordionContent className="space-y-1 flex flex-col gap-2 p-4">
+          <AccordionContent className="flex flex-col gap-2 p-3">
             <InventoryInfo
               inventoryData={inventoryData}
               inventoryUnitName={item.inventory_unit_name}
@@ -377,11 +377,11 @@ export default function ExpandedContent({
         <Accordion type="single" collapsible>
           <AccordionItem value="item-3">
             <AccordionTrigger iconPosition="left" className="px-2">
-              <h4 className="font-bold text-sm text-muted-foreground">
+              <h4 className="font-semibold text-xs text-muted-foreground">
                 {tPr("business_dimensions")}
               </h4>
             </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-2  border-l-4 border-purple-100 mx-3 my-1 -mt-px">
+            <AccordionContent className="flex flex-col gap-2 border-l-4 border-primary/20 mx-3 my-1 -mt-px">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 px-2">
                 {item.dimension?.map((dimension: unknown) => {
                   if (
@@ -400,7 +400,7 @@ export default function ExpandedContent({
                       <div key={dim.key}>
                         <div className="space-y-1 text-right">
                           <Label className="text-muted-foreground text-xs">{dim.label}</Label>
-                          <p className="text-sm font-semibold">{dim.value}</p>
+                          <p className="text-xs font-semibold">{dim.value}</p>
                         </div>
                       </div>
                     );

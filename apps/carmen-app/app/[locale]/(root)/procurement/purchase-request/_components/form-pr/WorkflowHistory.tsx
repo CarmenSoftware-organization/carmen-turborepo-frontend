@@ -34,9 +34,9 @@ export default function WorkflowHistory({ workflow_history }: Props) {
   if (!workflow_history || workflow_history.length === 0) {
     return (
       <div className="p-4">
-        <h1 className="text-2xl font-bold mb-6">{tWorkflow("workflow")}</h1>
-        <div className="text-center py-12">
-          <p>{tWorkflow("no_workflow_history")}</p>
+        <h3 className="text-base font-semibold tracking-tight mb-3">{tWorkflow("workflow")}</h3>
+        <div className="text-center py-6">
+          <p className="text-xs text-muted-foreground">{tWorkflow("no_workflow_history")}</p>
         </div>
       </div>
     );
@@ -53,10 +53,10 @@ export default function WorkflowHistory({ workflow_history }: Props) {
             <TimelineTitle className="text-primary">{item.action.toUpperCase()}</TimelineTitle>
           </TimelineHeader>
           <TimelineDescription>
-            <div className="mb-1 text-sm">
+            <div className="mb-1 text-xs">
               {tWorkflow("by")}: <span className="font-medium">{item.user.name}</span>
             </div>
-            <div className="flex items-center gap-1 text-sm">
+            <div className="flex items-center gap-1 text-xs">
               <Badge variant="outline">{item.current_stage}</Badge>
               {item.next_stage !== "-" && (
                 <>
