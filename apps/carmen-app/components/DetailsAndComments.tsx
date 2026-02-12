@@ -162,7 +162,7 @@ export default function DetailsAndComments({
                 transition={{ duration: 0.3, delay: 0.2 }}
               >
                 <div className="flex items-center justify-between p-2 bg-muted/50">
-                  <h3 className="text-base font-semibold flex items-center gap-2">
+                  <h3 className="text-sm font-semibold flex items-center gap-2">
                     {activeTab === "activity" ? (
                       <>
                         <Activity className="w-4 h-4" />
@@ -201,7 +201,7 @@ export default function DetailsAndComments({
                       {activeTab === "activity" ? (
                         <div className="space-y-4">
                           {activityComponent || (
-                            <p className="text-sm text-muted-foreground text-center py-8">
+                            <p className="text-xs text-muted-foreground text-center py-6">
                               {t("no_activity_log")}
                             </p>
                           )}
@@ -209,7 +209,7 @@ export default function DetailsAndComments({
                       ) : (
                         <div className="space-y-4">
                           {commentComponent || (
-                            <p className="text-sm text-muted-foreground text-center py-8">
+                            <p className="text-xs text-muted-foreground text-center py-6">
                               {t("no_comments")}
                             </p>
                           )}

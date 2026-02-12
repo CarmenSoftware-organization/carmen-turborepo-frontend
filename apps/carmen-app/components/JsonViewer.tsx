@@ -91,7 +91,7 @@ export default function JsonViewer({
   return (
     <div className="space-y-2 max-w-[1000px] overflow-x-auto">
       <div className="flex justify-between items-center">
-        <div className="flex flex-wrap gap-4 text-sm">
+        <div className="flex flex-wrap gap-4 text-xs">
           <div className="flex items-center gap-1">
             <span className="text-primary">●</span>
             <span>Keys</span>
@@ -115,7 +115,7 @@ export default function JsonViewer({
         </div>
         <button
           onClick={handleCopyToClipboard}
-          className={`px-3 py-1 text-sm rounded-md transition-colors ${isCopied
+          className={`px-2.5 py-1 text-xs rounded-md transition-colors ${isCopied
             ? "bg-green-100 text-green-700 border border-green-300"
             : "bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200"
             }`}
@@ -126,7 +126,7 @@ export default function JsonViewer({
       {title && (
         <h1>{title}</h1>
       )}
-      <pre className="bg-muted p-4 rounded-lg text-sm font-mono overflow-auto">
+      <pre className="bg-muted p-3 rounded-lg text-xs font-mono overflow-auto">
         {formatJson(data)}
       </pre>
     </div>

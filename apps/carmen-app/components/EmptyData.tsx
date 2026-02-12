@@ -10,7 +10,7 @@ export default function EmptyData({ message }: EmptyDataProps) {
       <TableRow>
         <TableCell colSpan={7} className="h-24 text-center">
           <div className="flex flex-col items-center justify-center gap-2">
-            <p className="text-sm text-muted-foreground">{message}</p>
+            <p className="text-xs text-muted-foreground">{message}</p>
           </div>
         </TableCell>
       </TableRow>

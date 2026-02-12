@@ -112,7 +112,7 @@ const PaginationComponent = memo(function PaginationComponent({
               handlePageChange(1);
             }}
             data-id="pagination-link"
-            className="text-sm"
+            className="text-xs"
           >
             1
           </PaginationLink>
@@ -120,7 +120,7 @@ const PaginationComponent = memo(function PaginationComponent({
 
         {currentPage > 3 && (
           <PaginationItem data-id="pagination-item">
-            <PaginationEllipsis data-id="pagination-ellipsis" className="text-sm" />
+            <PaginationEllipsis data-id="pagination-ellipsis" className="text-xs" />
           </PaginationItem>
         )}
 
@@ -133,7 +133,7 @@ const PaginationComponent = memo(function PaginationComponent({
                 handlePageChange(currentPage - 1);
               }}
               data-id="pagination-link"
-              className="text-sm"
+              className="text-xs"
             >
               {currentPage - 1}
             </PaginationLink>
@@ -142,7 +142,7 @@ const PaginationComponent = memo(function PaginationComponent({
 
         {currentPage !== 1 && currentPage !== totalPages && (
           <PaginationItem data-id="pagination-item">
-            <PaginationLink href="#" isActive={true} data-id="pagination-link" className="text-sm">
+            <PaginationLink href="#" isActive={true} data-id="pagination-link" className="text-xs">
               {currentPage}
             </PaginationLink>
           </PaginationItem>
@@ -157,7 +157,7 @@ const PaginationComponent = memo(function PaginationComponent({
                 handlePageChange(currentPage + 1);
               }}
               data-id="pagination-link"
-              className="text-sm"
+              className="text-xs"
             >
               {currentPage + 1}
             </PaginationLink>
@@ -166,7 +166,7 @@ const PaginationComponent = memo(function PaginationComponent({
 
         {currentPage < totalPages - 2 && (
           <PaginationItem data-id="pagination-item">
-            <PaginationEllipsis data-id="pagination-ellipsis" className="text-sm" />
+            <PaginationEllipsis data-id="pagination-ellipsis" className="text-xs" />
           </PaginationItem>
         )}
 
@@ -180,7 +180,7 @@ const PaginationComponent = memo(function PaginationComponent({
                 handlePageChange(totalPages);
               }}
               data-id="pagination-link"
-              className="text-sm"
+              className="text-xs"
             >
               {totalPages}
             </PaginationLink>
@@ -221,7 +221,7 @@ const PaginationComponent = memo(function PaginationComponent({
             <SelectTrigger className="h-8">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="text-sm">
+            <SelectContent className="text-xs">
               <SelectItem value="5">5 / {tCommon("perPage")}</SelectItem>
               <SelectItem value="10">10 / {tCommon("perPage")}</SelectItem>
               <SelectItem value="25">25 / {tCommon("perPage")}</SelectItem>
@@ -231,7 +231,7 @@ const PaginationComponent = memo(function PaginationComponent({
         </PaginationItem>
         <PaginationItem data-id="go-to-page">
           <div className="flex items-center gap-2 mx-1">
-            <p className="text-sm">{tCommon("goTo")}</p>
+            <p className="text-xs">{tCommon("goTo")}</p>
             <Input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
@@ -243,7 +243,7 @@ const PaginationComponent = memo(function PaginationComponent({
               }}
               className="h-8 bg-background w-10 text-center"
             />
-            <p className="text-sm">{tCommon("page")}</p>
+            <p className="text-xs">{tCommon("page")}</p>
           </div>
         </PaginationItem>
       </PaginationContent>

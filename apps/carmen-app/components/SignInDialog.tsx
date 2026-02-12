@@ -99,7 +99,7 @@ export default function SignInDialog({ open, onOpenChange }: Props) {
           <DialogDescription>{t("sessionExpiredDescription")}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-3">
             <FormField
               control={form.control}
               name="email"
@@ -140,7 +140,7 @@ export default function SignInDialog({ open, onOpenChange }: Props) {
             />
 
             {form.formState.errors.root && (
-              <div className="text-sm font-medium text-destructive">
+              <div className="text-xs font-medium text-destructive">
                 {form.formState.errors.root.message}
               </div>
             )}
@@ -148,7 +148,7 @@ export default function SignInDialog({ open, onOpenChange }: Props) {
             <DialogFooter>
               <Button
                 type="submit"
-                className="w-40 h-10 bg-primary hover:bg-primary/90 text-white rounded-full"
+                className="w-40 h-8 bg-primary hover:bg-primary/90 text-white rounded-full"
                 disabled={signInMutation.isPending}
               >
                 {signInMutation.isPending ? t("signingIn") : t("signIn")}
