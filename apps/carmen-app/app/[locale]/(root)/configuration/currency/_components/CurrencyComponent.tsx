@@ -174,7 +174,7 @@ export default function CurrencyComponent() {
   const title = tCurrency("title");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="purchase-request-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="purchase-request-action-buttons">
       {currencyPerms.canCreate && (
         <Button size={"sm"} onClick={handleAdd}>
           <Plus className="h-4 w-4" />
@@ -200,14 +200,14 @@ export default function CurrencyComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="unit-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="unit-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
         placeholder={tCommon("search")}
         data-id="unit-list-search-input"
       />
-      <div className="fxr-c gap-2">
+      <div className="flex items-center gap-2">
         <StatusSearchDropdown
           value={filter}
           onChange={setFilter}

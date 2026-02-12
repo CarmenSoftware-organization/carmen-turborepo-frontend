@@ -68,7 +68,7 @@ export default function LocationComponent() {
   const sortFields = [{ key: "name", label: tHeader("name") }];
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="store-location-list-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="store-location-list-action-buttons">
       <Button
         size="sm"
         data-id="store-location-add-button"
@@ -95,14 +95,14 @@ export default function LocationComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="location-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="location-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
         placeholder={tCommon("search")}
         data-id="location-list-search-input"
       />
-      <div className="fxr-c gap-2">
+      <div className="flex items-center gap-2">
         <StatusSearchDropdown
           value={filter}
           onChange={setFilter}

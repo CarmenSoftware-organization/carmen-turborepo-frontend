@@ -39,7 +39,7 @@ export default function GoodsReceivedNoteComponent() {
   const title = tHeader("title_goods_received_note");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="grn-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="grn-action-buttons">
       <Button size={"sm"} onClick={() => setDialogOpen(true)} data-id="grn-new-button">
         <Plus className="h-4 w-4" />
         {tCommon("add")}
@@ -61,7 +61,7 @@ export default function GoodsReceivedNoteComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="grn-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="grn-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}

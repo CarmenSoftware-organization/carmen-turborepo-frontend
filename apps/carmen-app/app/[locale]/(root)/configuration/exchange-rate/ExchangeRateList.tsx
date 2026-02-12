@@ -90,7 +90,7 @@ export default function ExchangeRateList({
           />
         ),
         cell: ({ row }) => (
-          <button type="button" className="btn-dialog text-sm" onClick={() => onEdit(row.original)}>
+          <button type="button" className="text-primary dark:text-foreground cursor-pointer hover:underline text-left text-xs md:text-sm" onClick={() => onEdit(row.original)}>
             {row.original.currency_code}
           </button>
         ),

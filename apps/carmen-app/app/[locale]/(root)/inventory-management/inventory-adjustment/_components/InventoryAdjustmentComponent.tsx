@@ -52,7 +52,7 @@ export default function InventoryAdjustmentComponent() {
   }, [search, setSort]);
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="adj-type-list-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="adj-type-list-action-buttons">
       <Button size="sm" asChild>
         <Link href="/inventory-management/inventory-adjustment/stock-in/new">
           <Plus className="h-4 w-4" />
@@ -78,14 +78,14 @@ export default function InventoryAdjustmentComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="adj-type-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="adj-type-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
         placeholder={tCommon("search")}
         data-id="adj-type-search-input"
       />
-      <div className="fxr-c gap-2">
+      <div className="flex items-center gap-2">
         <StatusSearchDropdown
           value={filter}
           onChange={setFilter}

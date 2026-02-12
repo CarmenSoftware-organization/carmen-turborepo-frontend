@@ -84,7 +84,7 @@ export default function BusinessTypeComponent() {
   };
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="bu-type-list-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="bu-type-list-action-buttons">
       {businessTypePerms.canCreate && (
         <Button size="sm" onClick={handleAddNew}>
           <Plus className="h-4 w-4" />
@@ -105,14 +105,14 @@ export default function BusinessTypeComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="bu-type-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="bu-type-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
         placeholder={tCommon("search")}
         data-id="bu-type-search-input"
       />
-      <div className="fxr-c gap-2">
+      <div className="flex items-center gap-2">
         <StatusSearchDropdown
           value={filter}
           onChange={setFilter}

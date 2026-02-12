@@ -108,7 +108,7 @@ export default function PurchaseOrderComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="user-management-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="user-management-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}

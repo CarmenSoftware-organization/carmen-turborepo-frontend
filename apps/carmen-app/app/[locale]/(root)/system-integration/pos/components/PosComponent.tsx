@@ -11,7 +11,7 @@ export default function PosComponent() {
     const title = "POS";
 
     const actionButtons = (
-        <div className="action-btn-container" data-id="pos-action-buttons">
+        <div className="flex flex-col md:flex-row gap-2" data-id="pos-action-buttons">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">

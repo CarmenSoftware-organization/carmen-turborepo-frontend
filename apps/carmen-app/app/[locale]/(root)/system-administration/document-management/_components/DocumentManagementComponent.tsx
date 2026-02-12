@@ -144,14 +144,14 @@ export default function DocumentManagementComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="document-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="document-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
         placeholder={t("search")}
         data-id="document-list-search-input"
       />
-      <div className="fxr-c gap-2">
+      <div className="flex items-center gap-2">
         <SortComponent
           fieldConfigs={sortFields}
           sort={sort}

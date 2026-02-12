@@ -28,7 +28,7 @@ export default function PeriodEndComponent() {
   const title = t("PeriodEnd.title");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="period-end-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="period-end-action-buttons">
       <Button size={"sm"}>
         <Plus className="h-4 w-4" />
         {tCommon("add")}
@@ -50,7 +50,7 @@ export default function PeriodEndComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="period-end-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="period-end-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}

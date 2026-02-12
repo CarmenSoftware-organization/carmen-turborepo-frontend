@@ -82,7 +82,7 @@ export default function CreditTermList({
           const creditTerm = row.original;
           if (canUpdate) {
             return (
-              <button type="button" className="btn-dialog" onClick={() => onEdit(creditTerm)}>
+              <button type="button" className="text-primary dark:text-foreground cursor-pointer hover:underline text-left text-xs md:text-sm" onClick={() => onEdit(creditTerm)}>
                 {creditTerm.name}
               </button>
             );

@@ -97,7 +97,7 @@ export default function MovementHistoryList() {
                         onClick={() => handleToggleSubSection(`${section.id}-${subItem.name}`)}
                       >
                         <TableCell className="font-medium">
-                          <div className="fxr-c gap-2 pl-6">
+                          <div className="flex items-center gap-2 pl-6">
                             {isSubExpanded ? (
                               <ChevronDown className="h-4 w-4" />
                             ) : (
@@ -123,7 +123,7 @@ export default function MovementHistoryList() {
                         subItem.items.map((item) => (
                           <TableRow key={item.id} className="bg-muted/10">
                             <TableCell className="font-medium">
-                              <div className="fxr-c gap-2 pl-12">{item.name}</div>
+                              <div className="flex items-center gap-2 pl-12">{item.name}</div>
                             </TableCell>
                             <TableCell>{item.code}</TableCell>
                             <TableCell className="text-right">

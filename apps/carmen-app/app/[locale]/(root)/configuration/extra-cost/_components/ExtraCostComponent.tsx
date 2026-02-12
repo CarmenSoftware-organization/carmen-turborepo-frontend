@@ -141,7 +141,7 @@ export default function ExtraCostComponent() {
   const title = tConfig("extra_cost");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="extra-cost-list-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="extra-cost-list-action-buttons">
       {extraCostPerms.canCreate && (
         <Button size="sm" onClick={handleAdd}>
           <Plus className="h-4 w-4" />
@@ -167,13 +167,13 @@ export default function ExtraCostComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="extra-cost-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="extra-cost-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
         data-id="extra-cost-list-search-input"
       />
-      <div className="fxr-c gap-2">
+      <div className="flex items-center gap-2">
         <StatusSearchDropdown
           value={filter}
           onChange={setFilter}

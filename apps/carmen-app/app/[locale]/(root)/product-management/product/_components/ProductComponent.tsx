@@ -68,7 +68,7 @@ export default function ProductComponent() {
   const title = tProduct("title");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="product-list-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="product-list-action-buttons">
       <Button size={"sm"} asChild>
         <Link href="/product-management/product/new">
           <Plus className="h-4 w-4" />
@@ -92,7 +92,7 @@ export default function ProductComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="product-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="product-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}

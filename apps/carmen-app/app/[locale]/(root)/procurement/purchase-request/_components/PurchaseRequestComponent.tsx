@@ -188,7 +188,7 @@ export default function PurchaseRequestComponent() {
   };
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="purchase-request-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="purchase-request-action-buttons">
       <Button size={"sm"} onClick={handleOpenDialog}>
         <Plus className="h-4 w-4" />
         <p className="hidden xl:block">{tCommon("add")}</p>
@@ -215,7 +215,7 @@ export default function PurchaseRequestComponent() {
 
   const filters = (
     <div className="space-y-2">
-      <div className="filter-container" data-id="pr-list-filters">
+      <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="pr-list-filters">
         <div className="flex items-center gap-2">
           <SearchInput
             defaultValue={search}

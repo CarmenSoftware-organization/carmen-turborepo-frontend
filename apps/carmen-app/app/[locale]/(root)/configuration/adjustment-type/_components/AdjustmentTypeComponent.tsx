@@ -92,7 +92,7 @@ export default function AdjustmentTypeComponent() {
   ];
 
   const actionButtons = (
-    <div className="action-btn-container">
+    <div className="flex flex-col md:flex-row gap-2">
       <Button size="sm" onClick={handleAdd}>
         <Plus className="h-4 w-4" />
         {tAdj("add")}
@@ -111,9 +111,9 @@ export default function AdjustmentTypeComponent() {
   );
 
   const filters = (
-    <div className="filter-container">
+    <div className="flex flex-col md:flex-row gap-4 justify-between">
       <SearchInput defaultValue={search} onSearch={setSearch} placeholder="Search..." />
-      <div className="fxr-c gap-2">
+      <div className="flex items-center gap-2">
         <StatusSearchDropdown
           value={filter}
           onChange={setFilter}

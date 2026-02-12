@@ -69,7 +69,7 @@ export default function StoreRequisitionComponent() {
   const title = tSr("title");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="store-requisition-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="store-requisition-action-buttons">
       <Button size={"sm"} asChild>
         <Link href="/store-operation/store-requisition/new">
           <Plus className="h-4 w-4" />
@@ -93,7 +93,7 @@ export default function StoreRequisitionComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="store-requisition-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="store-requisition-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}

@@ -22,7 +22,7 @@ export default function InventoryBalanceComponent() {
   const [statusOpen, setStatusOpen] = useState(false);
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="inventory-balance-list-filters">
+    <div className="flex flex-col md:flex-row gap-2" data-id="inventory-balance-list-filters">
       <Button variant={"outline"} size={"sm"}>
         Stock Card
       </Button>
@@ -42,7 +42,7 @@ export default function InventoryBalanceComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="inventory-balance-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="inventory-balance-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}

@@ -127,7 +127,7 @@ export default function UnitComponent() {
   const title = tUnit("title");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="unit-list-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="unit-list-action-buttons">
       <Button size="sm" onClick={handleAdd} disabled={!unitPerms.canCreate}>
         <Plus className="h-4 w-4" />
         {tCommon("add")}
@@ -150,7 +150,7 @@ export default function UnitComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="unit-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="unit-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}

@@ -46,7 +46,7 @@ export default function PriceListComponent() {
   }, [isUnauthorized]);
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="price-list-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="price-list-action-buttons">
       <Button
         size={"sm"}
         onClick={() => {
@@ -75,7 +75,7 @@ export default function PriceListComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="price-list-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="price-list-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}

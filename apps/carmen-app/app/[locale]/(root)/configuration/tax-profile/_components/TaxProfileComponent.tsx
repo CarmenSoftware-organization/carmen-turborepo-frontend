@@ -61,7 +61,7 @@ export function TaxProfileComponent() {
   };
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="tax-profile-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="tax-profile-action-buttons">
       {taxProfilePerms.canCreate && (
         <Button size="sm" onClick={handleAddNew}>
           <Plus className="h-4 w-4" />

@@ -73,7 +73,7 @@ export default function Rfp() {
   const title = tRfp("title");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="rfp-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="rfp-action-buttons">
       <Button
         size={"sm"}
         onClick={() => {
@@ -102,7 +102,7 @@ export default function Rfp() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="vendor-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="vendor-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}

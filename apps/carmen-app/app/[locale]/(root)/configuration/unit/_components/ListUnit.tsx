@@ -107,7 +107,7 @@ export default function ListUnit({
           const unit = row.original;
           if (canUpdate) {
             return (
-              <button className="btn-dialog text-xs" onClick={() => onEdit(unit)}>
+              <button className="text-primary dark:text-foreground cursor-pointer hover:underline text-left text-xs md:text-sm" onClick={() => onEdit(unit)}>
                 {unit.name}
               </button>
             );

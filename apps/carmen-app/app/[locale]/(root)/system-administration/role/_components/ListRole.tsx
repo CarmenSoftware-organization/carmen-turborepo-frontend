@@ -116,7 +116,7 @@ export default function ListRole({
             return (
               <Link
                 href={`/system-administration/role/${role.id}`}
-                className="btn-dialog text-sm"
+                className="text-primary dark:text-foreground cursor-pointer hover:underline text-left text-xs md:text-sm"
               >
                 {role.name}
               </Link>

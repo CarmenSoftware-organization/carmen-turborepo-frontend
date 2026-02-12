@@ -27,7 +27,7 @@ export default function AccountCodeMappingComponent() {
   const title = "Account Code Mapping";
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="account-code-mapping-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="account-code-mapping-action-buttons">
       <Button size={"sm"}>
         <Scan className="h-4 w-4" />
         {tCommon("scan")}
@@ -52,14 +52,14 @@ export default function AccountCodeMappingComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="account-code-mapping-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="account-code-mapping-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
         placeholder={tCommon("search")}
         data-id="account-code-mapping-search-input"
       />
-      <div className="fxr-c gap-2">
+      <div className="flex items-center gap-2">
         <StatusSearchDropdown
           value={status}
           onChange={setStatus}

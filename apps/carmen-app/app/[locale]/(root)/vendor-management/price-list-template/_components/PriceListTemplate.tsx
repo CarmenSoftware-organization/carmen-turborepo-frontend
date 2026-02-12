@@ -40,7 +40,7 @@ export default function PriceListTemplate() {
   const title = tPlt("title");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="price-list-template-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="price-list-template-action-buttons">
       <Button
         size={"sm"}
         onClick={() => {
@@ -69,7 +69,7 @@ export default function PriceListTemplate() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="price-list-template-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="price-list-template-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}

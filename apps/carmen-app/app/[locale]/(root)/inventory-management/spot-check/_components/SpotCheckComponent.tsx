@@ -30,7 +30,7 @@ export default function SpotCheckComponent() {
   const title = t("SpotCheck.title");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="spot-check-list-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="spot-check-list-action-buttons">
       <Button variant={"default"} size={"sm"} data-id="spot-check-list-print-button" asChild>
         <Link href={"/inventory-management/spot-check/new"}>
           <Plus className="h-4 w-4" />
@@ -41,7 +41,7 @@ export default function SpotCheckComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="spot-check-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="spot-check-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}

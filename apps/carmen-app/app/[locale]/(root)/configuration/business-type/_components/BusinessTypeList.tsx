@@ -118,7 +118,7 @@ export default function BusinessTypeList({
             return (
               <button
                 type="button"
-                className="btn-dialog text-sm"
+                className="text-primary dark:text-foreground cursor-pointer hover:underline text-left text-xs md:text-sm"
                 onClick={() => onEdit(buType.id)}
               >
                 {buType.name}

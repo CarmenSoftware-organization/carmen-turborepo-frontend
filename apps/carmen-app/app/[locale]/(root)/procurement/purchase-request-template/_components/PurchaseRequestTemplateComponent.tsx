@@ -42,7 +42,7 @@ export default function PurchaseRequestTemplateComponent() {
   const title = tPurchaseRequest("template");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="pr-template-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="pr-template-action-buttons">
       <Button size={"sm"} onClick={() => router.push("/procurement/purchase-request-template/new")}>
         <Plus className="h-4 w-4" />
         {tCommon("add")}
@@ -64,7 +64,7 @@ export default function PurchaseRequestTemplateComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="pr-template-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="pr-template-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}

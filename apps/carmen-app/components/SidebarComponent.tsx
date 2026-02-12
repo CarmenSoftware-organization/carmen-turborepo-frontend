@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { MotionDiv, AnimatePresence } from "./framer-motion/MotionWrapper";
 import { Skeleton } from "./ui/skeleton";
-import "@/styles/layout.css";
+
 
 type MenuIcon = React.ComponentType<{ className?: string }>;
 
@@ -38,7 +38,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   render() {
     if (this.state.hasError) {
       return (
-        <div className="error-div">
+        <div className="p-4 text-center">
           <div className="flex items-center gap-2 text-destructive">
             <AlertCircle className="h-5 w-5" />
             <span className="text-sm">Error loading menu</span>
@@ -52,7 +52,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 }
 
 const SidebarLoading = () => (
-  <nav className="sidebar-wrapper">
+  <nav className="p-4 space-y-1 border-r h-screen w-[250px] hidden md:block overflow-y-auto">
     <div>
       <Skeleton className="h-8 rounded mb-2" />
       <Skeleton className="h-4 rounded w-3/4" />
@@ -231,8 +231,8 @@ const SidebarContent = () => {
       <Link
         href={item.href}
         className={cn(
-          "fxb-c link-item group relative transition-all duration-200",
-          !isActive && "link-item-inactive hover:bg-primary/5 hover:text-primary",
+          "flex items-center justify-between p-2 rounded-md text-sm group relative transition-all duration-200",
+          !isActive && "text-muted-foreground hover:bg-primary/5 hover:text-primary",
           isActive ? "bg-primary/10 text-primary font-semibold shadow-sm" : "text-muted-foreground",
           level > 0 && !isActuallyCollapsed && `pl-${4}`,
           isActuallyCollapsed && "justify-center"
@@ -282,8 +282,8 @@ const SidebarContent = () => {
 
   const getMenuItemClassName = (level: number, isActive: boolean, isOpen: boolean) => {
     return cn(
-      "fxb-c menu-item",
-      isActive ? "item-active" : "menu-item-hover",
+      "flex items-center justify-between p-2 rounded-md text-sm w-full text-left cursor-pointer",
+      isActive ? "bg-primary text-white" : "hover:bg-muted hover:text-muted-foreground",
       level > 0 && !isActuallyCollapsed && `pl-${4 * (level + 1)}`,
       isOpen && !isActuallyCollapsed && "bg-muted",
       isActuallyCollapsed && "justify-center"
@@ -296,7 +296,7 @@ const SidebarContent = () => {
       transition={{ duration: 0.3, ease: "easeInOut" }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={cn("motion-wrapper")}
+      className="flex flex-col border-r border-border h-[calc(100vh-4rem)] hidden md:block relative overflow-y-auto"
       aria-label="Sidebar Navigation"
     >
       <div className="flex-1 overflow-y-auto p-3 space-y-1">

@@ -28,7 +28,7 @@ export default function CuisineComponent() {
   const title = t("title");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="cuisine-type-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="cuisine-type-action-buttons">
       <Button variant={"outline"} size={"sm"}>
         <FileUp className="h-4 w-4" />
         {tCommon("import")}
@@ -54,7 +54,7 @@ export default function CuisineComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="cuisine-type-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="cuisine-type-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}

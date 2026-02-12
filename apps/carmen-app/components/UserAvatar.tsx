@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 import { LogOut, User } from "lucide-react";
 import { Link } from "@/lib/navigation";
 import { useTranslations } from "next-intl";
-import "@/styles/layout.css";
+
 import { initName } from "@/utils/format/name";
 
 export default function UserAvatar() {
@@ -53,14 +53,14 @@ export default function UserAvatar() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48 xl:w-56">
         <DropdownMenuLabel className="p-2 xl:p-3">
-          <div className="fx-c">
+          <div className="flex flex-col">
             <p className="text-xs xl:text-sm font-medium">{fullName}</p>
-            <p className="email-font text-[10px] xl:text-xs">{email}</p>
+            <p className="text-muted-foreground truncate text-[10px] xl:text-xs">{email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer text-xs xl:text-sm py-1.5 xl:py-2">
-          <Link href="/profile" className="fxr-c gap-1.5 xl:gap-2">
+          <Link href="/profile" className="flex items-center gap-1.5 xl:gap-2">
             <User className="h-3.5 w-3.5 xl:h-4 xl:w-4" />
             <span>{t("profile")}</span>
           </Link>

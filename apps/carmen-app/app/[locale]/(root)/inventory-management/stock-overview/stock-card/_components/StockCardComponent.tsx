@@ -28,7 +28,7 @@ export default function StockCardComponent() {
   const title = t("StockCard.title");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="stock-card-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="stock-card-action-buttons">
       <Button size={"sm"}>
         <Plus className="h-4 w-4" />
         {tCommon("add")}
@@ -50,14 +50,14 @@ export default function StockCardComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="stock-card-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="stock-card-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
         placeholder={tCommon("search")}
         data-id="stock-card-list-search-input"
       />
-      <div className="fxr-c gap-2">
+      <div className="flex items-center gap-2">
         <StatusSearchDropdown
           value={status}
           onChange={setStatus}

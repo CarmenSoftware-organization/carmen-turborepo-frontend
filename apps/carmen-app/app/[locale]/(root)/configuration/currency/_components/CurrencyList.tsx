@@ -114,7 +114,7 @@ export default function CurrencyList({
           const currency = row.original;
           if (canUpdate) {
             return (
-              <button type="button" className="btn-dialog text-sm" onClick={() => onEdit(currency)}>
+              <button type="button" className="text-primary dark:text-foreground cursor-pointer hover:underline text-left text-xs md:text-sm" onClick={() => onEdit(currency)}>
                 {currency.name}
               </button>
             );

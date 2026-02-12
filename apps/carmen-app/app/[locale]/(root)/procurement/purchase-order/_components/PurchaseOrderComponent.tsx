@@ -48,7 +48,7 @@ export default function PurchaseOrderComponent() {
   const title = tPurchaseOrder("title");
 
   const filters = (
-    <div className="filter-container" data-id="po-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="po-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
@@ -72,7 +72,7 @@ export default function PurchaseOrderComponent() {
   );
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="po-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="po-action-buttons">
       <Button size={"sm"} onClick={handleOpenDialog}>
         <Plus className="h-4 w-4" />
         {tCommon("add")}

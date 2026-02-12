@@ -146,7 +146,7 @@ export default function DeliveryPointComponent() {
   const title = tDeliveryPoint("title");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="delivery-point-list-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="delivery-point-list-action-buttons">
       <Button size={"sm"} onClick={handleAdd}>
         <Plus className="h-4 w-4" />
         {tCommon("add")}
@@ -170,14 +170,14 @@ export default function DeliveryPointComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="delivery-point-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="delivery-point-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
         placeholder={tCommon("search")}
         data-id="delivery-point-list-search-input"
       />
-      <div className="fxr-c gap-2">
+      <div className="flex items-center gap-2">
         <StatusSearchDropdown
           value={filter}
           onChange={setFilter}

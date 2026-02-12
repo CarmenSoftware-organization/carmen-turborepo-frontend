@@ -74,7 +74,7 @@ export default function RoleComponent() {
   const title = tRole("title");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="role-list-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="role-list-action-buttons">
       <Button size={"sm"} onClick={handleAdd}>
         <Plus className="h-4 w-4" />
         {tCommon("add")}
@@ -93,14 +93,14 @@ export default function RoleComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="role-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="role-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
         placeholder={tCommon("search")}
         data-id="role-list-search-input"
       />
-      <div className="fxr-c gap-2">
+      <div className="flex items-center gap-2">
         <SortComponent
           fieldConfigs={sortFields}
           sort={sort}

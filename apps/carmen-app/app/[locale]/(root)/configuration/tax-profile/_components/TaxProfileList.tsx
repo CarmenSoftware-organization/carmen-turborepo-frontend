@@ -58,7 +58,7 @@ export default function TaxProfileList({
           if (canUpdate) {
             return (
               <div className="max-w-[300px] truncate">
-                <button type="button" className="btn-dialog" onClick={() => onEdit(taxProfile.id)}>
+                <button type="button" className="text-primary dark:text-foreground cursor-pointer hover:underline text-left text-xs md:text-sm" onClick={() => onEdit(taxProfile.id)}>
                   {taxProfile.name}
                 </button>
               </div>

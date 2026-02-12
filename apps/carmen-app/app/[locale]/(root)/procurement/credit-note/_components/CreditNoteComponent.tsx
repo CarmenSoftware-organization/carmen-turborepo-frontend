@@ -44,7 +44,7 @@ export default function CreditNoteComponent() {
   const title = tCreditNote("title");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="credit-note-action-buttons">
+    <div className="flex flex-col md:flex-row gap-2" data-id="credit-note-action-buttons">
       <Button
         size={"sm"}
         data-id="credit-note-new-button"
@@ -75,7 +75,7 @@ export default function CreditNoteComponent() {
   );
 
   const filters = (
-    <div className="filter-container" data-id="credit-note-list-filters">
+    <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="credit-note-list-filters">
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
