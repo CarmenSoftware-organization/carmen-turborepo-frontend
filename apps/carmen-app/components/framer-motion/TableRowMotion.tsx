@@ -7,9 +7,8 @@ interface TableRowMotionProps {
     readonly index: number;
 }
 
-export default function TableRowMotion({ children, index }: TableRowMotionProps) {
+export default function TableRowMotion({ children }: TableRowMotionProps) {
     if (!children) {
-        console.log("motion item is null");
         return null;
     }
     return (
@@ -18,14 +17,11 @@ export default function TableRowMotion({ children, index }: TableRowMotionProps)
             initial="hidden"
             animate="visible"
             exit="exit"
-            layout
             transition={{
-                duration: 0.5,
+                duration: 0.2,
                 ease: "easeOut",
-                layout: { duration: 0.3 },
-                delay: index * 0.08
             }}
-            className="border-b border-blue-100 transition-colors hover:bg-blue-50/30 data-[state=selected]:bg-blue-50"
+            className="border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
         >
             {children}
         </motion.tr>

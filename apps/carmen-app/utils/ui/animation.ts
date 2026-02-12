@@ -4,24 +4,22 @@ export const fadeVariants = {
 };
 
 export const slideUpVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 10 },
   visible: { opacity: 1, y: 0 },
 };
 
 export const buttonVariants = {
   idle: { scale: 1 },
-  hover: { scale: 1.05 },
-  tap: { scale: 0.95 },
+  hover: { scale: 1.02 },
+  tap: { scale: 0.98 },
 };
 
 export const cellContentVariants = {
-  hidden: { opacity: 0, scale: 0.9 },
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    scale: 1,
     transition: {
-      duration: 0.3,
-      delay: 0.1,
+      duration: 0.15,
     },
   },
 };
@@ -29,17 +27,11 @@ export const cellContentVariants = {
 export const rowVariants = {
   hidden: {
     opacity: 0,
-    y: 20,
-    scale: 0.95,
   },
   visible: {
     opacity: 1,
-    y: 0,
-    scale: 1,
   },
   exit: {
     opacity: 0,
-    x: -50,
-    scale: 0.95,
   },
 };
