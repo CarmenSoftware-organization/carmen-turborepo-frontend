@@ -22,13 +22,11 @@ const DataDisplayTemplate: React.FC<Props> = ({
   return (
     <div className="flex w-full flex-col justify-center">
       <div className="sticky top-0 bg-background z-10 space-y-1.5 pb-2">
-        <div className="md:flex justify-between items-center">
-          <div className="text-base font-semibold tracking-tight text-primary">
+        <div className="flex flex-col md:flex-row justify-between md:items-center gap-1.5">
+          <div className="text-base font-semibold tracking-tight">
             {title}
           </div>
-          {actionButtons && (
-            <div className="mt-1.5 md:mt-0">{actionButtons}</div>
-          )}
+          {actionButtons && <div>{actionButtons}</div>}
         </div>
         {filters && <div>{filters}</div>}
         {bulkActions && (

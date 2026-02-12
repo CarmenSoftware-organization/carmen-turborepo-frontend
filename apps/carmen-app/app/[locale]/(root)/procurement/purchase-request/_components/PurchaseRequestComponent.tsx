@@ -214,15 +214,20 @@ export default function PurchaseRequestComponent() {
   );
 
   const filters = (
-    <div className="space-y-2">
-      <div className="flex flex-col md:flex-row gap-4 justify-between" data-id="pr-list-filters">
-        <div className="flex items-center gap-2">
-          <SearchInput
-            defaultValue={search}
-            onSearch={setSearch}
-            placeholder={tCommon("search")}
-            data-id="pr-list-search-input"
-          />
+    <div className="space-y-2" data-id="pr-list-filters">
+      {/* Row 1: Search */}
+      <div className="flex flex-col md:flex-row gap-2 justify-between">
+        <SearchInput
+          defaultValue={search}
+          onSearch={setSearch}
+          placeholder={tCommon("search")}
+          data-id="pr-list-search-input"
+        />
+      </div>
+
+      {/* Row 2: Scope + Filters + View */}
+      <div className="flex flex-col md:flex-row gap-2 justify-between">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
             size={"sm"}
             className="h-8"
@@ -247,6 +252,8 @@ export default function PurchaseRequestComponent() {
             <FileStack />
             <span className="hidden xl:block">{tDataControls("allDoc")}</span>
           </Button>
+
+          <div className="w-px h-5 bg-border hidden md:block" />
 
           {fetchType !== FETCH_TYPE.MY_PENDING && (
             <SelectPrStatus status={filterStatus} setStatus={setFilterStatus} />
@@ -279,27 +286,25 @@ export default function PurchaseRequestComponent() {
             initialValues={getCurrentFilterValues()}
           />
 
-          <div className="hidden lg:block">
-            <div className="flex items-center gap-2">
-              <Button
-                variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
-                size={"sm"}
-                onClick={() => setView(VIEW.LIST)}
-                aria-label="List view"
-              >
-                <List className="h-4 w-4" />
-                <p className="hidden xl:block">{tCommon("list_view")}</p>
-              </Button>
-              <Button
-                variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
-                size={"sm"}
-                onClick={() => setView(VIEW.GRID)}
-                aria-label="Grid view"
-              >
-                <Grid className="h-4 w-4" />
-                <p className="hidden xl:block">{tCommon("grid_view")}</p>
-              </Button>
-            </div>
+          <div className="w-px h-5 bg-border hidden lg:block" />
+
+          <div className="hidden lg:flex items-center gap-1">
+            <Button
+              variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
+              size={"sm"}
+              onClick={() => setView(VIEW.LIST)}
+              aria-label="List view"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
+              size={"sm"}
+              onClick={() => setView(VIEW.GRID)}
+              aria-label="Grid view"
+            >
+              <Grid className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
