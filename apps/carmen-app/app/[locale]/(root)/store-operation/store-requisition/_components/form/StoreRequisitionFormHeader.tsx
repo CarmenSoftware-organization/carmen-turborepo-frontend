@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import DateInput from "@/components/form-custom/DateInput";
 import LookupLocation from "@/components/lookup/LookupLocation";
 import { TextareaValidate } from "@/components/ui-custom/TextareaValidate";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
 interface StoreRequisitionFormHeaderProps {

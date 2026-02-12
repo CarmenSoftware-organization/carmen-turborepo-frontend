@@ -9,7 +9,7 @@ import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
 import { useTranslations } from "next-intl";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import { useWorkflowTypeQuery } from "@/hooks/use-workflow";
 
 interface WorkflowDto {

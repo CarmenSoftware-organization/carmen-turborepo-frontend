@@ -1,5 +1,5 @@
 import { Label } from "@/components/ui/label";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import { formatAmountNaN } from "@/utils/format/number";
 
 interface Props {

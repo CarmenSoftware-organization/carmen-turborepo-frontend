@@ -5,7 +5,7 @@ import { UseFormReturn } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel } from "@/components/form-custom/form";
 import { Textarea } from "@/components/ui/textarea";
 import { PrtFormValues } from "../../_schema/prt.schema";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import { formType } from "@/dtos/form.dto";
 import LookupWorkflow from "@/components/lookup/LookupWorkflow";
 import { enum_workflow_type } from "@/dtos/workflows.dto";

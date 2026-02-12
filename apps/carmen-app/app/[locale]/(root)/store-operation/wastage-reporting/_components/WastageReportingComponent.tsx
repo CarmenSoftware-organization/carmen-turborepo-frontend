@@ -1,6 +1,10 @@
+"use client";
+
+import dynamic from "next/dynamic";
 import WastageCard from "./WastageCard";
-import WastageChartLevel from "./WastageChartLevel";
 import WastageTable from "./WastageTable";
+
+const WastageChartLevel = dynamic(() => import("./WastageChartLevel"), { ssr: false });
 
 export default function WastageReportingComponent() {
     return (

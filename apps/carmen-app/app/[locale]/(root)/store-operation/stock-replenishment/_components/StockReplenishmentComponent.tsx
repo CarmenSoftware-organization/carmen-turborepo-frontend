@@ -1,6 +1,10 @@
+"use client";
+
+import dynamic from "next/dynamic";
 import StockCard from "./StockCard";
-import StockLevel from "./StockLevel";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+
+const StockLevel = dynamic(() => import("./StockLevel"), { ssr: false });
 import StockTable from "./StockTable";
 export default function StockReplenishmentComponent() {
   return (
