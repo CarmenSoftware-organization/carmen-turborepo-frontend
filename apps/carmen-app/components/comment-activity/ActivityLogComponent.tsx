@@ -46,7 +46,7 @@ export default function ActivityLogComponent({
     return (
         <div>
             <Input
-                className="h-7 mb-3"
+                className="h-7 mb-2"
                 placeholder={searchPlaceholder}
                 value={searchTerm}
                 onChange={handleSearchChange}
@@ -55,23 +55,23 @@ export default function ActivityLogComponent({
             <ScrollArea className="h-[calc(80vh-120px)]">
                 {activities.length > 0 ? (
                     activities.map((activity) => (
-                        <Card key={activity.id} className="p-2 mb-2">
-                            <div className="flex items-start gap-2">
-                                <div className="h-6 w-6 bg-muted rounded-full flex items-center justify-center">
+                        <Card key={activity.id} className="p-1.5 mb-1.5">
+                            <div className="flex items-start gap-1.5">
+                                <div className="h-5 w-5 bg-muted rounded-full flex items-center justify-center text-[10px] font-medium shrink-0">
                                     {activity.user.charAt(0)}
                                 </div>
-                                <div className="w-full">
+                                <div className="w-full min-w-0">
                                     <div className="flex justify-between items-center">
-                                        <p className="font-medium text-xs">{activity.user}</p>
-                                        <p className="text-xs">{activity.date}</p>
+                                        <p className="font-medium text-[11px] truncate">{activity.user}</p>
+                                        <p className="text-[10px] text-muted-foreground shrink-0">{activity.date}</p>
                                     </div>
-                                    <p className="text-xs">{activity.action}</p>
+                                    <p className="text-[11px] text-muted-foreground">{activity.action}</p>
                                 </div>
                             </div>
                         </Card>
                     ))
                 ) : (
-                    <p className="text-center py-4 text-sm text-muted-foreground">
+                    <p className="text-center py-3 text-xs text-muted-foreground">
                         No Activity Log
                     </p>
                 )}

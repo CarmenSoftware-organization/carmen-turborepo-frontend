@@ -229,7 +229,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
       return cn(
         labelPlacement === "left" && "ml-2",
         labelPlacement === "right" && "mr-2",
-        derivedStates.needsTopPadding && "pt-4",
+        derivedStates.needsTopPadding && "pt-3",
         startContent && "pl-10",
         (endContent || derivedStates.shouldShowPasswordToggle) && "pr-10",
         derivedStates.finalError && "border-destructive focus:ring-destructive",
@@ -252,7 +252,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
 
       // Handle different label placements
       if (labelPlacement === "top") {
-        return cn(baseClasses, "block mb-2", derivedStates.finalError && "text-destructive");
+        return cn(baseClasses, "block mb-1", derivedStates.finalError && "text-destructive");
       }
 
       if (labelPlacement === "left") {
@@ -276,8 +276,8 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
           baseClasses,
           "absolute left-3 pointer-events-none transform-gpu text-muted-foreground",
           derivedStates.shouldShrinkLabel
-            ? "text-[10px] top-1 -translate-y-0"
-            : "top-3 text-sm translate-y-0"
+            ? "text-[10px] top-0.5 -translate-y-0"
+            : "top-2.5 text-xs translate-y-0"
         );
       }
 
@@ -485,7 +485,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
       return (
         <div
           id={`${inputId}-error`}
-          className="text-destructive text-sm mt-1"
+          className="text-destructive text-xs mt-1"
           role="alert"
           aria-live="polite"
         >

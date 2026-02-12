@@ -5,7 +5,6 @@ import { SignInFormValues, createSignInSchema } from "@/dtos/sign-in.dto";
 import { Link, useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import "@/styles/auth.css";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
@@ -63,25 +62,29 @@ export default function SignInForm() {
   };
 
   return (
-    <div className="login-page-wrapper">
-      <div className="login-container">
-        <div className="login-layout">
-          <div className="login-info">
-            <div className="avatar-wrapper">
+    <div className="flex justify-center items-center w-full min-h-screen bg-muted p-4 sm:p-0">
+      <div className="bg-background max-w-4xl w-full p-6 sm:p-10 rounded-lg">
+        <div className="flex flex-col lg:flex-row">
+          <div className="w-full lg:w-1/2 space-y-4 mb-8 lg:mb-0 text-center lg:text-left">
+            <div className="flex justify-center lg:justify-start">
               <Image
                 src="/images/carmen_pic.jpg"
-                alt="@shadcn"
+                alt="Carmen Software"
                 className="rounded-full"
                 width={60}
                 height={60}
                 data-id="sidebar-logo-avatar-image"
               />
             </div>
-            <p className="app-name">{tHome("CarmenSoftware")}</p>
-            <p className="app-description">{tHome("HotelFinanceManagementSoftware")}</p>
+            <p className="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight">
+              {tHome("CarmenSoftware")}
+            </p>
+            <p className="text-muted-foreground text-sm sm:text-base font-normal">
+              {tHome("HotelFinanceManagementSoftware")}
+            </p>
           </div>
 
-          <div className="login-form-wrapper">
+          <div className="w-full lg:w-1/2 lg:pt-10">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                 <FormField
@@ -95,11 +98,11 @@ export default function SignInForm() {
                           data-id="sign-in-email"
                           label={t("email")}
                           labelPlacement="inside"
-                          placeholder="This shows when input has value"
+                          placeholder=""
                           required
                           autoComplete="username"
                           {...field}
-                          className="h-12 sm:h-11"
+                          className="h-10 sm:h-9"
                         />
                       </FormControl>
                       <FormMessage />
@@ -121,7 +124,7 @@ export default function SignInForm() {
                           type="password"
                           autoComplete="current-password"
                           {...field}
-                          className="h-12 sm:h-11"
+                          className="h-10 sm:h-9"
                         />
                       </FormControl>
                       <FormMessage />
@@ -129,12 +132,14 @@ export default function SignInForm() {
                   )}
                 />
                 {form.formState.errors.root && (
-                  <div className="text-error">{form.formState.errors.root.message}</div>
+                  <div className="text-sm font-medium text-destructive">
+                    {form.formState.errors.root.message}
+                  </div>
                 )}
-                <div className="submit-container flex gap-2">
+                <div className="flex justify-center sm:justify-end pt-2 gap-2">
                   <Button
                     type="submit"
-                    className="submit-button"
+                    className="w-full h-10 sm:h-9"
                     disabled={signInMutation.isPending}
                     data-testid="sign-in-button"
                   >
@@ -151,15 +156,15 @@ export default function SignInForm() {
             </div>
           </div>
         </div>
-        <div className="form-footer">
-          <div>
+        <div className="flex flex-col sm:flex-row justify-between items-center mt-8 lg:mt-10 gap-4 sm:gap-0">
+          <div className="order-2 sm:order-1">
             <LanguageSwitcher data-id="language-switch" />
           </div>
-          <div className="legal-links">
-            <Link href="/terms" className="hover:underline text-xs">
+          <div className="flex items-center gap-4 text-center order-1 sm:order-2">
+            <Link href="/terms" className="text-muted-foreground hover:underline text-xs">
               {t("termsOfService")}
             </Link>
-            <Link href="/policy" className="hover:underline text-xs">
+            <Link href="/policy" className="text-muted-foreground hover:underline text-xs">
               {t("privacyPolicy")}
             </Link>
           </div>

@@ -271,8 +271,8 @@ export default function CommentComponent({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -285,9 +285,9 @@ export default function CommentComponent({
   return (
     <div>
       <ScrollArea className="h-[calc(75vh-120px)]">
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           {comments.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">{t("no_comments")}</p>
+            <p className="text-xs text-muted-foreground text-center py-4">{t("no_comments")}</p>
           ) : (
             comments.map((comment) => {
               const isEditing = editingCommentId === comment.id;
@@ -295,7 +295,7 @@ export default function CommentComponent({
               return (
                 <Card
                   key={comment.id}
-                  className="p-2 hover:bg-muted/30 transition-colors group mr-4"
+                  className="p-1.5 hover:bg-muted/30 transition-colors group mr-4"
                 >
                   <div className="flex items-start gap-2">
                     <div className="flex-1 min-w-0">
@@ -457,8 +457,8 @@ export default function CommentComponent({
           )}
         </div>
       </ScrollArea>
-      <div className="mt-2 space-y-2">
-        <Textarea placeholder="Add a comment" value={message} onChange={handleCommentChange} />
+      <div className="mt-1.5 space-y-1.5">
+        <Textarea placeholder="Add a comment" value={message} onChange={handleCommentChange} className="min-h-[60px] text-xs" />
 
         {/* File upload input */}
         <input
@@ -476,7 +476,7 @@ export default function CommentComponent({
             {selectedFiles.map((file) => (
               <div
                 key={getFileKey(file)}
-                className="flex items-center justify-between bg-muted p-2 rounded-md"
+                className="flex items-center justify-between bg-muted/50 px-1.5 py-1 rounded"
               >
                 <div className="flex items-center gap-2 text-xs">
                   <Paperclip className="h-2.5 w-2.5" />
@@ -522,9 +522,9 @@ export default function CommentComponent({
             className="gap-1"
           >
             {isSending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-3 w-3 animate-spin" />
             ) : (
-              <Send className="h-4 w-4" />
+              <Send className="h-3 w-3" />
             )}
             {getButtonText()}
           </Button>
