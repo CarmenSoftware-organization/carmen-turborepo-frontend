@@ -1,6 +1,5 @@
 import { X, ArrowLeftIcon, Eye, CheckCircleIcon, ShoppingCart, SendIcon, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MotionDiv } from "@/components/framer-motion/MotionWrapper";
 import { useTranslations } from "next-intl";
 import { PR_STATUS } from "../../_constants/pr-status";
 
@@ -29,8 +28,13 @@ interface ActionButtonsProps {
   readonly onApprove: () => void;
   readonly onPurchaseApprove: () => void;
   readonly onSubmitPr: () => void;
-  readonly onSave?: () => void; // Optional for new PR
+  readonly onSave?: () => void;
 }
+
+const stopEvent = (e: React.MouseEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
 
 export default function ActionButtons({
   prStatus,
@@ -71,39 +75,29 @@ export default function ActionButtons({
       itemsStatusSummary.newItems === 0
     : false;
 
-  // ถ้ามี pending และไม่ใช่ draft ให้ return null ไม่ต้องแสดง
   if (hasPending && !isDraft) {
     return null;
   }
 
+  const showSubmit = prStatus !== PR_STATUS.IN_PROGRESS;
+
   return (
-    <MotionDiv
-      className={`fixed bottom-8 right-20 w-fit flex items-center justify-end gap-2 bg-background shadow-lg border border-border rounded-md p-2`}
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.2 }}
-    >
+    <div className="sticky bottom-0 z-10 flex items-center justify-end gap-2 bg-background/95 backdrop-blur-sm shadow-[0_-1px_3px_0_hsl(220_15%_20%/0.08)] border border-border rounded-md p-2">
       {isNewPr ? (
         <Button onClick={onSave} disabled={isDisabled} size="sm" type="button">
-          <Save />
+          <Save className="w-4 h-4" />
           {tAction("save")}
         </Button>
       ) : (
         <>
           {!isDraft && (
             <>
-              {/* ถ้ามี review ให้แสดงเฉพาะปุ่ม review */}
               {hasReview && (
                 <Button
                   size="sm"
                   type="button"
-                  className="bg-[hsl(var(--azure-primary))] hover:bg-[hsl(var(--azure-primary)/0.8)] h-7"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onReview();
-                  }}
+                  variant="info"
+                  onClick={(e) => { stopEvent(e); onReview(); }}
                   disabled={isPending}
                 >
                   <Eye className="w-4 h-4" />
@@ -111,17 +105,12 @@ export default function ActionButtons({
                 </Button>
               )}
 
-              {/* ถ้ามีแต่ approved และไม่มี review ให้แสดงเฉพาะปุ่ม approve */}
               {!hasReview && hasOnlyApproved && (
                 <Button
                   size="sm"
                   type="button"
-                  className="bg-[hsl(var(--emerald-primary))] hover:bg-[hsl(var(--emerald-primary)/0.8)] h-7"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onApprove();
-                  }}
+                  variant="success"
+                  onClick={(e) => { stopEvent(e); onApprove(); }}
                   disabled={isPending}
                 >
                   <CheckCircleIcon className="w-4 h-4" />
@@ -129,17 +118,12 @@ export default function ActionButtons({
                 </Button>
               )}
 
-              {/* ถ้ามีแต่ rejected ให้แสดงเฉพาะปุ่ม reject */}
               {!hasReview && !hasOnlyApproved && hasOnlyRejected && (
                 <Button
                   size="sm"
                   type="button"
-                  className="bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive)/0.8)] h-7"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onReject();
-                  }}
+                  variant="destructive"
+                  onClick={(e) => { stopEvent(e); onReject(); }}
                   disabled={isPending}
                 >
                   <X className="w-4 h-4" />
@@ -147,18 +131,13 @@ export default function ActionButtons({
                 </Button>
               )}
 
-              {/* แสดงปุ่มทั้งหมด */}
               {!hasReview && !hasOnlyApproved && !hasOnlyRejected && (
                 <>
                   <Button
                     size="sm"
                     type="button"
-                    className="bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive)/0.8)] h-7"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onReject();
-                    }}
+                    variant="destructive"
+                    onClick={(e) => { stopEvent(e); onReject(); }}
                     disabled={isPending}
                   >
                     <X className="w-4 h-4" />
@@ -167,26 +146,21 @@ export default function ActionButtons({
                   <Button
                     size="sm"
                     type="button"
-                    className="bg-[hsl(var(--inactive))] hover:bg-[hsl(var(--inactive)/0.8)] h-7"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onSendBack();
-                    }}
+                    variant="warning"
+                    onClick={(e) => { stopEvent(e); onSendBack(); }}
                     disabled={isPending}
                   >
                     <ArrowLeftIcon className="w-4 h-4" />
                     {tAction("send_back")}
                   </Button>
+
+                  <div className="w-px h-5 bg-border" />
+
                   <Button
                     size="sm"
                     type="button"
-                    className="bg-[hsl(var(--azure-primary))] hover:bg-[hsl(var(--azure-primary)/0.8)] h-7"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onReview();
-                    }}
+                    variant="info"
+                    onClick={(e) => { stopEvent(e); onReview(); }}
                     disabled={isPending}
                   >
                     <Eye className="w-4 h-4" />
@@ -195,12 +169,8 @@ export default function ActionButtons({
                   <Button
                     size="sm"
                     type="button"
-                    className="bg-[hsl(var(--emerald-primary))] hover:bg-[hsl(var(--emerald-primary)/0.8)] h-7"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onApprove();
-                    }}
+                    variant="success"
+                    onClick={(e) => { stopEvent(e); onApprove(); }}
                     disabled={isPending}
                   >
                     <CheckCircleIcon className="w-4 h-4" />
@@ -209,12 +179,8 @@ export default function ActionButtons({
                   <Button
                     size="sm"
                     type="button"
-                    className="bg-[hsl(var(--teal-primary))] hover:bg-[hsl(var(--teal-primary)/0.8)] h-7"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onPurchaseApprove();
-                    }}
+                    variant="default"
+                    onClick={(e) => { stopEvent(e); onPurchaseApprove(); }}
                     disabled={isPending || isApproveDisabled}
                   >
                     <ShoppingCart className="w-4 h-4" />
@@ -225,24 +191,23 @@ export default function ActionButtons({
             </>
           )}
 
-          {(prStatus === PR_STATUS.DRAFT || prStatus !== PR_STATUS.IN_PROGRESS) && (
-            <Button
-              size="sm"
-              type="button"
-              className="bg-[hsl(var(--active))] hover:bg-[hsl(var(--active)/0.8)] h-7"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onSubmitPr();
-              }}
-              disabled={isPending || isSubmitDisabled}
-            >
-              <SendIcon className="w-4 h-4" />
-              {tAction("submit")}
-            </Button>
+          {showSubmit && (
+            <>
+              {!isDraft && <div className="w-px h-5 bg-border" />}
+              <Button
+                size="sm"
+                type="button"
+                variant="success"
+                onClick={(e) => { stopEvent(e); onSubmitPr(); }}
+                disabled={isPending || isSubmitDisabled}
+              >
+                <SendIcon className="w-4 h-4" />
+                {tAction("submit")}
+              </Button>
+            </>
           )}
         </>
       )}
-    </MotionDiv>
+    </div>
   );
 }

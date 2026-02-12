@@ -105,7 +105,7 @@ const LookupExchangeRate = forwardRef<HTMLButtonElement, ExchangeRateLookupProps
               className="w-full border-0 focus:ring-0"
             />
             <CommandList className="max-h-[280px] overflow-y-auto overscroll-contain">
-              <CommandEmpty className="py-6 text-center text-sm">No currencies found.</CommandEmpty>
+              <CommandEmpty className="py-3 text-center text-sm">No currencies found.</CommandEmpty>
               <CommandGroup className="p-0">
                 {availableCurrencies && availableCurrencies.length > 0 ? (
                   availableCurrencies.map((currency) => (
@@ -143,7 +143,7 @@ const LookupExchangeRate = forwardRef<HTMLButtonElement, ExchangeRateLookupProps
                     </CommandItem>
                   ))
                 ) : (
-                  <CommandItem disabled className="text-center py-6">
+                  <CommandItem disabled className="text-center py-3">
                     No currencies available.
                   </CommandItem>
                 )}

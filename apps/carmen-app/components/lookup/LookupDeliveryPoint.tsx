@@ -188,7 +188,7 @@ export function LookupDeliveryPoint({
 
     return (
       <div className="p-3 text-center">
-        <div className="text-gray-500 text-sm">
+        <div className="text-muted-foreground text-sm">
           {debouncedSearchTerm.trim() ? "No results found" : "Start typing to search..."}
         </div>
       </div>
@@ -246,9 +246,9 @@ export function LookupDeliveryPoint({
         />
         <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
           {isLoading ? (
-            <Loader2 className="h-4 w-4 text-gray-400 animate-spin" />
+            <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
           ) : (
-            <ChevronsUpDown className="h-4 w-4 text-gray-400" />
+            <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
           )}
         </div>
       </div>
@@ -261,7 +261,7 @@ export function LookupDeliveryPoint({
               {isLoading ? (
                 <div className="p-3 text-center">
                   <Loader2 className="h-4 w-4 animate-spin mx-auto mb-2" />
-                  <div className="text-sm text-gray-500">Loading...</div>
+                  <div className="text-sm text-muted-foreground">Loading...</div>
                 </div>
               ) : (
                 <div className="py-1 max-h-60 overflow-y-auto">{renderDropdownContent()}</div>

@@ -104,7 +104,7 @@ export default function LookupWorkflow({
   return (
     <Select value={value || ""} onValueChange={handleValueChange} disabled={disabled || isLoading}>
       <SelectTrigger
-        className={cn("w-full text-sm", disabled ? "bg-muted cursor-not-allowed" : "")}
+        className={cn("w-full", disabled ? "bg-muted cursor-not-allowed" : "")}
       >
         <SelectValue placeholder={t("select_workflow")} />
       </SelectTrigger>

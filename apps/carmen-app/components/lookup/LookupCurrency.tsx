@@ -178,7 +178,7 @@ export default function LookupCurrency({
             {(() => {
               if (error) {
                 return (
-                  <div className="flex items-center justify-center py-6 text-red-500">
+                  <div className="flex items-center justify-center py-3 text-destructive">
                     <span>{t("load_error")}</span>
                   </div>
                 );
@@ -186,8 +186,8 @@ export default function LookupCurrency({
 
               if (isLoading && currenciesData.length === 0) {
                 return (
-                  <div className="flex items-center justify-center py-6">
-                    <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                  <div className="flex items-center justify-center py-3">
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                   </div>
                 );
               }
@@ -224,14 +224,14 @@ export default function LookupCurrency({
                         {hasNextPage && (
                           <div
                             ref={loadMoreRef}
-                            className="h-8 w-full flex items-center justify-center text-xs text-gray-400 border-t border-border"
+                            className="h-8 w-full flex items-center justify-center text-xs text-muted-foreground border-t border-border"
                           >
                             {t("load_more_currencies")}
                           </div>
                         )}
                         {isFetchingNextPage && (
                           <div className="flex items-center justify-center py-2">
-                            <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                           </div>
                         )}
                       </>

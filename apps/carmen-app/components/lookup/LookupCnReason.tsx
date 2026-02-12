@@ -31,7 +31,7 @@ export default function LookupCnReason({
       <SelectContent>
         {isLoading ? (
           <SelectItem value="loading" disabled>
-            <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
           </SelectItem>
         ) : cnReasons.length === 0 ? (
           <SelectItem value="empty" disabled>
