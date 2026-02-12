@@ -52,7 +52,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 }
 
 const SidebarLoading = () => (
-  <nav className="p-4 space-y-1 border-r h-screen w-[250px] hidden md:block overflow-y-auto">
+  <nav className="p-2.5 space-y-1 border-r h-screen w-[240px] hidden md:block overflow-y-auto">
     <div>
       <Skeleton className="h-8 rounded mb-2" />
       <Skeleton className="h-4 rounded w-3/4" />
@@ -206,7 +206,7 @@ const SidebarContent = () => {
         <div className="flex items-center gap-2">
           {item.icon && <item.icon className="h-4 w-4" />}
           {!isActuallyCollapsed && (
-            <span className="font-medium text-muted-foreground text-xs xl:text-sm">
+            <span className="font-medium text-muted-foreground text-xs">
               {t(`${section}.${subItem}`)}
             </span>
           )}
@@ -231,7 +231,7 @@ const SidebarContent = () => {
       <Link
         href={item.href}
         className={cn(
-          "flex items-center justify-between p-2 rounded-md text-sm group relative transition-all duration-200",
+          "flex items-center justify-between px-2 py-1.5 rounded-md text-xs group relative transition-all duration-200",
           !isActive && "text-muted-foreground hover:bg-primary/5 hover:text-primary",
           isActive ? "bg-primary/10 text-primary font-semibold shadow-sm" : "text-muted-foreground",
           level > 0 && !isActuallyCollapsed && `pl-${4}`,
@@ -240,9 +240,9 @@ const SidebarContent = () => {
         title={isActuallyCollapsed ? t(`${section}.${subItem}`) : undefined}
       >
         {isActive && !isActuallyCollapsed && (
-          <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-primary rounded-r-full shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-full" />
         )}
-        <div className={cn("flex items-center", isActuallyCollapsed ? "justify-center" : "gap-3")}>
+        <div className={cn("flex items-center", isActuallyCollapsed ? "justify-center" : "gap-2")}>
           {item.icon && (
             <item.icon
               className={cn(
@@ -254,7 +254,7 @@ const SidebarContent = () => {
           {!isActuallyCollapsed && (
             <span
               className={cn(
-                "font-medium transition-colors text-xs xl:text-sm",
+                "font-medium transition-colors text-xs",
                 isActive ? "text-primary" : "group-hover:text-primary"
               )}
             >
@@ -282,7 +282,7 @@ const SidebarContent = () => {
 
   const getMenuItemClassName = (level: number, isActive: boolean, isOpen: boolean) => {
     return cn(
-      "flex items-center justify-between p-2 rounded-md text-sm w-full text-left cursor-pointer",
+      "flex items-center justify-between px-2 py-1.5 rounded-md text-xs w-full text-left cursor-pointer",
       isActive ? "bg-primary text-white" : "hover:bg-muted hover:text-muted-foreground",
       level > 0 && !isActuallyCollapsed && `pl-${4 * (level + 1)}`,
       isOpen && !isActuallyCollapsed && "bg-muted",
@@ -292,15 +292,15 @@ const SidebarContent = () => {
 
   return (
     <MotionDiv
-      animate={{ width: isActuallyCollapsed ? 64 : 250 }}
+      animate={{ width: isActuallyCollapsed ? 60 : 240 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className="flex flex-col border-r border-border h-[calc(100vh-4rem)] hidden md:block relative overflow-y-auto"
       aria-label="Sidebar Navigation"
     >
-      <div className="flex-1 overflow-y-auto p-3 space-y-1">
-        <div className="flex items-center justify-between p-1 mb-2 border-b border-border/40">
+      <div className="flex-1 overflow-y-auto px-2.5 py-2.5 space-y-1">
+        <div className="flex items-center justify-between px-1 pb-2 mb-2 border-b border-border/40">
           <MotionDiv
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
@@ -310,8 +310,8 @@ const SidebarContent = () => {
               isActuallyCollapsed && "hidden"
             )}
           >
-            {Icon && <Icon className="h-5 w-5 text-muted-foreground" />}
-            <h2 className="font-bold text-muted-foreground text-sm xl:text-lg leading-none tracking-tight truncate">
+            {Icon && <Icon className="h-[18px] w-[18px] text-muted-foreground" />}
+            <h2 className="font-semibold text-muted-foreground text-[13px] leading-none tracking-tight truncate">
               {t(moduleKey)}
             </h2>
           </MotionDiv>
@@ -321,7 +321,7 @@ const SidebarContent = () => {
             size="icon"
             onClick={handleToggleCollapse}
             className={cn(
-              "h-8 w-8 text-muted-foreground hover:text-foreground bg-foreground/10",
+              "h-7 w-7 text-muted-foreground hover:text-foreground bg-foreground/10",
               isActuallyCollapsed && "mx-auto bg-background"
             )}
             aria-label={isActuallyCollapsed ? "Expand sidebar" : "Collapse sidebar"}

@@ -21,18 +21,18 @@ const DataDisplayTemplate: React.FC<Props> = ({
 }) => {
   return (
     <div className="flex w-full flex-col justify-center">
-      <div className="sticky top-0 bg-background z-10 space-y-2 pb-2 xl:pb-4">
-        <div className="md:flex justify-between items-start">
-          <div className="text-lg xl:text-2xl font-semibold tracking-tight text-primary">
+      <div className="sticky top-0 bg-background z-10 space-y-1.5 pb-2">
+        <div className="md:flex justify-between items-center">
+          <div className="text-base font-semibold tracking-tight text-primary">
             {title}
           </div>
           {actionButtons && (
-            <div className="mt-2 xl:mt-4 md:mt-0">{actionButtons}</div>
+            <div className="mt-1.5 md:mt-0">{actionButtons}</div>
           )}
         </div>
         {filters && <div>{filters}</div>}
         {bulkActions && (
-          <div className="mb-2 xl:mb-4">{bulkActions}</div>
+          <div className="mb-2">{bulkActions}</div>
         )}
       </div>
       <div className="flex-1 overflow-y-auto bg-background">

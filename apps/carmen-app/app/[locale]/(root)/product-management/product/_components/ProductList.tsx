@@ -116,7 +116,7 @@ export default function ProductList({
                   `/product-management/product`,
                   searchParams
                 )}
-                className="hover:underline text-primary dark:text-primary-foreground hover:text-primary/80 cursor-pointer text-xs xl:text-sm"
+                className="hover:underline text-primary dark:text-primary-foreground hover:text-primary/80 cursor-pointer"
               >
                 {product.name}
               </Link>

@@ -37,7 +37,7 @@ export default function ActionFields({
 
   return (
     <TooltipProvider>
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
@@ -51,10 +51,10 @@ export default function ActionFields({
           </Tooltip>
           <div className="flex items-start gap-2">
             {currentMode === formType.ADD ? (
-              <p className="text-xl font-bold">Goods Received Note</p>
+              <p className="text-lg font-semibold">Goods Received Note</p>
             ) : (
               <div className="flex flex-col gap-1">
-                <p className="text-xl font-bold">{grnNo}</p>
+                <p className="text-lg font-semibold">{grnNo}</p>
                 <p className="text-sm font-medium text-muted-foreground">
                   Created at: {formatDate(createdAt, dateFormat || "yyyy/MM/dd")}
                 </p>

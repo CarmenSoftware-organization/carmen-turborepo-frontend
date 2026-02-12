@@ -195,7 +195,7 @@ const WorkflowStages = ({ control, isEditing, listUser }: WorkflowStageProps) =>
   return (
     <div className="space-y-3">
       <div className="mb-6">
-        <h2 className="text-xl font-bold mb-1">{tWf("workflow_stages")}</h2>
+        <h2 className="text-lg font-semibold mb-1">{tWf("workflow_stages")}</h2>
         <p className="text-sm text-gray-600">{tWf("configure_workflow_stages")}</p>
       </div>
 

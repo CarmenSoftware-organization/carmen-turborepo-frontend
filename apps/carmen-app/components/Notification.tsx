@@ -60,7 +60,7 @@ const NotificationItem = ({ notification, onMarkAsRead, tNoti }: NotificationIte
   };
 
   return (
-    <div className="p-2 xl:p-4 hover:bg-muted/50 transition-colors border-l-2 border-l-primary relative group">
+    <div className="p-3 hover:bg-muted/50 transition-colors border-l-2 border-l-primary relative group">
       {notification.link && (
         <a
           href={notification.link}
@@ -70,36 +70,36 @@ const NotificationItem = ({ notification, onMarkAsRead, tNoti }: NotificationIte
           }}
         />
       )}
-      <div className="flex items-start gap-2 xl:gap-3 relative z-20 pointer-events-none">
-        <div className="h-8 w-8 xl:h-10 xl:w-10 rounded-full bg-primary/10 flex items-center justify-center text-sm xl:text-lg">
+      <div className="flex items-start gap-2 relative z-20 pointer-events-none">
+        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-sm">
           {icon}
         </div>
         <div className="flex-1">
           <div className="flex justify-between items-start">
-            <h5 className="font-medium text-xs xl:text-sm">{notification.title}</h5>
-            <span className="text-[10px] xl:text-xs text-muted-foreground whitespace-nowrap ml-1 xl:ml-2">
+            <h5 className="font-medium text-xs">{notification.title}</h5>
+            <span className="text-[11px] text-muted-foreground whitespace-nowrap ml-2">
               {new Date(notification.created_at).toLocaleTimeString()}
             </span>
           </div>
-          <p className="text-[10px] xl:text-xs text-muted-foreground mt-0.5 xl:mt-1 mb-1 xl:mb-2">
+          <p className="text-[11px] text-muted-foreground mt-0.5 mb-1">
             {formatMessage(notification.message)}
           </p>
           <div className="flex justify-between items-center pointer-events-auto">
-            <span className="text-[10px] xl:text-xs font-medium capitalize">
+            <span className="text-[11px] font-medium capitalize">
               {notification.type}
             </span>
-            <div className="flex gap-1 xl:gap-2">
+            <div className="flex gap-1.5">
               {notification.link && (
                 <a
                   href={notification.link}
-                  className="text-[10px] xl:text-xs px-1.5 xl:px-2 py-0.5 xl:py-1 border rounded hover:bg-muted text-primary decoration-none"
+                  className="text-[11px] px-1.5 py-0.5 border rounded hover:bg-muted text-primary decoration-none"
                 >
                   View
                 </a>
               )}
               <button
                 onClick={() => onMarkAsRead(notification.id)}
-                className="text-[10px] xl:text-xs px-1.5 xl:px-2 py-0.5 xl:py-1 border rounded hover:bg-muted"
+                className="text-[11px] px-1.5 py-0.5 border rounded hover:bg-muted"
                 type="button"
               >
                 {tNoti("mark_read")}
@@ -118,9 +118,9 @@ interface EmptyNotificationStateProps {
 
 const EmptyNotificationState = ({ isConnected, tNoti }: EmptyNotificationStateProps) => {
   return (
-    <div className="p-4 xl:p-8 text-center text-[10px] xl:text-xs text-muted-foreground">
+    <div className="p-6 text-center text-[11px] text-muted-foreground">
       <p>{tNoti("no_notifications")}</p>
-      {!isConnected && <p className="text-[10px] xl:text-xs mt-1 xl:mt-2">{tNoti("connecting")}</p>}
+      {!isConnected && <p className="text-[11px] mt-1">{tNoti("connecting")}</p>}
     </div>
   );
 };
@@ -224,22 +224,22 @@ export default function Notification() {
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}
-          className="relative inline-flex justify-center items-center w-7 h-7 xl:w-8 xl:h-8"
+          className="relative inline-flex justify-center items-center w-7 h-7"
           size={"sm"}
         >
-          <Bell className="h-3.5 w-3.5 xl:h-4 xl:w-4" />
+          <Bell className="h-3.5 w-3.5" />
           {notificationCount > 0 && (
-            <span className="absolute top-1 end-1 inline-flex items-center py-0.5 px-1 xl:px-1.5 rounded-full text-[10px] xl:text-xs font-medium transform -translate-y-1/2 translate-x-1/2 bg-destructive text-white">
+            <span className="absolute top-1 end-1 inline-flex items-center py-0.5 px-1 rounded-full text-[10px] font-medium transform -translate-y-1/2 translate-x-1/2 bg-destructive text-white">
               {displayCount}
             </span>
           )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[30rem] max-h-[30rem] overflow-y-auto p-0 shadow-lg mx-4">
-        <div className="p-2 xl:p-4 border-b border-border bg-muted/50">
+        <div className="p-3 border-b border-border bg-muted/50">
           <div className="flex justify-between items-center">
-            <h4 className="font-medium text-xs xl:text-sm">{tNoti("notification")}</h4>
-            <span className="text-xs xl:text-sm">
+            <h4 className="font-medium text-xs">{tNoti("notification")}</h4>
+            <span className="text-xs">
               {notificationCount} {tNoti("new")}
             </span>
           </div>
@@ -261,16 +261,16 @@ export default function Notification() {
         </div>
 
         {notificationCount > 0 && (
-          <div className="p-2 xl:p-3 border-t bg-muted/30 flex justify-between">
+          <div className="p-2 border-t bg-muted/30 flex justify-between">
             <Button
               variant="ghost"
-              className="text-[10px] xl:text-xs h-7 xl:h-8"
+              className="text-[11px] h-7"
               size="sm"
               onClick={markAllAsRead}
             >
               {tNoti("mark_all_read")}
             </Button>
-            <Button variant="outline" className="text-[10px] xl:text-xs h-7 xl:h-8" size="sm">
+            <Button variant="outline" className="text-[11px] h-7" size="sm">
               {tNoti("view_all")}
             </Button>
           </div>

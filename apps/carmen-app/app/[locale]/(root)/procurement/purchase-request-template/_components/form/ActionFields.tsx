@@ -37,13 +37,13 @@ export default function ActionFields({
   const tCommon = useTranslations("Common");
   const router = useRouter();
   return (
-    <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center justify-between mb-3">
       <div className="flex items-center gap-2">
         <Button
           type="button"
           variant="outline"
           size="sm"
-          className="hover:bg-transparent w-8 h-8"
+          className="hover:bg-transparent w-7 h-7"
           onClick={(e) => {
             e.preventDefault();
             router.push("/procurement/purchase-request-template");
@@ -52,9 +52,9 @@ export default function ActionFields({
           <ChevronLeft />
         </Button>
         {currentMode === formType.ADD ? (
-          <p className="text-xl font-bold">{tPurchaseRequest("template")}</p>
+          <p className="text-lg font-semibold">{tPurchaseRequest("template")}</p>
         ) : (
-          <p className="text-xl font-bold">{title}</p>
+          <p className="text-lg font-semibold">{title}</p>
         )}
       </div>
       <div className="flex items-center gap-2">

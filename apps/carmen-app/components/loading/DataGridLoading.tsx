@@ -26,7 +26,7 @@ export default function DataGridLoading({
           <TableRow>
             {Array.from({ length: columns }).map((_, colIndex) => (
               <TableHead key={`header-${colIndex}`}>
-                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-3/4" />
               </TableHead>
             ))}
           </TableRow>
@@ -37,7 +37,7 @@ export default function DataGridLoading({
           <TableRow key={`row-${rowIndex}`}>
             {Array.from({ length: columns }).map((_, colIndex) => (
               <TableCell key={`cell-${rowIndex}-${colIndex}`}>
-                <Skeleton className={colIndex === 0 ? "h-4 w-1/2" : "h-4 w-full"} />
+                <Skeleton className={colIndex === 0 ? "h-3 w-1/2" : "h-3 w-full"} />
               </TableCell>
             ))}
           </TableRow>

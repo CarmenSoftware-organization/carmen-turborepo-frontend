@@ -13,7 +13,7 @@ export default function PriceListHeader({ data }: PriceListHeaderProps) {
     <div className="p-4 space-y-2">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-xl font-bold">{data.pricelist_no}</h1>
+          <h1 className="text-lg font-semibold">{data.pricelist_no}</h1>
           <p className="text-muted-foreground">{data.name}</p>
         </div>
         <Badge variant={data.status} className="font-bold">

@@ -11,26 +11,28 @@ import { Link } from "@/lib/navigation";
 export default function Navbar() {
   return (
     <div className="flex items-center justify-between p-2 gap-2 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
-      <Link href="/dashboard" className="px-1 xl:px-2 group flex flex-col justify-center">
+      <Link href="/dashboard" className="px-1 group flex flex-col justify-center">
         <span
-          className="text-xl xl:text-3xl font-bold tracking-tight text-primary hover:text-primary/80 transition-colors duration-200"
+          className="text-xl font-bold tracking-tight text-primary hover:text-primary/80 transition-colors duration-200"
           data-id="sidebar-logo-text"
         >
           Carmen
         </span>
         <div className="flex items-center gap-2">
           <span
-            className="text-[8px] xl:text-[10px] font-medium text-muted-foreground uppercase tracking-wider group-hover:text-primary/80 transition-colors duration-200"
+            className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider group-hover:text-primary/80 transition-colors duration-200"
             data-id="sidebar-logo-text-sub"
           >
             Hospitality Supply Chain
           </span>
-          <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-            (build latest 9/2/2026)
-          </p>
+          {process.env.NODE_ENV === "development" && (
+            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+              (build latest 9/2/2026)
+            </p>
+          )}
         </div>
       </Link>
-      <div className="flex items-center gap-2 xl:gap-4">
+      <div className="flex items-center gap-2">
         <div className="hidden md:block">
           <ModuleList />
         </div>
@@ -38,17 +40,17 @@ export default function Navbar() {
           <ModuleMobile />
         </div>
 
-        <div className="h-4 xl:h-6 w-px bg-border hidden md:block" />
+        <div className="h-4 w-px bg-border hidden md:block" />
 
-        <div className="hidden md:flex items-center gap-2 xl:gap-3">
+        <div className="hidden md:flex items-center gap-2">
           <BusinessList />
           <SwitchTheme />
           <LanguageSwitcher dense />
         </div>
 
-        <div className="h-4 xl:h-6 w-px bg-border hidden md:block" />
+        <div className="h-4 w-px bg-border hidden md:block" />
 
-        <div className="flex items-center gap-2 xl:gap-3">
+        <div className="flex items-center gap-2">
           <Notification />
           <UserAvatar />
         </div>

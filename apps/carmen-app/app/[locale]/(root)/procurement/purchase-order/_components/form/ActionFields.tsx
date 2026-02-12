@@ -38,7 +38,7 @@ export default function ActionFields({
   const router = useRouter();
   return (
     <TooltipProvider>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
@@ -51,9 +51,9 @@ export default function ActionFields({
             </TooltipContent>
           </Tooltip>
           {currentMode === formType.ADD ? (
-            <p className="text-xl font-bold">{tPurchaseOrder("title")}</p>
+            <p className="text-lg font-semibold">{tPurchaseOrder("title")}</p>
           ) : (
-            <p className="text-xl font-bold">{title}</p>
+            <p className="text-lg font-semibold">{title}</p>
           )}
         </div>
         <div className="flex items-center gap-2">

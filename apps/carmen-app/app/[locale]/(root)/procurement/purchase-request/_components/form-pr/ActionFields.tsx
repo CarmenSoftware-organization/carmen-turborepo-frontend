@@ -56,7 +56,7 @@ export default function ActionFields({ isViewOnly }: ActionFieldsProps) {
 
   return (
     <TooltipProvider>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
@@ -64,9 +64,9 @@ export default function ActionFields({ isViewOnly }: ActionFieldsProps) {
                 variant="outline"
                 size="sm"
                 onClick={handleBack}
-                className="hover:bg-transparent w-8 h-8"
+                className="hover:bg-transparent w-7 h-7"
               >
-                <ChevronLeft />
+                <ChevronLeft className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -76,9 +76,9 @@ export default function ActionFields({ isViewOnly }: ActionFieldsProps) {
 
           <div className="flex items-center gap-2">
             {currentMode === formType.ADD ? (
-              <p className="text-xl font-bold">{tPr("title")}</p>
+              <p className="text-lg font-semibold">{tPr("title")}</p>
             ) : (
-              <p className="text-xl font-bold">{initValues?.pr_no}</p>
+              <p className="text-lg font-semibold">{initValues?.pr_no}</p>
             )}
             {initValues?.pr_status && (
               <Badge variant={initValues?.pr_status}>{getStatusLabel(initValues?.pr_status)}</Badge>

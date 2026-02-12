@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils";
 const headerCellSpacingVariants = cva("", {
   variants: {
     size: {
-      dense: "px-2.5 h-8 py-1",
-      default: "px-4 py-2",
+      dense: "px-2 h-7 py-0.5",
+      default: "px-2.5 py-1",
     },
   },
   defaultVariants: {
@@ -22,8 +22,8 @@ const headerCellSpacingVariants = cva("", {
 const bodyCellSpacingVariants = cva("", {
   variants: {
     size: {
-      dense: "px-2.5 py-2",
-      default: "px-4 py-1.5",
+      dense: "px-2 py-1",
+      default: "px-2.5 py-1",
     },
   },
   defaultVariants: {
@@ -50,7 +50,7 @@ function DataGridTableBase({ children }: { children: ReactNode }) {
     <table
       data-slot="data-grid-table"
       className={cn(
-        "w-full align-middle caption-bottom text-left rtl:text-right text-foreground font-normal text-xs xl:text-sm",
+        "w-full align-middle caption-bottom text-left rtl:text-right text-foreground font-normal text-xs",
         !props.tableLayout?.columnsDraggable && "border-separate border-spacing-0",
         props.tableLayout?.width === "fixed" ? "table-fixed" : "table-auto",
         props.tableClassNames?.base
@@ -138,7 +138,7 @@ function DataGridTableHeadRowCell<TData>({
       data-pinned={isPinned || undefined}
       data-last-col={isLastLeftPinned ? "left" : isFirstRightPinned ? "right" : undefined}
       className={cn(
-        "relative h-12 text-left rtl:text-right align-middle font-normal text-accent-foreground [&:has([role=checkbox])]:pe-0",
+        "relative h-8 text-left rtl:text-right align-middle font-semibold text-[11px] text-muted-foreground uppercase tracking-wider bg-muted/30 [&:has([role=checkbox])]:pe-0",
         headerCellSpacing,
         props.tableLayout?.headerSticky && "sticky top-0 border-border",
         props.tableLayout?.cellBorder && "border-e border-border",
@@ -368,7 +368,7 @@ function DataGridTableEmpty() {
 
   return (
     <tr>
-      <td colSpan={totalColumns} className="text-center text-muted-foreground py-6">
+      <td colSpan={totalColumns} className="text-center text-muted-foreground text-xs py-4">
         {props.emptyMessage || "No data available"}
       </td>
     </tr>
@@ -380,9 +380,9 @@ function DataGridTableLoader() {
 
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      <div className="text-muted-foreground bg-card  flex items-center gap-2 px-4 py-2 font-medium leading-none text-xs xl:text-sm border border-border shadow-xs rounded-md">
+      <div className="text-muted-foreground bg-card flex items-center gap-2 px-3 py-1.5 font-medium leading-none text-xs border border-border shadow-xs rounded-md">
         <svg
-          className="animate-spin -ml-1 h-5 w-5 text-muted-foreground"
+          className="animate-spin -ml-1 h-4 w-4 text-muted-foreground"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"

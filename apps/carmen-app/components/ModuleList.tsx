@@ -38,12 +38,12 @@ export default function ModuleList() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="w-7 h-7 xl:w-8 xl:h-8 hover:bg-muted/80 transition-colors">
-          <LayoutGrid className="h-4 w-4 xl:h-5 xl:w-5 text-muted-foreground" strokeWidth={1.5} />
+        <Button variant="outline" className="w-7 h-7 hover:bg-muted/80 transition-colors">
+          <LayoutGrid className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 xl:w-80 p-2 xl:p-4" align="end" sideOffset={8}>
-        <div className="grid grid-cols-3 gap-2 xl:gap-3">
+      <PopoverContent className="w-72 p-3" align="end" sideOffset={8}>
+        <div className="grid grid-cols-3 gap-2">
           {moduleItems.map((module) => {
             const key = module.labelKey.split(".").pop() ?? "";
             const Icon = module.icon;
@@ -52,7 +52,7 @@ export default function ModuleList() {
             return (
               <button
                 key={module.labelKey}
-                className={`flex flex-col items-center justify-center gap-1 xl:gap-2 p-2 xl:p-3 rounded-xl transition-all duration-200 group aspect-square ${
+                className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-xl transition-all duration-200 group aspect-square ${
                   isActive
                     ? "bg-primary/10 text-primary shadow-inner ring-1 ring-primary/20"
                     : "hover:bg-muted text-muted-foreground hover:text-foreground hover:shadow-sm hover:-translate-y-0.5"
@@ -62,16 +62,16 @@ export default function ModuleList() {
               >
                 {Icon && (
                   <div
-                    className={`p-1.5 xl:p-2 rounded-lg transition-colors duration-200 ${
+                    className={`p-1.5 rounded-lg transition-colors duration-200 ${
                       isActive ? "bg-primary/20" : "bg-muted group-hover:bg-background"
                     }`}
                   >
                     <Icon
-                      className={`h-5 w-5 xl:h-6 xl:w-6 ${isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary"}`}
+                      className={`h-5 w-5 ${isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary"}`}
                     />
                   </div>
                 )}
-                <span className="text-[10px] xl:text-[11px] font-medium text-center leading-tight line-clamp-2">
+                <span className="text-[10px] font-medium text-center leading-tight line-clamp-2">
                   {t(key)}
                 </span>
               </button>

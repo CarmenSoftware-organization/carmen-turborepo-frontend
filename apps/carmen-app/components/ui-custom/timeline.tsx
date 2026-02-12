@@ -31,7 +31,7 @@ TimelineHeader.displayName = "TimelineHeader";
 
 const TimelineTitle = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, ref) => (
-    <div ref={ref} className={cn("text-xl font-bold text-primary", className)} {...props}>
+    <div ref={ref} className={cn("text-lg font-semibold text-primary", className)} {...props}>
       {children}
     </div>
   )
