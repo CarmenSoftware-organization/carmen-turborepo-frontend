@@ -50,6 +50,7 @@
     "jspdf": "^3.0.4",
     "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.548.0",
+    "motion": "^12.34.0",
     "nanoid": "^5.1.5",
     "next": "16.0.7",
     "next-intl": "^4.0.2",
